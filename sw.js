@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ai-math-v12';
+const CACHE_NAME = 'ai-math-v22';
 const ASSETS = [
   './',
   './index.html',
@@ -7,8 +7,15 @@ const ASSETS = [
   './manifest.json',
   './views/home.html',
   './views/intro.html',
+  './views/mlplay.html',
+  './views/logic.html',
   './views/perceptron.html',
+  './views/bias.html',
   './views/text.html',
+  './views/tfidf.html',
+  './views/sim.html',
+  './views/senti.html',
+  './views/review.html',
   './views/mnist.html',
   './views/quickdraw.html',
   './views/hamming.html',
@@ -22,7 +29,14 @@ const ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    await cache.addAll(ASSETS);
+    // HTTP 캐시를 우회해 항상 최신본을 받아 옵니다.
+    // (기본 cache.addAll은 브라우저 HTTP 캐시의 구버전을 그대로 담을 수 있어,
+    //  CACHE_NAME을 올려도 학생 기기에 구 core.js가 남는 사고가 납니다.)
+    await Promise.all(ASSETS.map(async (url) => {
+      const res = await fetch(url, { cache: 'reload' });
+      if (!res.ok) throw new Error(`SW install: ${url} → ${res.status}`);
+      await cache.put(url, res);
+    }));
     self.skipWaiting();
   })());
 });

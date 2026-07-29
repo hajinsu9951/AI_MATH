@@ -1,68 +1,1598 @@
-<!-- ═══════════ TEXT DATA ═══════════ -->
+<!-- ═══════════ TEXT (6~7차시: 텍스트를 집합으로 / 텍스트를 벡터로) ═══════════ -->
+<!-- 6차시 접두사 tp · 7차시 접두사 tv · 공용 접두사 tx — 모든 style 규칙은 #v-text 하위로 스코프 -->
 <div class="view" id="v-text">
-  <p class="mono" style="margin-bottom:0.4rem;">텍스트 데이터</p>
-  <h2>자연어의 수치 표현</h2>
-  <p class="desc">
-    인공지능이 텍스트를 처리하려면 단어를 숫자로 변환해야 합니다.
-    문장을 입력하면 원-핫 벡터와 빈도수 벡터로 변환하는 과정을 확인할 수 있습니다.
-  </p>
+  <style>
+  /* ───────── text 뷰 전용 스타일 (#v-text 스코프 한정 — 전역 누수 금지) ───────── */
 
-  <div class="card">
-    <h3>컴퓨터는 왜 문자를 이해하지 못할까?</h3>
-    <p>컴퓨터는 본질적으로 숫자 계산기입니다. "고양이"라는 단어를 보고 귀엽고 작은 동물을 떠올리는 것은 인간만의 능력이며,
-      컴퓨터에게 "고양이"는 의미 없는 문자 코드의 나열일 뿐입니다.
-      AI가 텍스트를 처리하려면 단어를 숫자 벡터(숫자의 나열)로 변환해야 하며, 이 과정을 <strong>텍스트 벡터화</strong>라 합니다.</p>
-    <p style="margin-top:0.5rem;">원-핫 인코딩은 가장 직관적인 변환 방법으로, 단어 집합에서 해당 단어의 위치만 1이고 나머지는 0인 벡터를 만듭니다.
-      이해하기 쉽지만 단어 간 관계(예: "왕"과 "여왕"이 유사하다는 것)를 표현할 수 없고, 단어가 많아지면 벡터가 매우 커지는 단점이 있습니다.</p>
-    <p style="margin-top:0.5rem;">빈도수 벡터(BoW)는 문장에서 각 단어가 몇 번 등장했는지를 세어 벡터로 표현합니다.
-      스팸 메일 필터, 뉴스 기사 분류, 감성 분석 등에 널리 사용되었으며, TF-IDF, Word2Vec, BERT 등 더 발전된 기법의 기초가 됩니다.</p>
+  /* 차시 전환 바 */
+  #v-text .tx-lbar{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;background:var(--card);
+    border:1px solid var(--border);border-radius:9999px;padding:0.4rem 0.5rem;margin:0 0 1.4rem;}
+  #v-text .tx-lbar .lb{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.14em;color:var(--muted);padding:0 0.5rem;}
+  #v-text .tx-lchip{font-family:var(--sans);font-size:0.98rem;font-weight:600;padding:0.5rem 1.1rem;min-height:44px;
+    border:1px solid var(--border);border-radius:9999px;background:var(--bg);color:var(--body);cursor:pointer;transition:all 0.2s;}
+  #v-text .tx-lchip:hover{border-color:var(--fg);color:var(--fg);}
+  #v-text .tx-lchip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-text .tx-sec{display:none;}
+  #v-text .tx-sec.on{display:block;}
+
+  /* STEP 구분선 */
+  #v-text .tx-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-text .tx-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-text .tx-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 핵심 질문 */
+  #v-text .tx-hero{position:relative;}
+  #v-text .tx-ask{border-left:4px solid var(--accent);}
+  #v-text .tx-ask .qq{font-size:1.12rem;font-weight:700;color:var(--fg);line-height:1.75;margin:0.5rem 0 0.4rem;}
+  #v-text .tx-ask .sub{font-size:1rem;color:var(--body);line-height:1.85;}
+  #v-text .tx-goal-map{width:100%;border-collapse:collapse;margin-top:0.7rem;font-size:0.95rem;}
+  #v-text .tx-goal-map th,#v-text .tx-goal-map td{border:1px solid var(--border);padding:0.4rem 0.6rem;text-align:left;line-height:1.7;}
+  #v-text .tx-goal-map th{background:var(--card-h);white-space:nowrap;font-weight:600;color:var(--fg);}
+
+  /* 공통 유틸 */
+  #v-text .tx-scroll{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;}
+  #v-text .tx-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.7rem;line-height:1.7;}
+  #v-text .tx-badge{display:inline-block;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.06em;
+    background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.14rem 0.55rem;margin-left:0.35rem;vertical-align:middle;}
+  #v-text .tx-badge.warn{background:var(--red);}
+  #v-text .tx-badge.soft{background:var(--accent);color:var(--fg);}
+  #v-text .tx-note{font-size:0.95rem;color:var(--body);line-height:1.8;margin-top:0.5rem;}
+  #v-text .tx-illu{display:block;width:100%;max-width:38rem;height:auto;margin:0.9rem auto 0.35rem;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);}
+  #v-text .tx-illu text{font-family:var(--mono);}
+  #v-text .tx-cap{font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.7;margin-bottom:0.4rem;}
+  #v-text .tx-set{font-family:var(--mono);font-size:1.02rem;font-weight:700;color:var(--fg);word-break:break-all;line-height:1.9;}
+  #v-text .tx-fb{font-size:1.05rem;font-weight:700;line-height:1.8;padding:0.7rem 0.95rem;border-radius:0.5rem;
+    background:var(--bg);border:1px solid var(--border);margin:0.6rem 0;min-height:1.2rem;}
+  #v-text .tx-fb.ok{border-left:5px solid var(--green);color:var(--green);}
+  #v-text .tx-fb.no{border-left:5px solid var(--red);color:var(--red);}
+  #v-text .tx-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:0.98rem;line-height:1.85;}
+  #v-text .tx-fb:empty{display:none;}
+  #v-text .tx-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-text .tx-3line li{font-size:1.06rem;font-weight:700;color:var(--fg);line-height:1.8;}
+  #v-text .tx-fold{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.2rem;}
+  #v-text .tx-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);
+    padding:0.7rem 0;min-height:44px;display:flex;align-items:center;position:relative;padding-right:1.5rem;}
+  #v-text .tx-fold>summary::-webkit-details-marker{display:none;}
+  #v-text .tx-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-text .tx-fold[open]>summary::after{content:'▾';}
+  #v-text .tx-fold .bd p{font-size:1rem;color:var(--body);line-height:1.85;margin-bottom:0.7rem;}
+  #v-text .tx-fold .bd{padding:0.2rem 0 0.6rem;}
+  #v-text .tx-mini{font-family:var(--sans);font-size:0.95rem;letter-spacing:0;text-transform:none;min-height:44px;}
+  #v-text .btn{min-height:44px;}
+  #v-text .tx-in{font-family:var(--sans);font-size:0.95rem;padding:0.5rem 0.7rem;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);color:var(--fg);min-height:44px;max-width:100%;}
+  #v-text textarea.tx-in{min-height:4.4rem;resize:vertical;width:100%;line-height:1.7;}
+  #v-text .tx-linkcard{display:flex;gap:0.9rem;align-items:center;text-decoration:none;color:inherit;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 0.9rem;margin-top:0.8rem;}
+  #v-text .tx-linkcard:hover{border-color:var(--fg);}
+  #v-text .tx-linkcard .th{width:6.6rem;flex:0 0 auto;aspect-ratio:16/9;border-radius:0.4rem;overflow:hidden;
+    background:var(--card-h);display:flex;align-items:center;justify-content:center;font-size:1.6rem;}
+  #v-text .tx-linkcard .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-text .tx-linkcard .tx{flex:1 1 10rem;min-width:0;}
+  #v-text .tx-linkcard .tx b{display:block;font-size:0.98rem;line-height:1.5;}
+  #v-text .tx-linkcard .tx span{display:block;font-size:0.86rem;color:var(--muted);line-height:1.6;margin-top:0.2rem;}
+
+  /* 참고 자료 카드 그리드 */
+  #v-text .tx-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-text .tx-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-text .tx-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-text .tx-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-text .tx-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-text .tx-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-text .tx-ref .bd{padding:0.65rem 0.75rem;}
+  #v-text .tx-ref .tt{font-weight:600;font-size:0.95rem;line-height:1.45;display:block;}
+  #v-text .tx-ref .ds{font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;display:block;}
+
+  /* 사진 타일 */
+  #v-text .tx-photo{margin:0;}
+  #v-text .tx-photo img{display:block;width:100%;height:auto;border-radius:0.6rem;border:1px solid var(--border);background:var(--card-h);}
+  #v-text .tx-photo .fb{display:none;align-items:center;justify-content:center;width:100%;min-height:7rem;
+    font-size:2.4rem;background:var(--card-h);border:1px dashed var(--border);border-radius:0.6rem;}
+  #v-text .tx-photo.nofoto img{display:none;}
+  #v-text .tx-photo.nofoto .fb{display:flex;}
+  #v-text .tx-photo figcaption{font-size:0.86rem;color:var(--muted);line-height:1.6;margin-top:0.35rem;}
+
+  /* ───────── 6차시 · 활동 ① 상황 사진 ───────── */
+  #v-text .tp-shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:0.8rem;margin:0.9rem 0;}
+  #v-text .tp-shot{background:var(--bg);border:1px solid var(--border);border-radius:0.7rem;padding:0.5rem;cursor:pointer;
+    text-align:left;font-family:var(--sans);color:var(--fg);transition:all 0.2s;min-height:44px;}
+  #v-text .tp-shot:hover{border-color:var(--fg);}
+  #v-text .tp-shot.on{border-color:var(--fg);background:var(--card-h);box-shadow:inset 0 0 0 2px var(--fg);}
+  #v-text .tp-shot .cap{display:block;font-size:0.9rem;line-height:1.55;margin-top:0.35rem;color:var(--body);}
+  #v-text .tp-shot .no{font-family:var(--mono);font-size:0.7rem;color:var(--muted);}
+  #v-text .tp-cnt{font-family:var(--mono);font-size:0.9rem;color:var(--muted);margin:0.4rem 0;}
+  #v-text .tp-cnt.ok{color:var(--green);font-weight:700;}
+  #v-text .tp-corp{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.8rem;}
+  #v-text .tp-corp .it{background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;padding:0.6rem 0.75rem;
+    font-size:0.98rem;line-height:1.7;display:flex;gap:0.6rem;align-items:flex-start;}
+  #v-text .tp-corp .it.mine{border-left:4px solid var(--accent);}
+  #v-text .tp-corp .it .lb{font-family:var(--mono);font-size:0.7rem;color:var(--muted);flex:0 0 auto;padding-top:0.25rem;}
+  #v-text .tp-corp .it button{margin-left:auto;border:none;background:transparent;color:var(--muted);cursor:pointer;
+    font-size:0.95rem;min-width:44px;min-height:44px;}
+  #v-text .tp-ov{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.6rem;}
+  #v-text .tp-ov .b{font-family:var(--mono);font-size:0.85rem;padding:0.3rem 0.6rem;border-radius:9999px;
+    background:var(--accent);color:var(--fg);font-weight:700;}
+
+  /* ───────── 6차시 · 활동 ② 순서 예측 · 파이프라인 ───────── */
+  #v-text .tp-ord{display:flex;flex-direction:column;gap:0.45rem;margin:0.8rem 0;}
+  #v-text .tp-ord .row{display:flex;align-items:center;gap:0.5rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:0.5rem;padding:0.45rem 0.6rem;}
+  #v-text .tp-ord .row.ok{border-color:var(--green);}
+  #v-text .tp-ord .row.no{border-color:var(--red);}
+  #v-text .tp-ord .n{font-family:var(--mono);font-size:0.8rem;color:var(--muted);width:1.6rem;flex:0 0 auto;}
+  #v-text .tp-ord .t{flex:1;min-width:0;font-size:0.98rem;line-height:1.6;}
+  #v-text .tp-ord .mv{border:1px solid var(--border);background:var(--card);border-radius:0.4rem;cursor:pointer;
+    min-width:44px;min-height:44px;font-size:1rem;color:var(--fg);}
+  #v-text .tp-ord .mv:disabled{opacity:0.35;cursor:default;}
+
+  #v-text .tp-docs{display:flex;flex-direction:column;gap:0.6rem;margin:0.8rem 0;}
+  #v-text .tp-doc{display:flex;gap:0.5rem;align-items:flex-start;}
+  #v-text .tp-doc .lb{font-family:var(--mono);font-size:0.8rem;font-weight:700;background:var(--fg);color:var(--bg);
+    border-radius:0.35rem;padding:0.3rem 0.5rem;flex:0 0 auto;margin-top:0.15rem;}
+  #v-text .tp-doc textarea{flex:1;min-width:0;}
+  #v-text .tp-doc .rm{border:1px solid var(--border);background:var(--card);border-radius:0.4rem;color:var(--muted);
+    cursor:pointer;min-width:44px;min-height:44px;flex:0 0 auto;}
+  #v-text .tp-stops{display:flex;flex-wrap:wrap;gap:0.35rem;margin:0.6rem 0;}
+  #v-text .tp-sw{display:inline-flex;align-items:center;gap:0.3rem;font-family:var(--sans);font-size:0.95rem;
+    padding:0.35rem 0.7rem;min-height:44px;border:1px solid var(--border);border-radius:9999px;background:var(--fg);
+    color:var(--bg);cursor:pointer;}
+  #v-text .tp-sw.off{background:var(--bg);color:var(--muted);}
+  #v-text .tp-sw .x{border:none;background:transparent;color:inherit;cursor:pointer;font-size:0.9rem;padding:0 0 0 0.2rem;line-height:1;}
+  #v-text .tp-chk{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.98rem;color:var(--body);margin:0.8rem 0 0;
+    cursor:pointer;line-height:1.7;}
+  #v-text .tp-chk input{width:1.15rem;height:1.15rem;margin-top:0.4rem;flex-shrink:0;accent-color:var(--fg);cursor:pointer;}
+
+  #v-text .tp-ctrl{position:sticky;top:0;z-index:3;background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:0.6rem 0.7rem;margin:0.9rem 0;}
+  #v-text .tp-stages{display:flex;gap:0.35rem;overflow-x:auto;padding-bottom:0.25rem;margin-top:0.5rem;}
+  #v-text .tp-sc{flex:0 0 auto;font-family:var(--sans);font-size:0.95rem;padding:0.4rem 0.8rem;min-height:44px;
+    border:1px solid var(--border);border-radius:9999px;background:var(--bg);color:var(--muted);cursor:pointer;white-space:nowrap;}
+  #v-text .tp-sc.on{background:var(--accent);color:var(--fg);border-color:var(--accent);font-weight:700;}
+  #v-text .tp-prog{font-family:var(--mono);font-size:0.85rem;color:var(--fg);font-weight:700;}
+
+  #v-text .tp-stage{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.9rem;margin:0.8rem 0;}
+  #v-text .tp-docline{border-left:4px solid var(--accent);background:var(--card);border-radius:0 0.5rem 0.5rem 0;
+    padding:0.6rem 0.8rem;margin:0.5rem 0;font-size:1rem;line-height:1.8;}
+  #v-text .tp-toks{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.6rem 0;}
+  #v-text .tp-tok{display:inline-flex;flex-direction:column;align-items:center;gap:0.1rem;font-family:var(--sans);
+    font-size:0.95rem;padding:0.35rem 0.7rem;min-height:44px;justify-content:center;border:1px solid var(--border);
+    border-radius:0.5rem;background:var(--card);color:var(--fg);cursor:pointer;transition:opacity 0.25s,transform 0.25s,background 0.25s;}
+  #v-text .tp-tok .o{font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:line-through;}
+  #v-text .tp-tok.stop{background:var(--red);color:#fff;text-decoration:line-through;opacity:0.75;}
+  #v-text .tp-tok.stop .o{color:#fff;opacity:0.8;}
+  #v-text .tp-tok.enter{animation:txPop 0.28s ease-out both;}
+  #v-text .tp-tok:focus-visible{outline:3px solid var(--fg);outline-offset:2px;}
+  #v-text .tp-bin{border:2px dashed var(--border);border-radius:0.6rem;padding:0.7rem;margin-top:0.6rem;min-height:5rem;
+    background:var(--card-h);}
+  #v-text .tp-bin.over{border-color:var(--red);background:var(--card);}
+  #v-text .tp-bin .h{font-family:var(--mono);font-size:0.8rem;color:var(--muted);}
+  #v-text .tp-setcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.7rem;margin-top:0.7rem;}
+  #v-text .tp-setcard{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:0 0.5rem 0.5rem 0;padding:0.7rem 0.85rem;}
+  #v-text .tp-setcard .n{font-family:var(--mono);font-size:0.85rem;color:var(--muted);margin-top:0.35rem;}
+  #v-text .tp-enc{border-collapse:collapse;font-family:var(--mono);font-size:0.85rem;margin-top:0.6rem;}
+  #v-text .tp-enc th,#v-text .tp-enc td{border:1px solid var(--border);padding:0.4rem 0.7rem;text-align:center;white-space:nowrap;}
+  #v-text .tp-enc th{background:var(--card-h);color:var(--fg);}
+  #v-text .tp-enc td.i{color:var(--fg);font-weight:700;background:var(--bg);}
+  #v-text .tp-enc td.slide{animation:txSlide 0.3s ease-out both;}
+
+  /* ───────── 6차시 · 활동 ③ 벤다이어그램 ───────── */
+  #v-text .tp-venwrap{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start;margin-top:0.8rem;}
+  #v-text .tp-vencol{flex:1 1 20rem;min-width:0;}
+  #v-text #tp-venn{display:block;width:100%;max-width:36rem;height:auto;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);}
+  #v-text .tp-ubox{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem;}
+  #v-text .tp-ubox .cnt{font-family:var(--mono);font-size:1.15rem;font-weight:700;color:var(--fg);}
+  #v-text .tp-uchips{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.6rem;min-height:3rem;}
+  #v-text .tp-uchip{font-family:var(--sans);font-size:0.95rem;padding:0.3rem 0.65rem;border-radius:9999px;
+    background:var(--accent);color:var(--fg);border:1px solid var(--accent);}
+  #v-text .tp-uchip.bounce{animation:txBounce 0.45s ease-out both;background:var(--red);color:#fff;border-color:var(--red);}
+  #v-text .tp-grade{display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;margin-top:0.8rem;}
+  #v-text .tp-grade label{font-family:var(--mono);font-size:0.9rem;color:var(--body);display:inline-flex;align-items:center;gap:0.3rem;}
+  #v-text .tp-num{width:4.4rem;min-height:44px;border:1px solid var(--border);border-radius:0.4rem;text-align:center;
+    font-family:var(--mono);font-size:1rem;background:var(--bg);color:var(--fg);}
+  #v-text .tp-num.ok{border-color:var(--green);box-shadow:inset 0 0 0 2px var(--green);}
+  #v-text .tp-num.no{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red);}
+
+  /* ───────── 7차시 · 표 · 격자 ───────── */
+  #v-text .tv-tbl{border-collapse:collapse;font-size:0.92rem;margin:0.6rem 0;min-width:100%;}
+  #v-text .tv-tbl th,#v-text .tv-tbl td{border:1px solid var(--border);padding:0.35rem 0.45rem;text-align:center;white-space:nowrap;}
+  #v-text .tv-tbl th{background:var(--card-h);font-family:var(--mono);font-size:0.8rem;color:var(--fg);font-weight:600;}
+  #v-text .tv-tbl th.rowh{background:var(--card);text-align:left;font-family:var(--sans);font-size:0.9rem;}
+  #v-text .tv-cell{min-width:44px;min-height:44px;width:100%;border:1px solid transparent;border-radius:0.35rem;
+    background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:1rem;font-weight:700;cursor:pointer;}
+  #v-text .tv-cell.ok{background:rgba(90,122,90,0.16);border-color:var(--green);}
+  #v-text .tv-cell.no{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red);}
+  #v-text .tv-cell.no.shake{animation:txShake 0.3s ease-in-out;}
+  #v-text .tv-in{width:3.2rem;min-height:44px;border:1px solid var(--border);border-radius:0.35rem;text-align:center;
+    font-family:var(--mono);font-size:1rem;background:var(--bg);color:var(--fg);-moz-appearance:textfield;}
+  #v-text .tv-in::-webkit-outer-spin-button,#v-text .tv-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #v-text .tv-in.ok{border-color:var(--green);background:rgba(90,122,90,0.14);}
+  #v-text .tv-in.no{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red);}
+  #v-text .tv-in.no.shake{animation:txShake 0.3s ease-in-out;}
+  #v-text .tv-mk{font-family:var(--mono);font-size:0.78rem;font-weight:700;display:block;min-height:1rem;}
+  #v-text .tv-mk.ok{color:var(--green);}
+  #v-text .tv-mk.no{color:var(--red);}
+  #v-text .tv-bar{height:6px;background:var(--card-h);border-radius:9999px;overflow:hidden;margin:0.4rem 0 0.6rem;max-width:26rem;}
+  #v-text .tv-bar i{display:block;height:100%;background:var(--fg);border-radius:9999px;transition:width 0.3s;}
+  #v-text .tv-vec{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--fg);line-height:2;word-break:break-all;}
+  #v-text .tv-vec .tag{font-family:var(--sans);font-size:0.8rem;font-weight:700;background:var(--accent);color:var(--fg);
+    border-radius:9999px;padding:0.1rem 0.5rem;margin-left:0.4rem;}
+  #v-text .tv-vecs{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.6rem;}
+  #v-text .tv-vecs .sl{animation:txSlide 0.3s ease-out both;}
+  #v-text .tv-hl{background:var(--accent);border-radius:0.2rem;padding:0 0.12rem;font-weight:700;}
+  #v-text .tv-switches{display:grid;grid-template-columns:repeat(auto-fit,minmax(6.4rem,1fr));gap:0.5rem;margin:0.8rem 0;}
+  #v-text .tv-sws{display:flex;flex-direction:column;align-items:center;gap:0.25rem;background:var(--bg);
+    border:1px solid var(--border);border-radius:0.6rem;padding:0.6rem 0.4rem;min-height:44px;cursor:pointer;
+    font-family:var(--sans);color:var(--fg);}
+  #v-text .tv-sws .w{font-size:0.95rem;font-weight:600;line-height:1.4;}
+  #v-text .tv-sws .v{font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--muted);}
+  #v-text .tv-sws.on{background:var(--fg);border-color:var(--fg);color:var(--bg);}
+  #v-text .tv-sws.on .v{color:var(--bg);}
+  #v-text .tv-sws .idx{font-family:var(--mono);font-size:0.68rem;color:var(--muted);}
+  #v-text .tv-sws.on .idx{color:var(--accent);}
+  #v-text .tv-ovl{border-collapse:collapse;font-family:var(--mono);font-size:0.9rem;margin-top:0.6rem;}
+  #v-text .tv-ovl td,#v-text .tv-ovl th{border:1px solid var(--border);padding:0.3rem 0.5rem;text-align:center;}
+  #v-text .tv-ovl td.one{background:var(--fg);color:var(--bg);font-weight:700;}
+  #v-text .tv-heat{transition:background 0.3s;}
+  #v-text #tv-sparse-cv{display:block;width:100%;max-width:34rem;height:auto;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);margin-top:0.7rem;}
+  #v-text .tv-emb{border:1px solid var(--border);border-radius:var(--radius);background:var(--card);
+    padding:0.1rem 1rem;margin-top:0.9rem;}
+  #v-text .tv-emb>summary{cursor:pointer;list-style:none;font-weight:600;font-size:1rem;padding:0.8rem 0;min-height:44px;
+    display:flex;align-items:center;gap:0.4rem;position:relative;padding-right:1.6rem;}
+  #v-text .tv-emb>summary::-webkit-details-marker{display:none;}
+  #v-text .tv-emb>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-text .tv-emb[open]>summary::after{content:'▾';}
+  #v-text .tv-banner{background:var(--bg);border-left:5px solid var(--red);border-radius:0 0.5rem 0.5rem 0;
+    padding:0.7rem 0.9rem;font-size:0.98rem;font-weight:700;color:var(--fg);line-height:1.75;margin:0.6rem 0;}
+  #v-text .tv-embcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:0.6rem;margin-top:0.7rem;}
+  #v-text .tv-embcard{background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;padding:0.6rem 0.7rem;}
+  #v-text .tv-embcard b{display:block;font-size:0.98rem;}
+  #v-text .tv-embcard span{display:block;font-family:var(--mono);font-size:0.82rem;color:var(--muted);margin-top:0.25rem;word-break:break-all;}
+  #v-text .tv-cmp{border-collapse:collapse;font-size:0.92rem;min-width:44rem;}
+  #v-text .tv-cmp th,#v-text .tv-cmp td{border:1px solid var(--border);padding:0.45rem 0.6rem;text-align:left;line-height:1.7;}
+  #v-text .tv-cmp th{background:var(--card-h);font-weight:600;color:var(--fg);}
+
+  /* 애니메이션 */
+  @keyframes txPop{from{opacity:0;transform:translateY(8px) scale(0.94);}to{opacity:1;transform:none;}}
+  @keyframes txSlide{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}
+  @keyframes txBounce{0%{transform:scale(1);}35%{transform:scale(1.18) translateX(10px);}100%{transform:scale(1);}}
+  @keyframes txShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+  @media (prefers-reduced-motion: reduce){
+    #v-text .tp-tok.enter,#v-text .tp-enc td.slide,#v-text .tv-vecs .sl,
+    #v-text .tp-uchip.bounce,#v-text .tv-cell.no.shake,#v-text .tv-in.no.shake{animation:none !important;}
+    #v-text .tp-tok,#v-text .tp-uchip{transition:none !important;}
+  }
+
+  @media (max-width:640px){
+    #v-text .tx-lbar{border-radius:var(--radius);}
+    #v-text .tp-shots{grid-template-columns:1fr;}
+    #v-text .tp-doc{flex-wrap:wrap;}
+    #v-text .tv-switches{grid-template-columns:repeat(auto-fit,minmax(5.4rem,1fr));}
+    #v-text .tx-linkcard{flex-wrap:wrap;}
+    #v-text .tx-linkcard .th{width:100%;}
+  }
+  </style>
+
+  <!-- ═════ 차시 전환 (6·7차시는 한 뷰의 두 차시 진입) ═════ -->
+  <div class="tx-lbar" id="tx-lbar" data-no-toggle="1" role="group" aria-label="차시 선택">
+    <span class="lb">Ⅱ 단원 · 차시</span>
+    <button type="button" class="tx-lchip on" id="tx-l6" onclick="txLesson(6)">6차시 · 텍스트를 집합으로</button>
+    <button type="button" class="tx-lchip" id="tx-l7" onclick="txLesson(7)">7차시 · 텍스트를 벡터로</button>
   </div>
 
-  <div class="tabs">
-    <button class="tab on" onclick="ttab(0,this)">원-핫 인코딩</button>
-    <button class="tab" onclick="ttab(1,this)">빈도수 벡터</button>
-  </div>
 
-  <!-- TAB 0: One-Hot -->
-  <div class="tpanel on" id="tt0">
-    <div class="card">
-      <h3>원-핫 인코딩 (One-Hot Encoding)</h3>
-      <p>단어 집합에서 각 단어의 위치만 1이고 나머지는 모두 0인 벡터로 표현합니다.
-        아래에 문장을 입력하면 각 단어의 원-핫 벡터를 확인할 수 있습니다.</p>
+  <!-- ═══════════════════════════════════════════════════════════════════
+       6차시 — 텍스트를 집합으로: 전처리와 단어집합 (접두사 tp)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="tx-sec on" id="tp-root">
+
+    <!-- ═════ 표제부 ═════ -->
+    <div class="tx-hero vw-wrap" data-no-toggle="1">
+      <div class="vw-mark" aria-hidden="true">
+        <svg viewBox="0 0 320 180" role="img" aria-label="문장이 어절로 잘리고 단어집합으로 묶이는 그림">
+          <rect width="320" height="180" fill="var(--bg)"/>
+          <path d="M14 34 h96 a8 8 0 0 1 8 8 v30 a8 8 0 0 1 -8 8 h-72 l-14 14 v-14 h-10 a8 8 0 0 1 -8 -8 v-30 a8 8 0 0 1 8 -8 z"
+                fill="var(--card)" stroke="var(--fg)" stroke-width="2"/>
+          <path d="M26 50 h72 M26 62 h52" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
+          <g font-family="monospace" font-size="11" text-anchor="middle">
+            <rect x="130" y="30" width="46" height="22" rx="7" fill="var(--accent)"/><text x="153" y="45" fill="var(--fg)">수학</text>
+            <rect x="130" y="60" width="46" height="22" rx="7" fill="var(--accent)"/><text x="153" y="75" fill="var(--fg)">탐구</text>
+            <rect x="130" y="90" width="46" height="22" rx="7" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="153" y="105" fill="var(--muted)">는</text>
+            <rect x="130" y="120" width="46" height="22" rx="7" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="153" y="135" fill="var(--muted)">의</text>
+          </g>
+          <path d="M214 26 q-12 54 0 108" fill="none" stroke="var(--fg)" stroke-width="3"/>
+          <path d="M302 26 q12 54 0 108" fill="none" stroke="var(--fg)" stroke-width="3"/>
+          <g font-family="monospace" font-size="11" text-anchor="middle">
+            <rect x="226" y="38" width="64" height="22" rx="7" fill="var(--fg)"/><text x="258" y="53" fill="var(--bg)">수학</text>
+            <rect x="226" y="68" width="64" height="22" rx="7" fill="var(--fg)"/><text x="258" y="83" fill="var(--bg)">탐구</text>
+            <rect x="226" y="98" width="64" height="22" rx="7" fill="var(--fg)"/><text x="258" y="113" fill="var(--bg)">열쇠</text>
+          </g>
+          <text x="258" y="140" font-size="11" fill="var(--muted)" font-family="monospace" text-anchor="middle">1  2  3</text>
+          <text x="160" y="170" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">문장 → 어절 → 단어집합 → 번호</text>
+        </svg>
+      </div>
+      <p class="mono" style="margin-bottom:0.4rem;">6차시 · Ⅱ. 텍스트 데이터 처리</p>
+      <h2>텍스트를 집합으로 — 전처리와 단어집합</h2>
+      <p class="desc">
+        컴퓨터에게 문장은 그저 글자의 줄입니다. 오늘은 문장을 어절로 자르고, 필요 없는 말을
+        걸러내어, 중복 없는 '단어집합'으로 바꾸는 길을 직접 따라가 봅니다.
+      </p>
     </div>
 
-    <div class="card">
-      <h3>문장 입력</h3>
-      <input type="text" id="oh-input" placeholder="예: 나는 인공지능 수학을 좋아한다" value="나는 인공지능 수학을 좋아한다"
-        style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--sans);font-size:0.88rem;background:var(--bg);color:var(--fg);margin-top:0.5rem;">
-      <div class="btn-row">
-        <button class="btn pri" onclick="ohVocabUser=null;ohEncode()">인코딩</button>
+    <div class="info" data-no-toggle="1" style="margin-top:0;">
+      <strong>오늘의 학습 목표</strong>
+      <div style="margin-top:0.5rem;">① 실생활의 텍스트 데이터에서 <b>불용어를 제거하여 단어집합을 만들 수 있다.</b> <b>[12인수02-01]</b></div>
+      <div style="margin-top:0.35rem;">② <b>단어집합의 원소에 정수를 대응시켜</b> 텍스트 데이터를 목적에 맞게 표현할 수 있다. <b>[12인수02-01]</b></div>
+      <table class="tx-goal-map">
+        <tr><th>목표 ①</th><td>→ STEP 2 활동 ① 문장 만들기 · 활동 ② 전처리 파이프라인에서 직접 만듭니다.
+          <button class="btn tx-mini" type="button" onclick="tpTab(0)">활동 ①로</button>
+          <button class="btn tx-mini" type="button" onclick="tpTab(1)">활동 ②로</button></td></tr>
+        <tr><th>목표 ②</th><td>→ 활동 ②의 5단계 · 활동 ③ 합집합 사전에서 완성합니다.
+          <button class="btn tx-mini" type="button" onclick="tpTab(2)">활동 ③으로</button></td></tr>
+      </table>
+    </div>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+      <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+    <div class="chips tp-keys" data-no-toggle="1">
+      <span class="chip">집합·원소</span>
+      <span class="chip">불용어</span>
+      <span class="chip">단어집합</span>
+      <span class="chip">합집합(전체집합 U)</span>
+      <span class="chip">정수 인코딩 [참고]</span>
+    </div>
+
+    <div class="card tx-ask" data-no-toggle="1">
+      <h3>핵심 질문</h3>
+      <p class="qq">❓ "숫자만 아는 컴퓨터는 문장을 어떻게 '읽는' 것일까?"</p>
+      <p class="sub">보조 질문: 문장을 그대로 두면 어떤 단어가 몇 번 나왔는지 셀 수 있을까요? 두 글이 얼마나 비슷한지 비교할 수 있을까요?</p>
+      <p class="tx-src">근거 — 연수교재 합본 p.53 도입 탐구 질문</p>
+    </div>
+
+    <!-- ═════ STEP 1 · 도입 ═════ -->
+    <div class="tx-step"><p class="mono">STEP 1 · 도입</p></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>추천 영상 — 텍스트를 왜 수로 바꿀까</h3>
+      <p>카드를 누르면 전체 화면으로 재생됩니다. 선생님께서 다른 영상을 쓰실 때에는 <b>[+ 선생님 영상 추가]</b> 슬롯(정확히 1칸)에 등록하세요.</p>
+      <div id="tp-videos"></div>
+      <a class="tx-linkcard" href="https://www.youtube.com/watch?v=RQczdgwONaQ" target="_blank" rel="noopener"
+         title="이 영상은 제작자 설정으로 이 페이지 안에서는 재생할 수 없습니다.">
+        <span class="th"><img src="https://img.youtube.com/vi/RQczdgwONaQ/hqdefault.jpg" alt="" loading="lazy"
+          onerror="this.style.display='none';this.parentElement.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="tx"><b>인공지능과 수학교육 1. (집합·십진법과 이진법·벡터) <span class="tx-badge">↗ 새 탭</span></b>
+          <span>수학교육학자 김정현(단국대) — "단어집합 = 집합" 연결에 가장 알맞은 영상입니다.
+          이 영상은 제작자 설정으로 이 페이지 안에서는 재생할 수 없어 새 탭으로만 열립니다.</span></span>
+      </a>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>마중 퀴즈 — 내 생각은?</h3>
+      <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요. 답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+      <div id="tp-warm"></div>
+      <p style="margin-top:1.1rem;"><b>세 질문의 답은 오늘 STEP 2의 세 활동에서 하나씩 완성합니다.</b></p>
+    </div>
+
+    <!-- ═════ STEP 2 · 전개 ═════ -->
+    <div class="tx-step"><p class="mono">STEP 2 · 전개</p></div>
+
+    <div class="tabs" id="tp-tabs">
+      <button class="tab on" type="button" onclick="tpTab(0,this)">① 문장 만들기</button>
+      <button class="tab" type="button" onclick="tpTab(1,this)">② 전처리 파이프라인</button>
+      <button class="tab" type="button" onclick="tpTab(2,this)">③ 합집합 사전</button>
+    </div>
+
+    <!-- ── 활동 ① ── -->
+    <div class="tpanel on" id="tpp0">
+      <div class="info" data-no-toggle="1"><strong>활동 ① 상황 사진으로 문장 만들기 — 우리 반 말뭉치 만들기</strong> —
+        아래 다섯 장의 사진에는 <b>말풍선이 비어 있습니다.</b> 사진 한 장을 골라, 그 장면의 인물이 할 법한 말을 <b>한 문장</b>으로 채워 보세요.
+        조건: ㉠ 완결된 한 문장 ㉡ 15자 이상 ㉢ 문장 부호 자유
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>사진을 고르고, 말풍선을 채워 보세요</h3>
+        <div class="tp-shots" id="tp-shots"></div>
+
+        <p class="mat-label" style="text-align:left;margin-top:0.9rem;">내가 만든 문장</p>
+        <textarea class="tx-in" id="tp-sent" rows="2" placeholder="예: 무릎에서 피가 나는데 많이 아프지 않니?"
+          oninput="tpSentCount()"></textarea>
+        <div class="tp-cnt" id="tp-sent-cnt">현재 글자 수 0자 — 15자 이상 쓰면 초록으로 바뀝니다.</div>
+        <div class="btn-row">
+          <button class="btn pri tx-mini" type="button" onclick="tpSentSave()">내 문장 저장</button>
+          <button class="btn tx-mini" type="button" onclick="tpSentDemo()">예시 문장 불러오기</button>
+          <button class="btn tx-mini" type="button" onclick="tpSentGroup()">모둠 문장 3개 채우기</button>
+          <a class="btn tx-mini" style="text-decoration:none;display:inline-flex;align-items:center;"
+             href="https://tjdgus1121.github.io/Text_mining.html" target="_blank" rel="noopener">공동 말뭉치로 제출하기 ↗</a>
+        </div>
+        <div class="tx-fb" id="tp-sent-fb"></div>
+
+        <p class="mat-label" style="text-align:left;margin-top:0.9rem;">우리 반 말뭉치</p>
+        <div class="tp-corp" id="tp-corp"></div>
+        <div class="tp-ov" id="tp-ov"></div>
+      </div>
+
+      <div class="card">
+        <h3>단계 1 · 관찰 — 같은 사진, 다른 문장</h3>
+        <p>모둠원 셋의 문장을 나란히 놓고 다음을 확인해 봅시다.</p>
+        <ul style="margin:0.4rem 0 0 1.2rem;">
+          <li>세 문장에 <b>똑같이 들어간 단어</b>는 무엇인가요? (예: 사진 1이라면 '괜찮다', '무릎')</li>
+          <li>나만 쓴 단어는 무엇인가요?</li>
+          <li>세 문장의 <b>길이</b>는 얼마나 다른가요?</li>
+        </ul>
+        <p style="margin-top:0.5rem;">화면의 '겹치는 단어' 배지가 자동으로 세어 줍니다. 사람 눈에는 당연해 보이는 이 비교를,
+          컴퓨터는 문장을 자르기 전에는 <b>한 번도</b> 할 수 없습니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 2 · 정의 확인 — 말뭉치란 무엇인가</h3>
+        <p>어떤 목적을 가지고 모아 놓은 텍스트 데이터 전체를 <b>말뭉치(코퍼스, corpus)</b> 라고 합니다.
+          방금 여러분이 만든 문장 묶음이 바로 "우리 반 상황 사진 말뭉치"입니다.</p>
+        <p>말뭉치는 <b>비정형 데이터</b>입니다. 학번·성별처럼 정해진 칸에 들어가는 정형 데이터와 달리, 문장은 길이도 형식도 제각각입니다.
+          그래서 분석하기 전에 <b>일정한 형태로 가공하는 단계</b>가 반드시 필요합니다. 그 단계를 <b>데이터 전처리</b>라고 합니다.</p>
+        <div class="math">데이터 수집 ▶ 데이터 전처리 ▶ 데이터 시각화 ▶ 데이터 분석</div>
+        <p class="tx-src">출처: 동아 교과서 Ⅱ p.47 · 미래엔 교과서 Ⅱ 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>왜 굳이 문장을 자를까 — 자르지 않으면 컴퓨터가 못 하는 세 가지</h3>
+        <div class="tx-scroll">
+          <table class="tv-cmp" style="min-width:26rem;">
+            <tr><th>자르지 않으면 못 하는 일</th><th>자르면 가능해지는 일</th></tr>
+            <tr><td>단어가 몇 번 나왔는지 <b>셀 수 없다</b></td><td>빈도수를 센다 (7·8차시)</td></tr>
+            <tr><td>두 문서가 얼마나 비슷한지 <b>비교할 수 없다</b></td><td>유사도를 잰다 (9·10차시)</td></tr>
+            <tr><td>학습 모델의 입력으로 <b>넣을 수 없다</b></td><td>벡터로 바꿔 학습시킨다</td></tr>
+          </table>
+        </div>
+        <p style="margin-top:0.6rem;"><b>단어로 나누지 않으면, 컴퓨터는 문장을 비교할 수도, 셀 수도, 배울 수도 없습니다.</b></p>
+        <p class="tx-src">출처: 연수교재 합본 p.59 「생각해 보기」 모범 답안 서술을 재구성</p>
       </div>
     </div>
 
-    <div id="oh-result"></div>
-  </div>
+    <!-- ── 활동 ② ── -->
+    <div class="tpanel" id="tpp1">
+      <div class="info" data-no-toggle="1"><strong>활동 ② 전처리 파이프라인 체험</strong> —
+        아래 문서 A를 컴퓨터가 다룰 수 있는 <b>집합</b>으로 바꾸려 합니다. 어떤 순서로 손질해야 할까요?
+        먼저 <b>여러분이 예상하는 순서</b>를 아래 네 조각으로 만들어 보세요. (정답은 맞혀 본 뒤에 공개됩니다.)
+      </div>
 
-  <!-- TAB 1: BoW -->
-  <div class="tpanel" id="tt1">
-    <div class="card">
-      <h3>빈도수 벡터 (Bag of Words)</h3>
-      <p>문장을 띄어쓰기 기준으로 분리하고, 각 단어의 등장 횟수를 벡터로 표현합니다.
-        여러 문장을 입력하면 각 문장의 빈도수 벡터를 비교할 수 있습니다.</p>
-    </div>
+      <div class="card" data-no-toggle="1">
+        <h3>순서 예측 — 네 조각을 올바른 차례로</h3>
+        <p>▲▼ 단추(또는 키보드 Tab·Enter)로 순서를 바꾼 뒤 <b>[제출]</b>을 누르세요. 틀려도 다시 시도할 수 있으며,
+          <b>2회 시도 후에는 정답 순서로 자동 정렬</b>되고 파이프라인 위젯이 열립니다.</p>
+        <div class="tp-ord" id="tp-ord"></div>
+        <div class="btn-row">
+          <button class="btn pri tx-mini" type="button" onclick="tpOrdCheck()">제출</button>
+          <button class="btn tx-mini" type="button" onclick="tpOrdShuffle()">섞기</button>
+        </div>
+        <div class="tx-fb" id="tp-ord-fb"></div>
+      </div>
 
-    <div class="card">
-      <h3>문장 입력 (줄바꿈으로 여러 문장 입력)</h3>
-      <textarea id="bow-input" rows="4" placeholder="문장 1&#10;문장 2&#10;..."
-        style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--sans);font-size:0.86rem;background:var(--bg);color:var(--fg);resize:vertical;margin-top:0.5rem;">오늘 날씨가 좋다
-오늘 공부를 한다
-인공지능 수학 공부가 재미있다</textarea>
-      <div class="btn-row">
-        <button class="btn pri" onclick="bowAnalyze()">분석</button>
-        <button class="btn" onclick="bowAnimate()">단계별 애니메이션</button>
+      <div id="tp-pipe" style="display:none;">
+        <div class="card" data-no-toggle="1">
+          <h3>문서 입력</h3>
+          <div class="btn-row" id="tp-presets"></div>
+          <div class="tp-docs" id="tp-docs"></div>
+          <div class="btn-row">
+            <button class="btn tx-mini" type="button" onclick="tpAddDoc()">+ 문서 추가</button>
+            <button class="btn tx-mini" type="button" onclick="tpLoadMine()">내 문장 가져오기</button>
+          </div>
+
+          <p class="mat-label" style="text-align:left;margin-top:0.9rem;">불용어 사전 — 칩을 눌러 켜고 끄고, ✕로 지웁니다</p>
+          <div class="tp-stops" id="tp-stopchips"></div>
+          <div class="btn-row" style="align-items:center;">
+            <input class="tx-in" id="tp-stop-in" type="text" placeholder="쉼표로 구분해 입력 (예: 은, 는, 이, 가)"
+                   style="flex:1 1 14rem;min-width:0;" aria-label="불용어 목록">
+            <button class="btn tx-mini" type="button" onclick="tpStopApply()">목록 적용</button>
+            <button class="btn tx-mini" type="button" onclick="tpStopPreset('base')">조사 기본 세트</button>
+            <button class="btn tx-mini" type="button" onclick="tpStopPreset('none')">비우기</button>
+          </div>
+          <label class="tp-chk" for="tp-usestop">
+            <input type="checkbox" id="tp-usestop" checked onchange="tpRender()">
+            <span><b>불용어 제거 적용</b> — 체크를 끄면 3단계가 통째로 건너뛰어지고 결과가 즉시 다시 계산됩니다(비교 실험의 핵심 스위치).</span>
+          </label>
+        </div>
+
+        <div class="tp-ctrl" data-no-toggle="1">
+          <div class="btn-row" style="align-items:center;margin:0;">
+            <button class="btn tx-mini" type="button" onclick="tpStep(-1)">◀ 이전</button>
+            <button class="btn pri tx-mini" type="button" onclick="tpStep(1)">▶ 다음 단계</button>
+            <button class="btn tx-mini" type="button" id="tp-play" onclick="tpPlay()">⏵ 자동 재생</button>
+            <button class="btn tx-mini" type="button" onclick="tpStepTo(0)">↺ 처음으로</button>
+            <span class="tp-prog" id="tp-progress">단계 1 / 5</span>
+          </div>
+          <div class="tp-stages" id="tp-stagechips"></div>
+        </div>
+
+        <div id="tp-out" data-no-toggle="1"></div>
+
+        <div class="card" data-no-toggle="1">
+          <h3>판정 문제 — 번호가 크면 더 중요한 단어일까?</h3>
+          <p>방금 만든 인코딩 표에서 <code>U = {기반, 사고, 성장, 수학, 열쇠, 인공지능, 탐구}</code> 의 '인공지능'은 6번, '수학'은 4번입니다.</p>
+          <div class="btn-row">
+            <button class="btn tx-mini" type="button" onclick="tpJudge(0)">6 &gt; 4 이므로 인공지능이 더 중요하다</button>
+            <button class="btn tx-mini" type="button" onclick="tpJudge(1)">번호는 중요도와 무관하다</button>
+          </div>
+          <div class="tx-fb" id="tp-judge-fb"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>단계 1 · 관찰 — 불용어를 켰을 때와 껐을 때</h3>
+        <p><b>불용어 제거 적용</b> 체크박스를 껐다 켰다 하며 다음 표를 채워 봅시다.
+          (표는 화면이 자동으로 채워 주지만, <b>먼저 예상값을 손으로 적고</b> 확인하세요.)</p>
+        <div class="tx-scroll">
+          <table class="tv-cmp" style="min-width:24rem;">
+            <tr><th></th><th>어절 수</th><th>단어집합의 원소 개수 n(A)</th></tr>
+            <tr><td>불용어 제거 <b>안 함</b></td><td id="tp-obs-a1">–</td><td id="tp-obs-a2">–</td></tr>
+            <tr><td>불용어 제거 <b>함</b></td><td id="tp-obs-b1">–</td><td id="tp-obs-b2">–</td></tr>
+          </table>
+        </div>
+        <p style="margin-top:0.5rem;">🍗 치킨 프리셋 기준 정답: 어절 8개 → 불용어 제거 안 함 <code>n(A)=6</code>, 제거 함 <code>n(A)=6</code>
+          (조사가 어절에 붙어 있어 어절 자체가 사라지지는 않음)<br>
+          💻 노트북 프리셋 기준 정답: 후기 A의 어절 4개 → <code>A = {노트북, 디자인, 좋다}</code> 로 <code>n(A)=3</code></p>
+        <p style="margin-top:0.5rem;"><b>관찰 질문</b>: 버린 단어 자리에 원래 있던 말들은 무엇이었나요?
+          그 말들을 버려도 문서의 <b>주제</b>를 알아보는 데 지장이 없었나요?</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 2 · 정리 — 전처리는 요리 전 손질입니다</h3>
+        <p>전처리는 재료를 다듬는 일과 같습니다. 씻지 않은 채소를 그대로 냄비에 넣지 않듯, 인공지능도 문장을 그대로 넣지 않습니다.
+          표준 순서는 다음 네 단계입니다.</p>
+        <p><b>㉠ 숫자·문장 부호 등 불필요한 기호 제거 → ㉡ 띄어쓰기 기준 어절 분리 → ㉢ 각 어절을 기본 사전형 단어로 변형 →
+          ㉣ 불용어 제거 후 목적에 맞는 단어(명사·동사·형용사 등) 추출</b></p>
+        <div class="tx-scroll">
+          <table class="tv-cmp" style="min-width:28rem;">
+            <tr><th>예</th><td>이 치킨은 맛이 좋고 양도 많아요.</td></tr>
+            <tr><th>㉡ 어절 분리</th><td>이 / 치킨은 / 맛이 / 좋고 / 양도 / 많아요</td></tr>
+            <tr><th>㉢ 사전형</th><td>이 / 치킨 / 은 / 맛 / 이 / 좋다 / 양 / 도 / 많다</td></tr>
+            <tr><th>㉣ 불용어 제거 후</th><td><b>치킨, 맛, 좋다, 양, 많다</b></td></tr>
+          </table>
+        </div>
+        <svg class="tx-illu" viewBox="0 0 660 210" role="img" aria-label="전처리 네 단계를 나타낸 도해">
+          <rect width="660" height="210" fill="var(--bg)"/>
+          <g font-family="monospace" font-size="13" text-anchor="middle">
+            <rect x="16" y="46" width="140" height="62" rx="10" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/>
+            <text x="86" y="72" fill="var(--fg)">㉠ 기호 제거</text><text x="86" y="94" fill="var(--muted)">. , ! ? 삭제</text>
+            <rect x="176" y="46" width="140" height="62" rx="10" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/>
+            <text x="246" y="72" fill="var(--fg)">㉡ 어절 분리</text><text x="246" y="94" fill="var(--muted)">띄어쓰기 기준</text>
+            <rect x="336" y="46" width="140" height="62" rx="10" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/>
+            <text x="406" y="72" fill="var(--fg)">㉢ 사전형</text><text x="406" y="94" fill="var(--muted)">좋고 → 좋다</text>
+            <rect x="496" y="46" width="148" height="62" rx="10" fill="var(--fg)"/>
+            <text x="570" y="72" fill="var(--bg)">㉣ 불용어 제거</text><text x="570" y="94" fill="var(--accent)">단어 추출</text>
+          </g>
+          <g stroke="var(--muted)" stroke-width="2.5" fill="none">
+            <path d="M158 77 H172"/><path d="M318 77 H332"/><path d="M478 77 H492"/>
+          </g>
+          <path d="M172 77 l-9 -5 v10 z" fill="var(--muted)"/><path d="M332 77 l-9 -5 v10 z" fill="var(--muted)"/>
+          <path d="M492 77 l-9 -5 v10 z" fill="var(--muted)"/>
+          <text x="330" y="148" font-size="14" font-family="monospace" text-anchor="middle" fill="var(--muted)">이 치킨은 맛이 좋고 양도 많아요.</text>
+          <text x="330" y="176" font-size="15" font-family="monospace" font-weight="700" text-anchor="middle" fill="var(--fg)">{ 치킨, 맛, 좋다, 양, 많다 }</text>
+        </svg>
+        <p class="tx-cap">▲ 전처리 네 단계 — 동아 교과서 Ⅱ p.47 도표를 우리 팔레트 SVG로 재구성</p>
+        <p class="tx-src">출처: 동아 교과서 Ⅱ p.47 도표를 재구성 · 천재 「인공지능 수학」 지도서 Ⅱ 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 3 · 정의 확인 — 불용어와 단어집합</h3>
+        <p><b>불용어</b>: 텍스트 데이터에 등장하지만 분석에 사용되지 않는 단어. 조사·관사·대명사·접속사·특수 문자 등이 해당하며,
+          <b>텍스트 분석 프로그램마다 다를 수 있습니다.</b></p>
+        <p><b>단어집합</b>: 텍스트 데이터에서 불용어를 제거하고 남은 단어를 <b>중복을 허용하지 않고</b> 모아 놓은 집합.</p>
+        <p><b>예시 1</b> — 한 줄 평 A "불편한 편의점의 따뜻한 이야기에 감동했습니다."<br>
+          어절 분리: <code>불편한 / 편의점의 / 따뜻한 / 이야기에 / 감동했습니다</code> → 사전형:
+          <code>불편하다 / 편의점 / 의 / 따뜻하다 / 이야기 / 에 / 감동하다</code> → 불용어(<code>의</code>, <code>에</code>) 제거<br>
+          ⇒ <span class="tx-set">A = {불편하다, 편의점, 따뜻하다, 이야기, 감동하다}</span></p>
+        <p><b>예시 2</b> — 후기 A "이 노트북은 디자인이 좋아요." ⇒ <span class="tx-set">A = {노트북, 디자인, 좋다}</span></p>
+        <p class="tx-src">출처: 씨마스 교과서 Ⅱ p.48 · 동아 교과서 Ⅱ p.48 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>더 알아보기 — 불용어 제거가 늘 좋기만 할까</h3>
+        <p>① <b>불용어 제거의 목적</b>: 효율성 향상(데이터 크기 축소·처리 속도), 모델 성능 개선(의미 있는 단어만 남김), 노이즈 감소.</p>
+        <p>② <b>제거 방법 세 가지</b>: 사전 기반 제거 / 빈도 기반 제거 / TF-IDF 기반 제거(8차시에서 배웁니다).</p>
+        <p>③ <b>한계</b>: 모든 상황에서 같은 단어를 불용어로 볼 수는 없습니다. 어떤 문장에서는 꼭 필요한 말일 수 있고,
+          지우는 과정에서 의미 있는 정보가 함께 사라질 수도 있습니다.</p>
+        <p>④ <b>오개념 주의</b>: "나는 사과를 좋아한다"와 "나는 사과를 했다"의 '사과'는 글자는 같아도 뜻이 전혀 다릅니다.
+          단어집합은 <b>글자 모양만 보고 같다고 판단</b>하기 때문에 이 둘을 구별하지 못합니다.</p>
+        <p class="tx-src">출처: 천재 「인공지능 수학」 지도서 Ⅱ · 씨마스 「인공지능 수학」 지도서 Ⅱ 지도 TIP 서술을 재구성</p>
       </div>
     </div>
 
-    <div id="bow-result"></div>
-  </div>
+    <!-- ── 활동 ③ ── -->
+    <div class="tpanel" id="tpp2">
+      <div class="info" data-no-toggle="1"><strong>활동 ③ 합집합 사전 만들기</strong> —
+        모둠의 문장 3개는 각각 단어집합 <b>A</b>, <b>B</b>, <b>C</b> 가 되었습니다. 이제 이 셋을 <b>하나의 사전으로</b> 합치려 합니다.
+        그런데 세 집합에 겹치는 단어가 있습니다.
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>예상 먼저 — n(A)=5, n(B)=6, n(C)=4 라면 n(U)는?</h3>
+        <div class="btn-row">
+          <button class="btn tx-mini" type="button" onclick="tpGuess(0)">15개</button>
+          <button class="btn tx-mini" type="button" onclick="tpGuess(1)">15개보다 적다</button>
+          <button class="btn tx-mini" type="button" onclick="tpGuess(2)">15개보다 많다</button>
+        </div>
+        <div class="tx-fb" id="tp-guess-fb"></div>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>세 집합을 겹쳐 보고, U 상자에 담아 보세요</h3>
+        <div class="btn-row" id="tp-vpresets"></div>
+        <div class="tp-venwrap">
+          <div class="tp-vencol">
+            <div class="tp-setcards" id="tp-setcards"></div>
+            <canvas id="tp-venn" width="560" height="360" aria-label="세 단어집합 A·B·C의 벤다이어그램"></canvas>
+            <p class="tx-cap" id="tp-venn-cap">칩을 누르면 그 단어가 어느 문서에 있는지 세 집합 카드에서 함께 표시됩니다.</p>
+          </div>
+          <div class="tp-vencol">
+            <div class="tp-ubox">
+              <p class="mat-label" style="text-align:left;">합집합 조립 패널</p>
+              <p class="cnt" id="tp-ucnt">n(U) = 0</p>
+              <div class="btn-row">
+                <button class="btn tx-mini" type="button" onclick="tpUnion(1)">A ∪ B</button>
+                <button class="btn tx-mini" type="button" onclick="tpUnion(2)">(A∪B) ∪ C</button>
+                <button class="btn tx-mini" type="button" onclick="tpUSort()">가나다순 정렬</button>
+                <button class="btn tx-mini" type="button" onclick="tpUEncode()">번호 붙이기 [참고]</button>
+                <button class="btn tx-mini" type="button" onclick="tpUReset()">비우기</button>
+              </div>
+              <div class="tp-uchips" id="tp-uchips"></div>
+              <p class="tx-note" id="tp-uorder">정렬 기준: —</p>
+              <div class="tx-scroll" id="tp-uenc"></div>
+              <div class="tx-fb" id="tp-u-fb"></div>
+            </div>
+
+            <div class="tp-ubox" style="margin-top:0.8rem;">
+              <p class="mat-label" style="text-align:left;">직접 채우기 — 네 칸을 채우고 채점하세요</p>
+              <div class="tp-grade">
+                <label>n(A) =<input class="tp-num" id="tp-gA" type="number" min="0" inputmode="numeric"></label>
+                <label>n(B) =<input class="tp-num" id="tp-gB" type="number" min="0" inputmode="numeric"></label>
+                <label>n(C) =<input class="tp-num" id="tp-gC" type="number" min="0" inputmode="numeric"></label>
+                <label>n(U) =<input class="tp-num" id="tp-gU" type="number" min="0" inputmode="numeric"></label>
+                <button class="btn pri tx-mini" type="button" onclick="tpGradeCheck()">채점</button>
+              </div>
+              <div class="tx-fb" id="tp-grade-fb"></div>
+              <div class="tx-set" id="tp-final" style="margin-top:0.5rem;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>단계 1 · 관찰 — 어디에 겹쳤나</h3>
+        <ul style="margin:0.3rem 0 0 1.2rem;">
+          <li>세 집합 <b>모두</b>에 들어 있는 단어는 무엇인가요? 그 단어는 우리 모둠 문장의 <b>공통 화제</b>를 알려 줍니다.</li>
+          <li><code>A</code>에만 있는 단어는 무엇인가요? 그 단어가 내 문장을 <b>다른 문장과 구별해 주는 단어</b>입니다.</li>
+          <li><code>n(A)+n(B)+n(C)</code> 와 <code>n(U)</code> 의 차이는 얼마인가요? 그 차이는 무엇을 뜻할까요?</li>
+        </ul>
+        <p style="margin-top:0.5rem;">(👉 그 차이가 곧 "겹쳐서 한 번만 센 횟수"입니다. 이 아이디어는 10차시 자카드 유사도로 이어집니다.)</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 2 · 정리 — 전체집합은 공통 눈금입니다</h3>
+        <p>문서마다 쓰는 단어가 다르면 서로 비교할 수 없습니다. 그래서 모든 문서의 단어집합을 합한
+          <b>전체집합 U = A∪B∪C</b> 를 만들어, <b>모든 문서를 같은 눈금 위에 올려놓습니다.</b></p>
+        <p>예: <code>A = {노트북, 디자인, 좋다}</code>, <code>B = {노트북, 가볍다, 만족}</code>,
+          <code>C = {화면, 크다, 만족, 배송, 빠르다}</code></p>
+        <p>⇒ <span class="tx-set">U = {노트북, 디자인, 좋다, 가볍다, 만족, 화면, 크다, 배송, 빠르다}</span>, <code>n(U) = 9</code></p>
+        <p>이 <code>U</code> 하나만 보아도 "디자인·무게·화면 크기·배송" 같은 <b>관심사가 무엇인지</b> 한눈에 파악됩니다.</p>
+        <p class="tx-src">출처: 동아 교과서 Ⅱ p.48 · 씨마스 교과서 Ⅱ p.48 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 3 · 정의 확인 — 합집합과 전체집합(단어 사전)</h3>
+        <p>두 집합 <code>A</code>, <code>B</code>에 대하여 <code>A</code>에 속하거나 <code>B</code>에 속하는 원소 전체로 이루어진 집합을
+          <code>A</code>와 <code>B</code>의 <b>합집합</b>이라 하고 <code>A∪B</code> 로 나타냅니다.</p>
+        <p>말뭉치에 속한 모든 문서의 단어집합을 합한 집합 <code>U = A∪B∪C∪…</code> 를 그 말뭉치의
+          <b>전체집합</b> 또는 <b>단어 사전</b>이라고 합니다.</p>
+        <p><b>성질</b>: <code>A ⊂ U</code>, <code>B ⊂ U</code>, <code>C ⊂ U</code> 이며, 겹치는 원소는 <code>U</code>에 한 번만 들어갑니다.
+          따라서 항상 <code>n(U) ≤ n(A)+n(B)+n(C)</code> 입니다.</p>
+        <p class="tx-src">출처: 씨마스 「인공지능 수학」 지도서 Ⅱ · 미래엔 「인공지능 수학」 Ⅱ 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>집합으로 나타내면 얻는 것과 잃는 것</h3>
+        <p><b>얻는 것</b>: 어떤 단어가 문서에 들어 있는지 한눈에 보이고, 합집합·교집합 같은 집합 연산으로 문서끼리 비교·분석할 수 있습니다.</p>
+        <p><b>잃는 것</b>: 단어의 <b>순서</b>를 고려하지 않고, 중복된 단어는 <b>한 번만</b> 나타냅니다.
+          그래서 "치킨을 세 번 말했다"는 열의가 사라집니다.</p>
+        <p><b>그래서 다음 시간에는</b>: 이 아쉬움을 메우기 위해 <b>벡터</b>를 도입합니다.
+          등장 여부를 0·1로 적으면 원-핫 벡터, 등장 <b>횟수</b>를 적으면 빈도수 벡터가 됩니다.</p>
+        <p class="tx-src">출처: 씨마스 교과서 Ⅱ p.49 · 씨마스 「인공지능 수학」 지도서 Ⅱ 지도 TIP 서술을 재구성</p>
+      </div>
+    </div>
+
+    <!-- ═════ STEP 3 · 정리 ═════ -->
+    <div class="tx-step"><p class="mono">STEP 3 · 정리</p></div>
+
+    <div class="card tx-ask" data-no-toggle="1">
+      <h3>오늘의 핵심 — 그리고 핵심 질문에 답하기</h3>
+      <ul class="tx-3line">
+        <li>① 컴퓨터는 문장의 뜻을 이해하지 못하므로, <b>어절로 자르고 → 사전형으로 바꾸고 → 불용어를 걸러</b> 수학적 대상으로 만들어야 합니다.</li>
+        <li>② 불용어를 제거하고 남은 단어를 <b>중복 없이</b> 모은 집합이 <b>단어집합</b>이며, 모든 단어집합의 합집합이 <b>전체집합 U(단어 사전)</b> 입니다.</li>
+        <li>③ 집합은 <b>순서와 중복을 버립니다.</b> 그래서 "무엇이 있는가"는 알 수 있지만 "몇 번 나왔는가"는 알 수 없습니다.</li>
+      </ul>
+      <p class="qq" style="margin-top:1rem;">❓ 핵심 질문 — "숫자만 아는 컴퓨터는 문장을 어떻게 '읽는' 것일까?"</p>
+      <p class="sub">➡️ 컴퓨터는 문장을 <b>읽지 않고 자릅니다.</b> 문장을 어절로 나눈 뒤 필요 없는 말을 버리고 남은 단어들을 집합으로 묶어,
+        비로소 세고 비교하고 계산할 수 있는 <b>수학적 대상</b>으로 바꾸어 다룹니다.</p>
+
+      <svg class="tx-illu" viewBox="0 0 660 130" role="img" aria-label="문장에서 벡터까지 이어지는 미니 파이프라인">
+        <rect width="660" height="130" fill="var(--bg)"/>
+        <g font-family="monospace" font-size="13" text-anchor="middle">
+          <rect x="14" y="38" width="112" height="52" rx="9" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/><text x="70" y="69" fill="var(--fg)">문장</text>
+          <rect x="146" y="38" width="112" height="52" rx="9" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/><text x="202" y="69" fill="var(--fg)">어절</text>
+          <rect x="278" y="38" width="112" height="52" rx="9" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/><text x="334" y="69" fill="var(--fg)">단어집합</text>
+          <rect x="410" y="38" width="112" height="52" rx="9" fill="var(--fg)"/><text x="466" y="69" fill="var(--bg)">U</text>
+          <rect x="542" y="38" width="104" height="52" rx="9" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 5"/>
+          <text x="594" y="63" fill="var(--muted)">벡터</text><text x="594" y="80" font-size="10" fill="var(--muted)">(다음 시간)</text>
+        </g>
+        <g stroke="var(--muted)" stroke-width="2.5" fill="none">
+          <path d="M128 64 H142"/><path d="M260 64 H274"/><path d="M392 64 H406"/><path d="M524 64 H538"/>
+        </g>
+      </svg>
+      <p class="tx-cap">▲ 오늘의 흐름 — 마지막 칸(벡터)은 7차시에서 채웁니다.</p>
+
+      <details class="tx-fold">
+        <summary><span class="rl" style="font-family:var(--mono);font-size:0.72rem;letter-spacing:0.12em;color:var(--muted);margin-right:0.6rem;">자세히 보기</span>교과서 정리 수준으로 한 번 더 읽기</summary>
+        <div class="bd">
+          <p>인간에게 의미를 지니는 문장도 인공지능에게는 그대로 처리할 수 없는 글자 줄일 뿐이며, 숫자와 수학 기호로 변환될 때 비로소 계산 가능한 데이터가 됩니다.</p>
+          <p>오늘 우리는 그 첫 관문인 <b>전처리</b>를 따라갔습니다. 문장 부호를 지우고 어절로 나누어 기본 사전형 단어로 바꾼 뒤,
+            목적에 맞게 정한 불용어를 걸러 냈습니다. 남은 단어를 중복 없이 모은 것이 단어집합이고, 여러 문서의 단어집합을 합한 것이 전체집합입니다.</p>
+          <p>여기서 중요한 것은 <b>계산 결과가 아니라 표현 방법과 그 의미</b>입니다. 불용어 목록을 어떻게 정하느냐에 따라 단어집합이 달라지고,
+            그러면 이후의 모든 분석 결과도 달라집니다. 표현을 정하는 일이 곧 분석을 정하는 일입니다.</p>
+          <p class="tx-src">출처: 연수교재 합본 p.57 정리·지도상의 유의점 서술을 재구성</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>형성평가 — 스스로 확인하기</h3>
+      <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고, 마지막에 총점과 문항별 복기가 표시됩니다.</p>
+      <div id="tp-quiz"></div>
+    </div>
+
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 · 7차시 — 텍스트를 벡터로: 포함관계·원-핫·빈도수</strong> —
+      오늘 만든 전체집합 <code>U</code> 의 원소 개수 <code>n(U)</code> 가 다음 시간에는 <b>벡터의 차원</b>이 됩니다.
+      <code>U = {노트북, 디자인, 좋다, 가볍다, 만족, 화면, 크다, 배송, 빠르다}</code> 라면
+      후기 A는 <code>(1, 1, 1, 0, 0, 0, 0, 0, 0)</code> 이라는 <b>9차원 벡터</b>가 됩니다.
+      그리고 오늘 잃어버렸던 "몇 번 나왔는가"를 되찾는 <b>빈도수 벡터</b>도 만나게 됩니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri tx-mini" type="button" onclick="go('text','incl')">7차시로 이동 →</button>
+      </span>
+    </div>
+
+    <div class="pj" data-no-toggle="1">
+      <span class="lb">프로젝트 과제 · 생각 키우기</span>
+      <h3>📝 우리 반 한 줄 평 사전 만들기</h3>
+      <p class="sub">오늘 배운 전처리 절차를 손으로 한 번 더 밟아 보며, 불용어를 스스로 정하는 판단까지 해 보는 과제입니다.</p>
+      <dl>
+        <dt>수행 방법</dt>
+        <dd>① 하나의 주제를 정합니다(예: 이번 주 급식, 최근 본 영화, 우리 학교 동아리, 학교 앞 분식집).
+          ② 그 주제에 대한 <b>한 줄 평 3건</b>을 실제로 모읍니다. 가족·친구에게 직접 묻거나, 공개된 리뷰·기사 제목을 옮겨 적어도 좋습니다.
+          <b>출처를 함께 적습니다.</b>
+          ③ 각 한 줄 평을 오늘 배운 순서대로 손으로 전처리합니다 — <b>문장 → 어절 분리 → 기본 사전형 → 불용어 제거 → 단어집합</b>.
+          ④ 단어집합 <code>A</code>, <code>B</code>, <code>C</code> 와 합집합 <code>U = A∪B∪C</code> 를 구하고,
+          <code>U</code>를 가나다순으로 정렬해 <b>번호(정수 인코딩)</b> 를 붙입니다.
+          ⑤ <b>불용어 목록을 스스로 정하고, 왜 그 단어들을 골랐는지</b> 한 문단으로 씁니다.
+          특히 주제어(예: '급식', '영화')를 불용어에 넣을지 말지 판단하고 그 이유를 밝힙니다.
+          ⑥ 확인: 웹의 활동 ② 파이프라인에 같은 문장을 입력해 손으로 구한 결과와 비교합니다. 다른 점이 있으면 왜 다른지 적습니다.</dd>
+        <dt>제출물</dt>
+        <dd>A4 1장 또는 웹 캡처 1장 + 손글씨 표 — ① 한 줄 평 3건과 출처 ② 전처리 과정 표 3개(어절 / 사전형 / 불용어 제거 후)
+          ③ 단어집합 <code>A</code>, <code>B</code>, <code>C</code> 와 전체집합 <code>U</code>, 정수 인코딩 표
+          ④ 불용어 선택 이유 한 문단(4~6문장) ⑤ 웹 결과와 손 계산의 차이에 대한 설명 2~3문장</dd>
+        <dt>평가 관점</dt>
+        <dd><b>[12인수02-01]</b> 실생활의 텍스트 데이터에서 <b>불용어를 제거하여 단어집합을 만들고</b>,
+          여러 단어집합의 합집합으로 전체집합을 구성하여 목적에 맞게 표현하는가.<br>
+          <b>A 수준</b> — 불용어 선택의 근거를 분석 목적과 연결해 설명하고, 웹 결과와의 차이까지 해석함.<br>
+          <b>B 수준</b> — 단어집합과 합집합을 정확히 구하고 불용어 선택 이유를 설명함.<br>
+          <b>C 수준</b> — 안내에 따라 전처리 과정을 따라가며 단어집합을 부분적으로 구성함.<br>
+          <span class="tx-src">(성취수준 기술은 연수교재 합본 p.52 [12인수02-01] A~E 기술을 6차시 범위로 축약·재구성)</span></dd>
+      </dl>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+      <p>카드를 누르면 새 탭에서 열립니다.</p>
+      <div class="tx-refs">
+        <a class="tx-ref" href="https://pjhoon1004.github.io/AI-Math/text-set.html" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">실습 앱</span>🧪</span>
+          <span class="bd"><span class="tt">text-set — 텍스트 데이터의 집합 표현 (원본)</span>
+            <span class="ds">오늘 활동 ②의 원본 실습 앱입니다. 문서를 여러 개 넣고 불용어를 바꿔 가며 4단계 결과를 다시 확인해 보세요.</span></span>
+        </a>
+        <a class="tx-ref" href="https://www.youtube.com/watch?v=x8kLcsKhQ0A" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">영상</span><img src="https://img.youtube.com/vi/x8kLcsKhQ0A/hqdefault.jpg" alt="" loading="lazy"
+            onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+          <span class="bd"><span class="tt">40초 인공지능 지식 #3 — 데이터 전처리 (이지딥)</span>
+            <span class="ds">데이터 전처리가 왜 필요한지 40초로 정리한 짧은 영상입니다. 수업을 마치고 한 번 더 확인할 때 좋습니다.</span></span>
+        </a>
+        <a class="tx-ref" href="https://www.youtube.com/results?search_query=%ED%85%8D%EC%8A%A4%ED%8A%B8+%EC%A0%84%EC%B2%98%EB%A6%AC+%EB%B6%88%EC%9A%A9%EC%96%B4+%EB%8B%A8%EC%96%B4%EC%A7%91%ED%95%A9"
+           target="_blank" rel="noopener">
+          <span class="th"><span class="bg">검색</span>🔎</span>
+          <span class="bd"><span class="tt">전처리·불용어 영상 더 찾기</span>
+            <span class="ds">임베드가 가능하고 검증된 한국어 영상이 더 필요할 때 쓰는 검색 카드입니다. 미검증 자원을 카드로 싣지 않는다는 원칙에 따라 검색 링크로 제공합니다.</span></span>
+        </a>
+      </div>
+      <div class="rx"></div>
+    </div>
+
+    <div class="ws" data-no-toggle="1">
+      <span class="lb">학습지</span>
+      <h3>6차시 학습지 — 손으로 기록하며 정리하기</h3>
+      <p>웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다. 실물 활동지를 내려받거나, 웹 활동과 1:1로 대응하는 인쇄용 학습지를 뽑아 쓰세요.</p>
+      <div class="ws-dl">
+        <a class="ws-btn" href="assets/worksheets/text/텍스트_활동1-2_비정형텍스트와집합.hwpx"
+           download="텍스트_활동1-2_비정형텍스트와집합.hwpx">📄 활동지 내려받기 <span class="sz">HWPX · 2쪽 · 약 127 KB</span></a>
+        <a class="ws-btn sec" href="assets/worksheets/text/텍스트_활동1-2_비정형텍스트와집합.pdf"
+           download="텍스트_활동1-2_비정형텍스트와집합.pdf">📕 활동지 내려받기 <span class="sz">PDF · 2쪽 · 약 132 KB</span></a>
+        <button class="ws-btn sec" type="button" onclick="wsPrint('tp-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2쪽</span></button>
+      </div>
+      <p class="tx-note">활동지 내용: 「비정형 텍스트와 집합」 — 정형/비정형 구분 문제, 집합의 뜻, 전처리 표(치킨 후기),
+        노트북 후기 단어집합·합집합, 연극 후기 문제.</p>
+      <div id="tp-wslinks"></div>
+    </div>
+
+    <div class="ws-sheet" id="tp-sheet" aria-hidden="true">
+      <div class="ws-h"><h2>6차시 학습지 — 텍스트를 집합으로: 전처리와 단어집합</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+      <p class="note">학습 목표 ① 불용어를 제거하여 단어집합을 만들 수 있다. ② 단어집합의 원소에 정수를 대응시켜 표현할 수 있다. [12인수02-01]</p>
+      <h3>핵심 질문</h3>
+      <p>숫자만 아는 컴퓨터는 문장을 어떻게 '읽는' 것일까?</p>
+      <div class="rule sm"></div>
+
+      <h3>① 마중 퀴즈 기록</h3>
+      <table>
+        <tr><th style="width:46%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+        <tr><td>컴퓨터는 문장의 뜻을 먼저 이해한 다음 계산한다? (O/X)</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>'수학'이 세 번 나온 문서 A의 단어집합에 '수학'은 몇 번 적히나?</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>교복 댓글 분석에서 '교복'을 불용어로 정할 수 있다? (O/X)</td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+
+      <h3>② 활동 ① — 상황 사진과 우리 반 말뭉치</h3>
+      <table>
+        <tr><th style="width:22%;">내가 고른 사진 번호</th><td class="blank"></td></tr>
+        <tr><th>내가 만든 문장</th><td class="blank"></td></tr>
+        <tr><th>모둠원 문장 1</th><td class="blank"></td></tr>
+        <tr><th>모둠원 문장 2</th><td class="blank"></td></tr>
+        <tr><th>세 문장에 겹치는 단어</th><td class="blank"></td></tr>
+      </table>
+
+      <h3>③ 활동 ② — 전처리 표</h3>
+      <p class="note">내가 정한 불용어 목록: __________________________________________</p>
+      <table>
+        <tr><th style="width:22%;"></th><th>문서 A</th><th>문서 B</th><th>문서 C</th></tr>
+        <tr><td>원문</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>어절 분리</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>기본 사전형</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>불용어 제거 후</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+
+      <h3>④ 활동 ③ — 단어집합과 합집합</h3>
+      <p>A = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }
+         &nbsp; B = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+      <p>C = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }
+         &nbsp; U = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+      <table>
+        <tr><th>n(A)</th><th>n(B)</th><th>n(C)</th><th>n(U)</th><th>n(A)+n(B)+n(C) − n(U)</th></tr>
+        <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+      <p class="note">벤다이어그램 — 세 원에 각 집합의 원소를 적어 넣으세요.</p>
+      <svg viewBox="0 0 300 190" style="width:100%;max-width:120mm;height:auto;">
+        <circle cx="118" cy="78" r="62" fill="none" stroke="#444" stroke-width="1"/>
+        <circle cx="182" cy="78" r="62" fill="none" stroke="#444" stroke-width="1"/>
+        <circle cx="150" cy="126" r="62" fill="none" stroke="#444" stroke-width="1"/>
+        <text x="70" y="40" font-size="11" fill="#000">A</text>
+        <text x="226" y="40" font-size="11" fill="#000">B</text>
+        <text x="148" y="184" font-size="11" fill="#000">C</text>
+      </svg>
+      <p class="note">정수 인코딩 표 — U를 가나다순으로 정렬한 뒤 1번부터 번호를 붙이세요.</p>
+      <table>
+        <tr><th>단어</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><th>번호</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+
+      <h3>⑤ 형성평가</h3>
+      <ol>
+        <li>전처리 네 단계(㉠ 불용어 제거·단어 추출 / ㉡ 어절 분리 / ㉢ 기호 제거 / ㉣ 사전형 변형)의 바른 순서는?<br>
+          ① ㉢→㉡→㉣→㉠ &nbsp; ② ㉡→㉢→㉠→㉣ &nbsp; ③ ㉠→㉢→㉡→㉣ &nbsp; ④ ㉣→㉡→㉢→㉠ &nbsp; 답: ______</li>
+        <li>후기 A "이 노트북은 디자인이 좋아요."에서 불용어 {이, 은, 가, 도}를 제거한 단어집합 A는?<br>
+          ① {이, 노트북, 은, 디자인, 이, 좋다} &nbsp; ② {노트북, 디자인, 좋다} &nbsp; ③ {노트북, 디자인, 좋아요} &nbsp; ④ {노트북, 좋다} &nbsp; 답: ______</li>
+        <li>A={노트북, 디자인, 좋다}, B={노트북, 가볍다, 만족}, C={화면, 크다, 만족, 배송, 빠르다}일 때 n(U)는?<br>
+          ① 9 &nbsp; ② 10 &nbsp; ③ 11 &nbsp; ④ 12 &nbsp; 답: ______</li>
+        <li>U={기반, 사고, 성장, 수학, 열쇠, 인공지능, 탐구}에 1번부터 번호를 붙였을 때 <b>옳지 않은</b> 것은?<br>
+          ① '열쇠'는 5번 &nbsp; ② '인공지능'은 6번 &nbsp; ③ 6번이 4번보다 더 중요한 단어다 &nbsp; ④ 번호는 이름표일 뿐이다 &nbsp; 답: ______</li>
+        <li>텍스트 데이터를 <b>집합으로만</b> 표현할 때의 한계는?<br>
+          ① 어떤 단어가 있는지 알 수 없다 &nbsp; ② 공통 단어를 찾을 수 없다 &nbsp; ③ 몇 번 사용되었는지 알 수 없다 &nbsp; ④ 불용어를 제거할 수 없다 &nbsp; 답: ______</li>
+      </ol>
+
+      <h3>⑥ 핵심 질문에 답하기</h3>
+      <p>숫자만 아는 컴퓨터는 문장을 어떻게 '읽는' 것일까? (4줄)</p>
+      <div class="rule lg"></div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       7차시 — 텍스트를 벡터로: 포함관계·원-핫·빈도수 (접두사 tv)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="tx-sec" id="tv-root">
+
+    <!-- ═════ 표제부 ═════ -->
+    <div class="tx-hero vw-wrap" data-no-toggle="1">
+      <div class="vw-mark" aria-hidden="true">
+        <svg viewBox="0 0 320 180" role="img" aria-label="단어 카드가 벡터 성분의 나열로 바뀌는 그림">
+          <rect width="320" height="180" fill="var(--bg)"/>
+          <g font-family="monospace" font-size="12" text-anchor="middle">
+            <rect x="16" y="28" width="76" height="30" rx="8" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/><text x="54" y="48" fill="var(--fg)">뷰</text>
+            <rect x="16" y="70" width="76" height="30" rx="8" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/><text x="54" y="90" fill="var(--fg)">좋다</text>
+            <rect x="16" y="112" width="76" height="30" rx="8" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/><text x="54" y="132" fill="var(--fg)">사진</text>
+          </g>
+          <g stroke="var(--muted)" stroke-width="2.5" fill="none"><path d="M100 85 H132"/></g>
+          <path d="M132 85 l-9 -5 v10 z" fill="var(--muted)"/>
+          <rect x="142" y="62" width="164" height="46" rx="9" fill="var(--fg)"/>
+          <text x="224" y="91" font-size="14" font-family="monospace" text-anchor="middle" fill="var(--bg)">(0, 1, 0, 2, 1, …)</text>
+          <text x="224" y="132" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">성분 · 차원 = n(U)</text>
+        </svg>
+      </div>
+      <p class="mono" style="margin-bottom:0.4rem;">7차시 · Ⅱ 텍스트 데이터 처리</p>
+      <h2>텍스트를 벡터로 — 포함관계·원-핫·빈도수</h2>
+      <p class="desc">
+        6차시에서 문장을 단어집합 {…}으로 바꾸었습니다. 오늘은 그 단어집합을 '눈금이 매겨진 자'로 삼아,
+        문장 하나를 수의 나열, 곧 벡터로 바꿉니다. 같은 문장도 무엇을 재느냐에 따라 서로 다른 벡터가 됩니다.
+      </p>
+    </div>
+
+    <div class="info" data-no-toggle="1" style="margin-top:0;">
+      <strong>오늘의 학습 목표</strong>
+      <div style="margin-top:0.5rem;">① 단어집합(전체집합 U)을 이용하여 문서를 <b>포함관계 여부 벡터</b>와 <b>원-핫 벡터</b>로 나타낼 수 있습니다. <b>[12인수02-01]</b></div>
+      <div style="margin-top:0.35rem;">② 문서를 <b>빈도수 벡터(단어가방 모형)</b>로 나타내고, 세 가지 표현을 비교하여
+        <b>희소 표현과 밀집 표현의 특징</b>을 설명할 수 있습니다. <b>[12인수02-01]</b></div>
+      <table class="tx-goal-map">
+        <tr><th>목표 ①</th><td>→ 활동 ① 같은 자로 재기(포함관계) → 활동 ② 단어 한 개를 벡터로(원-핫)
+          <button class="btn tx-mini" type="button" onclick="tvGoAct(1)">활동 ①</button>
+          <button class="btn tx-mini" type="button" onclick="tvGoAct(2)">활동 ②</button></td></tr>
+        <tr><th>목표 ②</th><td>→ 활동 ③ 몇 번 나왔나(빈도수·자동 채점) → 활동 ④ 0이 너무 많다(희소 vs 밀집)
+          <button class="btn tx-mini" type="button" onclick="tvGoAct(3)">활동 ③</button>
+          <button class="btn tx-mini" type="button" onclick="tvGoAct(4)">활동 ④</button></td></tr>
+      </table>
+    </div>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+      <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+    <div class="chips tv-keys" data-no-toggle="1">
+      <span class="chip">벡터·성분·차원</span>
+      <span class="chip">포함관계 여부 벡터</span>
+      <span class="chip">원-핫 벡터</span>
+      <span class="chip">빈도수 벡터(단어가방 모형)</span>
+      <span class="chip">희소 벡터와 밀집 벡터</span>
+    </div>
+
+    <div class="card tx-ask" data-no-toggle="1">
+      <h3>핵심 질문</h3>
+      <p class="qq">❓ "서로 다른 문장들을 '같은 자'로 재려면 무엇이 필요한가?"</p>
+      <p class="sub">보조 질문 — "같은 문장인데 벡터가 여러 개일 수 있을까요? 그렇다면 무엇을 기준으로 골라야 할까요?"</p>
+    </div>
+
+    <!-- ═════ STEP 1 · 도입 ═════ -->
+    <div class="tx-step"><p class="mono">STEP 1 · 도입</p></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>추천 영상 — 단어 하나를, 문서 하나를 벡터로</h3>
+      <p>카드를 누르면 전체 화면으로 재생됩니다. 세 번째 영상은 길이가 길어 수업 중 전체 시청은 권하지 않는
+        <b>선택 시청</b> 자료입니다. 교사 추가 슬롯은 정확히 1칸입니다.</p>
+      <div id="tv-videos"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>같은 장면, 다른 문장</h3>
+      <div class="tp-venwrap">
+        <div class="tp-vencol" style="flex:1 1 16rem;">
+          <figure class="tx-photo" id="tv-situ">
+            <img src="assets/situations/상황1.jpg" alt="축구장에서 무릎을 다친 친구와 말을 거는 친구, 말풍선이 비어 있는 상황 그림" loading="lazy"
+                 onerror="this.closest('.tx-photo').classList.add('nofoto');">
+            <span class="fb" aria-hidden="true">🗨️</span>
+            <figcaption>상황 그림(교사 배부) — 말풍선이 비어 있습니다. 다른 그림으로 바꾸려면 아래 단추를 누르세요.</figcaption>
+          </figure>
+          <div class="btn-row" id="tv-situ-btns"></div>
+        </div>
+        <div class="tp-vencol" style="flex:1 1 16rem;">
+          <p class="mat-label" style="text-align:left;">이 장면을 한 문장으로 적어 봅시다.</p>
+          <textarea class="tx-in" id="tv-s1" rows="2" placeholder="학생 1(또는 모둠 1)의 문장"></textarea>
+          <textarea class="tx-in" id="tv-s2" rows="2" placeholder="학생 2(또는 모둠 2)의 문장" style="margin-top:0.4rem;"></textarea>
+          <textarea class="tx-in" id="tv-s3" rows="2" placeholder="학생 3(또는 모둠 3)의 문장" style="margin-top:0.4rem;"></textarea>
+          <div class="btn-row">
+            <button class="btn pri tx-mini" type="button" onclick="tvSentSave()">문장 저장</button>
+            <button class="btn tx-mini" type="button" onclick="tvSentLoad()">6차시 문장 불러오기</button>
+          </div>
+          <div class="tx-fb" id="tv-sent-fb"></div>
+        </div>
+      </div>
+      <p class="tx-cap">같은 그림을 보고도 문장은 저마다 다릅니다. 그런데 컴퓨터는 이 서로 다른 문장들을 어떻게 '한 표' 위에 올려놓을까요?</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>마중 퀴즈 — 내 생각은?</h3>
+      <p style="margin-bottom:1rem;">한 번에 한 문항씩 열립니다. 답을 고르면 해설이 나타나고 다음 질문이 이어집니다.</p>
+      <div id="tv-warm"></div>
+      <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다. 이제 우리 손으로 '자'를 만들어 봅시다.</b></p>
+    </div>
+
+    <!-- ═════ STEP 2 · 전개 ═════ -->
+    <div class="tx-step"><p class="mono">STEP 2 · 전개</p></div>
+
+    <div class="tabs" id="tv-tabs">
+      <button class="tab on" type="button" onclick="tvTab(0,this)">① 같은 자로 재기</button>
+      <button class="tab" type="button" onclick="tvTab(1,this)">② 단어 한 개를 벡터로</button>
+      <button class="tab" type="button" onclick="tvTab(2,this)">③ 몇 번 나왔나</button>
+      <button class="tab" type="button" onclick="tvTab(3,this)">④ 0이 너무 많다</button>
+    </div>
+
+    <!-- ── 활동 ① 포함관계 여부 벡터 ── -->
+    <div class="tpanel on" id="tvp0">
+      <div class="info" data-no-toggle="1"><strong>활동 ① 같은 자로 재기 — 포함관계 여부 벡터</strong> —
+        어느 쇼핑몰의 노트북 후기 세 개입니다. <b>후기 A</b> 이 노트북은 디자인이 좋아요. /
+        <b>후기 B</b> 이 노트북은 가벼워서 만족합니다. / <b>후기 C</b> 화면이 커서 만족해요. 배송도 빨라요.
+        세 후기를 <b>한 표 위에 나란히 올려놓으려면</b> 먼저 무엇을 정해야 할까요? 답을 보지 말고, 아래 도구로 직접 시도해 보세요.
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>세 후기의 단어집합에서 공통의 자 U 만들기</h3>
+        <svg class="tx-illu" viewBox="0 0 660 230" role="img" aria-label="길이가 다른 자 세 개가 눈금이 같은 하나의 자로 합쳐지는 그림">
+          <rect width="660" height="230" fill="var(--bg)"/>
+          <g stroke="var(--muted)" stroke-width="2" fill="var(--card)">
+            <rect x="30" y="24" width="180" height="26" rx="5"/>
+            <rect x="30" y="62" width="230" height="26" rx="5"/>
+            <rect x="30" y="100" width="300" height="26" rx="5"/>
+          </g>
+          <g stroke="var(--muted)" stroke-width="1.5">
+            <path d="M60 24 v9 M90 24 v9 M120 24 v9 M150 24 v9 M180 24 v9"/>
+            <path d="M75 62 v9 M120 62 v9 M165 62 v9 M210 62 v9 M255 62 v9"/>
+            <path d="M70 100 v9 M110 100 v9 M150 100 v9 M190 100 v9 M230 100 v9 M270 100 v9 M310 100 v9"/>
+          </g>
+          <text x="120" y="43" font-family="monospace" font-size="12" fill="var(--muted)" text-anchor="middle">A의 자</text>
+          <text x="145" y="81" font-family="monospace" font-size="12" fill="var(--muted)" text-anchor="middle">B의 자</text>
+          <text x="180" y="119" font-family="monospace" font-size="12" fill="var(--muted)" text-anchor="middle">C의 자</text>
+          <g stroke="var(--fg)" stroke-width="2.5" fill="none"><path d="M350 75 H392"/></g>
+          <path d="M392 75 l-10 -6 v12 z" fill="var(--fg)"/>
+          <rect x="30" y="152" width="600" height="34" rx="6" fill="var(--fg)"/>
+          <g stroke="var(--accent)" stroke-width="2">
+            <path d="M96 152 v11 M162 152 v11 M228 152 v11 M294 152 v11 M360 152 v11 M426 152 v11 M492 152 v11 M558 152 v11"/>
+          </g>
+          <text x="330" y="176" font-family="monospace" font-size="14" fill="var(--bg)" text-anchor="middle">전체집합 U — 눈금이 같은 하나의 자</text>
+          <text x="330" y="212" font-family="monospace" font-size="12" fill="var(--muted)" text-anchor="middle">세 후기의 단어집합을 합친 전체집합 U가 공통의 자입니다.</text>
+        </svg>
+        <div class="btn-row">
+          <button class="btn tx-mini" type="button" onclick="tvBuildSets()">단어집합 만들기</button>
+          <button class="btn pri tx-mini" type="button" onclick="tvBuildU()">U 만들기</button>
+          <button class="btn tx-mini" type="button" onclick="tvAddDoc()">문서 추가 + (우리 반 문장)</button>
+          <button class="btn tx-mini" type="button" onclick="tvInclReset()">처음으로</button>
+        </div>
+        <div id="tv-sets" class="tp-setcards"></div>
+        <p class="tx-set" id="tv-ubox" style="margin-top:0.7rem;"></p>
+        <p class="tx-note" id="tv-uorder"></p>
+
+        <p class="mat-label" style="text-align:left;margin-top:0.9rem;">포함관계 표 — 칸을 누르면 0 → 1 → 0 으로 바뀝니다</p>
+        <div class="tv-bar"><i id="tv-incl-bar" style="width:0%"></i></div>
+        <p class="tp-prog" id="tv-incl-prog">채운 칸 0/27 · 맞은 칸 0</p>
+        <div class="tx-scroll" id="tv-incl-tblwrap"></div>
+        <div class="tv-vecs" id="tv-incl-vecs"></div>
+        <div class="tx-fb" id="tv-incl-fb"></div>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>미션 「같은 벡터 만들기」</h3>
+        <p>후기 C와 <b>똑같은 벡터</b>가 되는, C와 다른 문장을 만들어 보세요.</p>
+        <textarea class="tx-in" id="tv-mission" rows="2" placeholder="예: 만족스러운 화면 크기, 배송도 빨랐습니다."></textarea>
+        <div class="btn-row"><button class="btn pri tx-mini" type="button" onclick="tvMissionCheck()">확인</button></div>
+        <div class="tx-fb" id="tv-mission-fb"></div>
+        <div class="tv-vecs" id="tv-mission-vec"></div>
+      </div>
+
+      <div class="card">
+        <h3>단계 1 · 관찰 — 표에서 무엇이 보였나요?</h3>
+        <p>같은 열의 1과 0을 세로로 읽으면 그 단어가 어느 후기에 있는지가 한눈에 보입니다.
+          '만족'은 B와 C 두 곳에, '노트북'은 A와 B 두 곳에 있습니다. 어느 후기에도 0이 1보다 훨씬 많습니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 2 · 정리 — 세 벡터를 나란히 놓으면</h3>
+        <div class="math">a = (1, 1, 1, 0, 0, 0, 0, 0, 0)
+b = (1, 0, 0, 1, 1, 0, 0, 0, 0)
+c = (0, 0, 0, 0, 1, 1, 1, 1, 1)</div>
+        <p>세 벡터는 모두 9차원입니다. <b>차원이 같아야 비교가 가능</b>하며, 그 차원을 정해 주는 것이 전체집합 U입니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 3 · 정의 확인 — 포함관계 여부 벡터란 무엇인가</h3>
+        <p>전체집합 U의 각 단어가 해당 문서에 포함되어 있으면 1, 없으면 0으로 나타낸 벡터를 포함관계 여부 벡터라고 합니다.
+          문서 하나가 벡터 하나에 대응하고, 벡터의 차원은 U의 원소 개수와 같습니다.</p>
+        <p><b>한계 하나</b> — '있다·없다'만 보므로 같은 단어가 두 번 쓰였는지 열 번 쓰였는지 구분하지 못합니다.
+          미션에서 서로 다른 두 문장이 같은 벡터가 된 것도 이 때문입니다.</p>
+        <p class="tx-src">출처: 씨마스 교과서 Ⅱ p.50 · 동아 교과서 Ⅱ p.50 서술을 재구성</p>
+      </div>
+
+      <div class="info" data-no-toggle="1"><strong>일반화</strong> —
+        문서를 벡터로 바꾸는 첫 단계는 <b>'몇 번째 자리가 어떤 단어인지'를 모두가 똑같이 약속하는 일</b>입니다. 그 약속이 전체집합 U입니다.
+      </div>
+    </div>
+
+    <!-- ── 활동 ② 원-핫 벡터 ── -->
+    <div class="tpanel" id="tvp1">
+      <div class="info" data-no-toggle="1"><strong>활동 ② 단어 한 개를 벡터로 — 원-핫 벡터</strong> —
+        6차시에서 만든 전체집합입니다. <b>U = {기반, 사고, 성장, 수학, 열쇠, 인공지능, 탐구}</b>
+        활동 ①에서는 <b>문서 하나</b>를 벡터 하나로 바꾸었습니다. 이번에는 <b>단어 하나</b>를 벡터 하나로 바꿔 봅시다.
+        '수학'이라는 단어만 켜려면 어떤 벡터여야 할까요?
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>7칸 스위치 — 목표 단어의 자리만 켜 보세요</h3>
+        <div class="tp-venwrap">
+          <div class="tp-vencol" style="flex:1 1 20rem;">
+            <p class="tp-prog" id="tv-oh-goal">미션 1 / 3 — 목표 단어: <b>수학</b></p>
+            <div class="tv-switches" id="tv-oh-grid"></div>
+            <p class="tv-vec" id="tv-oh-vec">( 0, 0, 0, 0, 0, 0, 0 )</p>
+            <div class="tx-fb" id="tv-oh-fb"></div>
+            <div class="btn-row">
+              <button class="btn tx-mini" type="button" onclick="tvOhClear()">모두 끄기</button>
+              <button class="btn tx-mini" type="button" onclick="tvOhOverlap()">세 벡터 겹쳐 보기</button>
+              <button class="btn tx-mini" type="button" onclick="tvOhMode()">
+                <span id="tv-oh-mode">[문서 → 벡터] ↔ [단어 → 벡터]</span></button>
+            </div>
+            <div class="tv-vecs" id="tv-oh-list"></div>
+            <div class="tx-scroll" id="tv-oh-ovl"></div>
+          </div>
+          <div class="tp-vencol" style="flex:0 1 17rem;">
+            <figure class="tx-photo">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Localist_%28one-hot%29_representation.svg"
+                   alt="영어 단어 she를 원-핫 벡터로 나타낸 그림" loading="lazy" referrerpolicy="no-referrer"
+                   onerror="this.closest('.tx-photo').classList.add('nofoto');">
+              <span class="fb" aria-hidden="true">🔦</span>
+              <figcaption>영어 단어 'she'를 원-핫 벡터로 나타낸 예. 해당 단어의 자리만 1이고 나머지는 모두 0입니다.
+                — 위키미디어 커먼스, Raquel Garrido Alhama, CC BY-SA 4.0</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>단계 1 · 관찰 — 무엇이 달라졌나요?</h3>
+        <p>활동 ①의 표는 <b>행이 문서</b>였는데, 이번 표는 <b>행이 단어</b>입니다. 단어 7개면 벡터도 7개가 생기고,
+          각 벡터의 차원은 여전히 7입니다. 표가 정사각형 모양이 되며 대각선만 1입니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 2 · 정리 — 원-핫 벡터가 잘하는 일과 못하는 일</h3>
+        <p><b>잘하는 일</b> — 범주(단어·혈액형·색상처럼 순서가 없는 값)를 수로 바꿔 인공지능의 입력으로 넣을 수 있게 해 줍니다.</p>
+        <p><b>못하는 일</b> — 어떤 두 단어를 골라도 겹치는 자리가 없으므로, '늑대'와 '개'가 '늑대'와 '책상'보다 가깝다는 사실을
+          나타낼 방법이 없습니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 3 · 정의 확인 — 원-핫 벡터란 무엇인가</h3>
+        <p>원-핫 벡터는 전체집합의 원소의 개수를 벡터의 차원으로 하되, 표현하고자 하는 단어에 대응하는 성분에만 1을,
+          그 이외의 성분에는 0을 부여하는 벡터입니다. 이 방식은 단어 간의 관계를 생각하지 않고 각 단어가 독립적으로 존재하는 것으로
+          가정하며, 단어의 등장 여부에만 관심이 있거나 순서를 고려하지 않을 때 주로 사용합니다.</p>
+        <p><b>자주 하는 실수</b> — 포함관계 여부 벡터와 원-핫 벡터를 같은 것으로 생각하는 경우가 많습니다.
+          앞의 것은 <i>문서</i> 하나를 나타내고, 뒤의 것은 <i>단어</i> 하나를 나타냅니다.
+          1의 개수를 세어 보면 구분됩니다(포함관계는 여러 개, 원-핫은 정확히 하나).</p>
+        <p class="tx-src">출처: 씨마스 교과서 Ⅱ p.50 '지식 Plus' · 미래엔 「인공지능 수학」 Ⅱ · 천재 「인공지능 수학」 지도서 Ⅱ 서술을 재구성</p>
+      </div>
+
+      <div class="info" data-no-toggle="1"><strong>일반화</strong> —
+        원-핫 벡터는 "이 자리는 이 단어"라는 <b>이름표</b>입니다. 이름표만으로는 누가 누구와 닮았는지 알 수 없습니다.
+        이 빈틈이 활동 ④의 밀집 벡터로 이어집니다.
+      </div>
+    </div>
+
+    <!-- ── 활동 ③ 빈도수 벡터 ── -->
+    <div class="tpanel" id="tvp2">
+      <div class="card" data-no-toggle="1">
+        <h3>먼저 '왜 필요한가'부터 — 두 표어를 견주어 봅시다</h3>
+        <p><b>표어 A</b> 수학으로 혁신하고 수학으로 발전하는 인공지능!<br>
+          <b>표어 B</b> 수학은 인공지능의 꽃, 인공지능은 수학의 산물!<br>
+          <span class="tx-set">U = {수학, 혁신, 발전, 인공지능, 꽃, 산물}</span></p>
+        <div class="tx-scroll">
+          <table class="tv-tbl">
+            <tr><th class="rowh"></th><th>수학</th><th>혁신</th><th>발전</th><th>인공지능</th><th>꽃</th><th>산물</th></tr>
+            <tr><th class="rowh">포함관계 A</th><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+            <tr><th class="rowh">포함관계 B</th><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+          </table>
+        </div>
+        <p style="margin-top:0.5rem;">포함관계 벡터만으로는 두 표어에서 <b>어떤 단어를 더 강조했는지</b> 알 수 없습니다. 무엇을 더 세어야 할까요?</p>
+        <p class="tx-src">출처: 미래엔 「인공지능 수학」 Ⅱ 서술을 재구성</p>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>캠핑장 후기 세 개 — 빈도수 표 24칸을 채우세요</h3>
+        <p><b>후기 A</b> 뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요.<br>
+          <b>후기 B</b> 뷰가 좋고, 깨끗한 차박에 좋은 캠핑장!<br>
+          <b>후기 C</b> 캠핑장에 온수가 잘 나와요. 화장실도 깨끗하고 온수가 나와요.<br>
+          <span class="tx-set">U = {뷰, 좋다, 사진, 깨끗하다, 캠핑장, 차박, 온수, 화장실} (8개)</span></p>
+        <p class="tx-note">칸에 수를 넣고 다른 칸으로 옮기면 즉시 채점됩니다. ← → ↑ ↓ 로 칸을 옮기고 Enter로 다음 칸.
+          칸을 <b>길게 누르거나 오른쪽 클릭</b>하면 그 단어가 원문에서 어디에 나오는지 형광 표시가 됩니다.</p>
+
+        <svg class="tx-illu" viewBox="0 0 660 190" role="img" aria-label="단어를 가방에 담고 개수를 세는 단어가방 그림">
+          <rect width="660" height="190" fill="var(--bg)"/>
+          <path d="M210 62 h240 l-22 104 h-196 z" fill="var(--card)" stroke="var(--fg)" stroke-width="2.5"/>
+          <path d="M266 62 q64 -46 128 0" fill="none" stroke="var(--fg)" stroke-width="2.5"/>
+          <g font-family="monospace" font-size="12" text-anchor="middle">
+            <rect x="228" y="82" width="60" height="22" rx="7" fill="var(--accent)"/><text x="258" y="98" fill="var(--fg)">사진 ×2</text>
+            <rect x="300" y="82" width="60" height="22" rx="7" fill="var(--accent)"/><text x="330" y="98" fill="var(--fg)">좋다 ×3</text>
+            <rect x="372" y="82" width="60" height="22" rx="7" fill="var(--accent)"/><text x="402" y="98" fill="var(--fg)">온수 ×2</text>
+            <rect x="240" y="114" width="76" height="22" rx="7" fill="var(--card-h)"/><text x="278" y="130" fill="var(--body)">깨끗하다 ×3</text>
+            <rect x="330" y="114" width="76" height="22" rx="7" fill="var(--card-h)"/><text x="368" y="130" fill="var(--body)">캠핑장 ×3</text>
+          </g>
+          <text x="330" y="34" font-family="monospace" font-size="13" fill="var(--muted)" text-anchor="middle">단어가방 모형 — 순서는 버리고, 개수만 셉니다</text>
+        </svg>
+        <p class="tx-cap">▲ 단어가방 — 불용어를 걸러 낸 단어를 한 가방에 넣고 개수를 셉니다.</p>
+
+        <div class="tv-bar"><i id="tv-tf-bar" style="width:0%"></i></div>
+        <p class="tp-prog" id="tv-tf-prog">채운 칸 0/24 · 정답 0/24</p>
+        <div class="tx-scroll" id="tv-tf-tblwrap"></div>
+        <div class="btn-row">
+          <button class="btn tx-mini" type="button" id="tv-tf-ans" onclick="tvTfReveal()" disabled>먼저 채워 보세요 (0/24)</button>
+          <button class="btn tx-mini" type="button" onclick="tvTfReset()">지우고 다시</button>
+          <button class="btn tx-mini" type="button" onclick="tvTfMine()">우리 반 문장 넣기</button>
+        </div>
+        <div class="tv-vecs" id="tv-tf-vecs"></div>
+        <div class="tx-fb" id="tv-tf-fb"></div>
+        <div id="tv-tf-src" class="tx-src">출처: 동아 교과서 Ⅱ p.54~55 표와 벡터를 재구성 · 활동지 「활동 1(TF-IDF)3 — 벡터와 빈도수벡터」 문제 1을 웹으로 이식</div>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>도전 문제 — 미세먼지 기사 두 개 (16칸)</h3>
+        <p><b>기사 A</b> 미세먼지 증가, 마스크 착용하세요. 마스크 필수! 꼭 착용!<br>
+          <b>기사 B</b> 미세먼지로 호흡기 질환이 증가하니 마스크를 착용하세요. 호흡기 질환 조심!<br>
+          <span class="tx-set">U = {미세먼지, 증가, 마스크, 착용, 필수, 호흡기, 질환, 조심}</span></p>
+        <div class="tv-bar"><i id="tv-tf2-bar" style="width:0%"></i></div>
+        <p class="tp-prog" id="tv-tf2-prog">채운 칸 0/16 · 정답 0/16</p>
+        <div class="tx-scroll" id="tv-tf2-tblwrap"></div>
+        <div class="tv-vecs" id="tv-tf2-vecs"></div>
+        <p class="tx-src">출처: 활동지 「활동 1(TF-IDF)3」 문제 2를 웹으로 이식</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 1 · 관찰 — 표에서 가장 큰 수는 어디에 있나요?</h3>
+        <p>각 행에서 가장 큰 성분을 찾으면 그 후기가 무엇을 강조했는지 보입니다.
+          합계 행에서 가장 큰 성분을 찾으면 세 후기 전체의 주제어가 보입니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 2 · 정리 — 단어별 빈도수 벡터를 나타내는 세 단계</h3>
+        <p><b>단계 1</b> 텍스트 데이터에서 불용어를 제거하고 남은 단어를 집합으로 나타내기<br>
+          <b>단계 2</b> 남은 단어가 텍스트 데이터에 등장한 횟수를 각각 구하기<br>
+          <b>단계 3</b> 구한 횟수를 차례대로 나열하여 벡터로 나타내기</p>
+        <p>또한 합계 벡터는 각 문서 벡터의 <b>성분끼리의 합</b>과 같습니다: <code>u = a + b + c</code>.</p>
+        <p class="tx-src">출처: 씨마스 교과서 Ⅱ p.51 '단어별 빈도수 벡터를 나타내는 과정' 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 3 · 정의 확인 — 빈도수 벡터와 단어가방 모형</h3>
+        <p>주어진 텍스트 데이터에서 불용어를 제거하고 남은 단어를 하나의 가방에 넣은 다음, 가방에 들어 있는 단어별 빈도수를 세어
+          벡터의 성분으로 표현한 것을 <b>단어가방 모형</b>이라 하고, 단어별 빈도수를 성분으로 하는 벡터를 <b>빈도수 벡터</b>라고 합니다.
+          단어의 순서는 무시하고 빈도만 고려합니다.</p>
+        <p>이렇게 표현하면 자주 사용된 단어나 주제어를 쉽게 찾을 수 있고, 문서를 분류하거나 내용이 비슷한 문서를 찾을 때 활용할 수 있습니다.</p>
+        <p class="tx-src">출처: 씨마스 교과서 Ⅱ p.51~53 · 미래엔 「인공지능 수학」 Ⅱ 서술을 재구성</p>
+      </div>
+
+      <div class="info" data-no-toggle="1"><strong>일반화</strong> —
+        빈도수 벡터는 문서를 <b>요약한 수의 목록</b>입니다. 여기까지 오면 문서 비교·분류·검색 같은 계산을 컴퓨터가 할 수 있습니다.
+        그런데 한 가지 의심이 남습니다. <b>많이 나온 단어가 정말 항상 중요한 단어일까요?</b> 이 질문은 8차시에서 답합니다.
+        <span style="display:block;margin-top:0.5rem;"><button class="btn tx-mini" type="button" onclick="go('tfidf')">8차시 미리 보기 →</button></span>
+      </div>
+    </div>
+
+    <!-- ── 활동 ④ 희소 vs 밀집 ── -->
+    <div class="tpanel" id="tvp3">
+      <div class="info" data-no-toggle="1"><strong>활동 ④ 0이 너무 많다 — 희소 표현과 밀집 표현</strong> —
+        활동 ③에서 만든 표를 다시 봅시다. 24칸 중 <b>0인 칸이 몇 칸</b>인가요? 세어 보세요.
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>0 세기 계산기 — 화면의 표를 그대로 셉니다</h3>
+        <div class="btn-row">
+          <button class="btn pri tx-mini" type="button" onclick="tvSparsity()">지금 표에서 0 세기</button>
+        </div>
+        <div class="tx-scroll" id="tv-zero-tbl"></div>
+        <p class="tx-note">※ 두 값 모두 화면의 실제 표를 세어 계산합니다(하드코딩하지 않습니다).</p>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>문서를 늘리면 0의 비율은 어떻게 될까</h3>
+        <p class="mat-label" style="text-align:left;">사용할 문서 수</p>
+        <div class="btn-row" id="tv-docn-btns"></div>
+        <input class="ns" id="tv-docn" type="range" min="0" max="3" step="1" value="0"
+               oninput="tvDocN(this.value)" aria-label="사용할 문서 수">
+        <p class="tp-prog" id="tv-docn-st">문서 3건 · 차원 n(U) = – · 전체 칸 – · 0인 칸 – (–%)</p>
+        <canvas id="tv-sparse-cv" width="640" height="300" aria-label="문서 수에 따른 0의 비율 꺾은선 그래프"></canvas>
+        <p class="tx-cap">▲ 문서를 늘릴수록 U의 크기(차원)가 커지고, 늘어난 자리는 대부분 0으로 채워집니다.</p>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>큰 수로 확인하기</h3>
+        <p>주요 단어가 <b>10만 개</b>인 말뭉치에서, 한 문서에 서로 다른 단어가 <b>200개</b> 쓰였다면 0의 비율은?
+          (힌트: 전체 칸 수와 0이 아닌 칸 수를 먼저 구합니다.)</p>
+        <div class="btn-row" style="align-items:center;">
+          <input class="tp-num" id="tv-big" type="number" step="0.1" inputmode="decimal" style="width:6rem;" aria-label="0의 비율 백분율">
+          <span style="font-family:var(--mono);font-size:0.95rem;">%</span>
+          <button class="btn pri tx-mini" type="button" onclick="tvBigCheck()">채점</button>
+        </div>
+        <div class="tx-fb" id="tv-big-fb"></div>
+      </div>
+
+      <details class="tv-emb">
+        <summary>밀집 벡터 맛보기 <span class="tx-badge warn">선택 심화 · 평가 제외</span></summary>
+        <div class="bd" style="padding-bottom:1rem;">
+          <p class="tv-banner">임베딩(밀집 벡터)은 [12인수02-01]의 범위를 넘는 선택 심화 내용입니다.
+            오늘의 형성평가와 지필평가에는 출제되지 않습니다.</p>
+          <svg class="tx-illu" viewBox="0 0 660 320" role="img" aria-label="2차원 의미 공간에서 왕 빼기 남자 더하기 여자가 여왕에 가까워지는 그림">
+            <rect width="660" height="320" fill="var(--bg)"/>
+            <path d="M60 280 H620" stroke="var(--border)" stroke-width="1.5"/>
+            <path d="M60 280 V30" stroke="var(--border)" stroke-width="1.5"/>
+            <g font-family="monospace" font-size="13">
+              <circle cx="180" cy="220" r="6" fill="var(--blue)"/><text x="192" y="225" fill="var(--fg)">남자</text>
+              <circle cx="180" cy="120" r="6" fill="var(--red)"/><text x="192" y="125" fill="var(--fg)">여자</text>
+              <circle cx="400" cy="220" r="6" fill="var(--blue)"/><text x="412" y="225" fill="var(--fg)">왕</text>
+              <circle cx="400" cy="120" r="6" fill="var(--red)"/><text x="412" y="125" fill="var(--fg)">여왕</text>
+              <circle cx="520" cy="235" r="6" fill="var(--blue)"/><text x="532" y="240" fill="var(--fg)">왕자</text>
+              <circle cx="520" cy="135" r="6" fill="var(--red)"/><text x="532" y="140" fill="var(--fg)">공주</text>
+            </g>
+            <g stroke="var(--fg)" stroke-width="2.5" fill="none" stroke-dasharray="7 5">
+              <path d="M180 220 L180 120"/><path d="M400 220 L400 120"/>
+            </g>
+            <path d="M400 128 l-6 -12 h12 z" fill="var(--fg)"/><path d="M180 128 l-6 -12 h12 z" fill="var(--fg)"/>
+            <text x="330" y="300" font-family="monospace" font-size="13" fill="var(--muted)" text-anchor="middle">왕 − 남자 + 여자 ≈ 여왕 — 같은 방향, 같은 길이의 이동</text>
+          </svg>
+          <p class="tx-cap">▲ 의미 공간 2D 도해(자체 제작). 실제 임베딩은 훨씬 높은 차원에서 학습됩니다.</p>
+          <div class="tv-embcards" id="tv-emb-cards"></div>
+          <p class="tx-note"><b>이 값은 시연을 위해 만든 예시입니다. 실제 임베딩은 대규모 텍스트에서 학습하며 보통 50~300차원을 씁니다.</b></p>
+          <div class="btn-row">
+            <a class="btn tx-mini" style="text-decoration:none;display:inline-flex;align-items:center;"
+               href="https://projector.tensorflow.org" target="_blank" rel="noopener">Embedding Projector 열기 ↗</a>
+          </div>
+          <p class="tx-note">Korean 데이터를 선택해 실제 학습된 임베딩에서 비슷한 단어 목록을 확인해 보세요.</p>
+        </div>
+      </details>
+
+      <div class="card">
+        <h3>단계 1 · 관찰 — 0의 비율은 왜 커지나요?</h3>
+        <p>문서를 추가하면 새 단어가 U에 들어와 <b>모든 문서 벡터의 차원이 함께 늘어납니다.</b>
+          그런데 한 문서가 쓰는 단어 수는 거의 그대로이므로, 늘어난 자리는 대부분 0으로 채워집니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 2 · 정리 — 희소 표현의 두 가지 문제</h3>
+        <p>① 개별 단어 및 연결된 단어 사이의 의미를 알기 어렵습니다.</p>
+        <p>② 긴 글에는 많은 단어가 포함되어 있어서 단어 전체를 나타내려면 아주 큰 차원의 벡터가 필요합니다.</p>
+        <p class="tx-src">출처: 씨마스 교과서 Ⅱ p.53 · 천재 「인공지능 수학」 지도서 Ⅱ 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>단계 3 · 정의 확인 — 희소 벡터와 밀집 벡터</h3>
+        <p>대부분의 성분이 0인 벡터를 <b>희소 벡터</b>라고 합니다. 포함관계 여부 벡터·원-핫 벡터·빈도수 벡터가 모두 여기에 속합니다.</p>
+        <p>단어의 의미를 하나의 차원에만 두지 않고 <b>여러 차원에 나누어 실수로 표현한 낮은 차원의 벡터를 밀집 벡터</b>라 하며,
+          이 방법을 단어 임베딩이라고 합니다. 밀집 벡터에서는 의미가 비슷한 단어가 서로 가까운 곳이나 비슷한 방향에 놓입니다.
+          <span class="tx-badge soft">선택 심화</span></p>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>일반화 — 세 표현 비교표</h3>
+        <div class="tx-scroll">
+          <table class="tv-cmp">
+            <tr><th>표현</th><th>무엇을 하나의 벡터로 만드나</th><th>성분의 뜻</th><th>구분할 수 있는 것</th><th>구분할 수 없는 것</th></tr>
+            <tr><td>포함관계 여부 벡터</td><td>문서 1개</td><td>0 또는 1</td><td>어떤 단어가 있는지</td><td>몇 번 나왔는지</td></tr>
+            <tr><td>원-핫 벡터</td><td>단어 1개</td><td>0 또는 1(1은 정확히 하나)</td><td>어떤 단어인지</td><td>단어끼리 얼마나 비슷한지</td></tr>
+            <tr><td>빈도수 벡터</td><td>문서 1개</td><td>0 이상의 정수(등장 횟수)</td><td>어떤 단어가 몇 번 나왔는지</td><td>단어의 순서, 단어의 의미</td></tr>
+            <tr><td><i>(선택 심화)</i> 임베딩 벡터</td><td>단어 1개</td><td>실수</td><td>단어끼리 의미가 얼마나 가까운지</td><td>— <i>(평가 제외)</i></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════ STEP 3 · 정리 ═════ -->
+    <div class="tx-step"><p class="mono">STEP 3 · 정리</p></div>
+
+    <div class="card tx-ask" data-no-toggle="1">
+      <h3>오늘의 핵심 — 그리고 핵심 질문에 답하기</h3>
+      <ul class="tx-3line">
+        <li>① 문서를 벡터로 바꾸려면 먼저 <b>전체집합 U라는 공통의 자</b>를 정해야 하고, 벡터의 차원은 U의 원소 개수와 같습니다.</li>
+        <li>② <b>포함관계 여부 벡터는 '있다·없다'</b>, <b>원-핫 벡터는 '어느 단어인가'</b>, <b>빈도수 벡터는 '몇 번 나왔나'</b>를 잽니다.
+          같은 문서도 자에 따라 다른 벡터가 됩니다.</li>
+        <li>③ 이 세 표현은 모두 <b>대부분의 성분이 0인 희소 벡터</b>여서, 어휘가 커질수록 차원이 커지고 단어끼리의 의미는 담지 못합니다.</li>
+      </ul>
+      <p class="qq" style="margin-top:1rem;">❓ 핵심 질문 — "서로 다른 문장들을 '같은 자'로 재려면 무엇이 필요한가?"</p>
+      <p class="sub">→ 모든 문서의 단어집합을 합친 <b>전체집합 U</b>와, U에 적힌 <b>단어의 순서</b>가 필요합니다.
+        이 둘을 약속하고 나면 서로 다른 문장이 같은 차원의 벡터가 되어 비교·계산할 수 있습니다.</p>
+      <details class="tx-fold">
+        <summary><span class="rl" style="font-family:var(--mono);font-size:0.72rem;letter-spacing:0.12em;color:var(--muted);margin-right:0.6rem;">자세히 보기</span>왜 '같은 자'여야 하는지 한 번 더</summary>
+        <div class="bd">
+          <p>자의 눈금이 서로 다르면 두 사람의 키를 비교할 수 없습니다. 벡터도 마찬가지여서, 몇 번째 자리가 어떤 단어인지가 같아야
+            비로소 두 문서를 나란히 놓을 수 있습니다. 그래서 문서마다 따로 만든 단어집합이 아니라 합집합 U를 기준으로 삼습니다.</p>
+          <p>다만 '같은 자'를 쓴다고 해서 모든 정보가 담기는 것은 아닙니다. 포함관계 여부 벡터는 반복을 지우고, 빈도수 벡터는 순서를 지웁니다.
+            무엇을 남기고 무엇을 버릴지 정하는 일이 곧 "목적에 맞게 표현한다"의 뜻이며, 이것이 성취기준 [12인수02-01]이 요구하는 판단입니다.</p>
+          <p>오늘 남은 의심 하나 — 많이 나온 단어가 정말 중요한 단어일까요? 세 후기 모두에 나온 '캠핑장'은 어느 후기의 특징도 알려 주지 못했습니다.
+            8차시에서 이 문제를 수학으로 해결합니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>형성평가 — 스스로 확인하기</h3>
+      <p class="tv-banner">임베딩(밀집 벡터)은 선택 심화 내용으로 출제하지 않습니다.</p>
+      <p style="margin-bottom:0.8rem;">한 화면에 한 문항씩 진행됩니다. 마지막에 총점과 문항별 복기가 표시됩니다.</p>
+      <div id="tv-quiz"></div>
+    </div>
+
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 · 8차시 — 중요한 단어 찾기: TF-IDF</strong> —
+      오늘 만든 캠핑장 표에서 '캠핑장'은 세 후기 모두에 나왔지만, 그래서 오히려 <b>어느 후기의 특징도 알려 주지 못했습니다.</b>
+      다음 시간에는 여러 문서에 흔히 나오는 단어의 무게를 깎는 방법(역문서빈도)을 배워, 오늘의 빈도수(TF)를 한 단계 발전시킵니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri tx-mini" type="button" onclick="go('tfidf')">8차시로 이동 →</button>
+      </span>
+    </div>
+
+    <div class="pj" data-no-toggle="1">
+      <span class="lb">프로젝트 과제 · 생각 키우기</span>
+      <h3>「우리 반 한 줄 평 벡터 도감」</h3>
+      <p class="sub">같은 문장을 세 가지 자로 재어 보고, 어느 자가 우리 반 한 줄 평을 가장 잘 요약하는지 스스로 판단하는 과제입니다.</p>
+      <dl>
+        <dt>수행 방법</dt>
+        <dd>① 우리 학교·학급에서 최근에 있었던 일(체육대회, 급식, 동아리 발표 등) 중 하나를 정하고, 친구 <b>3명에게 한 줄 평</b>을 받습니다.
+          도입에서 쓴 상황 그림의 문장을 그대로 써도 좋습니다.
+          ② 세 문장에서 불용어를 제거해 단어집합 A, B, C를 만들고, 합집합으로 <b>전체집합 U</b>를 만듭니다(6차시 절차 사용).
+          ③ U를 기준으로 <b>세 가지 표</b>를 만듭니다 — ⓐ 포함관계 여부 표 ⓑ U의 단어 중 <b>하나를 골라</b> 그 단어의 원-핫 벡터
+          ⓒ 빈도수 표와 합계 벡터 u.
+          ④ 빈도수 표에서 <b>0인 칸의 비율</b>을 계산합니다(0인 칸 수 ÷ 전체 칸 수 × 100%).
+          ⑤ "세 표현 중 우리 반 한 줄 평을 요약하는 데 가장 알맞은 것은 무엇이고 왜 그런가"를 <b>4~6문장</b>으로 씁니다.
+          반드시 자신이 만든 벡터의 성분을 근거로 들어야 합니다.</dd>
+        <dt>제출물</dt>
+        <dd>표 3종이 담긴 활동지 1장(손글씨 촬영 또는 웹 화면 캡처 모두 가능) / 벡터 표기 3줄 이상(a, b, c와 합계 u) /
+          0의 비율 계산 과정 1줄 / 판단 글 4~6문장</dd>
+        <dt>평가 관점</dt>
+        <dd><b>[12인수02-01]</b> 집합과 벡터를 이용하여 텍스트 데이터를 <b>목적에 맞게</b> 표현했는가 —
+          ① U를 올바르게 구성했는가 ② 세 표현을 정확히 만들었는가
+          ③ <b>표현을 고른 이유를 자신의 벡터 성분을 근거로 설명했는가</b>(핵심 배점).<br>
+          감점 없는 도전 항목: 서로 다른 두 문장이 같은 벡터가 되는 사례를 찾아 함께 제출하면 가산.</dd>
+      </dl>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>참고 자료 — 벡터 표현을 더 확인하기</h3>
+      <p>카드를 누르면 새 탭에서 열립니다. 6·8·9차시에서 쓰는 자료는 중복을 피해 여기서 제외했습니다.</p>
+      <div class="tx-refs">
+        <a class="tx-ref" href="https://ko.wikipedia.org/wiki/%EB%8B%A8%EC%96%B4_%EA%B0%80%EB%B0%A9_%EB%AA%A8%ED%98%95" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">백과</span>📚</span>
+          <span class="bd"><span class="tt">위키백과 「단어 가방 모형」</span>
+            <span class="ds">오늘 배운 빈도수 벡터(Bag of Words)의 정의와 활용 분야를 한국어 백과 항목으로 확인합니다.</span></span>
+        </a>
+        <a class="tx-ref" href="https://ko.wikipedia.org/wiki/%EC%9B%90-%ED%95%AB" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">백과</span>🔦</span>
+          <span class="bd"><span class="tt">위키백과 「원-핫」</span>
+            <span class="ds">원-핫 표현이 자연어뿐 아니라 회로·범주형 자료에서도 쓰인다는 점을 확인합니다.</span></span>
+        </a>
+        <a class="tx-ref" href="https://projector.tensorflow.org" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">웹 도구</span>🌌</span>
+          <span class="bd"><span class="tt">TensorFlow Embedding Projector <span class="tx-badge warn">선택 심화</span></span>
+            <span class="ds">실제로 학습된 단어 임베딩을 3차원 공간에서 돌려 보며 비슷한 단어 목록을 확인합니다. <b>평가 대상이 아닙니다.</b></span></span>
+        </a>
+      </div>
+      <div id="tv-refx"></div>
+    </div>
+
+    <div class="ws" data-no-toggle="1">
+      <span class="lb">학습지</span>
+      <h3>7차시 학습지 — 표를 채우고 벡터로 적어 보기</h3>
+      <p>웹 활동 ③의 자동 채점 표는 <b>이 학습지 문제 1·2와 문항이 1:1로 같습니다.</b>
+        웹에서 채점한 뒤 종이에 옮겨 적으면 복습이 됩니다.</p>
+      <div class="ws-dl">
+        <a class="ws-btn" href="assets/worksheets/text/텍스트_활동1-3_벡터와빈도수벡터.hwpx"
+           download="텍스트_활동1-3_벡터와빈도수벡터.hwpx">📄 활동지 내려받기 <span class="sz">HWPX · 3쪽 · 약 198 KB</span></a>
+        <a class="ws-btn sec" href="assets/worksheets/text/텍스트_활동1-3_벡터와빈도수벡터.pdf"
+           download="텍스트_활동1-3_벡터와빈도수벡터.pdf">📕 활동지 내려받기 <span class="sz">PDF · 3쪽 · 약 177 KB</span></a>
+        <button class="ws-btn sec" type="button" onclick="wsPrint('tv-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2쪽</span></button>
+      </div>
+      <details class="tx-fold" style="border-top:none;">
+        <summary>선행 복습(선택) — 활동 1-2 2쪽 「벡터란?」</summary>
+        <div class="bd">
+          <p>벡터·성분·차원의 정의와 확인 문제만 담긴 발췌본입니다. 6차시에 이미 배부한 활동지와 중복되므로 기본은 숨겨 둡니다.</p>
+          <div class="ws-dl">
+            <a class="ws-btn sec" href="assets/worksheets/text/텍스트_활동1-2_비정형텍스트와집합.pdf"
+               download="텍스트_활동1-2_비정형텍스트와집합.pdf">📕 활동 1-2 내려받기 <span class="sz">PDF 발췌</span></a>
+          </div>
+        </div>
+      </details>
+      <div id="tv-wslinks"></div>
+    </div>
+
+    <div class="ws-sheet" id="tv-sheet" aria-hidden="true">
+      <div class="ws-h"><h2>「인공지능 수학」 7차시 · 텍스트를 벡터로 — 포함관계·원-핫·빈도수</h2>
+        <span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+      <p class="note">학습 목표 ① U를 이용해 포함관계 여부 벡터·원-핫 벡터로 나타낼 수 있다.
+        ② 빈도수 벡터로 나타내고 희소·밀집 표현의 특징을 설명할 수 있다. [12인수02-01]</p>
+
+      <h3>① 마중 퀴즈 기록</h3>
+      <table>
+        <tr><th style="width:46%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+        <tr><td>U가 9개일 때 후기 A 하나를 적는 데 수는 몇 개 필요한가?</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>두 벡터를 비교하려면 먼저 무엇이 같아야 하는가?</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>"치킨 치킨 치킨 맛있다"를 (치킨, 맛있다) 순서로 나타내면?</td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+
+      <h3>② 활동 ① — 포함관계 여부 벡터</h3>
+      <p class="note">후기 A: 이 노트북은 디자인이 좋아요. / 후기 B: 이 노트북은 가벼워서 만족합니다. / 후기 C: 화면이 커서 만족해요. 배송도 빨라요.</p>
+      <p>A = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; } &nbsp; B = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; } &nbsp; C = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+      <p>U = { &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+      <table>
+        <tr><th></th><th>노트북</th><th>디자인</th><th>좋다</th><th>가볍다</th><th>만족</th><th>화면</th><th>크다</th><th>배송</th><th>빠르다</th></tr>
+        <tr><td>후기 A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>후기 B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>후기 C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+      <p>a = ( &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ) &nbsp; b = ( &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ) &nbsp; c = ( &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; )</p>
+      <p class="note">미션 — 후기 C와 같은 벡터가 되는 다른 문장을 만들어 보세요.</p>
+      <div class="rule sm"></div>
+
+      <h3>③ 활동 ② — 원-핫 벡터</h3>
+      <p class="note">U = {기반, 사고, 성장, 수학, 열쇠, 인공지능, 탐구}</p>
+      <p>'수학' = ( &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ) &nbsp; '열쇠' = ( &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ) &nbsp; '인공지능' = ( &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; )</p>
+      <p class="note">포함관계 여부 벡터와 원-핫 벡터의 차이 (2줄)</p>
+      <div class="rule sm"></div>
+
+      <h3>④ 활동 ③ — 빈도수 벡터</h3>
+      <p class="note">후기 A: 뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요. / 후기 B: 뷰가 좋고, 깨끗한 차박에 좋은 캠핑장! /
+        후기 C: 캠핑장에 온수가 잘 나와요. 화장실도 깨끗하고 온수가 나와요.</p>
+      <table>
+        <tr><th></th><th>뷰</th><th>좋다</th><th>사진</th><th>깨끗하다</th><th>캠핑장</th><th>차박</th><th>온수</th><th>화장실</th></tr>
+        <tr><td>후기 A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>후기 B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>후기 C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>합계 u</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+      <p>a = ( &nbsp; &nbsp; &nbsp; &nbsp; ) b = ( &nbsp; &nbsp; &nbsp; &nbsp; ) c = ( &nbsp; &nbsp; &nbsp; &nbsp; ) u = ( &nbsp; &nbsp; &nbsp; &nbsp; ) &nbsp;
+        주제어: A ______ B ______ C ______ 전체 ______</p>
+      <p class="note">도전 — 미세먼지 기사 두 개 (U = {미세먼지, 증가, 마스크, 착용, 필수, 호흡기, 질환, 조심})</p>
+      <table>
+        <tr><th></th><th>미세먼지</th><th>증가</th><th>마스크</th><th>착용</th><th>필수</th><th>호흡기</th><th>질환</th><th>조심</th></tr>
+        <tr><td>기사 A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>기사 B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+
+      <h3>⑤ 활동 ④ — 0의 비율</h3>
+      <table>
+        <tr><th>전체 칸 수</th><th>0인 칸 수</th><th>0의 비율(%)</th></tr>
+        <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+      <p class="note">주요 단어 10만 개, 한 문서에 서로 다른 단어 200개일 때 0의 비율은? (계산 과정을 쓰세요)</p>
+      <div class="rule sm"></div>
+
+      <h3>⑥ 형성평가</h3>
+      <p class="note">임베딩(밀집 벡터)은 선택 심화 내용으로 출제하지 않습니다.</p>
+      <ol>
+        <li>U={추천, 눈물, 감동, 영화, 지루하다, 잠, 스토리, 연기}, 후기 C={스토리, 연기, 감동}일 때 c는?<br>
+          ① (0,0,1,0,0,0,1,1) &nbsp; ② (1,1,1,1,0,0,0,0) &nbsp; ③ (0,0,1,1,0,0,1,1) &nbsp; ④ (1,0,1,0,0,0,1,1) &nbsp; 답: ______</li>
+        <li>U={기반, 사고, 성장, 수학, 열쇠, 인공지능, 탐구}에서 '열쇠'의 원-핫 벡터는?<br>
+          ① (0,0,0,1,0,0,0) &nbsp; ② (0,0,0,0,1,0,0) &nbsp; ③ (0,0,0,0,0,1,0) &nbsp; ④ (1,1,1,1,1,1,1) &nbsp; 답: ______</li>
+        <li>후기 C "캠핑장에 온수가 잘 나와요. 화장실도 깨끗하고 온수가 나와요."의 빈도수 벡터는?<br>
+          ① (0,0,0,1,1,0,2,1) &nbsp; ② (0,0,0,1,1,0,1,1) &nbsp; ③ (0,1,0,1,1,0,2,1) &nbsp; ④ (1,0,0,1,1,0,2,1) &nbsp; 답: ______</li>
+        <li>원-핫 벡터와 빈도수 벡터가 공통으로 가지는 한계는?<br>
+          ① 몇 번 나왔는지 셀 수 없다 &nbsp; ② 성분 대부분이 0이고 차원이 매우 커진다 &nbsp; ③ 두 문서를 비교할 수 없다 &nbsp; ④ 불용어를 제거할 수 없다 &nbsp; 답: ______</li>
+        <li>P="배송 빠르다 배송", Q="배송 빠르다"를 (배송, 빠르다) 순서로 나타냈다. 옳은 설명은?<br>
+          ① 포함관계 여부 벡터로는 둘 다 (1,1)로 같아진다 &nbsp; ② 빈도수 벡터로도 같아진다 &nbsp;
+          ③ 두 표현 모두에서 다르다 &nbsp; ④ 빈도수 벡터로 P=(1,1), Q=(2,1) &nbsp; 답: ______</li>
+      </ol>
+
+      <h3>⑦ 핵심 질문에 답하기</h3>
+      <p>서로 다른 문장들을 '같은 자'로 재려면 무엇이 필요한가? (5줄)</p>
+      <div class="rule lg"></div>
+
+      <h3>⑧ 프로젝트 과제 요약</h3>
+      <p class="note">친구 3명에게 한 줄 평을 받아 U를 만들고, 포함관계 표·원-핫 벡터 하나·빈도수 표와 합계 벡터 u를 만든 뒤
+        0인 칸의 비율을 계산합니다. 세 표현 중 어느 것이 우리 반 한 줄 평을 가장 잘 요약하는지 자신의 벡터 성분을 근거로 4~6문장으로 씁니다.</p>
+    </div>
+
+  </section>
 </div>
+

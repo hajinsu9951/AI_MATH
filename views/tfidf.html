@@ -1,0 +1,922 @@
+<!-- ═══════════ TFIDF (8차시: 중요한 단어 찾기 — TF-IDF) ═══════════ -->
+<div class="view" id="v-tfidf">
+  <style>
+  /* tfidf 뷰 전용 스타일 — 모든 규칙을 #v-tfidf 하위로 스코프합니다(전역 누수 금지, §12). */
+  #v-tfidf .tf-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-tfidf .tf-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-tfidf .tf-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 */
+  #v-tfidf .vw-mark{opacity:0.09;}
+  #v-tfidf .tf-ask{border-left:4px solid var(--accent);}
+  #v-tfidf .tf-ask .q{font-size:1.15rem;font-weight:700;color:var(--fg);line-height:1.7;margin:0.5rem 0;}
+  #v-tfidf .tf-goal-map{margin-top:0.7rem;padding-top:0.6rem;border-top:1px dashed var(--border);
+    font-size:0.95rem;color:var(--body);line-height:1.75;}
+
+  /* 배지 */
+  #v-tfidf .tf-badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.06em;
+    border:1px solid var(--border);border-radius:9999px;padding:0.14rem 0.55rem;color:var(--muted);
+    background:var(--bg);margin-right:0.35rem;white-space:nowrap;}
+  #v-tfidf .tf-badge.adv{border-color:var(--blue);color:var(--blue);}
+  #v-tfidf .tf-soon{color:var(--muted);border-bottom:1px dotted var(--muted);}
+  #v-tfidf .tf-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.7;
+    margin-top:0.8rem;padding-top:0.5rem;border-top:1px dashed var(--border);}
+  #v-tfidf .tf-jump{display:block;margin-top:0.6rem;}
+
+  /* 도입 대비 SVG · 일반 도해 */
+  #v-tfidf .tf-illu{display:block;width:100%;max-width:40rem;height:auto;margin:0.9rem auto 0.35rem;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);}
+  #v-tfidf .tf-illu text{font-family:var(--mono);}
+  #v-tfidf .tf-cap{font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-align:center;
+    line-height:1.7;margin-bottom:0.4rem;}
+  #v-tfidf .tf-vgrid-note{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
+    gap:0.5rem 1rem;margin-top:0.9rem;}
+  #v-tfidf .tf-vgrid-note div{font-size:0.92rem;color:var(--body);line-height:1.65;}
+  #v-tfidf .tf-vgrid-note b{color:var(--fg);}
+
+  /* 원문 카드 */
+  #v-tfidf .tf-docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13.5rem,1fr));gap:0.7rem;margin:0.9rem 0;}
+  #v-tfidf .tf-doc{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.8rem 0.9rem;}
+  #v-tfidf .tf-doc .lb{display:block;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.3rem;}
+  #v-tfidf .tf-doc p{font-size:1.0rem;line-height:1.75;color:var(--fg);margin:0;}
+  #v-tfidf .tf-uset{font-family:var(--mono);font-size:0.95rem;background:var(--fg);color:var(--bg);
+    border-left:3px solid var(--accent);border-radius:var(--radius);padding:0.9rem 1.1rem;margin:0.9rem 0;
+    line-height:1.8;overflow-x:auto;}
+
+  /* STEP 2 탭 */
+  #v-tfidf .tf-tabs{flex-wrap:wrap;}
+  #v-tfidf .tf-tabs .tab{font-family:var(--sans);font-size:0.98rem;letter-spacing:0;padding:0.6rem 1rem;min-height:44px;}
+  #v-tfidf .tf-tabs .tab.lock{color:var(--muted);cursor:not-allowed;}
+  #v-tfidf .tf-tabs .tab .lk{margin-left:0.3rem;}
+  #v-tfidf .tf-panel{display:none;}
+  #v-tfidf .tf-panel.on{display:block;}
+  #v-tfidf #tf-tab-st{font-family:var(--sans);font-size:0.95rem;font-weight:600;color:var(--red);
+    min-height:1.4rem;margin:-0.8rem 0 0.9rem;line-height:1.6;}
+
+  /* 4단 계단 진행 SVG + 표 */
+  #v-tfidf .tf-stairwrap{display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap;margin-top:0.6rem;}
+  #v-tfidf .tf-stairbox{flex:0 0 13rem;max-width:100%;text-align:center;}
+  #v-tfidf .tf-stairbox svg{display:block;width:100%;height:auto;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);}
+  #v-tfidf .tf-stairbox svg rect.sq{fill:var(--card-h);stroke:var(--border);stroke-width:1.5;transition:fill 0.35s ease;}
+  #v-tfidf .tf-stairbox g.done rect.sq{fill:var(--green);}
+  #v-tfidf .tf-stairbox g.now rect.sq{fill:var(--accent);stroke:var(--fg);}
+  #v-tfidf .tf-stairbox svg text{font-family:var(--mono);font-size:9px;fill:var(--fg);}
+  #v-tfidf .tf-stairbox g.done text{fill:#fff;}
+  #v-tfidf #tf-stair-lb{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.4rem;line-height:1.6;}
+  #v-tfidf .tf-stepswrap{flex:1 1 22rem;min-width:0;}
+
+  #v-tfidf .tf-stage{display:none;border-top:1px dashed var(--border);padding-top:1rem;margin-top:1rem;}
+  #v-tfidf .tf-stage:first-child{border-top:none;padding-top:0;margin-top:0;}
+  #v-tfidf .tf-stage.on{display:block;}
+  #v-tfidf .tf-stage.slide{animation:tfSlide 0.42s cubic-bezier(0.22,1,0.36,1);}
+  #v-tfidf .tf-stage-t{font-size:1.08rem;font-weight:700;margin-bottom:0.4rem;color:var(--fg);}
+  #v-tfidf .tf-stage-n{font-size:0.95rem;color:var(--body);line-height:1.75;margin-bottom:0.6rem;}
+  #v-tfidf .tf-formula{font-family:var(--mono);font-size:1.0rem;background:var(--fg);color:var(--bg);
+    border-left:3px solid var(--accent);border-radius:var(--radius);padding:0.7rem 1rem;margin:0.5rem 0 0.7rem;line-height:1.8;}
+  #v-tfidf .tf-formula b{color:var(--accent);}
+  @keyframes tfSlide{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+  #v-tfidf .tf-scroll{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;}
+  #v-tfidf .tf-tbl{border-collapse:collapse;font-size:0.95rem;margin:0.3rem 0 0.6rem;}
+  #v-tfidf .tf-tbl th,#v-tfidf .tf-tbl td{border:1px solid var(--border);padding:0.25rem 0.3rem;text-align:center;
+    background:var(--bg);white-space:nowrap;}
+  #v-tfidf .tf-tbl th{background:var(--card-h);font-weight:600;font-size:0.88rem;padding:0.4rem 0.5rem;}
+  #v-tfidf .tf-tbl th.tf-rh{font-family:var(--mono);font-size:0.8rem;text-align:right;padding-right:0.6rem;
+    position:sticky;left:0;z-index:1;}
+  #v-tfidf td.tf-c{position:relative;min-width:3.6rem;height:2.9rem;}
+  #v-tfidf td.tf-c.ex{background:var(--card-h);font-weight:700;color:var(--fg);}
+  #v-tfidf td.tf-c.ok{background:rgba(90,122,90,0.16);border-color:var(--green);}
+  #v-tfidf td.tf-c.no{outline:2px solid var(--red);outline-offset:-2px;}
+  #v-tfidf .tf-extag{display:block;font-family:var(--mono);font-size:0.55rem;color:var(--muted);letter-spacing:0.04em;line-height:1.2;}
+  #v-tfidf .tf-in{width:2.9rem;height:2.4rem;min-height:44px;border:1px solid var(--border);border-radius:0.35rem;
+    text-align:center;font-family:var(--mono);font-size:1.0rem;font-weight:600;background:var(--card);color:var(--fg);padding:0;}
+  #v-tfidf .tf-in:focus{outline:2px solid var(--fg);outline-offset:1px;}
+  #v-tfidf .tf-in[readonly]{background:transparent;border-color:transparent;color:var(--fg);}
+  #v-tfidf .tf-fin{display:inline-flex;align-items:center;gap:0.1rem;}
+  #v-tfidf .tf-fin .tf-in{width:2.2rem;}
+  #v-tfidf .tf-fin i{font-style:normal;color:var(--muted);font-family:var(--mono);}
+  #v-tfidf .tf-frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.05;font-family:var(--mono);}
+  #v-tfidf .tf-frac i{font-style:normal;border-bottom:1.5px solid currentColor;padding:0 0.18rem;}
+  #v-tfidf .tf-frac b{font-weight:600;padding:0 0.18rem;}
+  #v-tfidf .tf-trophy{position:absolute;top:0;right:0.1rem;font-size:0.78rem;line-height:1;}
+  #v-tfidf .tf-tbl.heat td.hv{background:rgba(120,84,52,calc(var(--tfh,0) * 0.42));}
+  #v-tfidf .tf-tbl.heat td.hv.ok{border-color:var(--green);}
+
+  #v-tfidf .tf-msg{font-family:var(--sans);font-size:1.02rem;font-weight:700;line-height:1.75;
+    background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;padding:0.7rem 0.9rem;margin:0.5rem 0;}
+  #v-tfidf .tf-msg.ok{border-left:5px solid var(--green);color:var(--green);}
+  #v-tfidf .tf-msg.no{border-left:5px solid var(--red);color:var(--red);}
+  #v-tfidf .tf-msg.hint{border-left:5px solid var(--blue);color:var(--fg);font-weight:400;}
+  #v-tfidf .tf-msg b{color:var(--fg);}
+  #v-tfidf .tf-hint p{font-size:0.98rem;line-height:1.9;margin:0.35rem 0;color:var(--fg);}
+  #v-tfidf .tf-hint .lb{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-right:0.4rem;}
+  #v-tfidf .tf-hint-n{font-size:0.92rem;color:var(--body);margin-top:0.4rem;line-height:1.7;}
+  #v-tfidf mark.tf-mk{background:#f2e28a;color:#1a1714;border-radius:0.2rem;padding:0 0.1rem;}
+
+  /* IDF 반비례 막대 */
+  #v-tfidf .tf-ladder{margin:0.8rem 0 0.4rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:var(--radius);padding:0.9rem 1rem;}
+  #v-tfidf .tf-ladder.slide{animation:tfSlide 0.5s cubic-bezier(0.22,1,0.36,1);}
+  #v-tfidf .tf-ladder-t{font-weight:700;font-size:1.0rem;color:var(--fg);margin-bottom:0.6rem;}
+  #v-tfidf .tf-lrow{display:flex;align-items:center;gap:0.5rem;margin:0.45rem 0;flex-wrap:wrap;}
+  #v-tfidf .tf-lrow .dfl{font-family:var(--mono);font-size:0.8rem;width:4.4rem;flex-shrink:0;color:var(--body);}
+  #v-tfidf .tf-lrow .tk{flex:1 1 6rem;min-width:4rem;height:1.1rem;background:var(--card-h);
+    border:1px solid var(--border);border-radius:9999px;overflow:hidden;}
+  #v-tfidf .tf-lrow .fl{display:block;height:100%;background:var(--accent);border-radius:9999px;}
+  #v-tfidf .tf-lrow .vl{font-family:var(--mono);font-size:0.82rem;font-weight:700;width:5.4rem;text-align:right;flex-shrink:0;}
+  #v-tfidf .tf-lrow .ws{font-size:0.85rem;color:var(--muted);flex:1 1 100%;line-height:1.6;}
+  #v-tfidf .tf-ladder-n{font-size:0.92rem;color:var(--body);line-height:1.75;margin-top:0.6rem;}
+
+  /* 계산 과정 말풍선 */
+  #v-tfidf .tf-pop{position:relative;background:var(--card-h);border:1px solid var(--fg);border-radius:0.6rem;
+    padding:0.85rem 2.2rem 0.85rem 1rem;margin:0.6rem 0;font-size:0.98rem;line-height:1.8;color:var(--fg);}
+  #v-tfidf .tf-pop ol{margin:0.4rem 0 0 1.2rem;}
+  #v-tfidf .tf-pop li{font-size:0.98rem;line-height:1.85;color:var(--body);}
+  #v-tfidf .tf-pop .x{position:absolute;top:0.4rem;right:0.5rem;border:none;background:transparent;
+    color:var(--muted);font-size:0.95rem;cursor:pointer;width:2rem;height:2rem;}
+
+  /* ⓓ 마무리 */
+  #v-tfidf .tf-done.slide{animation:tfSlide 0.5s cubic-bezier(0.22,1,0.36,1);}
+  #v-tfidf .tf-top-tbl td,#v-tfidf .tf-top-tbl th{white-space:normal;text-align:left;vertical-align:top;}
+  #v-tfidf .tf-top-tbl .tf-w{font-family:var(--mono);font-weight:700;color:var(--fg);white-space:nowrap;}
+  #v-tfidf .tf-ta{width:100%;min-width:0;border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);
+    color:var(--fg);font-family:var(--sans);font-size:1.0rem;line-height:1.7;padding:0.5rem 0.6rem;resize:vertical;}
+  #v-tfidf .tf-model{background:var(--bg);border-left:4px solid var(--green);border-radius:0 var(--radius) var(--radius) 0;
+    padding:0.85rem 1rem;margin-top:0.7rem;font-size:0.98rem;line-height:1.8;color:var(--body);}
+  #v-tfidf .tf-model b{color:var(--fg);}
+
+  /* 활동 ② 워드클라우드 */
+  #v-tfidf .tf-clouds{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;margin:0.9rem 0;}
+  #v-tfidf .tf-cloudbox{min-width:0;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0.5rem;}
+  #v-tfidf .tf-cloudbox h5{font-family:var(--mono);font-size:0.78rem;letter-spacing:0.1em;color:var(--muted);
+    text-align:center;margin-bottom:0.3rem;font-weight:600;}
+  #v-tfidf .tf-cloudbox canvas{display:block;width:100%;max-width:100%;height:auto;cursor:pointer;background:var(--bg);}
+  #v-tfidf .tf-radios{display:flex;flex-wrap:wrap;gap:0.6rem;margin:0.8rem 0 0.3rem;}
+  #v-tfidf .tf-radio{display:inline-flex;align-items:center;gap:0.45rem;font-size:0.98rem;color:var(--fg);
+    background:var(--bg);border:1px solid var(--border);border-radius:1.4rem;padding:0.5rem 1rem;min-height:44px;
+    cursor:pointer;flex-wrap:wrap;max-width:100%;line-height:1.5;}
+  #v-tfidf .tf-radio input{width:1.1rem;height:1.1rem;accent-color:var(--fg);cursor:pointer;}
+  #v-tfidf .tf-radio:hover{border-color:var(--fg);}
+  #v-tfidf #tf-mode-note,#v-tfidf #tf-cloud-note{font-size:0.95rem;color:var(--body);line-height:1.75;margin:0.4rem 0 0.2rem;}
+  #v-tfidf #tf-thr{width:100%;max-width:26rem;}
+  #v-tfidf #tf-thr-st{font-family:var(--sans);font-size:0.95rem;color:var(--body);line-height:1.7;min-height:1.4rem;margin:0.3rem 0 0.6rem;}
+  #v-tfidf .tf-news .common td,#v-tfidf .tf-news .common th{background:var(--card-h);}
+  #v-tfidf .tf-news td.df,#v-tfidf .tf-news td.idf{font-family:var(--mono);font-weight:700;}
+  #v-tfidf #tf-doc-chips .chip{font-family:var(--sans);font-size:0.98rem;padding:0.5rem 1.05rem;min-height:44px;
+    background:var(--card);color:var(--fg);display:inline-flex;align-items:center;}
+
+  /* 활동 ③ 라운드 */
+  #v-tfidf .tf-round-hd{display:flex;justify-content:space-between;align-items:baseline;gap:0.6rem;flex-wrap:wrap;}
+  #v-tfidf .tf-round-p{font-family:var(--mono);font-size:0.78rem;letter-spacing:0.1em;color:var(--muted);}
+  #v-tfidf .tf-round-n{font-size:0.98rem;color:var(--body);line-height:1.8;margin:0.5rem 0;}
+  #v-tfidf .tf-wcards{display:flex;flex-wrap:wrap;gap:0.6rem;margin:0.8rem 0 1rem;}
+  #v-tfidf .tf-wcard{display:inline-flex;flex-direction:column;align-items:center;background:var(--bg);
+    border:1px solid var(--border);border-radius:0.7rem;padding:0.7rem 1.1rem;font-size:1.15rem;font-weight:700;color:var(--fg);}
+  #v-tfidf .tf-wcard i{font-style:normal;font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.2rem;font-weight:400;}
+  #v-tfidf .tf-opts{display:flex;flex-direction:column;gap:0.4rem;margin:0.6rem 0;}
+  #v-tfidf .tf-opt{width:100%;text-align:left;}
+  #v-tfidf .tf-round-score{font-size:1.2rem;font-weight:700;color:var(--fg);margin:0.4rem 0;}
+  #v-tfidf .tf-res{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;margin-top:0.9rem;}
+  #v-tfidf .tf-res.slide{animation:tfSlide 0.5s cubic-bezier(0.22,1,0.36,1);}
+  #v-tfidf .tf-res h4{font-size:1.05rem;margin-bottom:0.6rem;}
+  #v-tfidf .tf-bar{display:flex;align-items:center;gap:0.5rem;margin:0.45rem 0;}
+  #v-tfidf .tf-bar .nm{font-family:var(--mono);font-size:0.74rem;width:6.4rem;flex-shrink:0;color:var(--body);line-height:1.35;}
+  #v-tfidf .tf-bar .tk{flex:1;min-width:3rem;height:1.15rem;background:var(--card-h);border:1px solid var(--border);
+    border-radius:9999px;overflow:hidden;}
+  #v-tfidf .tf-bar .fl{display:block;height:100%;border-radius:9999px;transition:width 0.4s cubic-bezier(0.22,1,0.36,1);}
+  #v-tfidf .tf-bar .fl.a{background:var(--muted);}
+  #v-tfidf .tf-bar .fl.b{background:var(--green);}
+  #v-tfidf .tf-bar .vl{font-family:var(--mono);font-size:0.85rem;font-weight:700;width:3.4rem;text-align:right;flex-shrink:0;}
+  #v-tfidf .tf-fill{font-size:1.0rem;line-height:1.9;color:var(--fg);background:var(--card-h);
+    border-radius:0.5rem;padding:0.7rem 0.9rem;margin:0.5rem 0;}
+
+  /* 선택 심화 도전 문항 */
+  #v-tfidf .tf-chal{border-left:4px solid var(--blue);}
+  #v-tfidf .tf-chal-hd{margin-bottom:0.4rem;}
+  #v-tfidf .tf-chal-n{font-size:0.95rem;color:var(--body);line-height:1.7;margin-bottom:0.6rem;}
+
+  /* 참고 자료 카드 */
+  #v-tfidf .tf-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-tfidf .tf-ref{display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-tfidf .tf-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-tfidf .tf-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.6rem;}
+  #v-tfidf .tf-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-tfidf .tf-ref .bd{padding:0.65rem 0.75rem;}
+  #v-tfidf .tf-ref .tt{display:block;font-weight:600;font-size:0.98rem;line-height:1.45;}
+  #v-tfidf .tf-ref .ds{display:block;font-size:0.88rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+
+  /* 학습지 접이식 */
+  #v-tfidf .tf-fold{border-top:1px dashed var(--border);margin-top:0.9rem;padding-top:0.2rem;}
+  #v-tfidf .tf-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);
+    padding:0.7rem 0;min-height:44px;display:flex;align-items:center;position:relative;padding-right:1.6rem;}
+  #v-tfidf .tf-fold>summary::-webkit-details-marker{display:none;}
+  #v-tfidf .tf-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-tfidf .tf-fold[open]>summary::after{content:'▾';}
+
+  /* 교과서 캡처 로컬 슬롯 */
+  #v-tfidf .tf-tbshot{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-tfidf .tf-tbshot:empty{display:none;}
+  #v-tfidf .tf-tbshot figure{margin:0;max-width:100%;}
+  #v-tfidf .tf-tbshot img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;background:#fff;}
+  #v-tfidf .tf-tbshot figcaption{font-size:0.78rem;color:var(--muted);line-height:1.55;margin-top:0.3rem;}
+
+  #v-tfidf .tf-dec{font-family:var(--mono);}
+
+  @media (prefers-reduced-motion:reduce){
+    #v-tfidf .tf-stage.slide,#v-tfidf .tf-ladder.slide,#v-tfidf .tf-res.slide,#v-tfidf .tf-done.slide{animation:none;}
+    #v-tfidf .tf-bar .fl,#v-tfidf .tf-stairbox svg rect.sq{transition:none;}
+    #v-tfidf .tf-stage.on{outline:2px solid var(--accent);outline-offset:4px;}
+  }
+
+  @media (max-width:900px){
+    #v-tfidf .tf-clouds{grid-template-columns:1fr;}
+  }
+  @media (max-width:640px){
+    #v-tfidf .tf-stairbox{flex:1 1 100%;}
+    #v-tfidf .tf-tbl{font-size:0.88rem;}
+    #v-tfidf .tf-tbl th{font-size:0.8rem;}
+    #v-tfidf .tf-in{width:2.5rem;font-size:0.95rem;}
+    #v-tfidf .tf-fin .tf-in{width:2rem;}
+    #v-tfidf .tf-bar .nm{width:5rem;font-size:0.66rem;}
+    #v-tfidf .tf-wcard{font-size:1.02rem;padding:0.6rem 0.85rem;}
+    #v-tfidf .tf-radios{flex-direction:column;align-items:stretch;}
+    #v-tfidf .tf-radio{border-radius:0.7rem;padding:0.55rem 0.8rem;}
+    #v-tfidf .tf-badge{white-space:normal;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="vw-wrap">
+    <div class="vw-mark" aria-hidden="true">
+      <svg viewBox="0 0 320 180" role="img" aria-label="많이 나온 순서로 그린 단어 구름과 중요한 순서로 그린 단어 구름">
+        <rect width="320" height="180" fill="var(--bg)"/>
+        <text x="66" y="66" font-size="30" font-weight="700" fill="var(--fg)" text-anchor="middle" font-family="sans-serif">발표</text>
+        <text x="40" y="104" font-size="15" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">정부</text>
+        <text x="96" y="110" font-size="14" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">대책</text>
+        <text x="62" y="140" font-size="9" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">폭염</text>
+        <path d="M132 92 H188" stroke="var(--fg)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M180 84 L190 92 L180 100" fill="none" stroke="var(--fg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="160" y="74" font-size="14" fill="var(--red)" text-anchor="middle" font-family="sans-serif">?</text>
+        <text x="252" y="70" font-size="30" font-weight="700" fill="var(--fg)" text-anchor="middle" font-family="sans-serif">폭염</text>
+        <text x="252" y="106" font-size="15" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">온열질환</text>
+        <text x="248" y="136" font-size="9" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">발표</text>
+      </svg>
+    </div>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅱ 텍스트 데이터 처리 · 8차시</p>
+    <h2>중요한 단어 찾기 — TF-IDF</h2>
+    <p class="desc">
+      많이 나온 단어와 중요한 단어는 다릅니다. 오늘은 '흔한 단어'의 무게를
+      덜어 내고 그 문서만의 단어를 찾아내는 계산법을 손으로 완성해 봅니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 빈도수 벡터(단어가방 모형)를 이용하여 텍스트 데이터를 요약할 수 있다. <b>([12인수02-02])</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 역문서빈도(IDF)를 문서빈도(DF)의 역수로 표현하고, TF-IDF를 계산하여 문서의 핵심 단어를 추출할 수 있다. <b>([12인수02-02])</b>
+    </div>
+    <div class="tf-goal-map">
+      목표 ① → <b>활동 ①</b> 1단·2단(TF·DF 채우기) / 목표 ② → <b>활동 ①</b> 3단·4단, <b>활동 ②·③</b>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips tf-keys" data-no-toggle="1">
+    <span class="chip">단어 빈도수 TF</span>
+    <span class="chip">문서 빈도수 DF</span>
+    <span class="chip">역문서 빈도수 IDF</span>
+    <span class="chip">TF-IDF</span>
+    <span class="chip">[선택 심화] 로그로 정의하는 IDF</span>
+  </div>
+
+  <div class="card tf-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p class="q">"많이 나온 단어가 항상 중요한 단어일까?"</p>
+    <p>오늘 수업이 끝날 때 이 질문에 여러분의 문장으로 답하게 됩니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="tf-step"><p class="mono">STEP 1 · 도입 — 생각 열기 (8분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — TF와 IDF, 오늘 계산의 전체 그림 먼저 잡기</h3>
+    <p>카드를 누르면 전체 화면으로 재생됩니다(✕ 또는 ESC로 닫기). 마지막으로 본 영상은 이 기기에 기억됩니다.
+      선생님께서 다른 영상을 쓰실 때에는 <b>[+ 선생님 영상 추가]</b> 슬롯 <b>한 칸</b>에 카드를 더할 수 있습니다.</p>
+    <div id="tf-videos"></div>
+    <div class="tf-vgrid-note">
+      <div><b>① [딥러닝 자연어처리] TF-IDF</b> — TF와 IDF를 나누어 설명합니다. 오늘 계산의 전체 그림을 먼저 잡아 두세요.</div>
+      <div><b>② 4. 텍스트 자료의 처리</b> — 교과서의 '주제어 찾기' 순서 그대로 따라갑니다.</div>
+      <div><b>③ 제4강 — 텍스트 자료의 처리(P33~38)</b> — 교과서 쪽수를 짚어 가며 설명합니다. 예습·복습용으로 좋습니다.</div>
+      <div><b>④ 텍스트마이닝 — 용어빈도·역문서빈도·tf-idf</b> — 수식 정의가 엄밀합니다. 더 깊이 알고 싶은 학생만 보세요.</div>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>같은 뉴스, 다른 구름 — 무엇이 글자 크기를 바꾸었을까요?</h3>
+    <svg class="tf-illu" viewBox="0 0 640 300" role="img"
+         aria-label="왼쪽은 많이 나온 순서로 그려 발표가 가장 크고, 오른쪽은 중요한 순서로 그려 폭염이 가장 큰 두 단어 구름">
+      <rect width="640" height="300" fill="var(--bg)"/>
+      <rect x="14" y="14" width="270" height="238" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+      <rect x="356" y="14" width="270" height="238" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="149" y="42" font-size="14" fill="var(--muted)" text-anchor="middle">「많이 나온 순서」</text>
+      <text x="491" y="42" font-size="14" fill="var(--muted)" text-anchor="middle">「중요한 순서」</text>
+
+      <text x="149" y="112" font-size="46" font-weight="700" fill="var(--fg)" text-anchor="middle" font-family="sans-serif">발표</text>
+      <text x="86"  y="164" font-size="26" font-weight="600" fill="var(--body)" text-anchor="middle" font-family="sans-serif">정부</text>
+      <text x="208" y="168" font-size="24" font-weight="600" fill="var(--body)" text-anchor="middle" font-family="sans-serif">대책</text>
+      <text x="60"  y="212" font-size="11" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">폭염</text>
+      <text x="150" y="222" font-size="11" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">배터리</text>
+      <text x="238" y="210" font-size="11" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">관중</text>
+
+      <text x="491" y="116" font-size="46" font-weight="700" fill="var(--fg)" text-anchor="middle" font-family="sans-serif">폭염</text>
+      <text x="491" y="170" font-size="25" font-weight="600" fill="var(--body)" text-anchor="middle" font-family="sans-serif">온열질환</text>
+      <text x="491" y="214" font-size="13" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">발표</text>
+
+      <path d="M296 132 H340" stroke="var(--fg)" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M331 122 L342 132 L331 142" fill="none" stroke="var(--fg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="318" cy="98" r="15" fill="none" stroke="var(--red)" stroke-width="2"/>
+      <text x="318" y="105" font-size="18" font-weight="700" fill="var(--red)" text-anchor="middle" font-family="sans-serif">?</text>
+      <text x="320" y="284" font-size="13" fill="var(--fg)" text-anchor="middle">무엇이 글자 크기를 바꾸었을까요?</text>
+    </svg>
+    <p class="tf-cap">같은 뉴스 5건을 두 가지 방법으로 그린 단어 구름입니다. 오른쪽 그림은 오늘 배울 계산으로 만들었습니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 지금의 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="tf-warm"></div>
+    <p style="margin-top:1.1rem;"><b>그 가중치의 이름이 IDF입니다. 오늘 여러분은 TF → DF → IDF → TF-IDF 네 계단을 직접 올라가며 이 방법을 완성하게 됩니다.</b></p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="tf-step"><p class="mono">STEP 2 · 전개 — 탐구 활동 (30분)</p></div>
+
+  <div class="info" data-no-toggle="1"><strong>세 활동은 순서대로 진행합니다</strong> —
+    활동 ①의 4단(TF-IDF)까지 모두 맞히면 활동 ②·③ 탭이 열립니다.
+    각 활동은 <b>ⓐ 문제 상황 → ⓑ 조작 → ⓒ 단계 토글(관찰·정리·정의 확인) → ⓓ 마무리</b>의 순서입니다.
+    <b>정답과 해설은 스스로 시도한 뒤에만 열립니다.</b>
+  </div>
+
+  <div class="tabs tf-tabs">
+    <button class="tab on" type="button" onclick="tfTab(0,this)">① 4단 계단 오르기</button>
+    <button class="tab lock" type="button" onclick="tfTab(1,this)" title="활동 ①을 먼저 완성해 주세요">② TF 구름 vs TF-IDF 구름<span class="lk" aria-hidden="true">🔒</span></button>
+    <button class="tab lock" type="button" onclick="tfTab(2,this)" title="활동 ①을 먼저 완성해 주세요">③ 뉴스 제목 맞히기<span class="lk" aria-hidden="true">🔒</span></button>
+  </div>
+  <p id="tf-tab-st" role="status" aria-live="polite"></p>
+
+  <!-- ── 활동 ① ─────────────────────────────────────────── -->
+  <div class="tf-panel on" id="tf-p0">
+
+    <div class="card" data-no-toggle="1">
+      <h3>ⓐ 문제 상황 — 캠핑장 후기 세 개, 무엇이 좋아서일까</h3>
+      <p><b>세 사람 모두 이 캠핑장이 좋다고 합니다. 그런데 '무엇이 좋아서'는 각각 다릅니다.
+        그 이유를 컴퓨터가 스스로 찾아내게 하려면 어떤 수를 계산해야 할까요?</b></p>
+      <div class="tf-docs">
+        <div class="tf-doc"><span class="lb">후기 A</span><p>뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요.</p></div>
+        <div class="tf-doc"><span class="lb">후기 B</span><p>뷰가 좋고, 깨끗한 차박에 좋은 캠핑장!</p></div>
+        <div class="tf-doc"><span class="lb">후기 C</span><p>캠핑장에 온수가 잘 나와요. 화장실도 깨끗하고 온수가 나와요.</p></div>
+      </div>
+      <p>6차시에서 배운 방식으로 전처리를 마친 단어집합을 제시합니다.</p>
+      <div class="tf-uset">U = {뷰, 좋다, 사진, 깨끗하다, 캠핑장, 차박, 온수, 화장실}   (원소 8개, n = 3)</div>
+      <p class="status">정렬 기준 — 고정 예제이므로 <b>교과서 지면의 등장 순서</b>를 그대로 씁니다(§0-3 #3).</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>ⓑ 학생 조작 — 4단 계단 오르기</h3>
+      <p>왼쪽 계단이 진행 상황입니다. <b>이전 단의 모든 칸이 정답일 때만 다음 단이 열립니다.</b>
+        틀린 칸은 다시 입력할 수 있고, <b>[힌트]</b>는 원문에서 그 단어가 나타난 곳을 형광펜으로 표시해 줍니다.</p>
+      <div class="tf-stairwrap">
+        <div class="tf-stairbox">
+          <svg viewBox="0 0 180 170" role="img" aria-label="TF, DF, IDF, TF-IDF 네 단으로 이루어진 계단 진행 표시">
+            <rect width="180" height="170" fill="var(--bg)"/>
+            <g id="tf-stair-1"><rect class="sq" x="10"  y="122" width="38" height="38" rx="5"/><text x="29"  y="146" text-anchor="middle">1단 TF</text></g>
+            <g id="tf-stair-2"><rect class="sq" x="52"  y="92"  width="38" height="38" rx="5"/><text x="71"  y="116" text-anchor="middle">2단 DF</text></g>
+            <g id="tf-stair-3"><rect class="sq" x="94"  y="62"  width="38" height="38" rx="5"/><text x="113" y="86"  text-anchor="middle">3단 IDF</text></g>
+            <g id="tf-stair-4"><rect class="sq" x="136" y="32"  width="38" height="38" rx="5"/><text x="155" y="52"  text-anchor="middle">4단</text><text x="155" y="62" text-anchor="middle">TF-IDF</text></g>
+            <path d="M14 118 L46 118" stroke="var(--border)" stroke-width="1.5"/>
+            <path d="M56 88 L88 88"   stroke="var(--border)" stroke-width="1.5"/>
+            <path d="M98 58 L130 58"  stroke="var(--border)" stroke-width="1.5"/>
+          </svg>
+          <p id="tf-stair-lb">1단 진행 중 · 완료 0/4</p>
+        </div>
+        <div class="tf-stepswrap">
+          <div id="tf-steps"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card tf-done" id="tf-act1-done" data-no-toggle="1" hidden>
+      <h3>ⓓ 마무리 — 핵심 단어 뽑기와 요약 문장 완성</h3>
+      <p>4단을 통과했습니다. 문서마다 TF-IDF가 가장 큰 단어가 곧 그 후기의 핵심 단어입니다.
+        오른쪽 칸에 <b>이 후기가 말하는 좋은 이유</b>를 한 문장으로 직접 채워 넣어 보세요(이 기기에 저장됩니다).</p>
+      <div id="tf-top"></div>
+      <div class="btn-row">
+        <button class="btn cmn-go" type="button" onclick="tfShowModel()">모범 답안 보기</button>
+      </div>
+      <div class="tf-model" id="tf-top-model" hidden>
+        <b>모범 답안</b> — 후기 A: 사진 찍기 좋아서 / 후기 B: 차박하기 좋아서 / 후기 C: 온수가 잘 나와서.
+        세 후기 모두 "좋다"고 말하지만, TF-IDF가 큰 단어를 보면 <b>좋다고 말한 이유</b>가 서로 다르다는 것을 알 수 있습니다.
+      </div>
+      <p class="tf-src">동아출판 「인공지능 수학」 Ⅱ p.58 서술을 재구성</p>
+      <div class="tf-tbshot">
+        <figure>
+          <img src="assets/textbook-local/tfidf_step4_donga_p58.png" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>동아출판 「인공지능 수학」 p.58 (수업용)</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/textbook-local/tfidf_step4_seemas_p59.png" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 「인공지능 수학」 p.59 (수업용)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div id="tf-act1-tgl" hidden>
+      <div class="card">
+        <h3>ⓒ 단계 토글 1 · 관찰 — 표에서 무엇이 보이나요</h3>
+        <p>TF 표에서는 '깨끗하다'와 '캠핑장'이 세 후기 모두에서 1로 나타납니다. 그런데 TF-IDF 표에서는
+          이 두 단어의 값이 모든 문서에서 1로 가장 작아졌습니다. 반대로 후기 A의 '사진'은 6, 후기 C의 '온수'는 6으로
+          크게 솟아올랐습니다. 어떤 계산이 이 차이를 만들었는지 3단의 IDF 표를 다시 확인해 봅시다.</p>
+      </div>
+
+      <div class="card">
+        <h3>ⓒ 단계 토글 2 · 정리 — 흔한 단어의 무게를 덜어 내는 방법</h3>
+        <p>DF가 커진다는 것은 그 단어가 여러 문서에 두루 나온다는 뜻입니다. <span class="mi">IDF = n/DF</span>는
+          분모가 커지면 값이 작아지는 식이므로, 두루 나오는 단어일수록 작은 가중치를 받습니다. 여기에 TF를 곱하면
+          <b>"이 문서에서 자주 나오면서 동시에 다른 문서에서는 잘 안 나오는 단어"</b> 에만 큰 값이 남습니다.</p>
+        <p>우리 데이터에서 n = 3이므로 IDF가 가질 수 있는 값은 3/3 = 1, 3/2, 3/1 = 3 세 가지뿐입니다.
+          IDF의 최솟값이 1이라는 점(로그 방식과 달리 0이 되지 않는다는 점)도 확인해 둡시다.</p>
+        <p class="tf-src">씨마스 「인공지능 수학」 Ⅱ p.58~59, 동아출판 Ⅱ p.57~58 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>ⓒ 단계 토글 3 · 정의 확인 — TF-IDF란 무엇인가</h3>
+        <p><b>단어 빈도수 TF(d, t)</b> — 문서 d에서 단어 t가 등장한 횟수</p>
+        <p><b>문서 빈도수 DF(t)</b> — 단어 t가 등장한 문서의 개수</p>
+        <p><b>역문서 빈도수 IDF(t)</b> — 상대도수 DF/n의 역수, 즉 n/DF (n은 전체 문서의 개수)</p>
+        <p><b>TF-IDF(d, t) = TF(d, t) × IDF(t)</b> — 값이 클수록 그 문서에서 중요도가 높은 단어</p>
+        <p><i>예시 1</i> 후기 A의 '사진': 2 × 3 = 6 → 후기 A의 주제어<br>
+           <i>예시 2</i> 후기 C의 '온수': 2 × 3 = 6 → 후기 C의 주제어</p>
+        <p>TF-IDF에서 '-'는 뺄셈 기호가 아니라 두 낱말을 잇는 <b>붙임표(hyphen)</b> 입니다.</p>
+        <p class="tf-src">씨마스 「인공지능 수학」 Ⅱ p.59 '정보 Plus' 서술을 재구성</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 활동 ② ─────────────────────────────────────────── -->
+  <div class="tf-panel" id="tf-p1">
+
+    <div class="card" data-no-toggle="1">
+      <h3>ⓐ 문제 상황 — 이 표만 보고 다섯 뉴스를 구별할 수 있을까</h3>
+      <p>오늘 아침 뉴스 다섯 건을 모았습니다. 각 뉴스에서 어떤 단어가 몇 번 나왔는지는 7차시에서 배운 방법으로
+        이미 세어 두었습니다. 이 표만 가지고 <b>다섯 건의 뉴스가 각각 무슨 이야기인지</b> 알아낼 수 있을까요?</p>
+      <p class="status">말뭉치 TF 표 (n = 5, 단어집합 원소 13개) — 뉴스 제목은 활동 ③까지 가려 둡니다.</p>
+      <div id="tf-news-table"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>ⓑ 학생 조작 — 두 구름을 나란히 놓고 비교하기</h3>
+      <p>문서를 하나 고르면 왼쪽에는 <b>TF 구름</b>, 오른쪽에는 <b>TF-IDF 구름</b>이 그려집니다.
+        글자 크기는 값에 비례합니다. 구름의 단어를 누르면 계산 과정이 나타납니다.</p>
+
+      <p class="mat-label" style="text-align:left;">문서 선택</p>
+      <div class="chips" id="tf-doc-chips">
+        <span class="chip on" role="button" tabindex="0" onclick="tfPickDoc(0,this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tfPickDoc(0,this);}">전체 말뭉치</span>
+        <span class="chip" role="button" tabindex="0" onclick="tfPickDoc(1,this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tfPickDoc(1,this);}">①</span>
+        <span class="chip" role="button" tabindex="0" onclick="tfPickDoc(2,this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tfPickDoc(2,this);}">②</span>
+        <span class="chip" role="button" tabindex="0" onclick="tfPickDoc(3,this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tfPickDoc(3,this);}">③</span>
+        <span class="chip" role="button" tabindex="0" onclick="tfPickDoc(4,this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tfPickDoc(4,this);}">④</span>
+        <span class="chip" role="button" tabindex="0" onclick="tfPickDoc(5,this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tfPickDoc(5,this);}">⑤</span>
+      </div>
+      <p id="tf-cloud-note"></p>
+
+      <div class="tf-clouds">
+        <div class="tf-cloudbox"><h5>TF 구름 — 많이 쓰인 말</h5>
+          <canvas id="tf-cloud-tf" aria-label="TF를 기준으로 그린 단어 구름"></canvas></div>
+        <div class="tf-cloudbox"><h5>TF-IDF 구름 — 이 문서다운 말</h5>
+          <canvas id="tf-cloud-ti" aria-label="TF-IDF를 기준으로 그린 단어 구름"></canvas></div>
+      </div>
+      <div class="tf-pop" id="tf-cloudpop" hidden></div>
+
+      <p class="mat-label" style="text-align:left;">IDF 방식</p>
+      <div class="tf-radios" id="tf-idfmode" role="radiogroup" aria-label="IDF 계산 방식">
+        <label class="tf-radio"><input type="radio" name="tf-idf-mode" value="ratio" checked onchange="tfSetMode('ratio')"> n / DF <span class="tf-badge">기본</span></label>
+        <label class="tf-radio"><input type="radio" name="tf-idf-mode" value="log" onchange="tfSetMode('log')"> log₁₀(n / DF) <span class="tf-badge adv">선택 심화 · 평가 제외</span></label>
+      </div>
+      <p id="tf-mode-note"></p>
+
+      <p class="mat-label" style="text-align:left;margin-top:0.9rem;">TF-IDF 기준값</p>
+      <input class="ns" id="tf-thr" type="range" min="0" max="10" step="1" value="0"
+             oninput="tfSetThr(this.value)" aria-label="TF-IDF 기준값">
+      <p id="tf-thr-st" role="status" aria-live="polite"></p>
+    </div>
+
+    <div id="tf-act2-tgl" hidden>
+      <div class="card">
+        <h3>ⓒ 단계 토글 1 · 관찰 — 두 구름은 어떻게 다른가</h3>
+        <p>문서 ①을 골라 봅시다. TF 구름에서는 '발표'가 가장 크고 '폭염'은 그보다 작습니다.
+          그런데 TF-IDF 구름에서는 '폭염'(10)이 가장 크고 '발표'(3)는 훨씬 작아졌습니다.
+          다섯 문서 모두에서 같은 일이 일어나는지 칩을 눌러 가며 확인해 보세요.</p>
+      </div>
+
+      <div class="card">
+        <h3>ⓒ 단계 토글 2 · 관찰 — 로그로 바꾸면 무슨 일이 벌어지나 [선택 심화]</h3>
+        <p><span class="tf-badge adv">선택 심화 · 평가 제외</span></p>
+        <p>IDF 방식을 log₁₀(n/DF)로 바꾸어 봅시다. '정부·발표·대책'은 DF가 5로 전체 문서 수 n과 같으므로
+          log₁₀(5/5) = log₁₀ 1 = 0이 되어 TF-IDF가 0이 됩니다. 세 단어가 구름에서 <b>완전히 사라집니다.</b></p>
+        <p>n/DF 방식에서는 이 세 단어의 IDF가 1까지만 내려가 여전히 구름에 남아 있었습니다.
+          두 방식이 흔한 단어를 다루는 태도가 이렇게 다릅니다.</p>
+        <p><i>교사 안내</i>: 이 관찰은 로그 정의를 도입하는 자연스러운 동기가 됩니다. 다만 평가 범위는 IDF = n/DF입니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>ⓒ 단계 토글 3 · 정리 — 워드클라우드는 무엇을 보여 주는가</h3>
+        <p>단어 구름은 값에 비례하도록 글자 크기를 정해 그린 그림입니다. 따라서 어떤 값을 기준으로 그리느냐에 따라
+          완전히 다른 그림이 나옵니다. 빈도수(TF)를 기준으로 그리면 "많이 쓰인 말"이 보이고,
+          TF-IDF를 기준으로 그리면 "이 문서다운 말"이 보입니다.</p>
+        <p class="tf-src">씨마스 「인공지능 수학」 Ⅱ p.62~63 탐구 활동(TF 기반·TF-IDF 기반 단어 구름 비교) 서술을 재구성</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 활동 ③ ─────────────────────────────────────────── -->
+  <div class="tf-panel" id="tf-p2">
+
+    <div class="card" data-no-toggle="1">
+      <h3>ⓐ 문제 상황 — 단어 세 개만 보고 뉴스 제목 맞히기</h3>
+      <p>두 라운드를 <b>반드시 이 순서로</b> 진행합니다.
+        <b>라운드 1</b>은 한 문서의 <b>TF 상위 3개 단어</b>만 보고 제목을 고릅니다.
+        <b>라운드 2</b>는 같은 다섯 문항을 <b>TF-IDF 상위 3개 단어</b>로 다시 풉니다.</p>
+      <div id="tf-round"></div>
+      <div class="tf-res" id="tf-round-res" hidden></div>
+    </div>
+
+    <div id="tf-act3-tgl" hidden>
+      <div class="card">
+        <h3>ⓒ 단계 토글 1 · 정리 — 왜 TF-IDF는 제목을 알려 주는가</h3>
+        <p>제목은 그 뉴스가 다른 뉴스와 <b>다른 점</b>을 담습니다. TF는 "많이 쓰인 말"을 알려 주지만 다른 점은
+          알려 주지 못합니다. TF-IDF는 DF가 큰 단어의 무게를 IDF로 덜어 내기 때문에 남는 단어가 곧 그 문서만의 단어,
+          즉 제목에 들어갈 만한 단어가 됩니다.</p>
+      </div>
+
+      <div class="card" id="tf-act3-t2">
+        <h3>ⓒ 단계 토글 2 · 정의 확인 — 순위가 뒤집히는 대표 사례</h3>
+        <p>음식점 후기 A 「추천! 위생적이고 인테리어가 예뻐서 이 음식점을 추천해요.」를 봅시다.</p>
+        <p>TF: 추천 2, 위생적 1 → <b>'추천'이 더 커 보임</b></p>
+        <p>DF: 추천 4(네 후기 모두), 위생적 1(A에만) → IDF: 추천 4/4 = 1, 위생적 4/1 = 4</p>
+        <p>TF-IDF: 추천 2 × 1 = <b>2</b>, 위생적 1 × 4 = <b>4</b> → <b>순위가 뒤집힘</b></p>
+        <p>TF는 낮지만 TF-IDF가 더 큰 '위생적'을 후기 A에서 더 유용한 단어로 판단합니다.</p>
+        <p class="tf-src">미래엔 「인공지능 수학」 Ⅱ p.59 서술을 재구성</p>
+      </div>
+
+      <div class="card">
+        <h3>ⓒ 단계 토글 3 · 읽을거리 — IDF를 처음 생각해 낸 사람</h3>
+        <figure class="phz phz-r">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Karen_Sp%C3%A4rck.jpg"
+               alt="카렌 스파크 존스" loading="lazy" referrerpolicy="no-referrer"
+               onerror="this.style.display='none';var f=this.closest('.phz');if(f)f.classList.add('nofoto');">
+          <div class="fb" aria-hidden="true">🔍</div>
+          <figcaption><b>카렌 스파크 존스(Karen Spärck Jones, 1935~2007).</b>
+            2002년 여름 케임브리지 대학교 컴퓨터연구소 앞에서.
+            <span class="src">출처: 위키미디어 커먼스, 촬영 en:user:Markus Kuhn, CC BY 2.5</span></figcaption>
+        </figure>
+        <p>영국의 컴퓨터 과학자 카렌 스파크 존스는 1972년 논문에서 "어떤 단어가 여러 문서에 널리 퍼져 있을수록
+          그 단어로 문서를 골라내는 힘은 약해진다"는 생각을 수식으로 정리했습니다.
+          오늘 우리가 계산한 IDF가 바로 그 아이디어입니다.</p>
+        <p>당시에는 도서관 자료를 검색하는 문제를 풀기 위한 연구였지만, 지금은 검색 엔진과 뉴스 요약,
+          추천 시스템에 두루 쓰입니다.</p>
+        <p>그는 여성 연구자가 드물던 시절 자연어 처리 분야를 개척했고,
+          "컴퓨팅은 너무 중요해서 남성에게만 맡겨 둘 수 없다"는 말을 남겼습니다.</p>
+        <p><b>생각해 보기</b>: 스파크 존스가 "많이 쓰인 단어"가 아니라 "널리 퍼진 단어"에 주목한 것이
+          왜 결정적인 전환이었을까요?</p>
+        <p class="tf-src">미래엔 「인공지능 수학」 Ⅱ p.58 인물 소개란 서술을 재구성</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="tf-step"><p class="mono">STEP 3 · 정리 — 오늘 배운 것 (7분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ol style="margin:0.7rem 0 0 1.3rem;">
+      <li style="font-size:1.06rem;font-weight:700;color:var(--fg);margin-bottom:0.45rem;">
+        단어 빈도수 <b>TF</b>는 한 문서 안에서 그 단어가 나온 횟수이고, 문서 빈도수 <b>DF</b>는 그 단어가 나온 문서의 개수입니다.</li>
+      <li style="font-size:1.06rem;font-weight:700;color:var(--fg);margin-bottom:0.45rem;">
+        역문서 빈도수 <b>IDF는 상대도수 DF/n의 역수</b>, 곧 n/DF입니다. 여러 문서에 두루 나오는 단어일수록 작아집니다.</li>
+      <li style="font-size:1.06rem;font-weight:700;color:var(--fg);">
+        <b>TF-IDF = TF × IDF</b> 이며, 이 값이 큰 단어가 그 문서의 핵심 단어입니다.</li>
+    </ol>
+
+    <svg class="tf-illu" viewBox="0 0 640 170" role="img"
+         aria-label="DF가 1이면 IDF는 3, DF가 2이면 IDF는 1.5, DF가 3이면 IDF는 1이 되는 반비례 사다리">
+      <rect width="640" height="170" fill="var(--bg)"/>
+      <text x="320" y="28" font-size="14" fill="var(--fg)" text-anchor="middle">IDF 사다리 — DF가 한 칸 커질 때 IDF는 한 칸 내려갑니다 (n = 3)</text>
+      <rect x="60"  y="52" width="150" height="34" rx="6" fill="var(--card)" stroke="var(--border)"/>
+      <rect x="245" y="82" width="150" height="34" rx="6" fill="var(--card)" stroke="var(--border)"/>
+      <rect x="430" y="112" width="150" height="34" rx="6" fill="var(--card)" stroke="var(--border)"/>
+      <text x="135" y="74"  font-size="13" fill="var(--fg)" text-anchor="middle">DF = 1 → IDF = 3</text>
+      <text x="320" y="104" font-size="13" fill="var(--fg)" text-anchor="middle">DF = 2 → IDF = 3/2</text>
+      <text x="505" y="134" font-size="13" fill="var(--fg)" text-anchor="middle">DF = 3 → IDF = 1</text>
+      <path d="M212 70 L243 96"  stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M397 100 L428 126" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+      <text x="135" y="160" font-size="11" fill="var(--muted)" text-anchor="middle">사진 · 차박 · 온수 · 화장실</text>
+      <text x="320" y="160" font-size="11" fill="var(--muted)" text-anchor="middle">뷰 · 좋다</text>
+      <text x="505" y="160" font-size="11" fill="var(--muted)" text-anchor="middle">깨끗하다 · 캠핑장</text>
+    </svg>
+    <p class="tf-cap">n/DF 방식에서는 IDF가 1까지만 내려갑니다 — 흔한 단어를 지우지 않고 무게만 덜어 냅니다.</p>
+
+    <details class="tf-fold">
+      <summary>자세히 보기 — 4단 계산 순서와 세 교과서의 대표 예시</summary>
+      <svg class="tf-illu" viewBox="0 0 660 130" role="img"
+           aria-label="TF에서 DF와 상대도수, IDF를 거쳐 TF-IDF에 이르는 네 단계 흐름도">
+        <rect width="660" height="130" fill="var(--bg)"/>
+        <rect x="12"  y="38" width="128" height="52" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <rect x="176" y="38" width="150" height="52" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <rect x="362" y="38" width="128" height="52" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <rect x="526" y="38" width="122" height="52" rx="8" fill="var(--fg)" stroke="var(--fg)" stroke-width="1.5"/>
+        <text x="76"  y="60" font-size="13" fill="var(--fg)" text-anchor="middle">1단 · TF</text>
+        <text x="76"  y="78" font-size="10" fill="var(--muted)" text-anchor="middle">문서 안 등장 횟수</text>
+        <text x="251" y="60" font-size="13" fill="var(--fg)" text-anchor="middle">2단 · DF와 DF/n</text>
+        <text x="251" y="78" font-size="10" fill="var(--muted)" text-anchor="middle">등장한 문서의 개수</text>
+        <text x="426" y="60" font-size="13" fill="var(--fg)" text-anchor="middle">3단 · IDF</text>
+        <text x="426" y="78" font-size="10" fill="var(--muted)" text-anchor="middle">DF/n 의 역수 = n/DF</text>
+        <text x="587" y="60" font-size="13" fill="var(--bg)" text-anchor="middle">4단 · TF-IDF</text>
+        <text x="587" y="78" font-size="10" fill="var(--accent)" text-anchor="middle">TF × IDF</text>
+        <path d="M144 64 H172" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M164 57 L173 64 L164 71" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M330 64 H358" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M350 57 L359 64 L350 71" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M494 64 H522" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M514 57 L523 64 L514 71" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="330" y="118" font-size="11" fill="var(--muted)" text-anchor="middle">계산 순서는 어느 교과서에서나 같습니다.</text>
+      </svg>
+      <div class="tf-scroll">
+        <table class="tf-tbl" style="min-width:30rem;">
+          <tr><th>교과서</th><th>대표 예시</th><th>문서 수 n</th><th>드러난 핵심 단어</th></tr>
+          <tr><td>동아출판 Ⅱ p.57~58</td><td style="white-space:normal;">캠핑장 후기 A·B·C</td><td>3</td>
+              <td style="white-space:normal;">A 사진 / B 좋다·차박 / C 온수</td></tr>
+          <tr><td>씨마스 Ⅱ p.58~59</td><td style="white-space:normal;">프라이드치킨 후기 A·B·C</td><td>3</td>
+              <td style="white-space:normal;">A 배달·빠르다·양·많다 / B 배달·빠르다·맛있다 / C 양·많다·맛있다</td></tr>
+          <tr><td>미래엔 Ⅱ p.59~60</td><td style="white-space:normal;">음식점 후기 A·B·C·D</td><td>4</td>
+              <td style="white-space:normal;">A 위생적 / B 맛·좋다 / C 저렴 / D 맛</td></tr>
+        </table>
+      </div>
+      <p class="tf-src">씨마스 「인공지능 수학」 Ⅱ p.58~59, 동아출판 Ⅱ p.57~58, 미래엔 Ⅱ p.59~60 서술을 재구성</p>
+    </details>
+  </div>
+
+  <div class="card tf-ask" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p class="q">"많이 나온 단어가 항상 중요한 단어일까?"</p>
+    <p>활동 ③에서 쓴 문장이 아래 칸에 불려 와 있습니다. 고쳐 써도 좋습니다.</p>
+    <textarea class="tf-ta" id="tf-answer" rows="4" aria-label="핵심 질문에 대한 나의 답"
+      placeholder="예) 아닙니다. 여러 문서에 두루 나오는 단어는 …"></textarea>
+    <div class="btn-row">
+      <button class="btn cmn-go" type="button" onclick="tfAnswerModel()">모범 답안과 비교하기</button>
+    </div>
+    <div class="tf-model" id="tf-answer-model" hidden>
+      <b>모범 답안(1~2문장)</b> — 아닙니다. 여러 문서에 두루 나오는 단어는 빈도수가 높아도 그 문서를 구별해 주지 못하므로,
+      빈도수(TF)에 희귀함을 나타내는 가중치(IDF)를 곱한 TF-IDF로 판단해야 그 문서만의 중요한 단어를 찾을 수 있습니다.
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.9rem;">한 화면에 한 문항씩 진행합니다. 답을 고르면 정답과 해설이 바로 나타나고,
+      마지막에는 총점과 문항별 복기 목록을 볼 수 있습니다.
+      <b>평가 범위는 IDF = n/DF 이며, 로그 정의는 출제하지 않습니다.</b></p>
+    <div id="tf-quiz"></div>
+  </div>
+
+  <div class="card tf-chal" id="tf-chal" data-no-toggle="1"></div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 9차시 · 얼마나 비슷한가: 유클리드·코사인 유사도</strong>
+    오늘 우리는 문서마다 "그 문서다운 단어들"을 수로 뽑아냈습니다. 그렇다면 두 문서가 <b>얼마나 비슷한지</b>는
+    어떻게 잴 수 있을까요? 다음 시간에는 문서를 화살표(벡터)로 보고, 두 화살표 사이의 <b>거리</b>로 잴 때와
+    <b>사잇각</b>으로 잴 때 결론이 어떻게 달라지는지 확인합니다.
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" role="link" tabindex="0" onclick="go('sim')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('sim');}">
+      <h3>다음 차시 · 9차시 — 얼마나 비슷한가</h3>
+      <p>오늘 만든 TF-IDF 벡터가 그대로 재료가 됩니다. 거리로 잴까요, 방향으로 잴까요?</p>
+    </div>
+    <div class="card-link" role="link" tabindex="0" onclick="go('text')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('text');}">
+      <h3>돌아보기 · 7차시 — 텍스트를 벡터로</h3>
+      <p>오늘의 TF는 7차시에서 만든 빈도수 벡터의 성분과 같습니다. 단어집합과 벡터를 다시 확인해 보세요.</p>
+    </div>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>오늘의 뉴스, 주제어로 맞히기</h3>
+    <p class="sub">오늘 배운 TF-IDF를 실제 뉴스 기사에 그대로 적용해 봅니다.
+      표만 보고 짝이 기사 제목을 맞힐 수 있는지 확인하면, "왜 빈도수만으로는 부족한가"를 스스로 설명할 수 있게 됩니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>
+        ① 빅카인즈(<a href="https://www.bigkinds.or.kr" target="_blank" rel="noopener">https://www.bigkinds.or.kr</a>)에 접속해
+        [뉴스보기] → [주간이슈]에서 서로 다른 분야의 기사 <b>3건</b>을 고릅니다(예: 사회·경제·과학 각 1건).<br>
+        ② 기사 본문을 이 차시의 TF-IDF 계산기에 붙여 넣고 <b>[분석]</b>을 눌러, 기사 3건을 하나의 말뭉치로 분석합니다.<br>
+        ③ 기사마다 TF 상위 3개 단어와 TF-IDF 상위 3개 단어를 표로 옮겨 적습니다. <b>표에는 기사 제목을 쓰지 않습니다.</b><br>
+        ④ 짝과 표를 바꾸어, 상대의 표만 보고 기사 3건의 제목을 각각 한 문장으로 추측해 적습니다.<br>
+        ⑤ 정답을 공개한 뒤, <b>TF 상위 단어로 맞혔는지 TF-IDF 상위 단어로 맞혔는지</b>를 표시하고 그 이유를 한 문단(3~5문장)으로 씁니다.
+      </dd>
+      <dt>제출물</dt>
+      <dd>기사 3건의 TF·DF·IDF·TF-IDF 표 1장(손글씨 또는 화면 캡처) / 짝의 추측과 실제 제목 대조표 /
+        「빈도수만으로는 왜 부족한가」 한 문단(3~5문장)</dd>
+      <dt>평가 관점</dt>
+      <dd>TF-IDF를 바르게 계산하여 각 기사의 유용한 정보를 추출하였는가 <b>([12인수02-02])</b> /
+        흔한 단어의 가중치가 IDF로 낮아지는 원리를 자신의 사례로 설명하였는가 /
+        짝의 추측 결과를 근거로 TF와 TF-IDF의 차이를 해석하였는가</dd>
+      <dt>주의</dt>
+      <dd>기사 원문은 저작권이 있으므로 <b>본문 전체를 옮겨 적지 말고, 분석 결과 표와 제목만</b> 제출물에 담습니다.</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실은 영상 4종은 여기에 다시 넣지 않았습니다.</p>
+    <div class="tf-refs">
+      <a class="tf-ref" href="https://www.bigkinds.or.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">사이트</span>📰</span>
+        <span class="bd"><span class="tt">빅카인즈 뉴스 분석 서비스</span>
+          <span class="ds">국내 54개 언론사 뉴스를 모아 놓은 분석 서비스입니다. 프로젝트 과제에서 분석할 기사를 여기서 고릅니다.</span></span>
+      </a>
+      <a class="tf-ref" href="https://tjdgus1121.github.io/log_ruler.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>📏</span>
+        <span class="bd"><span class="tt">로그 계산자(슬라이드 룰) <span class="tf-badge adv">선택 심화</span></span>
+          <span class="ds">로그가 큰 수를 어떻게 줄여 주는지 자를 밀며 확인해 봅니다. 로그 IDF를 이해하고 싶은 학생용입니다.</span></span>
+      </a>
+      <a class="tf-ref" href="https://colab.research.google.com/drive/1aa0cBv6gle_0URCGAYcQu80phmugq1PE?usp=sharing" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">실습 코드</span>💻</span>
+        <span class="bd"><span class="tt">단어 구름 만들기 실습(코랩) <span class="tf-badge">교사용</span></span>
+          <span class="ds">씨마스 교과서 p.62 탐구 활동에 안내된 코랩 자료입니다. TF 기반 구름과 TF-IDF 기반 구름을 코드로 만들어 비교합니다. 구글 계정 로그인이 필요합니다.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>8차시 학습지 — 손으로 채우며 4단 계단 오르기</h3>
+    <p>웹에서 조작한 4단 표를 손으로 한 번 더 채우면 계산 순서가 몸에 남습니다.
+      <b>활동 1-4</b>가 활동 ①의 지면판이고, <b>활동 1</b>은 프로젝트 과제와 1:1로 대응합니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('tf-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/text/활동 1(TF-IDF)4.pdf" target="_blank" rel="noopener">
+        📄 활동 1-4(TF·IDF) — 4단 표 채우기 <span class="sz">PDF · 약 99 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/활동 1(TF-IDF)4.hwpx" download>
+        📝 활동 1-4(TF·IDF) — 4단 표 채우기 <span class="sz">HWPX · 약 75 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/활동 1(TF-IDF).pdf" target="_blank" rel="noopener">
+        📄 활동 1(TF-IDF) — 뉴스로 주제어 찾기 <span class="sz">PDF · 약 109 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/활동 1(TF-IDF).hwpx" download>
+        📝 활동 1(TF-IDF) — 뉴스로 주제어 찾기 <span class="sz">HWPX · 약 118 KB</span></a>
+    </div>
+    <p class="status">활동 1-4는 캠핑장 후기 A·B·C의 TF→DF→IDF→TF·IDF 네 표를 손으로 채우고, 2쪽에서 AI·데이터·이미지 4문장으로 한 번 더 연습합니다.
+      활동 1은 빅카인즈 기사 선택 → 표 작성 → 짝과 교환해 제목 맞히기로 이어지며 뒷면에 벡터 개념 복습이 있습니다.</p>
+
+    <details class="tf-fold">
+      <summary>7차시 복습이 필요한 학생에게 — 활동 1-3(벡터와 빈도수 벡터)</summary>
+      <p>TF 표를 채우기 전에 단어집합과 빈도수 벡터를 다시 확인하고 싶은 학생에게 권합니다.
+        <b>7차시에 배부한 것과 같은 파일</b>이므로 이미 가지고 있다면 새로 내려받지 않아도 됩니다.</p>
+      <div class="ws-dl">
+        <a class="ws-btn sec" href="assets/worksheets/text/활동 1(TF-IDF)3.pdf" target="_blank" rel="noopener">
+          📄 활동 1-3(벡터와 빈도수 벡터) <span class="sz">PDF · 약 177 KB</span></a>
+        <a class="ws-btn sec" href="assets/worksheets/text/활동 1(TF-IDF)3.hwpx" download>
+          📝 활동 1-3(벡터와 빈도수 벡터) <span class="sz">HWPX · 약 198 KB</span></a>
+      </div>
+    </details>
+
+    <div id="tf-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 학습지 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="tf-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>「인공지능 수학」 8차시 — 중요한 단어 찾기: TF-IDF</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+
+    <p class="note"><b>학습 목표</b> ① 빈도수 벡터를 이용하여 텍스트 데이터를 요약할 수 있다. [12인수02-02]
+      ② 역문서빈도(IDF)를 문서빈도(DF)의 역수로 표현하고, TF-IDF를 계산하여 문서의 핵심 단어를 추출할 수 있다. [12인수02-02]</p>
+    <p class="note"><b>핵심 질문</b> 많이 나온 단어가 항상 중요한 단어일까?</p>
+
+    <h3>① 마중 퀴즈 기록</h3>
+    <table>
+      <tr><th style="width:52%;">질문</th><th style="width:12%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>가장 많이 등장한 단어가 곧 그 문서의 주제어이다. (O/X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>네 후기에 모두 나오는 '추천'은 후기를 구별하는 데 도움이 될까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>빈도수 벡터만으로 주제어를 찾기 어려운 이유는?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 ① · 4단 계단 오르기 — 캠핑장 후기 A·B·C (n = 3)</h3>
+    <p class="note">후기 A: 뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요. / 후기 B: 뷰가 좋고, 깨끗한 차박에 좋은 캠핑장! /
+      후기 C: 캠핑장에 온수가 잘 나와요. 화장실도 깨끗하고 온수가 나와요.<br>
+      U = {뷰, 좋다, 사진, 깨끗하다, 캠핑장, 차박, 온수, 화장실}</p>
+
+    <p class="note"><b>1단 · 단어빈도 TF</b> (예시 칸만 채워져 있습니다)</p>
+    <table>
+      <tr><th></th><th>뷰</th><th>좋다</th><th>사진</th><th>깨끗하다</th><th>캠핑장</th><th>차박</th><th>온수</th><th>화장실</th></tr>
+      <tr><td>TF(A)</td><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>TF(B)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>TF(C)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <p class="note"><b>2단 · 문서빈도 DF와 상대도수 DF/n</b></p>
+    <table>
+      <tr><th></th><th>뷰</th><th>좋다</th><th>사진</th><th>깨끗하다</th><th>캠핑장</th><th>차박</th><th>온수</th><th>화장실</th></tr>
+      <tr><td>DF</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td>3</td><td class="blank"></td><td class="blank"></td><td>1</td></tr>
+      <tr><td>DF/n</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <p class="note"><b>3단 · 역문서빈도 IDF</b> — IDF = 상대도수 DF/n 의 역수 = n/DF (n = 3)</p>
+    <table>
+      <tr><th></th><th>뷰</th><th>좋다</th><th>사진</th><th>깨끗하다</th><th>캠핑장</th><th>차박</th><th>온수</th><th>화장실</th></tr>
+      <tr><td>IDF</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td>1</td><td class="blank"></td><td class="blank"></td><td>3</td></tr>
+    </table>
+
+    <p class="note"><b>4단 · TF-IDF</b> — TF-IDF = TF × IDF</p>
+    <table>
+      <tr><th></th><th>뷰</th><th>좋다</th><th>사진</th><th>깨끗하다</th><th>캠핑장</th><th>차박</th><th>온수</th><th>화장실</th></tr>
+      <tr><td>TF-IDF(A)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>TF-IDF(B)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>TF-IDF(C)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td>3</td></tr>
+    </table>
+
+    <h3>관찰 기록</h3>
+    <p class="note">TF 표와 TF-IDF 표에서 값이 가장 크게 달라진 단어는? 그 이유는?</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 활동 ② · 말뭉치 TF 표 (n = 5) — DF와 IDF는 직접 채웁니다</h3>
+    <table>
+      <tr><th>단어</th><th>①</th><th>②</th><th>③</th><th>④</th><th>⑤</th><th>DF</th><th>IDF = 5/DF</th></tr>
+      <tr><td>정부</td><td>2</td><td>2</td><td>2</td><td>3</td><td>2</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>발표</td><td>3</td><td>2</td><td>3</td><td>2</td><td>3</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>대책</td><td>2</td><td>3</td><td>3</td><td>2</td><td>2</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>폭염</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>온열질환</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>배터리</td><td>0</td><td>2</td><td>0</td><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>충전</td><td>0</td><td>2</td><td>0</td><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>관중</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>구단</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>물가</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>장바구니</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>발사체</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>궤도</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <table>
+      <tr><th>문서</th><th>TF 상위 3개</th><th>TF-IDF 상위 3개</th></tr>
+      <tr><td>①</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>②</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>③</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>④</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>⑤</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>④ 활동 ③ · 제목 맞히기 기록표</h3>
+    <table>
+      <tr><th>라운드 1 (TF만)</th><th>라운드 2 (TF-IDF)</th></tr>
+      <tr><td class="blank">______ / 5</td><td class="blank">______ / 5</td></tr>
+    </table>
+    <p class="note">차이가 생긴 이유 (3줄)</p>
+    <div class="rule sm"></div>
+
+    <h3>⑤ 형성평가</h3>
+    <ol>
+      <li>후기 A 「뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요.」에서 '사진'의 TF는?
+        &nbsp;① 0 ② 1 ③ 2 ④ 3 &nbsp; 답: ______</li>
+      <li>캠핑장 후기 A·B·C(n = 3)에서 '깨끗하다'의 IDF는?
+        &nbsp;① 1/3 ② 1 ③ 3 ④ 9 &nbsp; 답: ______</li>
+      <li>후기 C에서 '온수'의 TF는 2이고 '온수'는 후기 C에만 등장합니다(n = 3). '온수'의 TF-IDF는?
+        &nbsp;① 2 ② 3 ③ 6 ④ 2/3 &nbsp; 답: ______</li>
+      <li>TF-IDF에 대한 설명으로 옳지 <b>않은</b> 것은?
+        &nbsp;① TF-IDF가 큰 단어는 중요도가 높다 ② IDF는 DF가 커질수록 작아진다
+        ③ 크다·작다의 절대적인 기준값이 정해져 있다 ④ 모든 문서에 등장하는 단어의 TF-IDF는 TF와 같다 &nbsp; 답: ______</li>
+      <li>음식점 후기 A에서 '추천'의 TF는 2, '위생적'의 TF는 1입니다. '추천'은 네 후기 모두에, '위생적'은 A에만 등장합니다(n = 4).
+        후기 A의 핵심 단어로 더 알맞은 것과 이유는?
+        &nbsp;① 추천 — TF가 크다 ② 추천 — 대표성이 있다 ③ 위생적 — TF-IDF가 4로 더 크다 ④ 위생적 — DF가 작아 TF도 작다 &nbsp; 답: ______</li>
+    </ol>
+    <p class="note"><b>[선택 심화 · 평가 제외] 도전 문항</b> — n = 10⁶, DF = 10²일 때 IDF = log₁₀(n/DF)의 값은?
+      &nbsp;① 2 ② 4 ③ 6 ④ 10⁴ &nbsp; 답: ______</p>
+
+    <h3>⑥ 핵심 질문 — 많이 나온 단어가 항상 중요한 단어일까?</h3>
+    <div class="rule lg"></div>
+  </div>
+</div>

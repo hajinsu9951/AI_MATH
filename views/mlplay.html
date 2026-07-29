@@ -1,0 +1,902 @@
+<!-- ═══════════ MLPLAY (2차시: AI의 학습 방식 — 지도·비지도·강화) ═══════════ -->
+<div class="view" id="v-mlplay">
+  <style>
+  /* mlplay 뷰 전용 스타일 (#v-mlplay 스코프 한정 — 전역 누수 금지) */
+  #v-mlplay .ml-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-mlplay .ml-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-mlplay .ml-step .mono{font-size:0.8rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+  /* 표제부 — 핵심 개념 · 핵심 질문 */
+  #v-mlplay .ml-ask{border-left:4px solid var(--accent);}
+  #v-mlplay .ml-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-mlplay .ml-ask li{position:relative;padding-left:1.5rem;margin-bottom:0.55rem;font-weight:500;color:var(--fg);}
+  #v-mlplay .ml-ask li::before{content:'?';position:absolute;left:0;top:0;font-family:var(--mono);font-weight:700;color:var(--accent);}
+  #v-mlplay .ml-ask li:last-child{margin-bottom:0;}
+  /* 정의 확인 카드 — 좌측 액센트 */
+  #v-mlplay .ml-def{border-left:4px solid var(--accent);}
+  /* 읽을거리 카드 */
+  #v-mlplay .ml-read{border-left:4px solid var(--blue);}
+  #v-mlplay .ml-read p{margin-bottom:0.75rem;}
+  #v-mlplay .ml-read p:last-child{margin-bottom:0;}
+  #v-mlplay .ml-read .ask{margin-top:0.9rem;padding:0.7rem 0.9rem;background:var(--bg);border-radius:var(--radius);}
+  /* 개념 일러스트(인라인 SVG) */
+  #v-mlplay .ml-svg{display:block;width:100%;max-width:44rem;height:auto;margin:1rem 0 0.4rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);}
+  #v-mlplay .ml-svg text{font-family:var(--sans);}
+  #v-mlplay .ml-cap{font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.7;margin:0 0 0.4rem;}
+  /* 사례 카드 하단 이모지 타일 스트립 */
+  #v-mlplay .ml-thumbs{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:1rem;}
+  #v-mlplay .ml-thumb{flex:0 0 auto;width:6.6rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem 0.4rem;text-align:center;}
+  #v-mlplay .ml-thumb .em{display:block;font-size:2.1rem;line-height:1.25;}
+  #v-mlplay .ml-thumb .cp{display:block;font-size:0.78rem;color:var(--muted);margin-top:0.35rem;line-height:1.45;}
+  /* 탭 — 좁은 화면에서 탭 줄만 가로 스크롤 */
+  #v-mlplay .tabs{overflow-x:auto;scrollbar-width:none;}
+  #v-mlplay .tabs::-webkit-scrollbar{display:none;}
+  #v-mlplay .tab{white-space:nowrap;flex-shrink:0;font-size:0.82rem;}
+  /* 표 */
+  #v-mlplay .ml-tbl{border-collapse:collapse;font-family:var(--mono);font-size:0.8rem;margin:0.5rem 0;width:100%;min-width:16rem;}
+  #v-mlplay .ml-tbl th,#v-mlplay .ml-tbl td{border:1px solid var(--border);padding:0.35rem 0.55rem;text-align:center;white-space:nowrap;}
+  #v-mlplay .ml-tbl th{background:var(--bg);}
+  #v-mlplay .ml-tbl.txt td,#v-mlplay .ml-tbl.txt th{font-family:var(--sans);white-space:normal;text-align:left;line-height:1.7;}
+  #v-mlplay .ml-scroll{overflow-x:auto;max-width:100%;}
+  #v-mlplay .ml-logbox{max-height:14rem;overflow-y:auto;overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0 0.5rem;}
+  /* 조작 요소 확대 (스펙 15 — 활동 칩·소형 버튼 0.95rem, 소제목 라벨 0.85rem) */
+  #v-mlplay .mat-label{font-size:0.85rem;letter-spacing:0.04em;text-transform:none;}
+  #v-mlplay #ml-sort-pool .chip,#v-mlplay #ml-km-ks .chip{font-family:var(--sans);font-size:0.95rem;padding:0.5rem 1rem;min-height:2.5rem;}
+  #v-mlplay .tpanel .btn{font-size:0.95rem;font-family:var(--sans);letter-spacing:0.01em;text-transform:none;padding:0.6rem 1.1rem;min-height:2.75rem;}
+  /* 판별·피드백 텍스트 가독성 강화 (스펙 15) */
+  #v-mlplay #ml-sort-st,#v-mlplay #ml-km-st,#v-mlplay #ml-bd-st{font-family:var(--sans);font-size:1.05rem;font-weight:700;line-height:1.7;color:var(--fg);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.65rem 0.85rem;min-height:0;}
+  /* 탭 A — 사례 분류 바구니 */
+  #v-mlplay .ml-bskts{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:0.6rem;margin:0.9rem 0;}
+  #v-mlplay .ml-bskt{border:2px dashed var(--border);border-radius:var(--radius);background:var(--bg);padding:0.7rem 0.6rem;cursor:pointer;transition:all 0.2s;min-height:7.4rem;}
+  #v-mlplay .ml-bskt:hover{border-color:var(--muted);}
+  #v-mlplay .ml-bskt.arm{border-style:solid;border-color:var(--fg);background:var(--card);}
+  #v-mlplay .ml-bskt .bt{font-size:1rem;font-weight:700;color:var(--fg);margin-bottom:0.15rem;}
+  #v-mlplay .ml-bskt .bs{font-size:0.8rem;color:var(--muted);line-height:1.6;}
+  #v-mlplay .ml-bskt .bb{margin-top:0.5rem;display:flex;flex-direction:column;gap:0.25rem;}
+  #v-mlplay .ml-bskt .bi{font-size:0.78rem;color:var(--green);border:1px solid var(--green);border-radius:0.35rem;padding:0.22rem 0.4rem;line-height:1.5;}
+  #v-mlplay .ml-case-txt{font-size:1rem;color:var(--body);border-left:3px solid var(--accent);padding:0.5rem 0.8rem;margin:0.6rem 0;min-height:2.4rem;line-height:1.8;}
+  /* 탭 B — k-means 캔버스 */
+  #v-mlplay .ml-cv{display:block;width:100%;max-width:100%;height:auto;background:#fff;border:1px solid var(--border);border-radius:var(--radius);cursor:crosshair;touch-action:manipulation;}
+  #v-mlplay .ml-legend{display:flex;flex-wrap:wrap;gap:0.6rem;margin:0.6rem 0;font-size:0.78rem;color:var(--muted);}
+  #v-mlplay .ml-legend span{display:inline-flex;align-items:center;gap:0.3rem;}
+  #v-mlplay .ml-legend i{width:0.7rem;height:0.7rem;border-radius:50%;display:inline-block;}
+  #v-mlplay .ml-calc{display:none;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0.75rem 0.85rem;margin-top:0.6rem;font-size:0.9rem;color:var(--body);}
+  #v-mlplay .ml-calc.open{display:block;}
+  #v-mlplay .ml-calc h5{font-family:var(--mono);font-size:0.78rem;letter-spacing:0.06em;color:var(--fg);margin:0.7rem 0 0.3rem;}
+  #v-mlplay .ml-calc h5:first-child{margin-top:0;}
+  #v-mlplay .ml-calc .fx{font-family:var(--mono);font-size:0.82rem;color:var(--muted);line-height:1.95;}
+  /* 탭 C — 밴딧 슬롯·막대 */
+  #v-mlplay .ml-slots{display:flex;gap:0.6rem;flex-wrap:wrap;margin:0.9rem 0;}
+  #v-mlplay .ml-slot{flex:1 1 6rem;min-width:5.4rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);padding:0.85rem 0.5rem;cursor:pointer;text-align:center;transition:all 0.2s;}
+  #v-mlplay .ml-slot:hover{background:var(--card-h);}
+  #v-mlplay .ml-slot .nm{display:block;font-family:var(--mono);font-size:1.6rem;font-weight:700;color:var(--fg);line-height:1.2;}
+  #v-mlplay .ml-slot .sub{display:block;font-size:0.78rem;color:var(--muted);margin-top:0.25rem;}
+  #v-mlplay .ml-slot.hit{border-color:var(--green);background:var(--card-h);}
+  #v-mlplay .ml-slot.miss{border-color:var(--red);}
+  #v-mlplay .ml-bar{display:flex;align-items:center;gap:0.5rem;margin:0.4rem 0;}
+  #v-mlplay .ml-bar .lb{font-family:var(--mono);font-size:0.95rem;font-weight:700;width:1.4rem;text-align:center;color:var(--fg);}
+  #v-mlplay .ml-bar .tk{flex:1;min-width:3.5rem;height:1.1rem;background:var(--bg);border:1px solid var(--border);border-radius:9999px;overflow:hidden;position:relative;}
+  #v-mlplay .ml-bar .fl{height:100%;width:0;background:var(--accent);transition:width 0.45s cubic-bezier(0.22,1,0.36,1);}
+  #v-mlplay .ml-bar .fl.best{background:var(--green);}
+  #v-mlplay .ml-bar .tp{position:absolute;top:0;bottom:0;width:2px;background:var(--red);}
+  #v-mlplay .ml-bar .vv{font-family:var(--mono);font-size:0.76rem;color:var(--muted);width:9.6rem;text-align:right;white-space:nowrap;}
+  /* 참고 자료 카드 */
+  #v-mlplay .ml-refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-mlplay .ml-ref{display:block;text-decoration:none;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);overflow:hidden;position:relative;transition:all 0.2s;}
+  #v-mlplay .ml-ref:hover{border-color:var(--muted);transform:translateY(-2px);box-shadow:0 2px 8px rgba(26,23,20,0.06);}
+  #v-mlplay .ml-ref .th{aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-mlplay .ml-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-mlplay .ml-ref .bd{padding:0.6rem 0.7rem;}
+  #v-mlplay .ml-ref .tt{font-size:0.92rem;font-weight:600;color:var(--fg);line-height:1.5;}
+  #v-mlplay .ml-ref .ds{font-size:0.8rem;color:var(--muted);line-height:1.6;margin-top:0.3rem;}
+  #v-mlplay .ml-ref .bg{position:absolute;top:0.4rem;left:0.4rem;font-family:var(--mono);font-size:0.66rem;background:var(--card);border:1px solid var(--border);border-radius:9999px;padding:0.18rem 0.55rem;color:var(--muted);}
+  #v-mlplay .ml-ref .del{position:absolute;top:0.38rem;right:0.38rem;border:1px solid var(--border);background:var(--card);border-radius:9999px;width:1.7rem;height:1.7rem;line-height:1;color:var(--muted);cursor:pointer;font-size:0.95rem;}
+  #v-mlplay .ml-ref-in{flex:1 1 12rem;min-width:0;height:2.6rem;border:1px solid var(--border);border-radius:var(--radius);padding:0 0.7rem;font-family:var(--sans);font-size:0.9rem;background:var(--bg);color:var(--fg);}
+  /* 작업 1 — k-means 단계 라벨 · 예시 계산 패널 · 단계 로그 */
+  #v-mlplay .ml-km-phase{font-family:var(--mono);font-size:1.02rem;font-weight:700;letter-spacing:0.02em;padding:0.6rem 0.9rem;border-radius:var(--radius);background:var(--bg);border:1px solid var(--border);color:var(--muted);margin-top:0.8rem;text-align:center;}
+  #v-mlplay .ml-km-phase.asn{color:var(--blue);border-color:var(--blue);}
+  #v-mlplay .ml-km-phase.upd{color:var(--green);border-color:var(--green);}
+  #v-mlplay .ml-km-ex:empty{display:none;}
+  #v-mlplay .ml-km-ex{margin-top:0.6rem;}
+  #v-mlplay .ml-km-ex .fx-ttl{font-family:var(--mono);font-size:0.78rem;letter-spacing:0.03em;color:var(--fg);margin:0 0 0.3rem;}
+  #v-mlplay .ml-km-ex .fx-line{font-family:var(--mono);font-size:0.85rem;color:var(--body);line-height:1.9;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.6rem 0.8rem;margin:0 0 0.3rem;}
+  /* 작업 2 — 강화학습 쉬운 도입 · 4단계 사이클 · 탐험/활용 배지 · 이력 색칠 */
+  #v-mlplay .ml-easy{background:var(--bg);border:1px dashed var(--border);border-radius:var(--radius);padding:0.9rem 1rem;margin:0.9rem 0;}
+  #v-mlplay .ml-easy p{font-size:1rem;line-height:1.85;margin:0 0 0.5rem;color:var(--body);}
+  #v-mlplay .ml-easy p:last-child{margin-bottom:0;}
+  #v-mlplay .ml-cycle{display:flex;flex-wrap:wrap;align-items:center;gap:0.4rem;margin:0.9rem 0 0.5rem;}
+  #v-mlplay .ml-cycle .cy-step{font-family:var(--sans);font-size:0.85rem;padding:0.4rem 0.7rem;border:1px solid var(--border);border-radius:9999px;color:var(--muted);background:var(--bg);transition:all 0.2s;}
+  #v-mlplay .ml-cycle .cy-step.on{color:var(--fg);border-color:var(--accent);background:var(--card);font-weight:700;}
+  #v-mlplay .ml-cycle .cy-arr{color:var(--muted);font-size:0.85rem;}
+  #v-mlplay .ml-badge{display:inline-block;font-family:var(--sans);font-size:0.9rem;font-weight:600;padding:0.35rem 0.75rem;border-radius:9999px;border:1px solid var(--border);color:var(--muted);background:var(--bg);}
+  #v-mlplay .ml-badge.explore{color:var(--blue);border-color:var(--blue);}
+  #v-mlplay .ml-badge.exploit{color:var(--green);border-color:var(--green);}
+  #v-mlplay .ml-eeseq{display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.5rem;}
+  #v-mlplay .ml-eechip{font-family:var(--mono);font-size:0.72rem;padding:0.15rem 0.42rem;border-radius:0.35rem;border:1px solid var(--border);background:var(--bg);}
+  #v-mlplay .ml-eechip.explore{color:var(--blue);border-color:var(--blue);}
+  #v-mlplay .ml-eechip.exploit{color:var(--green);border-color:var(--green);}
+  /* 시각 우선 레이아웃 — 개념 카드 좌(도해) · 우(짧은 설명) 2단 스프레드 */
+  #v-mlplay .ml-spread{display:grid;grid-template-columns:0.9fr 1.1fr;gap:1.1rem;align-items:center;}
+  #v-mlplay .ml-spread .ml-svg{margin:0;max-width:100%;}
+  @media (max-width:860px){#v-mlplay .ml-spread{grid-template-columns:1fr;}}
+  @media (max-width:640px){
+    #v-mlplay .ml-bar .vv{width:7.4rem;font-size:0.7rem;}
+    #v-mlplay .ml-bskt{min-height:6.4rem;}
+    #v-mlplay .ml-thumb{width:5.4rem;}
+    #v-mlplay .ml-refs{grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));}
+  }
+  </style>
+
+  <p class="mono" style="margin-bottom:0.4rem;">1단원 · 인공지능과 빅데이터</p>
+  <h2>2차시 — AI의 학습 방식: 지도·비지도·강화</h2>
+  <p class="desc">
+    1차시에서 우리는 인공지능의 학습을 "입력 x와 출력 y를 잇는 함수 f 찾기"로 읽었습니다.
+    그런데 기계가 f를 찾는 길은 하나가 아닙니다. 정답을 알려 주는 길, 정답 없이 스스로 묶는 길,
+    정답 대신 보상만 받는 길 — 오늘은 이 세 갈래를 <b>거리 · 평균 · 상대도수</b>라는
+    수학의 언어로 직접 돌려 봅니다.
+  </p>
+
+  <!-- ═════ 표제부 · 학습 목표 / 핵심 개념 / 핵심 질문 ═════ -->
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 지도학습·비지도학습·강화학습의 특성을 구분하여 설명할 수 있다. <b>[12인수01-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② k-means 시뮬레이션에서 두 점 사이의 거리와 평균을 이용해 군집의 중심이 이동하는 과정을 수학적으로 해석할 수 있다. <b>[12인수01-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 밴딧 게임의 보상 기록에서 상대도수(보상률)를 구하여 강화학습의 선택 전략을 설명할 수 있다. <b>[12인수01-01]</b>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념 <span style="font-weight:400;">— 칩을 누르면 자세한 설명이 열립니다</span></p>
+  <div class="chips ml-keys">
+    <span class="chip">지도학습 · 레이블</span>
+    <span class="chip">비지도학습 · 군집</span>
+    <span class="chip">강화학습 · 보상</span>
+    <span class="chip">두 점 사이 거리</span>
+    <span class="chip">평균(중심)</span>
+    <span class="chip">상대도수(보상률)</span>
+  </div>
+
+  <div class="card ml-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p>오늘 수업은 이 한 물음에 답하기 위한 여정입니다. STEP 3에서 다시 만나 답을 완성합니다.</p>
+    <ul>
+      <li>기계는 정답을 알려 주지 않아도 어떻게 '배울' 수 있는가?</li>
+    </ul>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="ml-step"><p class="mono">STEP 1 · 도입 — 생각 열기</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>디딤 영상 — 오늘 배울 세 갈래를 먼저 눈으로 보기</h3>
+    <p>아래 추천 영상 카드를 누르면 위쪽 화면에서 바로 재생됩니다. 마지막으로 고른 영상은 이 기기에 저장되어 다음 방문 때 복원됩니다.
+      선생님께서는 <b>[+ 영상 추가]</b>로 학급에 맞는 영상을 직접 등록하실 수 있습니다.</p>
+    <div id="ml-videos"></div>
+  </div>
+
+  <div class="card">
+    <h3>문제 상황 — 김치찌개를 '토마토 수프'라고 답한 AI, 무엇이 문제였을까</h3>
+    <p>음식 사진을 알려 주는 앱에 김치찌개 사진을 올렸더니 <b>'토마토 수프'</b>라는 답이 돌아왔습니다.
+      AI가 멍청해서일까요? 아닙니다. AI는 <b>자기가 배운 데이터 안에서 가장 그럴듯한 답</b>을 내놓았을 뿐입니다.
+      붉은 국물에 건더기가 떠 있는 사진을 '토마토 수프'라고만 배웠다면, 그 앱에게 김치찌개라는 답은 애초에 존재하지 않습니다.</p>
+    <p style="margin-top:0.5rem;">그렇다면 "배웠다"는 말은 정확히 무슨 뜻일까요?
+      누군가 <b>정답 이름표(레이블)</b>를 붙여 준 사진으로 배웠을 수도 있고,
+      정답 없이 <b>비슷한 것끼리 묶으며</b> 배웠을 수도 있고,
+      맞히면 상·틀리면 벌이라는 <b>보상</b>만 받으며 배웠을 수도 있습니다.
+      이 세 갈래가 오늘의 주제입니다.</p>
+  </div>
+
+  <div class="card">
+    <h3>개념 — 기계학습은 규칙을 '받는' 것이 아니라 '찾는' 것입니다</h3>
+    <p><b>기계학습(Machine Learning)</b>은 사람이 학습하듯 컴퓨터가 주어진 자료를 스스로 학습하여 문제를 해결하는 기술입니다.
+      기존 프로그램이 <b>사람이 제공한 규칙</b>에서 답을 구하는 것과 달리, 기계학습은 컴퓨터가 충분한 훈련을 거쳐
+      <b>스스로 찾아낸 규칙</b>을 새로운 자료에 적용해 판단하고 예측합니다.</p>
+    <p style="margin-top:0.5rem;">기계학습은 <b>학습시키는 방법에 따라</b> 지도학습, 비지도학습, 강화학습으로 나뉩니다.
+      세 갈래를 가르는 것은 알고리즘의 어려움이 아니라 <b>데이터가 기계에게 무엇을 알려 주는가</b>입니다 —
+      정답 y를 알려 주는가, 아무것도 알려 주지 않는가, 정답 대신 보상 r만 돌려주는가.</p>
+
+    <svg class="ml-svg" viewBox="0 0 720 330" role="img" aria-label="기계학습의 세 갈래 학습 방식 분기도">
+      <defs>
+        <marker id="mlArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#78726a"></path>
+        </marker>
+      </defs>
+      <rect x="12" y="127" width="116" height="76" rx="10" fill="#ebe5dc" stroke="#d8d0c4" stroke-width="1.5"></rect>
+      <text x="70" y="158" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1714">데이터</text>
+      <text x="70" y="181" text-anchor="middle" font-size="13" fill="#78726a">입력 x</text>
+
+      <path d="M128,165 C182,165 176,61 226,61" fill="none" stroke="#78726a" stroke-width="1.6" marker-end="url(#mlArr)"></path>
+      <path d="M128,165 L226,165" fill="none" stroke="#78726a" stroke-width="1.6" marker-end="url(#mlArr)"></path>
+      <path d="M128,165 C182,165 176,269 226,269" fill="none" stroke="#78726a" stroke-width="1.6" marker-end="url(#mlArr)"></path>
+      <text x="176" y="96" text-anchor="middle" font-size="12" fill="#78726a">정답 y가 있다</text>
+      <text x="176" y="152" text-anchor="middle" font-size="12" fill="#78726a">정답이 없다</text>
+      <text x="176" y="308" text-anchor="middle" font-size="12" fill="#78726a">보상 r만 온다</text>
+
+      <rect x="232" y="25" width="196" height="72" rx="10" fill="#f5f0ea" stroke="#4a6b8a" stroke-width="2"></rect>
+      <text x="330" y="55" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1714">지도학습</text>
+      <text x="330" y="78" text-anchor="middle" font-size="13" fill="#4a6b8a">(x, y) — 문제와 정답</text>
+
+      <rect x="232" y="129" width="196" height="72" rx="10" fill="#f5f0ea" stroke="#5a7a5a" stroke-width="2"></rect>
+      <text x="330" y="159" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1714">비지도학습</text>
+      <text x="330" y="182" text-anchor="middle" font-size="13" fill="#5a7a5a">(x) — 정답 라벨 없음</text>
+
+      <rect x="232" y="233" width="196" height="72" rx="10" fill="#f5f0ea" stroke="#b44133" stroke-width="2"></rect>
+      <text x="330" y="263" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1714">강화학습</text>
+      <text x="330" y="286" text-anchor="middle" font-size="13" fill="#b44133">행동 → 보상 r</text>
+
+      <path d="M428,61 L486,61" fill="none" stroke="#78726a" stroke-width="1.6" marker-end="url(#mlArr)"></path>
+      <path d="M428,165 L486,165" fill="none" stroke="#78726a" stroke-width="1.6" marker-end="url(#mlArr)"></path>
+      <path d="M428,269 L486,269" fill="none" stroke="#78726a" stroke-width="1.6" marker-end="url(#mlArr)"></path>
+
+      <rect x="492" y="25" width="216" height="72" rx="10" fill="#ebe5dc" stroke="#d8d0c4" stroke-width="1.5"></rect>
+      <text x="600" y="53" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1714">y를 잘 맞히는 f 찾기</text>
+      <text x="600" y="76" text-anchor="middle" font-size="12" fill="#78726a">분류 · 예측</text>
+
+      <rect x="492" y="129" width="216" height="72" rx="10" fill="#ebe5dc" stroke="#d8d0c4" stroke-width="1.5"></rect>
+      <text x="600" y="157" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1714">거리와 평균으로 묶기</text>
+      <text x="600" y="180" text-anchor="middle" font-size="12" fill="#78726a">군집화 · 연관성 분석</text>
+
+      <rect x="492" y="233" width="216" height="72" rx="10" fill="#ebe5dc" stroke="#d8d0c4" stroke-width="1.5"></rect>
+      <text x="600" y="261" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1714">누적 보상을 크게 하기</text>
+      <text x="600" y="284" text-anchor="middle" font-size="12" fill="#78726a">탐험 · 활용</text>
+    </svg>
+    <p class="ml-cap">▲ 세 갈래 학습 방식 — 무엇을 신호로 삼는가에 따라 길이 갈립니다. (개념도: 인라인 SVG)</p>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 13쪽의 기계학습 정의(규칙을 주는 프로그램과 규칙을 찾는 기계학습의 대비) 서술을 재구성하였습니다.
+    </p>
+  </div>
+
+  <div class="card ml-read">
+    <h3>더 알아보기 — 규칙을 주던 시대에서, 규칙을 찾는 시대로</h3>
+    <p>컴퓨터로 문제를 풀던 전통적인 방법은 이러했습니다. 사람이 규칙을 알고리즘으로 적어 주면, 컴퓨터는 그 규칙에 따라 답을 계산합니다.
+      예를 들어 "입력에 2를 곱하고 5를 더하라"는 규칙을 프로그램으로 주면, 컴퓨터는 입력 2에 대해 9를, 3에 대해 11을, 5에 대해 15를 출력합니다.
+      규칙을 만든 주체는 사람이고, 컴퓨터는 성실한 계산기 역할만 합니다.</p>
+    <p>기계학습은 이 순서를 뒤집습니다. 사람은 규칙 대신 <b>자료</b>를 줍니다. 입력 변수 집합 {2, 3, 5, …}와
+      출력 변수 집합 {5, 8, 14, …}만 보여 주면, 컴퓨터는 대응되는 원소 사이의 함수 관계를 스스로 찾아
+      <b>y = 3x − 1</b>이라는 규칙을 터득합니다. 규칙을 발견한 주체가 사람에서 기계로 옮겨 간 것입니다.</p>
+    <p>이 차이가 왜 중요할까요? 세상에는 규칙을 사람이 적어 줄 수 없는 문제가 훨씬 많기 때문입니다.
+      "고양이 사진을 알아보는 규칙"을 말로 적어 보십시오. 귀가 뾰족하다, 수염이 있다… 몇 줄 쓰다 보면
+      예외가 규칙보다 많아집니다. 그래서 우리는 규칙 대신 <b>고양이 사진 수천 장</b>을 주고,
+      규칙 찾기는 기계에게 맡깁니다. 오늘 배우는 세 갈래는 모두 "그 규칙을 어떤 신호를 보고 찾을 것인가"에 대한 서로 다른 대답입니다.</p>
+    <div class="ask"><b>생각해 보기</b> — 우리 학교 급식 만족도를 예측하는 규칙을 사람이 직접 적는다면 어떤 항목이 필요할까요?
+      그 항목만으로 충분하지 않다고 느껴진다면, 그것이 바로 기계학습이 필요한 순간입니다.</div>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 13쪽의 프로그램·기계학습 문제 해결 비교 예시(입력 변수 2, 3, 5 → 출력 변수 규칙 찾기)를 재구성하였습니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>사례 ① 지도학습 — 스팸 필터·손글씨 인식·의료 영상 판독은 무엇을 보고 배웠나</h3>
+    <p><b>지도학습(Supervised Learning)</b>은 입력값과 출력값을 함께 주고 학습시키는 방법으로, 처음부터 <b>문제와 정답을 모두</b> 알려 줍니다.
+      학습에 쓰는 자료를 <b>훈련 데이터</b>라고 하고, 훈련 데이터에 정답을 달아 주는 일을 <b>레이블링(Labeling)</b>이라고 합니다.
+      레이블링한 훈련 데이터를 충분히 넣어 주면, 새로운 입력이 들어왔을 때 알맞은 답을 내놓는 모형이 됩니다.</p>
+    <ul style="margin:0.6rem 0 0 1.2rem;">
+      <li><b>스팸 메일 분류</b> — 메일 한 통마다 '스팸'·'정상'이라는 정답 이름표를 붙인 자료로 학습합니다. 새 메일이 오면 두 부류 중 하나로 분류합니다.</li>
+      <li><b>손글씨 숫자 인식</b> — 손으로 쓴 숫자 이미지마다 0~9의 정답을 달아 학습시킵니다. 12차시에서 우리가 직접 다룰 방식입니다.</li>
+      <li><b>의료 영상 판독</b> — 엑스선·CT 영상에 '질병 있음/없음' 판정을 달아 학습시키면, 새 영상에 대한 판단을 돕는 모형이 됩니다(교과서의 '질병 유무 판단').</li>
+    </ul>
+    <p style="margin-top:0.6rem;">이 밖에 사진 속 인물 구분, 내일 날씨 예측, 음악 일부를 듣고 제목과 가수를 식별하는 일도 모두 지도학습입니다.
+      공통점은 하나 — <b>사람이 붙여 준 정답 y가 데이터에 함께 있다</b>는 점입니다.
+      '무엇인가'를 맞히면 <b>분류</b>, '얼마인가'를 맞히면 <b>예측</b>이라 부르지만, 둘 다 정답이 있는 지도학습입니다.</p>
+    <div class="ml-thumbs">
+      <div class="ml-thumb"><span class="em">📧</span><span class="cp">스팸 필터</span></div>
+      <div class="ml-thumb"><span class="em">✍️</span><span class="cp">손글씨 인식</span></div>
+      <div class="ml-thumb"><span class="em">🏥</span><span class="cp">의료 영상 판독</span></div>
+    </div>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 14쪽의 지도학습 정의·활용 사례 서술을 재구성하였습니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>사례 ② 비지도학습 — 고객 군집화와 뉴스 토픽 묶음은 정답 없이 무엇을 했나</h3>
+    <p><b>비지도학습(Unsupervised Learning)</b>은 기계가 <b>정답이 제공되지 않은 데이터</b>를 학습하여 스스로 새로운 정보를 찾아내는 방법입니다.
+      맞혀야 할 이름표가 아예 없으므로, 판단의 기준은 "정답과 같은가"가 아니라 <b>"서로 얼마나 가까운가"</b>가 됩니다.
+      그 '가깝다'를 재는 자가 바로 오늘 탭 ②에서 쓸 <b>두 점 사이의 거리</b>입니다.</p>
+    <ul style="margin:0.6rem 0 0 1.2rem;">
+      <li><b>고객 군집화</b> — 쇼핑몰이 구매 기록만 보고 소비 성향이 비슷한 회원끼리 묶어, 그룹별로 다른 상품을 추천하고 광고를 보냅니다.
+        대형 식료품점의 회원 그룹별 마케팅, 사회 관계망 서비스(SNS)의 회원 성향 분류도 같은 방식입니다.</li>
+      <li><b>뉴스 토픽 묶음</b> — 수천 건의 기사에 주제 이름표를 달아 주지 않아도, 쓰인 단어가 비슷한 기사끼리 모으면
+        '경제·스포츠·문화' 같은 묶음이 저절로 드러납니다. 6~8차시에서 배울 텍스트 표현이 그 준비 작업입니다.</li>
+    </ul>
+    <p style="margin-top:0.6rem;"><b>주의할 점</b> — 군집의 결과에는 정답이 없습니다. 그래서 사람마다 묶음이 달라질 수 있고,
+      "왜 그렇게 묶었는지 <b>기준을 설명할 수 있는가</b>"가 평가의 잣대가 됩니다. 군집화를 '정답 맞히기'로 오해하지 않도록 합시다.</p>
+    <div class="ml-thumbs">
+      <div class="ml-thumb"><span class="em">🛍️</span><span class="cp">고객 군집화</span></div>
+      <div class="ml-thumb"><span class="em">📰</span><span class="cp">뉴스 토픽 묶음</span></div>
+    </div>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 15쪽의 비지도학습 정의·활용 사례 서술을 재구성하였습니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>사례 ③ 강화학습 — 알파고·로봇 보행·게임 AI는 무엇을 신호로 삼았나</h3>
+    <p><b>강화학습(Reinforcement Learning)</b>은 현재 상태에서 어떤 행동을 하는 것이 최적인지를 찾아내는 학습 방법입니다.
+      각 행동에 따라 주어지는 <b>보상</b>을 통해 최적 행동이 점점 강화되도록 학습이 진행됩니다.
+      정답을 매 순간 알려 주는 사람은 없고, 오직 결과로 돌아오는 상과 벌만이 신호입니다.</p>
+    <ul style="margin:0.6rem 0 0 1.2rem;">
+      <li><b>알파고</b> — 2016년 이세돌 9단과의 대국에서 4승 1패를 거둔 바둑 프로그램입니다. 매 수마다 "이 수가 정답"이라고 알려 준 사람은 없었고,
+        대국의 승패라는 보상만으로 스스로 강해졌습니다. 1차시 타임라인에서 만난 그 사건입니다.</li>
+      <li><b>로봇 보행</b> — 넘어지지 않고 앞으로 나아가면 상, 넘어지면 벌. 관절의 각도를 사람이 일일이 지정하지 않아도
+        보상만으로 걸음걸이를 다듬어 갑니다(교과서의 '동작 모방 로봇 제어').</li>
+      <li><b>게임 AI</b> — 게임은 현재 캐릭터의 상태와 장애물의 위치를 보여 줍니다. 점수가 높아지면 상, 낮아지면 벌로 인식하며
+        더 많은 상을 받는 행동을 찾아 갑니다. 자율 주행 자동차 시뮬레이션, 전략 게임 인공지능도 같은 원리입니다.</li>
+    </ul>
+    <p style="margin-top:0.6rem;">강화학습의 목표는 한 번의 정답이 아니라 <b>장기적으로 누적 보상을 크게 하는 전략</b>을 찾는 것입니다.
+      탭 ③의 밴딧 게임에서 그 전략을 직접 세워 보겠습니다.</p>
+    <div class="ml-thumbs">
+      <div class="ml-thumb"><span class="em">⚫</span><span class="cp">알파고</span></div>
+      <div class="ml-thumb"><span class="em">🤖</span><span class="cp">로봇 보행</span></div>
+      <div class="ml-thumb"><span class="em">🎮</span><span class="cp">게임 AI</span></div>
+    </div>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 15쪽의 강화 학습 정의·게임 예시·활용 사례 서술을 재구성하였습니다.
+    </p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요. 답하면 다음 질문이 나타납니다.</p>
+    <div id="ml-warm"></div>
+  </div>
+
+  <div class="math">지도학습   : 데이터 (x, y) — 정답 y가 있다 → y를 잘 맞히는 함수 f 찾기
+  비지도학습 : 데이터 (x) — 정답이 없다 → 거리와 평균으로 구조(군집) 찾기
+  강화학습   : 행동 → 보상 r — 정답 대신 보상 → 누적 보상을 크게 하는 전략 찾기</div>
+
+  <div class="info"><strong>학습 목표는 어떤 활동으로 이어지나</strong> —
+    목표 ①은 전개 탭 ①에서 — 사례 카드 6장을 세 바구니에 직접 분류하며 세 방식의 판단 기준을 잡습니다.
+    목표 ②는 전개 탭 ②에서 — k-means 시뮬레이터의 [1 Step]마다 <b>거리</b>로 배정하고 <b>평균</b>으로 중심을 옮기는 과정을 수로 확인합니다.
+    목표 ③은 전개 탭 ③에서 — 밴딧 기록표의 <b>상대도수</b>(보상률)로 숨은 확률을 추정하고 탐험과 활용을 판단합니다.
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="ml-step"><p class="mono">STEP 2 · 전개 — 탐구 활동</p></div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="mlTab(0,this)">① 세 방식 분류</button>
+    <button class="tab" onclick="mlTab(1,this)">② 비지도 · k-means</button>
+    <button class="tab" onclick="mlTab(2,this)">③ 강화 · 밴딧 게임</button>
+  </div>
+
+  <!-- ── TAB 0 : 세 방식 분류 미니 활동 ─────────────────────── -->
+  <div class="tpanel on" id="ml0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      실제 사례 6가지를 지도·비지도·강화 세 바구니에 직접 넣어 보며, 세 방식을 가르는 <b>판단 기준</b>을 스스로 세웁니다.
+      진행 순서: <b>단계 1 관찰</b>(카드 분류) → <b>단계 2 정리</b>(판단 기준) → <b>단계 3 정의 확인</b>(교과서 정의). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" data-no-toggle="1" id="ml-act-sort">
+      <h3>단계 1 · 관찰 — 사례 카드 6장을 바구니에 넣기</h3>
+      <p>아래 <b>사례 카드</b>를 하나 누르면 내용이 펼쳐집니다. 이어서 알맞은 <b>바구니</b>를 누르면 그 자리에서 채점됩니다.
+        틀리면 카드가 되돌아오니 다시 생각해 보세요.</p>
+      <div class="status">배치 <span id="ml-sort-prog">0 / 6</span> &nbsp;·&nbsp; 시도 <span id="ml-sort-try">0</span>회</div>
+
+      <p class="mat-label" style="text-align:left;">사례 카드</p>
+      <div class="chips" id="ml-sort-pool"></div>
+      <div class="ml-case-txt" id="ml-sort-txt">카드를 먼저 고르세요.</div>
+
+      <div class="ml-bskts">
+        <div class="ml-bskt" id="ml-bk0" onclick="mlSortDrop(0)">
+          <p class="bt">지도학습</p>
+          <p class="bs">정답(레이블)이<br>함께 주어진다</p>
+          <div class="bb" id="ml-bkb0"></div>
+        </div>
+        <div class="ml-bskt" id="ml-bk1" onclick="mlSortDrop(1)">
+          <p class="bt">비지도학습</p>
+          <p class="bs">정답이 없다<br>구조·군집을 찾는다</p>
+          <div class="bb" id="ml-bkb1"></div>
+        </div>
+        <div class="ml-bskt" id="ml-bk2" onclick="mlSortDrop(2)">
+          <p class="bt">강화학습</p>
+          <p class="bs">정답 대신<br>보상(상·벌)을 받는다</p>
+          <div class="bb" id="ml-bkb2"></div>
+        </div>
+      </div>
+      <div class="status" id="ml-sort-st">카드를 고른 뒤 바구니를 누르세요.</div>
+      <div class="btn-row"><button class="btn" onclick="mlSortReset()">처음부터 다시</button></div>
+    </div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 무엇이 세 방식을 가르는가</h3>
+      <p>6장을 모두 넣은 뒤 열어 보세요. 판단은 결국 <b>세 개의 질문</b>으로 끝납니다.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>Q1. 데이터에 정답(y)이 붙어 있는가?</b> — 붙어 있으면 <b>지도학습</b>. '이건 김치찌개'처럼 사람이 레이블링한 훈련 데이터로 배웁니다.
+          분류(무엇인가)와 예측(얼마인가)이 모두 여기에 듭니다.</li>
+        <li><b>Q2. 정답이 없다면, 무엇을 기준으로 묶는가?</b> — <b>비지도학습</b>. 기준은 <b>거리</b>나 유사도입니다.
+          이름표를 맞히는 것이 아니라 "묶음이 타당한가"가 목표입니다.</li>
+        <li><b>Q3. 행동의 결과로 무엇이 돌아오는가?</b> — 보상이 돌아오면 <b>강화학습</b>. 매 순간의 정답 대신 상·벌만 주어지고,
+          기계는 누적 보상을 크게 하는 전략을 찾습니다.</li>
+        <li><b>자주 하는 오해 ①</b> — "군집도 결국 정답을 맞히는 것 아닌가요?" 아닙니다. 군집에는 정답 라벨 자체가 없습니다.
+          그래서 사람마다 묶음이 달라질 수 있고, <b>기준을 설명할 수 있으면</b> 타당한 군집입니다.</li>
+        <li><b>자주 하는 오해 ②</b> — "예측은 지도학습이 아니지 않나요?" 예측도 (x, y) 짝으로 배웁니다.
+          과거의 기온 x와 판매량 y가 함께 있으니 정답이 있는 학습, 즉 지도학습입니다.</li>
+        <li><b>자주 하는 오해 ③</b> — "강화학습에는 데이터가 없다?" 있습니다. 다만 그 데이터가 사람이 미리 모아 둔 (x, y)가 아니라,
+          기계가 <b>행동해 보며 스스로 만들어 내는</b> (상태, 행동, 보상) 기록이라는 점이 다릅니다.</li>
+      </ul>
+      <p style="margin-top:0.6rem;">활동지에는 6장의 카드마다 "내가 그렇게 판단한 근거 한 줄"을 적어 봅시다.
+        틀린 카드가 있었다면, 위 세 질문 가운데 어느 질문에서 흔들렸는지 표시해 두면 복습에 도움이 됩니다.</p>
+    </div>
+
+    <div class="card ml-def">
+      <h3>단계 3 · 정의 확인 — 기계학습은 무엇을 기준으로 세 갈래로 나뉘는가</h3>
+      <p><b>기계학습</b>은 알고리즘을 연구하고 구현하는 대표 기술로, 사람이 학습하듯 컴퓨터가 주어진 자료를 스스로 학습하여 문제를 해결하는 것을 뜻합니다.
+        그리고 기계학습은 <b>학습시키는 방법에 따라</b> 지도학습·비지도학습·강화학습으로 분류합니다.</p>
+      <ul style="margin:0.6rem 0 0 1.2rem;">
+        <li><b>지도학습(Supervised Learning)</b> — 입력값과 출력값을 주고 학습시키는 방법으로, 처음부터 문제와 정답을 모두 알려 줍니다.
+          학습에 주는 데이터를 <b>훈련 데이터</b>, 훈련 데이터에 답을 달아 주는 일을 <b>레이블링(Labeling)</b>이라고 합니다.
+          <span style="color:var(--muted);">예 · 여러 사진에서 개·고양이·토끼를 구분하게 할 때 어떤 사진이 무엇인지 미리 답지를 달아 알려 주는 방식.</span></li>
+        <li><b>비지도학습(Unsupervised Learning)</b> — 정답이 제공되지 않은 데이터를 학습하여 스스로 새로운 정보를 찾아내는 방법입니다.
+          <span style="color:var(--muted);">예 · 동물 사진에서 "꼬리가 길고 귀가 짧은 집단"과 "꼬리가 짧고 귀가 긴 집단"을 스스로 구분해 내는 방식.</span></li>
+        <li><b>강화학습(Reinforcement Learning)</b> — 현재 상태에서 어떤 행동을 하는 것이 최적인지를 찾아내는 방법으로,
+          각 행동에 주어지는 <b>보상</b>을 통해 최적 행동이 점점 강화됩니다.
+          <span style="color:var(--muted);">예 · 게임에서 점수가 오르면 상, 깎이면 벌로 인식하며 더 나은 행동을 찾아 가는 방식.</span>
+          (교과서에 따라 '강화 학습'으로 띄어 쓰기도 합니다.)</li>
+      </ul>
+      <div class="ml-scroll">
+        <table class="ml-tbl txt">
+          <tr><th>구분</th><th>학습 방식</th><th>활용 분야</th><th>대표 사례</th></tr>
+          <tr><td>지도학습</td><td>정답이 있는 데이터를 통한 학습</td><td>예측, 분류</td><td>스팸 메일 분류, 질병 유무 판단, 내일 날씨 예측</td></tr>
+          <tr><td>비지도학습</td><td>정답이 없는 데이터를 통한 학습</td><td>연관 규칙, 군집화</td><td>회원 그룹별 마케팅, SNS 회원 성향 분류</td></tr>
+          <tr><td>강화학습</td><td>시행에 따른 보상을 통한 학습</td><td>최적 행동 양식 습득</td><td>알파고, 자율 주행 시뮬레이션, 동작 모방 로봇 제어</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:0.7rem;"><b>스스로 확인하기</b> — 다음 세 가지는 각각 어느 방식일까요?
+        ㉠ 이메일에서 스팸 여부 분류하기 ㉡ 고객 구매 데이터에서 내역별로 연관성 식별하기 ㉢ 차량이 스스로 주차하도록 교육해 소모 시간과 시행착오 줄이기.
+        <span style="color:var(--muted);">(답 · ㉠ 지도학습, ㉡ 비지도학습, ㉢ 강화학습)</span></p>
+      <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+        씨마스 「인공지능 수학」 Ⅰ단원 14~15쪽의 지도·비지도·강화 학습 정의 및 15쪽 '확인하기 1' 문항을 재구성하였습니다.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 비지도학습 · k-means 스텝 시뮬레이터 ─────────────────────── -->
+  <div class="tpanel" id="ml1">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      정답 라벨이 하나도 없는 점들을 기계가 어떻게 묶는지, <b>거리</b>로 배정하고 <b>평균</b>으로 중심을 옮기는 두 동작을 눈으로 확인합니다.
+      진행 순서: <b>단계 1 관찰</b>(스텝 실행) → <b>단계 2 정리</b>(반복과 이상치) → <b>단계 3 정의 확인</b>(k-means). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" data-no-toggle="1" id="ml-act-km">
+      <h3>단계 1 · 관찰 — 중심(×)은 어떻게 움직이는가</h3>
+      <p>좌표평면을 <b>클릭</b>해 점을 찍거나 <b>[예시 데이터]</b>를 불러오세요.
+        군집 수 k를 고르고 <b>[1 Step]</b>을 누를 때마다
+        ① 각 점이 <b>가장 가까운 중심</b>의 색으로 물들고 ② 중심 ×가 <b>소속 점들의 평균</b> 위치로 이동합니다.</p>
+
+      <div class="chips" id="ml-km-ks">
+        <button class="chip" onclick="mlKmSetK(2,this)">k = 2</button>
+        <button class="chip on" onclick="mlKmSetK(3,this)">k = 3</button>
+        <button class="chip" onclick="mlKmSetK(4,this)">k = 4</button>
+      </div>
+
+      <canvas id="ml-km-cv" class="ml-cv" width="560" height="380"></canvas>
+      <div class="ml-legend" id="ml-km-lg"></div>
+
+      <div class="btn-row">
+        <button class="btn pri" onclick="mlKmStep()">1 Step</button>
+        <button class="btn" onclick="mlKmSample()">예시 데이터</button>
+        <button class="btn" onclick="mlKmOutlier()">이상치 추가</button>
+        <button class="btn" onclick="mlKmRestart()">중심 다시 뽑기</button>
+        <button class="btn" onclick="mlKmClear()">모두 지우기</button>
+      </div>
+      <div class="status" id="ml-km-st">좌표평면을 클릭해 점을 찍거나 [예시 데이터]를 눌러 보세요.</div>
+
+      <div class="ml-km-phase" id="ml-km-phase">아직 시작하지 않았습니다</div>
+      <div class="ml-km-ex" id="ml-km-ex"></div>
+
+      <div class="btn-row" style="margin-top:0.2rem;">
+        <button class="btn" id="ml-km-calcbtn" onclick="mlKmToggleCalc()">계산 과정 펼치기 ▸</button>
+      </div>
+      <div class="ml-calc" id="ml-km-calc"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1rem;">단계 로그 — [1 Step]을 누를 때마다 한 줄씩 기록이 쌓입니다</p>
+      <div class="ml-logbox" id="ml-km-logbox"><table class="ml-tbl" id="ml-km-log"></table></div>
+      <p class="status" style="margin-top:0.3rem;">수렴 판정 — <b>중심이 더 이상 움직이지 않으면 종료</b>합니다. 정답 없이도 데이터 스스로 구조를 찾아냈다는 뜻에서, 이것이 '스스로 묶는 학습'입니다.</p>
+    </div>
+
+    <div class="math">두 점 사이의 거리 d = √((x₁−x₂)² + (y₁−y₂)²)
+  군집의 중심(평균) (x̄, ȳ) = ( (x₁+x₂+…+xₙ)/n , (y₁+y₂+…+yₙ)/n )
+  배정: 각 점을 d가 가장 작은 중심에 배정  →  갱신: 중심을 소속 점들의 평균으로 이동  →  반복</div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 반복하면 무엇이 일어나는가</h3>
+      <p>여러 번 [1 Step]을 눌러 본 뒤 열어 보세요. 관찰해야 할 문장은 네 개입니다.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>한 번에 끝나지 않는다</b> — [1 Step]을 반복하면 점의 소속이 바뀌고 중심도 따라 이동합니다.
+          몇 번을 지나면 더 이상 바뀌지 않는 상태에 이르는데, 이때 군집화가 완료된 것입니다.</li>
+        <li><b>중심은 평균이다</b> — 그래서 중심의 좌표는 소속 점들의 x좌표 평균, y좌표 평균으로 정확히 계산됩니다.
+          [계산 과정 펼치기]에서 그 식을 확인해 보세요. '중심'이라는 말이 기하의 무게중심이 아니라 <b>산술평균</b>이라는 점이 핵심입니다.</li>
+        <li><b>이상치는 중심을 끌어당긴다</b> — 평균은 극단값에 약합니다. [이상치 추가]로 멀리 떨어진 점 하나를 넣으면,
+          그 점이 속한 군집의 중심이 이상치 쪽으로 끌려갑니다. 데이터 한 개가 결과를 바꾸는 장면입니다.</li>
+        <li><b>시작점이 결과를 바꾼다</b> — [중심 다시 뽑기]를 눌러 보세요. 처음 중심을 어디서 시작하느냐에 따라
+          최종 군집이 달라질 수 있습니다. 정답이 없는 학습이므로 "어떤 결과가 옳은가"가 아니라 "이 묶음이 타당한가"를 말해야 합니다.</li>
+      </ul>
+      <p style="margin-top:0.6rem;">활동지에는 <b>예시 데이터 9점을 손으로 3군집으로 나눈 결과</b>와 각 군집의 중심(평균)을 적고,
+        시뮬레이터 결과와 비교해 "내 기준"과 "기계의 기준"이 어떻게 달랐는지 한 줄로 써 봅시다.
+        예시 데이터는 (1, 1), (2, 1), (2, 2) / (5, 1), (6, 1), (6, 2) / (8, 8), (9, 8), (8, 9)의 9점입니다 —
+        손으로 계산한 중심은 각각 (1.67, 1.33), (5.67, 1.33), (8.33, 8.33)이 됩니다.</p>
+    </div>
+
+    <div class="card ml-def">
+      <h3>단계 3 · 정의 확인 — k-means(k-평균) 군집화는 어떤 절차인가</h3>
+      <p><b>비지도학습(Unsupervised Learning)</b>은 정답이 없는 데이터에서 기계가 스스로 새로운 정보(구조)를 찾아내는 학습 방식입니다.
+        사람이 미리 답을 달아 주지 않으므로, 기계는 오직 데이터 사이의 <b>거리</b>만으로 "무엇이 서로 비슷한가"를 판단합니다.
+        <b>군집화(clustering)</b>는 이 비지도학습의 대표 방법으로, 비슷한 것끼리 모아 정답 라벨 없이도 데이터의 숨은 구조를 드러냅니다.
+        그 가운데 <b>k-means(k-평균) 알고리즘</b>은 다음 네 단계로 진행합니다.</p>
+      <ul style="margin:0.6rem 0 0 1.2rem;">
+        <li><b>① 중심 정하기</b> — 군집의 개수 k를 정하고, 중심 k개를 임의로 설정합니다.</li>
+        <li><b>② 배정</b> — 각 데이터를 <b>가장 가까운 중심</b>의 군집으로 분류합니다. 여기서 '가깝다'의 기준이
+          두 점 사이의 거리 d = √((x₁−x₂)² + (y₁−y₂)²)입니다.</li>
+        <li><b>③ 갱신</b> — 각 군집에 속한 데이터의 <b>평균 위치</b>로 중심을 옮깁니다. 중심의 좌표가 곧 평균입니다.</li>
+        <li><b>④ 반복</b> — ②와 ③을 번갈아 반복하여 <b>더 이상 중심이 이동하지 않으면</b> 군집화가 완료된 것입니다.</li>
+      </ul>
+      <p style="margin-top:0.7rem;">이 절차를 수학의 눈으로 다시 읽으면, k-means는 <b>군집 안의 흩어짐(거리)을 줄이는 최적화 문제</b>를
+        반복으로 풀어 가는 방법입니다. 배정 단계는 거리를 줄이고, 갱신 단계는 평균으로 옮겨 다시 거리를 줄입니다.
+        그래서 두 단계를 번갈아 하면 흩어짐이 계속 작아지다가 어느 순간 멈춥니다.</p>
+      <p style="margin-top:0.5rem;"><b>k는 사람이 정한다</b> — 알고리즘은 k를 스스로 찾아 주지 않습니다.
+        k = 2, 3, 4를 바꿔 가며 결과를 비교하고, 어떤 k가 자료를 가장 잘 설명하는지 <b>사람이 판단</b>해야 합니다.
+        정답 라벨이 없으므로 결과의 옳고 그름이 아니라 <b>묶음의 타당성</b>을 설명하는 것이 핵심입니다.</p>
+      <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+        동아출판 「인공지능 수학」 01. 인공지능의 개념 16쪽의 K-평균 알고리즘 절차(중심 설정 → 거리 계산·분류 → 평균 위치로 중심 이동 → 반복)를 재구성하였습니다.
+      </p>
+    </div>
+
+    <div class="card ml-read">
+      <h3>더 알아보기 — 군집화 말고도 있다: 연관성 분석, 그리고 과일 60가지의 K-평균</h3>
+      <p>비지도학습의 사례는 크게 두 갈래입니다. 하나는 오늘 다룬 <b>군집화</b>이고,
+        다른 하나는 <b>연관성 분석(Association Rule Analysis)</b>입니다.
+        연관성 분석은 특정 사건이 일어났을 때 빈번하게 함께 일어나는 또 다른 사건을 찾아, 둘 사이의 연관된 특징을 밝혀냅니다.
+        예를 들어 온라인 서점에서 인공지능 서적을 구매한 사람이 컴퓨터 분야 관련 서적을 구매할 확률이 높다면,
+        두 분야의 책은 서로 연관성이 높다고 말합니다. 쇼핑몰의 "이 상품을 산 사람이 함께 본 상품" 목록이 바로 이 분석의 결과입니다.</p>
+      <p>한편 k-평균은 좌표평면 위의 점에만 쓰이는 방법이 아닙니다. 어떤 특성이든 수로 나타낼 수 있으면 그대로 적용됩니다.
+        한 교과서는 60가지 과일의 <b>단맛</b>과 <b>신맛</b>을 각각 1부터 10까지의 수로 나타낸 자료를 2개의 군집으로 나누는 활동을 제시합니다.
+        단맛을 x, 신맛을 y로 삼으면 과일 하나가 좌표평면 위의 점 하나가 되고, 오늘 우리가 돌린 절차가 똑같이 적용됩니다.
+        점이 몇 개든, 특성이 몇 가지든 <b>거리를 잴 수 있으면</b> 묶을 수 있습니다.</p>
+      <div class="ask"><b>생각해 보기</b> — ① 친구가 좋아하는 과일이 어느 군집에 속하는지 확인하고, 같은 군집의 다른 과일을 추천해 봅시다.
+        ② 추천이 잘 맞지 않았다면 그 이유는 무엇일까요? 단맛과 신맛 두 가지 특성만으로 취향을 설명하기에 부족했던 것은 아닐까요?</div>
+      <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+        동아출판 「인공지능 수학」 01. 인공지능의 개념 16~17쪽의 과일 60가지 단맛·신맛 K-평균 실습 활동을 재구성하였습니다.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── TAB 2 : 강화학습 · 밴딧 보상 게임 ─────────────────────── -->
+  <div class="tpanel" id="ml2">
+    <div class="ml-easy" data-no-toggle="1">
+      <p><b>쉽게 말하면</b> — 앞에 뽑기 기계 3대가 있습니다. 어떤 기계가 잘 나오는지 아무도 알려 주지 않아요.
+        직접 눌러 보고, 결과(보상)를 보고, 더 잘 나오는 기계를 찾아가는 것 — 이것이 강화학습입니다.</p>
+      <p>정답 이름표를 주는 지도학습도 아니고, 비슷한 것끼리 묶는 비지도학습도 아닙니다.
+        강화학습은 오직 <b>보상으로 배우는</b> 학습입니다.</p>
+      <svg class="ml-svg" id="ml-rl-svg-a" viewBox="0 0 640 260" role="img" aria-label="강화학습 개념도 — 나(에이전트)와 뽑기 기계(환경) 사이에서 행동과 보상이 순환한다">
+        <defs>
+          <marker id="mlRlArrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
+          </marker>
+        </defs>
+        <rect x="50" y="65" width="190" height="110" rx="14" fill="var(--card)" stroke="var(--accent)" stroke-width="2"></rect>
+        <text x="145" y="115" text-anchor="middle" font-size="19" font-weight="700" fill="var(--fg)">나</text>
+        <text x="145" y="140" text-anchor="middle" font-size="13" fill="var(--muted)">(에이전트)</text>
+        <rect x="400" y="65" width="190" height="110" rx="14" fill="var(--card)" stroke="var(--blue)" stroke-width="2"></rect>
+        <text x="495" y="115" text-anchor="middle" font-size="19" font-weight="700" fill="var(--fg)">뽑기 기계</text>
+        <text x="495" y="140" text-anchor="middle" font-size="13" fill="var(--muted)">(환경)</text>
+        <path d="M240,100 C300,84 340,84 400,100" fill="none" stroke="var(--muted)" stroke-width="1.8" marker-end="url(#mlRlArrA)"></path>
+        <text x="320" y="75" text-anchor="middle" font-size="13" fill="var(--fg)">행동</text>
+        <path d="M400,150 C340,168 300,168 240,150" fill="none" stroke="var(--muted)" stroke-width="1.8" marker-end="url(#mlRlArrA)"></path>
+        <text x="320" y="192" text-anchor="middle" font-size="13" fill="var(--fg)">보상</text>
+      </svg>
+      <p class="ml-cap">▲ 행동하고, 보상을 받고, 더 나은 행동을 배운다. (개념도: 인라인 SVG)</p>
+    </div>
+
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      정답을 한 번도 알려 주지 않는 게임에서, <b>보상 기록</b>만으로 어느 선택이 좋은지 추정합니다.
+      진행 순서: <b>단계 1 관찰</b>(10회 이상 선택) → <b>단계 2 정리</b>(탐험과 활용) → <b>단계 3 정의 확인</b>(강화학습). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" data-no-toggle="1" id="ml-act-bd">
+      <h3>단계 1 · 관찰 — 세 개의 버튼, 숨은 확률</h3>
+      <p>버튼 A · B · C에는 각각 <b>보상 1이 나올 숨은 확률 p</b>가 정해져 있습니다(당연히 알려 주지 않습니다).
+        하나를 누르면 보상 <b>1 또는 0</b>이 돌아오고 기록표가 자동으로 채워집니다.
+        <b>최소 10회</b>를 눌러 보고, 어느 버튼이 좋은지 판단해 보세요.</p>
+
+      <svg class="ml-svg ml-bd-svg" viewBox="0 0 640 230" role="img" aria-label="뽑기 기계 세 대 A, B, C가 나란히 놓여 있다">
+        <g>
+          <rect x="40" y="30" width="160" height="150" rx="16" fill="var(--card)" stroke="var(--border)" stroke-width="2"></rect>
+          <circle cx="200" cy="60" r="9" fill="var(--accent)"></circle>
+          <rect x="70" y="50" width="100" height="55" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"></rect>
+          <text x="120" y="90" text-anchor="middle" font-size="28" font-weight="700" fill="var(--fg)">A</text>
+          <circle cx="95" cy="130" r="6" fill="var(--fg)"></circle>
+          <circle cx="145" cy="130" r="6" fill="var(--fg)"></circle>
+          <path d="M95,150 Q120,162 145,150" fill="none" stroke="var(--fg)" stroke-width="3" stroke-linecap="round"></path>
+          <rect x="60" y="180" width="140" height="12" rx="4" fill="var(--border)"></rect>
+          <text x="120" y="215" text-anchor="middle" font-size="14" fill="var(--muted)">기계 A</text>
+        </g>
+        <g>
+          <rect x="240" y="30" width="160" height="150" rx="16" fill="var(--card)" stroke="var(--border)" stroke-width="2"></rect>
+          <circle cx="400" cy="60" r="9" fill="var(--accent)"></circle>
+          <rect x="270" y="50" width="100" height="55" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"></rect>
+          <text x="320" y="90" text-anchor="middle" font-size="28" font-weight="700" fill="var(--fg)">B</text>
+          <circle cx="295" cy="128" r="6" fill="var(--fg)"></circle>
+          <circle cx="345" cy="128" r="6" fill="var(--fg)"></circle>
+          <path d="M292,148 Q320,168 348,148" fill="none" stroke="var(--fg)" stroke-width="3" stroke-linecap="round"></path>
+          <rect x="260" y="180" width="140" height="12" rx="4" fill="var(--border)"></rect>
+          <text x="320" y="215" text-anchor="middle" font-size="14" fill="var(--muted)">기계 B</text>
+        </g>
+        <g>
+          <rect x="440" y="30" width="160" height="150" rx="16" fill="var(--card)" stroke="var(--border)" stroke-width="2"></rect>
+          <circle cx="600" cy="60" r="9" fill="var(--accent)"></circle>
+          <rect x="470" y="50" width="100" height="55" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"></rect>
+          <text x="520" y="90" text-anchor="middle" font-size="28" font-weight="700" fill="var(--fg)">C</text>
+          <circle cx="495" cy="130" r="6" fill="var(--fg)"></circle>
+          <path d="M540,124 L552,132 M552,124 L540,132" stroke="var(--fg)" stroke-width="3" stroke-linecap="round"></path>
+          <path d="M495,150 Q520,160 545,150" fill="none" stroke="var(--fg)" stroke-width="3" stroke-linecap="round"></path>
+          <rect x="460" y="180" width="140" height="12" rx="4" fill="var(--border)"></rect>
+          <text x="520" y="215" text-anchor="middle" font-size="14" fill="var(--muted)">기계 C</text>
+        </g>
+      </svg>
+      <p class="ml-cap">▲ 뽑기 기계 A · B · C — 어떤 기계가 잘 나오는지는 아무도 알려 주지 않습니다. (삽화: 인라인 SVG)</p>
+
+      <div class="ml-slots">
+        <button class="ml-slot" id="ml-bd-s0" onclick="mlBdPull(0)"><span class="nm">A</span><span class="sub">시도 0 · 보상 0</span></button>
+        <button class="ml-slot" id="ml-bd-s1" onclick="mlBdPull(1)"><span class="nm">B</span><span class="sub">시도 0 · 보상 0</span></button>
+        <button class="ml-slot" id="ml-bd-s2" onclick="mlBdPull(2)"><span class="nm">C</span><span class="sub">시도 0 · 보상 0</span></button>
+      </div>
+
+      <p class="mat-label" style="text-align:left;margin-top:0.7rem;">지금 어느 단계인가 — 누를 때마다 이 자리가 순서대로 밝아집니다</p>
+      <div class="ml-cycle" id="ml-bd-cycle">
+        <span class="cy-step on" data-k="1">① 행동 선택</span><span class="cy-arr">→</span>
+        <span class="cy-step" data-k="2">② 보상 관찰</span><span class="cy-arr">→</span>
+        <span class="cy-step" data-k="3">③ 보상률 갱신</span><span class="cy-arr">→</span>
+        <span class="cy-step" data-k="4">④ 다음 선택에 반영</span>
+      </div>
+      <span class="ml-badge" id="ml-bd-badge">버튼을 누르면 이 자리에 탐험/활용 상태가 표시됩니다.</span>
+
+      <div class="status" id="ml-bd-st">버튼을 눌러 첫 회차를 시작하세요. (누적 보상 0)</div>
+
+      <p class="mat-label" style="text-align:left;margin-top:0.8rem;">선택지별 경험적 보상률 = 상대도수</p>
+      <div id="ml-bd-bars"></div>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;margin-top:0.9rem;">
+        <div style="flex:1 1 15rem;min-width:0;">
+          <p class="mat-label" style="text-align:left;">기록표</p>
+          <div class="ml-logbox" id="ml-bd-logbox">
+            <table class="ml-tbl" id="ml-bd-log"></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn pri" id="ml-bd-reveal" onclick="mlBdReveal()" disabled>확률 공개 (10회 이후)</button>
+        <button class="btn" onclick="mlBdReset()">기록 지우고 다시</button>
+      </div>
+      <div class="info" id="ml-bd-box" data-no-toggle="1" style="display:none;margin:0.8rem 0;"></div>
+    </div>
+
+    <div class="math">경험적 보상률(상대도수) = (보상이 1인 횟수) ÷ (그 선택지를 고른 횟수)
+  시도 횟수가 늘어날수록 이 상대도수는 숨은 확률 p에 가까워진다
+  누적 보상 = 지금까지 받은 보상의 합</div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 탐험과 활용, 왜 둘 다 필요한가</h3>
+      <p>10회 이상 눌러 [확률 공개]까지 마친 뒤 열어 보세요.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>탐험(explore)</b> — 여러 선택지를 골고루 시도해야 각 선택지의 보상 확률을 <b>상대도수로 추정</b>할 수 있습니다.
+          한 번도 눌러 보지 않은 버튼의 보상률은 알 길이 없습니다.</li>
+        <li><b>활용(exploit)</b> — 지금까지 보상률이 높아 보이는 선택을 <b>반복</b>해야 누적 보상이 커집니다.</li>
+        <li><b>10회로는 확신하기 어렵다</b> — 시도 횟수가 적으면 상대도수가 크게 흔들립니다.
+          보상률 1/2 = 0.5와 6/10 = 0.6 중 어느 쪽이 더 믿을 만한 추정일지 생각해 보세요.
+          시도가 늘어야 상대도수가 숨은 확률에 가까워집니다.</li>
+        <li><b>너무 빨리 한 곳만 고르면</b> 더 좋은 선택지를 영영 놓칠 수 있습니다.
+          초반에는 탐험, 어느 정도 판단이 서면 활용 — 이 균형이 강화학습의 전략(정책)입니다.</li>
+      </ul>
+      <p style="margin-top:0.6rem;">활동지 기록표의 <b>메모</b> 칸에는 "왜 그 버튼을 골랐는지"(탐험인지 활용인지)를 적고,
+        <b>전략이 바뀐 회차</b>가 몇 번째였는지 표시해 봅시다. 목표는 '최선'을 찾아내는 것보다
+        <b>전략이 바뀌는 순간</b>을 스스로 관찰하는 데 있습니다.</p>
+      <div class="ml-scroll">
+        <table class="ml-tbl txt">
+          <tr><th>회차</th><th>선택</th><th>보상</th><th>누적</th><th>메모(왜 그렇게 선택했나?)</th></tr>
+          <tr><td>1</td><td>A</td><td>0</td><td>0</td><td>탐험 — A를 먼저 시도</td></tr>
+          <tr><td>2</td><td>B</td><td>1</td><td>1</td><td>탐험 — B를 시도(보상 1)</td></tr>
+          <tr><td>3</td><td>C</td><td>0</td><td>1</td><td>탐험 — C를 시도</td></tr>
+          <tr><td>4</td><td>B</td><td>1</td><td>2</td><td>현재까지 B의 보상률이 높음 → 활용 시작</td></tr>
+          <tr><td>8</td><td>B</td><td>0</td><td>4</td><td>확률적 보상이라 가끔 0도 나옴</td></tr>
+        </table>
+      </div>
+      <p class="ml-cap" style="margin-top:0.4rem;">▲ 예시 기록표 — 초반에는 탐험, 중반부터 보상률이 높아 보이는 선택을 활용하는 흐름을 읽어 봅시다.</p>
+    </div>
+
+    <div class="card ml-def">
+      <h3>단계 3 · 정의 확인 — 강화학습은 보상으로 무엇을 배우는가</h3>
+      <svg class="ml-svg" viewBox="0 0 640 260" role="img" aria-label="강화학습 개념도 — 나(에이전트)와 뽑기 기계(환경) 사이에서 행동과 보상이 순환한다" style="max-width:30rem;">
+        <defs>
+          <marker id="mlRlArrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
+          </marker>
+        </defs>
+        <rect x="50" y="65" width="190" height="110" rx="14" fill="var(--card)" stroke="var(--accent)" stroke-width="2"></rect>
+        <text x="145" y="115" text-anchor="middle" font-size="19" font-weight="700" fill="var(--fg)">나</text>
+        <text x="145" y="140" text-anchor="middle" font-size="13" fill="var(--muted)">(에이전트)</text>
+        <rect x="400" y="65" width="190" height="110" rx="14" fill="var(--card)" stroke="var(--blue)" stroke-width="2"></rect>
+        <text x="495" y="115" text-anchor="middle" font-size="19" font-weight="700" fill="var(--fg)">뽑기 기계</text>
+        <text x="495" y="140" text-anchor="middle" font-size="13" fill="var(--muted)">(환경)</text>
+        <path d="M240,100 C300,84 340,84 400,100" fill="none" stroke="var(--muted)" stroke-width="1.8" marker-end="url(#mlRlArrB)"></path>
+        <text x="320" y="75" text-anchor="middle" font-size="13" fill="var(--fg)">행동</text>
+        <path d="M400,150 C340,168 300,168 240,150" fill="none" stroke="var(--muted)" stroke-width="1.8" marker-end="url(#mlRlArrB)"></path>
+        <text x="320" y="192" text-anchor="middle" font-size="13" fill="var(--fg)">보상</text>
+      </svg>
+      <p class="ml-cap">▲ 행동하고, 보상을 받고, 더 나은 행동을 배운다. (개념도: 인라인 SVG · 위 도입 문단과 같은 그림을 재사용)</p>
+      <p><b>강화학습(Reinforcement Learning)</b>은 현재 상태에서 어떤 행동을 하는 것이 최적인지를 찾아내는 학습 방법입니다.
+        각 행동에 따라 주어지는 <b>보상</b>을 통해 최적 행동이 점점 강화되도록 학습이 진행됩니다.
+        정답 y를 알려 주는 사람은 없고, 기계는 <b>상태 → 행동 → 보상</b>의 기록을 스스로 쌓아 가며 배웁니다.</p>
+      <p style="margin-top:0.5rem;">교과서는 컴퓨터 게임의 예를 듭니다. 게임은 게이머에게 현재 캐릭터의 상태나 장애물의 위치를 보여 줍니다.
+        게이머는 점수가 높아지는 것을 <b>상</b>으로, 낮아지는 것을 <b>벌</b>로 인식합니다.
+        이후 게임을 관찰하면서 어떻게 행동해야 더 많은 상과 더 적은 벌을 받을 수 있는지 깨닫고, 그렇게 판단력이 강화되며 행동이 바뀝니다.</p>
+      <p style="margin-top:0.5rem;">오늘 밴딧 게임을 수학으로 다시 읽어 봅시다. 각 선택지에는 보상 1이 나올 <b>숨은 확률 p</b>가 있습니다.
+        우리는 그 p를 볼 수 없으므로, 여러 번 시도해 얻은 <b>경험적 보상률(상대도수)</b>로 p를 추정했습니다.
+        시도 횟수가 늘어날수록 상대도수는 숨은 확률에 가까워지고, 추정은 더 믿을 만해집니다.
+        목표는 한 번의 정답이 아니라 <b>장기적으로 누적 보상을 최대화하는 전략(정책)</b>을 찾는 것이며,
+        그 과정에서 <b>탐험과 활용</b>의 균형이 성패를 가릅니다.</p>
+      <p style="margin-top:0.5rem;"><b>상대도수는 시행을 반복할수록 정확해집니다</b> — 오늘은 30회 안에서 상대도수로 확률을 어림잡았지만,
+        시행 횟수를 한없이 늘리면 상대도수는 참값(확률)에 점점 더 가까이 다가갑니다.
+        이 성질은 20차시 '데이터에서 확률 읽기'에서 배울 <b>통계적 확률</b>의 밑그림이 됩니다.</p>
+      <p style="margin-top:0.5rem;"><b>강화학습의 활용 사례</b> — 자율 주행 자동차 시뮬레이션, 동작 모방 로봇 제어,
+        알파고(인공지능 바둑 프로그램), 전략 게임 인공지능 등이 대표적입니다.
+        1차시 타임라인의 <b>2016년 알파고</b>가 바로 이 방식으로 스스로 강해진 사례입니다.</p>
+      <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+        씨마스 「인공지능 수학」 Ⅰ단원 15쪽의 강화 학습 정의·게임 예시·활용 사례 서술을 재구성하였습니다.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="ml-step"><p class="mono">STEP 3 · 정리 — 배움 다지기</p></div>
+
+  <div class="card ml-ask" data-no-toggle="1">
+    <h3>정리 — 핵심 질문에 답하기: 정답이 없어도 기계는 어떻게 배우는가</h3>
+    <ul style="list-style:none;margin:0.6rem 0 1rem;padding:0;">
+      <li style="font-size:1.08rem;font-weight:700;margin-bottom:0.45rem;">🏷️ 정답이 있으면 — 지도학습</li>
+      <li style="font-size:1.08rem;font-weight:700;margin-bottom:0.45rem;">📏 정답 없이 거리로 묶으면 — 비지도학습</li>
+      <li style="font-size:1.08rem;font-weight:700;">🎯 보상으로 배우면 — 강화학습</li>
+    </ul>
+    <p><b>Q. 기계는 정답을 알려 주지 않아도 어떻게 '배울' 수 있는가?</b><br>
+      정답이 없으면 <b>거리</b>로 가까운 것끼리 묶어 <b>평균</b>으로 중심을 갱신하고(비지도학습),
+      정답 대신 보상만 있으면 <b>상대도수(보상률)</b>로 숨은 확률을 추정해 전략을 찾습니다(강화학습).</p>
+    <p style="margin-top:0.6rem;">오늘의 한 줄 — <b>정답이 없어도, 거리와 보상이 있으면 기계는 배운다.</b></p>
+  </div>
+
+  <div class="card ml-read">
+    <h3>더 보기 — 답을 자세히 풀어 쓰면</h3>
+    <p>수업을 열며 던진 질문으로 돌아옵니다. 이제 우리는 답할 수 있습니다.</p>
+    <p style="margin-top:0.6rem;"><b>정답이 있을 때(지도학습)</b>는 (x, y) 데이터에서 y를 잘 맞히는 함수 f를 찾습니다.
+      <b>정답이 없을 때(비지도학습)</b>는 <b>거리</b>를 기준으로 가까운 것끼리 묶고, 묶음의 중심을 <b>평균</b>으로 갱신하며 구조를 찾습니다 — k-means에서 직접 본 두 동작입니다.
+      <b>정답 대신 보상만 있을 때(강화학습)</b>는 기록에서 <b>상대도수(보상률)</b>를 구해 숨은 확률을 추정하고, 누적 보상을 크게 하는 전략을 찾습니다.</p>
+    <p style="margin-top:0.6rem;">세 방식 모두 "데이터에서 규칙을 찾는다"는 점은 같지만, <b>무엇을 신호로 삼는가</b>가 다릅니다 —
+      정답 y인가, 거리인가, 보상 r인가. 그리고 이 신호들은 모두 우리가 아는 수학 언어(거리·평균·상대도수)로 쓰여 있습니다.</p>
+    <p style="margin-top:0.6rem;">활동지에 "김치찌개를 토마토 수프로 답한 AI"가 어떤 학습 방식이었고 무엇이 부족했는지 한 줄로 써 보세요.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.9rem;">한 문항씩 풀어 봅니다. 답을 고르면 정답과 해설이 바로 나타나고, [다음 문항]으로 넘어갑니다.
+      마지막에는 총점과 문항별 복기가 제공됩니다.</p>
+    <div id="ml-quiz"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" onclick="go('logic')">
+      <h3>다음 차시 · 3차시 규칙으로 생각하는 AI</h3>
+      <p>오늘은 데이터에서 배우는 기계를 만났습니다. 다음 시간에는 반대편 — 사람이 규칙을 모두 써 주는 기계(진리표·전문가 시스템·순서도)로 갑니다.</p>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고</strong> —
+    3차시에서는 명제와 진리표(∼, ∧, ∨, ⊕)로 작동하는 <b>규칙 기반 AI</b>를 해부합니다.
+    게이트 회로에 신호를 흘려 전구를 켜 보고, 규칙 카드로 추론하는 전문가 시스템을 만들어 봅니다.
+    "규칙만으로 생각하는 기계는 어디까지 똑똑해질 수 있는가?" — 그리고 4차시에서 만날 <b>XOR의 벽</b>의 밑그림을 그립니다.
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 싶다면</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. 선생님께서는 아래 입력란으로 학급에 맞는 자료를 추가하실 수 있습니다(이 기기에만 저장됩니다).</p>
+    <div class="ml-refs" id="ml-refs"></div>
+    <div class="btn-row" style="margin-top:0.9rem;align-items:center;">
+      <input class="ml-ref-in" id="ml-ref-url" type="url" placeholder="https://..." aria-label="참고 자료 URL">
+      <input class="ml-ref-in" id="ml-ref-title" type="text" placeholder="자료 제목(선택)" aria-label="참고 자료 제목">
+      <button class="btn" onclick="mlRefAdd()">+ 자료 추가</button>
+    </div>
+    <div class="status" id="ml-ref-st"></div>
+  </div>
+
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>학습 방식 분류 리포트</h3>
+    <p class="sub">뉴스 기사, 유튜브 영상, 평소에 쓰는 앱 가운데 인공지능이 활용된 사례를 3가지 찾아보세요.
+      그리고 오늘 배운 지도학습·비지도학습·강화학습 가운데 각 사례가 어느 방식에 해당하는지 분류하고,
+      "왜 그렇게 판단했는지"를 근거와 함께 짧은 보고서로 정리해 봅시다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① AI 사례 3가지를 검색해 출처(기사명·앱 이름·링크)를 기록합니다.
+        ② 각 사례를 지도·비지도·강화학습 중 하나로 분류합니다.
+        ③ 판단 근거를 "정답(레이블)이 있는가", "정답 없이 무엇을 기준으로 묶는가", "행동의 결과로 보상이 돌아오는가" 세 질문에 맞추어 한두 문장으로 씁니다.</dd>
+      <dt>제출물</dt>
+      <dd>사례별 출처 캡처(또는 링크) 1장, 분류 결과와 근거를 정리한 표 1개, 셋 중 가장 흥미로웠던 사례를 고른 이유를 담은 한 문단(5문장 이상).</dd>
+      <dt>평가 관점</dt>
+      <dd>지도학습·비지도학습·강화학습의 특성을 구분하여 설명하는가 <b>[12인수01-01]</b> — 분류의 정확성보다 <b>근거 서술의 타당성</b>을 중심으로 평가합니다.</dd>
+    </dl>
+  </div>
+
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>2차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>오늘 화면에서 진행한 활동을 손으로 옮겨 적으며 정리하는 학습지입니다. [학습지 인쇄]를 누르면 이 지면만 A4로 인쇄됩니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('ml-sheet')">🖨 학습지 인쇄 <span class="sz">A4 1~2장</span></button>
+    </div>
+    <div id="ml-wslinks"></div>
+  </div>
+
+  <div class="ws-sheet" id="ml-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>2차시 학습지 — AI의 학습 방식</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>① 마중 퀴즈 기록</h3>
+    <table>
+      <tr><th style="width:12%;">질문</th><th style="width:44%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>질문 1</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>질문 2</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>질문 3</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 ① k-means 관찰·정리</h3>
+    <p class="note">화면의 [1 Step]을 누를 때마다 중심(×)의 좌표가 어떻게 바뀌는지 적어 보세요.</p>
+    <table>
+      <tr><th>반복 횟수</th><th>중심 1 (x, y)</th><th>중심 2 (x, y)</th><th>중심 3 (x, y)</th></tr>
+      <tr><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>수렴했다고 판단한 근거(중심이 더 이상 움직이지 않은 반복 횟수와 그 이유)</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 활동 ② 밴딧 기록</h3>
+    <table>
+      <tr><th>슬롯</th><th>시도 횟수</th><th>보상 횟수</th><th>보상률(상대도수)</th></tr>
+      <tr><td>A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>내 전략 서술 — 언제까지 탐험했고, 언제부터 활용으로 바꾸었는지, 그 이유는 무엇인지 써 보세요.</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 형성평가</h3>
+    <p><b>1.</b> 지도학습·비지도학습·강화학습을 구분하는 기준으로 가장 알맞은 것은 무엇입니까?</p>
+    <p>① 사용하는 컴퓨터의 성능　② 정답(레이블)이 있는가, 없다면 무엇을 신호로 삼는가　③ 데이터가 사진인가 숫자인가</p>
+    <p class="note">답 ( 　 )</p>
+
+    <p><b>2.</b> k-means에서 각 점이 어느 군집에 속할지 정하는 기준은 무엇입니까?</p>
+    <p>① 점에 미리 붙어 있는 정답 라벨　② 각 중심까지의 거리 — 가장 가까운 중심　③ 점을 찍은 순서</p>
+    <p class="note">답 ( 　 )</p>
+
+    <p><b>3.</b> k-means에서 중심(×)의 새 위치는 무엇으로 정해집니까?</p>
+    <p>① 소속 점들의 좌표의 평균　② 소속 점들 중 가장 큰 좌표　③ 좌표평면의 한가운데 (5, 5)</p>
+    <p class="note">답 ( 　 )</p>
+
+    <p><b>4.</b> 밴딧 게임에서 B를 8번 눌러 보상 1이 5번 나왔습니다. B의 경험적 보상률은 얼마입니까?</p>
+    <p>① 5 (보상의 합)　② 5/8 = 0.625 (상대도수)　③ 8/5 = 1.6</p>
+    <p class="note">답 ( 　 )</p>
+
+    <p><b>5.</b> 10회만 해 보고 "B가 최선"이라고 확신하기 어려운 이유로 가장 알맞은 것은 무엇입니까?</p>
+    <p>① 보상이 1과 0뿐이라 계산이 불가능해서　② 시도가 적어 상대도수가 흔들리고, 탐험을 멈추면 더 좋은 선택을 놓칠 수 있어서　③ 숨은 확률이 매 회차마다 바뀌어서</p>
+    <p class="note">답 ( 　 )</p>
+
+    <p><b>6.</b> 다음 중 강화학습에 해당하는 것은 무엇입니까?</p>
+    <p>① 이메일에서 스팸 여부 분류하기　② 고객 구매 데이터에서 내역별로 연관성 식별하기　③ 차량이 스스로 주차하도록 교육해 소모 시간과 시행착오 줄이기</p>
+    <p class="note">답 ( 　 )</p>
+
+    <h3>⑤ 핵심 질문</h3>
+    <p><b>기계는 정답을 알려 주지 않아도 어떻게 배울 수 있는가?</b></p>
+    <div class="rule lg"></div>
+  </div>
+</div>

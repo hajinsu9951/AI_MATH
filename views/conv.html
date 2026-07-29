@@ -1,5 +1,10 @@
 <!-- ═══════════ CONV ═══════════ -->
 <div class="view" id="v-conv">
+<style>
+  /* 좁은 화면에서 2열 그리드 항목이 최소 콘텐츠 폭 때문에 화면 밖으로 밀리는 문제 방지 */
+  #v-conv .card div{min-width:0;}
+  #v-conv canvas{max-width:100%;}
+</style>
   <p class="mono" style="margin-bottom:0.4rem;">합성곱 연산</p>
   <h2>CNN의 핵심 — 아다마르 곱</h2>
   <p class="desc">

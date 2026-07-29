@@ -1,0 +1,1027 @@
+<!-- ═══════════ LOGIC (3차시: 규칙으로 생각하는 AI) ═══════════ -->
+<div class="view" id="v-logic">
+  <style>
+  /* logic 뷰 전용 스타일 (#v-logic 스코프 한정 — 전역 누수 금지) */
+  #v-logic .lg-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-logic .lg-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-logic .lg-step .mono{font-size:0.78rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-logic .lg-hd{position:relative;overflow:hidden;padding-right:0.5rem;}
+  #v-logic .lg-wm{position:absolute;right:-0.5rem;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.1;pointer-events:none;}
+  #v-logic .lg-hd .desc{position:relative;}
+  @media (max-width:700px){#v-logic .lg-wm{display:none;}}
+
+  #v-logic .lg-ask{border-left:4px solid var(--accent);}
+  #v-logic .lg-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-logic .lg-ask li{position:relative;padding-left:1.5rem;margin-bottom:0.55rem;font-weight:500;color:var(--fg);}
+  #v-logic .lg-ask li::before{content:'?';position:absolute;left:0;top:0;font-family:var(--mono);font-weight:700;color:var(--accent);}
+  #v-logic .lg-ask li:last-child{margin-bottom:0;}
+
+  /* 조작 요소 확대 — 활동 칩·버튼·소제목 라벨 (핵심 개념 칩 .lg-keys는 chipDefs가 별도로 확대) */
+  #v-logic .chips:not(.lg-keys) .chip{font-size:0.95rem;letter-spacing:0.01em;padding:0.5rem 1.05rem;min-height:2.6rem;display:inline-flex;align-items:center;}
+  #v-logic .btn{font-size:0.95rem;letter-spacing:0.01em;text-transform:none;padding:0.55rem 1.05rem;min-height:2.6rem;}
+  #v-logic .mat-label{font-size:0.86rem;letter-spacing:0.06em;text-transform:none;color:var(--fg);font-weight:600;margin-bottom:0.45rem;}
+  #v-logic .tab{font-size:0.85rem;padding:0.6rem 1.05rem;}
+
+  /* 피드백 강조 — .status의 흐린 회색 대신 굵은 하이라이트 박스 */
+  #v-logic #lg-tt-st,#v-logic #lg-tt-out,#v-logic #lg-fc-st{
+    font-family:var(--sans);font-size:1.05rem;font-weight:700;color:var(--fg);
+    background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:var(--radius);padding:0.65rem 0.9rem;line-height:1.7;min-height:0;margin:0.7rem 0;}
+  #v-logic #lg-tt-name{font-size:0.95rem;color:var(--body);font-family:var(--sans);}
+
+  /* 공통 표 · 입력 */
+  #v-logic .lg-tbl{border-collapse:collapse;font-family:var(--mono);font-size:0.82rem;margin:0.6rem 0;min-width:15rem;}
+  #v-logic .lg-tbl th,#v-logic .lg-tbl td{border:1px solid var(--border);padding:0.35rem 0.65rem;text-align:center;background:var(--bg);}
+  #v-logic .lg-tbl th{background:var(--card);color:var(--fg);font-weight:600;}
+  #v-logic .lg-tbl tr.cur td{background:var(--accent);}
+  #v-logic .lg-scroll{overflow-x:auto;max-width:100%;}
+  #v-logic select.lg-sel{height:2.4rem;border:1px solid var(--border);border-radius:0.4rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);padding:0 0.3rem;}
+  #v-logic .lg-num{width:5rem;height:2.4rem;border:1px solid var(--border);border-radius:0.4rem;text-align:center;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-logic .lg-mini{font-family:var(--mono);font-size:0.78rem;letter-spacing:0.02em;padding:0.35rem 0.6rem;border:1px solid var(--border);border-radius:9999px;background:var(--card);color:var(--fg);cursor:pointer;min-height:2.1rem;}
+  #v-logic .lg-mini:hover{color:var(--fg);border-color:var(--muted);}
+  #v-logic .lg-dim{color:var(--muted);font-size:0.9rem;}
+
+  /* 게이트 회로도 SVG */
+  #v-logic .lg-cirbox{overflow-x:auto;max-width:100%;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0.4rem;margin:0.8rem 0;}
+  #v-logic .lg-svg{display:block;width:100%;min-width:19rem;max-width:29rem;height:auto;margin:0 auto;}
+  #v-logic .lg-gate{fill:var(--card);stroke:var(--fg);stroke-width:2;}
+  #v-logic .lg-gate2{fill:none;stroke:var(--fg);stroke-width:2;}
+  #v-logic .lg-t{font-family:var(--mono);font-size:13px;fill:var(--fg);}
+  #v-logic .lg-t.sm{font-size:11px;fill:var(--muted);}
+  #v-logic .lg-lock{border:2px dashed var(--border);border-radius:var(--radius);padding:1.6rem 1rem;text-align:center;color:var(--muted);font-size:0.95rem;line-height:1.7;background:var(--bg);}
+
+  /* 개념 일러스트 (인라인 SVG) */
+  #v-logic .lg-illbox{overflow-x:auto;max-width:100%;margin:0.9rem 0 0.3rem;}
+  #v-logic .lg-ill{display:block;width:100%;min-width:20rem;max-width:41rem;height:auto;margin:0 auto;}
+  #v-logic .lg-il-h{font-family:var(--mono);font-size:12.5px;fill:var(--muted);letter-spacing:0.06em;}
+  #v-logic .lg-il-t{font-family:var(--sans);font-size:13px;fill:var(--fg);}
+  #v-logic .lg-il-s{font-family:var(--sans);font-size:11.5px;fill:var(--muted);}
+  #v-logic .lg-il-b{font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--fg);}
+  #v-logic .lg-cap{font-size:0.86rem;color:var(--muted);text-align:center;line-height:1.7;margin-top:0.3rem;}
+
+  /* 이모지 타일 썸네일 스트립 */
+  #v-logic .lg-tiles{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:1rem;}
+  #v-logic .lg-tile{flex:1 1 8rem;min-width:7rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem 0.55rem;text-align:center;}
+  #v-logic .lg-tile .em{display:block;font-size:2rem;line-height:1.3;}
+  #v-logic .lg-tile .tl{display:block;font-size:0.9rem;font-weight:700;color:var(--fg);margin-top:0.25rem;line-height:1.45;}
+  #v-logic .lg-tile .ts{display:block;font-size:0.8rem;color:var(--muted);line-height:1.55;margin-top:0.15rem;}
+
+  /* 더 알아보기 읽을거리 */
+  #v-logic .lg-read{border-left:4px solid var(--accent);}
+  #v-logic .lg-read h4{font-size:0.98rem;font-weight:700;margin:1rem 0 0.35rem;color:var(--fg);}
+  #v-logic .lg-read .q{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.8rem;}
+
+  /* 전문가 시스템 */
+  #v-logic .lg-facts{display:flex;flex-wrap:wrap;gap:0.45rem;margin:0.8rem 0;}
+  #v-logic .lg-fact{display:inline-flex;align-items:center;gap:0.4rem;border:1px solid var(--border);border-radius:9999px;padding:0.4rem 0.85rem;font-family:var(--sans);font-size:0.92rem;color:var(--fg);background:var(--bg);cursor:pointer;user-select:none;min-height:2.6rem;}
+  #v-logic .lg-fact:hover{border-color:var(--muted);color:var(--fg);}
+  #v-logic .lg-fact input{width:1.05rem;height:1.05rem;accent-color:var(--fg);cursor:pointer;}
+  #v-logic .lg-kb{border:1px solid var(--border);border-left:3px solid var(--border);border-radius:var(--radius);padding:0.65rem 0.85rem;margin-bottom:0.5rem;background:var(--bg);opacity:0.55;transition:all 0.25s;}
+  #v-logic .lg-kb.on{opacity:1;border-left-color:var(--green);background:var(--card);}
+  #v-logic .lg-kb p{font-size:0.92rem;margin:0;line-height:1.75;}
+  #v-logic .lg-kb .rn{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;color:var(--muted);display:block;margin-bottom:0.15rem;}
+  #v-logic .lg-fire{border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:0.7rem 0.9rem;margin-bottom:0.55rem;background:var(--bg);}
+  #v-logic .lg-fire p{font-size:0.9rem;margin:0 0 0.2rem;line-height:1.7;}
+  #v-logic .lg-fire p:last-child{margin-bottom:0;}
+  #v-logic .lg-fn{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;color:var(--muted);}
+  #v-logic .lg-ac{font-family:var(--mono);font-size:0.82rem;color:var(--fg);border-top:1px dashed var(--border);padding-top:0.3rem;margin-top:0.35rem;}
+  #v-logic .lg-tag{display:inline-block;font-family:var(--mono);font-size:0.72rem;padding:0.12rem 0.5rem;border-radius:9999px;background:var(--accent);color:var(--fg);margin-right:0.25rem;}
+  #v-logic .lg-concl{border-radius:var(--radius);padding:0.9rem 1.05rem;font-size:1rem;line-height:1.8;border:1px solid var(--border);border-left:4px solid var(--accent);background:var(--card);}
+  #v-logic .lg-concl.ok{border-left-color:var(--green);}
+  #v-logic .lg-concl.bad{border-left-color:var(--red);}
+  #v-logic .lg-two{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;}
+  @media (max-width:760px){#v-logic .lg-two{grid-template-columns:1fr;}}
+  #v-logic .lg-path{list-style:none;margin:0.5rem 0 0;padding:0;}
+  #v-logic .lg-path li{font-family:var(--sans);font-size:0.88rem;color:var(--body);border-left:2px solid var(--accent);padding:0.15rem 0 0.15rem 0.6rem;margin-bottom:0.3rem;line-height:1.6;}
+
+  /* 순서도 트레이서 */
+  #v-logic .lg-flowbox{overflow-x:auto;max-width:100%;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0.5rem;margin:0.8rem 0;}
+  #v-logic .lg-flow{display:block;width:100%;min-width:22rem;max-width:27rem;height:auto;margin:0 auto;}
+  #v-logic .lg-nd{fill:var(--card);stroke:var(--border);stroke-width:1.6;transition:fill 0.25s,stroke 0.25s;}
+  #v-logic .lg-nd.done{stroke:var(--green);stroke-width:2;}
+  #v-logic .lg-nd.on{fill:var(--accent);stroke:var(--fg);stroke-width:3;}
+  #v-logic .lg-fx{font-family:var(--mono);font-size:11.5px;fill:var(--fg);}
+  #v-logic .lg-fy{font-family:var(--mono);font-size:10.5px;fill:var(--muted);}
+  #v-logic .lg-fl{stroke:var(--muted);stroke-width:1.6;fill:none;}
+  #v-logic .lg-fcgrid{display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;}
+  #v-logic .lg-fcgrid>div{flex:1 1 13rem;min-width:0;}
+  #v-logic #lg-fc-log{font-family:var(--mono);font-size:0.8rem;line-height:1.7;}
+
+  /* 참고 자료 카드 */
+  #v-logic .lg-refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(13rem,100%),1fr));gap:0.85rem;margin-top:0.9rem;}
+  #v-logic .lg-ref{display:block;text-decoration:none;color:inherit;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;position:relative;}
+  #v-logic .lg-ref:hover{border-color:var(--muted);transform:translateY(-2px);box-shadow:0 2px 8px rgba(26,23,20,0.07);}
+  #v-logic .lg-ref .th{position:relative;width:100%;aspect-ratio:16/9;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:2.4rem;border-bottom:1px solid var(--border);}
+  #v-logic .lg-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-logic .lg-ref .bd{padding:0.6rem 0.75rem 0.8rem;}
+  #v-logic .lg-ref .bg{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.06em;padding:0.15rem 0.5rem;border-radius:9999px;background:var(--accent);color:var(--fg);margin-bottom:0.35rem;}
+  #v-logic .lg-ref .tt{display:block;font-size:0.92rem;font-weight:700;color:var(--fg);line-height:1.5;}
+  #v-logic .lg-ref .ds{display:block;font-size:0.82rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+  #v-logic .lg-ref .rm{position:absolute;top:0.35rem;right:0.35rem;z-index:2;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:9999px;width:1.9rem;height:1.9rem;line-height:1;cursor:pointer;font-size:0.9rem;}
+  #v-logic .lg-ref .rm:hover{color:var(--red);border-color:var(--red);}
+  #v-logic .lg-refadd{flex:1 1 14rem;min-width:0;height:2.6rem;border:1px solid var(--border);border-radius:var(--radius);padding:0 0.7rem;font-family:var(--sans);font-size:0.92rem;background:var(--bg);color:var(--fg);}
+
+  /* STEP 3 정리 카드 — 펼치기 전에도 보이는 "핵심 3줄" + 요약 비교표 */
+  #v-logic .lg-sum3{list-style:none;margin:0.7rem 0 0;padding:0;display:grid;gap:0.4rem;}
+  #v-logic .lg-ask .lg-sum3 li{font-size:1.08rem;font-weight:700;color:var(--fg);position:static;padding-left:0;}
+  #v-logic .lg-ask .lg-sum3 li::before{content:none;}
+  #v-logic .lg-sumtbl{border-collapse:collapse;width:100%;min-width:26rem;margin:0.6rem 0;font-family:var(--sans);font-size:0.92rem;}
+  #v-logic .lg-sumtbl th,#v-logic .lg-sumtbl td{border:1px solid var(--border);padding:0.55rem 0.75rem;text-align:left;vertical-align:top;line-height:1.65;}
+  #v-logic .lg-sumtbl th{background:var(--card);color:var(--fg);font-weight:700;}
+
+  /* 교과서 펼침면형 좌(도해)·우(설명) 2단 그리드 — 860px 이하는 상하 스택 */
+  #v-logic .lg-spread{display:grid;grid-template-columns:0.9fr 1.1fr;gap:1.1rem;align-items:center;margin:0.7rem 0;}
+  @media (max-width:860px){#v-logic .lg-spread{grid-template-columns:1fr;}}
+  </style>
+
+  <div class="lg-hd" data-no-toggle="1">
+    <svg class="lg-wm" viewBox="0 0 220 150" role="presentation" aria-hidden="true" focusable="false">
+      <g fill="none" stroke="var(--fg)" stroke-width="4">
+        <path d="M6,44 H50"></path><path d="M6,96 H50"></path>
+        <path d="M50,22 H86 A38,38 0 0 1 86,74 H50 Z"></path>
+        <path d="M50,74 H86 A38,38 0 0 1 86,126 H50 Z" opacity="0.65"></path>
+        <path d="M124,48 H160"></path><path d="M124,100 H160"></path>
+        <path d="M160,40 H186 A34,34 0 0 1 186,108 H160 Z"></path>
+        <path d="M220,74 H206"></path>
+      </g>
+      <circle cx="204" cy="74" r="9" fill="var(--fg)"></circle>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">1단원 · 인공지능과 빅데이터</p>
+    <h2>3차시 — 규칙으로 생각하는 AI</h2>
+    <p class="desc">
+      1차시에서 인공지능을 "입력을 출력으로 잇는 함수"로 보았습니다.
+      그 함수를 <b>사람이 규칙으로 직접 적어 주는</b> 방식이 오늘의 주제입니다.
+      참·거짓을 계산하는 논리 연산, 규칙을 쌓아 추론하는 전문가 시스템,
+      문제 해결 절차를 그림으로 적는 순서도 — 규칙으로 생각하는 기계가
+      어디까지 갈 수 있고, 어디에서 멈추는지 직접 확인해 봅시다.
+    </p>
+  </div>
+
+  <!-- ═════ 표제부 · 학습 목표 / 핵심 개념 / 핵심 질문 ═════ -->
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 논리합(OR)·논리곱(AND)·배타적 논리합(XOR)을 진리표를 사용하여 나타낼 수 있다. <b>[12인수01-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 실생활 예제를 활용하여 전문가 시스템의 규칙 기반 표현 방법과 추론 과정을 설명할 수 있다. <b>[12인수01-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 순서도를 따라 알고리즘의 실행 과정을 단계별로 추적하여 설명할 수 있다. <b>[12인수01-02]</b>
+    </div>
+  </div>
+
+  <p class="mat-label lg-keys-label" style="text-align:left;margin-top:1.2rem;">핵심 개념 — 칩을 누르면 자세한 설명이 열립니다</p>
+  <div class="chips lg-keys">
+    <span class="chip">명제 · 진릿값</span>
+    <span class="chip">진리표 (∼, ∧, ∨, ⊕)</span>
+    <span class="chip">논리 게이트 · 논리 회로</span>
+    <span class="chip">전문가 시스템 (지식 베이스 · 추론 엔진)</span>
+    <span class="chip">알고리즘 · 순서도</span>
+  </div>
+
+  <div class="card lg-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p>오늘 수업은 이 물음에 답하기 위한 여정입니다. STEP 3에서 다시 만나 답을 완성합니다.</p>
+    <ul>
+      <li>규칙만으로 생각하는 기계는 어디까지 똑똑해질 수 있는가?</li>
+    </ul>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="lg-step"><p class="mono">STEP 1 · 도입 — 생각 열기</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 규칙과 탐색으로 시작한 인공지능</h3>
+    <p>카드를 누르면 위쪽 화면에서 바로 재생됩니다. 첫 번째 영상은 규칙과 탐색으로 문제를 풀던 초기 인공지능을 다루므로,
+      오늘 배울 <b>규칙 기반 인공지능</b>의 배경을 잡는 데 가장 알맞습니다.
+      교사는 [+ 영상 추가]로 학급에 맞는 영상을 더할 수 있으며, 추가한 영상과 마지막으로 본 영상은 이 기기에 저장됩니다.</p>
+    <div id="lg-vdeck"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 규칙 몇 개면 의사를 대신할 수 있을까?</h3>
+    <p style="margin-bottom:0.9rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답하면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="lg-warm"></div>
+  </div>
+
+  <div class="card" id="lg-c-rule">
+    <h3>개념 — "규칙으로 생각한다"는 것은 무엇인가</h3>
+    <p>참 또는 거짓을 명확히 구분할 수 있는 문장이나 식을 <b>명제</b>라 하고, 명제의 참과 거짓을 <b>진릿값</b>이라고 합니다.
+      진릿값이 참이면 T, 거짓이면 F로 나타내는데, 프로그래밍에서는 <b>참을 1, 거짓을 0</b>으로 나타냅니다.
+      "3은 소수이다"는 참이므로 진릿값이 1이고, "6은 소수이다"는 거짓이므로 진릿값이 0입니다.
+      반면 "내일 비가 올까?"처럼 참·거짓을 정할 수 없는 문장은 명제가 아닙니다.</p>
+    <p style="margin-top:0.6rem;">여러 명제를 결합하여 새로운 명제를 만들 때 쓰는 것이 <b>논리 연산자</b>이고,
+      각 경우의 진릿값을 한 표에 정리한 것이 <b>진리표</b>입니다.
+      기계가 "생각한다"는 말은, 사실은 <b>0과 1로 바뀐 명제들을 논리 연산으로 계산한다</b>는 뜻입니다.
+      규칙 기반 인공지능은 이 계산을 아주 많이 쌓아 올린 기계입니다.</p>
+    <div class="lg-spread">
+      <div class="lg-illbox" style="margin:0;">
+        <svg class="lg-ill" viewBox="0 0 660 240" role="img" aria-label="사실을 지식 베이스의 IF-THEN 규칙에 넣고 추론 엔진이 결론을 좁히는 규칙 기반 인공지능의 흐름도">
+          <rect x="6" y="18" width="168" height="204" rx="12" fill="var(--bg)" stroke="var(--border)" stroke-width="1.6"></rect>
+          <text class="lg-il-h" x="90" y="44" text-anchor="middle">사실 FACTS</text>
+          <rect x="24" y="58" width="132" height="36" rx="9" fill="var(--card)" stroke="var(--border)"></rect>
+          <text class="lg-il-t" x="90" y="81" text-anchor="middle">고열이 있다</text>
+          <rect x="24" y="102" width="132" height="36" rx="9" fill="var(--card)" stroke="var(--border)"></rect>
+          <text class="lg-il-t" x="90" y="125" text-anchor="middle">인후통이 있다</text>
+          <rect x="24" y="146" width="132" height="36" rx="9" fill="var(--card)" stroke="var(--border)"></rect>
+          <text class="lg-il-t" x="90" y="169" text-anchor="middle">후각에 이상이 있다</text>
+          <text class="lg-il-s" x="90" y="204" text-anchor="middle">관찰한 것 = 0 또는 1</text>
+
+          <path d="M176,120 H206" stroke="var(--muted)" stroke-width="2" fill="none"></path>
+          <path d="M200,114 L208,120 L200,126 Z" fill="var(--muted)"></path>
+
+          <rect x="210" y="18" width="240" height="204" rx="12" fill="var(--bg)" stroke="var(--border)" stroke-width="1.6"></rect>
+          <text class="lg-il-h" x="330" y="44" text-anchor="middle">지식 베이스 · 추론 엔진</text>
+          <rect x="226" y="58" width="208" height="36" rx="9" fill="var(--card)" stroke="var(--accent)" stroke-width="2"></rect>
+          <text class="lg-il-t" x="238" y="81">IF 고열 THEN 코로나19·독감</text>
+          <rect x="226" y="102" width="208" height="36" rx="9" fill="var(--card)" stroke="var(--border)"></rect>
+          <text class="lg-il-t" x="238" y="125">IF 재채기 THEN 비염·감기</text>
+          <rect x="226" y="146" width="208" height="36" rx="9" fill="var(--card)" stroke="var(--accent)" stroke-width="2"></rect>
+          <text class="lg-il-t" x="238" y="169">IF 후각 상실 THEN 코로나19</text>
+          <text class="lg-il-s" x="330" y="204" text-anchor="middle">조건이 맞는 규칙만 발동 → 후보의 교집합</text>
+
+          <path d="M452,120 H482" stroke="var(--muted)" stroke-width="2" fill="none"></path>
+          <path d="M476,114 L484,120 L476,126 Z" fill="var(--muted)"></path>
+
+          <rect x="486" y="18" width="168" height="204" rx="12" fill="var(--card)" stroke="var(--accent)" stroke-width="2.4"></rect>
+          <text class="lg-il-h" x="570" y="44" text-anchor="middle">결론 CONCLUSION</text>
+          <circle cx="570" cy="112" r="42" fill="var(--bg)" stroke="var(--fg)" stroke-width="2"></circle>
+          <text class="lg-il-b" x="570" y="118" text-anchor="middle">코로나19</text>
+          <text class="lg-il-s" x="570" y="182" text-anchor="middle">후보가 1개로 좁혀지면</text>
+          <text class="lg-il-s" x="570" y="200" text-anchor="middle">진단이 확정됩니다</text>
+        </svg>
+      </div>
+      <div>
+        <p style="margin:0;">그 계산을 쌓아 올리는 방법이 <b>IF-THEN 규칙</b>입니다.
+          "만약 열이 나고 기침을 한다면, 그것은 감기이거나 독감이다" — 전문가의 판단을 이런 문장으로 옮겨 적어 두면,
+          기계는 관찰된 <b>사실</b>과 조건이 맞는 규칙을 찾아 <b>결론</b>을 만들어 냅니다. 이 그림이 오늘 수업 전체의 지도입니다.</p>
+        <p class="lg-cap" style="text-align:left;margin-top:0.6rem;">▲ 자료: 씨마스 「인공지능 수학」 Ⅰ단원 19쪽 코로나19 전문가 시스템의 구성을 재구성</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="math">규칙 기반 인공지능의 뼈대
+    명제 p, q  ──▶  논리 연산 (∼, ∧, ∨, ⊕)  ──▶  진릿값 0 또는 1
+    사실 + 규칙(IF-THEN)  ──▶  추론 엔진  ──▶  결론
+    문제  ──▶  알고리즘(절차)  ──▶  순서도(기호와 그림)</div>
+
+  <div class="card" id="lg-c-where">
+    <h3>사례 — 규칙으로 만든 기계는 실제로 어디에 있었나</h3>
+    <p>규칙 기반 인공지능은 교과서 속 이야기만이 아닙니다. 1970~80년대에는 <b>전문가 시스템</b>이라는 이름으로
+      의료·화학·세무·제조 현장에서 실제로 쓰였고, 오늘날에도 예약 시스템과 질병 진단 시스템 안에 남아 있습니다.
+      우리 주변의 전자 기기 역시 <b>논리 회로</b>라는 이름의 규칙 덩어리로 움직입니다.</p>
+    <p style="margin-top:0.6rem;">아래 네 가지는 오늘 세 개의 활동에서 차례로 다시 만나게 될 사례입니다.
+      각각이 "어떤 사실을 받아, 어떤 규칙으로, 어떤 결론을 내는가"를 머릿속에 그려 보며 활동을 시작해 봅시다.</p>
+    <div class="lg-tiles">
+      <div class="lg-tile"><span class="em">🧫</span><span class="tl">MYCIN</span><span class="ts">1970년대 의료 — 세균 감염 진단과 항생제 처방</span></div>
+      <div class="lg-tile"><span class="em">🧾</span><span class="tl">세무 상담 시스템</span><span class="ts">공제 요건 규칙으로 세액을 판정</span></div>
+      <div class="lg-tile"><span class="em">🚗</span><span class="tl">안전벨트 경고 회로</span><span class="ts">시동 AND 미착용이면 경고음</span></div>
+      <div class="lg-tile"><span class="em">📋</span><span class="tl">병원 문진표</span><span class="ts">예·아니요 분기로 진료과를 안내</span></div>
+    </div>
+  </div>
+
+  <div class="info"><strong>학습 안내 — 학습 목표는 어떤 활동으로 이어지나</strong>
+    <p style="margin-top:0.5rem;">목표 ①은 전개 탭 ①에서 — p·q 토글과 게이트 선택으로 논리 회로의 신호를 관찰하고, 진리표 4행을 <b>먼저 예측</b>한 뒤 채점합니다.</p>
+    <p>목표 ②는 전개 탭 ②에서 — 증상(사실)을 체크하면 규칙이 발동하는 순서를 눈으로 보며 결론이 좁혀지는 과정을 추적합니다.</p>
+    <p>목표 ③은 전개 탭 ③에서 — 이차방정식의 실근 개수를 판정하는 순서도를 한 단계씩 따라가며 변수값의 변화를 기록합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="lg-step"><p class="mono">STEP 2 · 전개 — 탐구 활동</p></div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="lgTab(0,this)">① 진리표 실험실</button>
+    <button class="tab" onclick="lgTab(1,this)">② 전문가 시스템</button>
+    <button class="tab" onclick="lgTab(2,this)">③ 순서도 트레이서</button>
+  </div>
+
+  <!-- ── TAB 0 : 진리표 실험실 ─────────────────────── -->
+  <div class="tpanel on" id="lg0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      NOT · AND · OR · XOR 네 연산의 진리표를 <b>스스로 예측해 채우고</b>, 회로의 신호 흐름으로 확인합니다.
+      진행 순서: <b>단계 1 관찰</b>(예측 → 채점 → 회로 확인) → <b>단계 2 정리</b>(네 연산 비교) → <b>단계 3 정의 확인</b>(논리 연산자와 진리표). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" id="lg-act0" data-no-toggle="1">
+      <h3>단계 1 · 관찰 — 진리표를 먼저 예측하고, 회로에서 확인하기</h3>
+      <p>게이트를 하나 고르고, <b>표의 네 칸을 먼저 채운 뒤</b> [채점]을 누르세요.
+        채점을 마치면 아래 회로도가 열립니다. 회로에서 p·q를 바꿔 가며 신호가 어떻게 흐르는지 확인해 보세요.</p>
+
+      <p class="mat-label" style="text-align:left;">논리 연산자 고르기</p>
+      <div class="chips" id="lg-tt-gates">
+        <button class="chip on" onclick="lgTTGate('NOT',this)">NOT ∼p</button>
+        <button class="chip" onclick="lgTTGate('AND',this)">AND p∧q</button>
+        <button class="chip" onclick="lgTTGate('OR',this)">OR p∨q</button>
+        <button class="chip" onclick="lgTTGate('XOR',this)">XOR p⊕q</button>
+      </div>
+      <div class="status" id="lg-tt-name"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:0.9rem;">내 예측 진리표</p>
+      <div class="lg-scroll"><table class="lg-tbl" id="lg-tt-tbl"></table></div>
+      <div class="btn-row">
+        <button class="btn pri" onclick="lgTTGrade()">채점</button>
+        <button class="btn" onclick="lgTTClear()">예측 지우기</button>
+        <button class="btn" id="lg-tt-peek" onclick="lgTTOpen()">회로 먼저 열어 보기</button>
+      </div>
+      <div class="status" id="lg-tt-st">네 칸을 모두 고른 뒤 [채점]을 누르세요.</div>
+      <div class="info" id="lg-tt-fore" data-no-toggle="1" style="display:none;margin:0.8rem 0;border-left-color:var(--red);"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1rem;">논리 회로 — 신호 흐름과 출력 전구</p>
+      <div class="lg-cirbox" id="lg-tt-cir"></div>
+      <div class="btn-row" id="lg-tt-inputs">
+        <button class="btn" onclick="lgTTToggle('p')">p 뒤집기 (현재 <span id="lg-tt-pv">0</span>)</button>
+        <button class="btn" onclick="lgTTToggle('q')" id="lg-tt-qbtn">q 뒤집기 (현재 <span id="lg-tt-qv">0</span>)</button>
+      </div>
+      <div class="status" id="lg-tt-out"></div>
+    </div>
+
+    <div class="card">
+      <h3>정리 — 네 연산은 무엇이 어떻게 다른가</h3>
+      <p>네 게이트를 모두 채점한 뒤 열어 보세요. 진리표의 출력 열만 세로로 읽으면 차이가 한눈에 보입니다.
+        (행의 순서는 p, q가 0 0 → 0 1 → 1 0 → 1 1입니다.)</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>∼p (NOT, 부정)</b> — 출력 열 <span class="mi">1 1 0 0</span>. q의 값과 상관없이 p만 뒤집습니다. 입력이 하나뿐인 연산입니다.</li>
+        <li><b>p∧q (AND, 논리곱)</b> — 출력 열 <span class="mi">0 0 0 1</span>. <b>둘 다 참</b>일 때만 참. 곱셈처럼 하나라도 0이면 0입니다.</li>
+        <li><b>p∨q (OR, 논리합)</b> — 출력 열 <span class="mi">0 1 1 1</span>. <b>하나라도 참</b>이면 참. 모두 거짓일 때만 거짓입니다.</li>
+        <li><b>p⊕q (XOR, 배타적 논리합)</b> — 출력 열 <span class="mi">0 1 1 0</span>. <b>정확히 하나만 참</b>일 때 참. "다르면 1, 같으면 0"으로 읽어도 됩니다.</li>
+      </ul>
+      <p style="margin-top:0.7rem;">네 연산은 서로 독립적인 것이 아니라 <b>서로를 이용해 표현</b>할 수 있습니다.
+        예를 들어 배타적 논리합은 p⊕q = (∼p ∧ q) ∨ (p ∧ ∼q)로 나타낼 수 있습니다.
+        "p가 거짓이고 q가 참인 경우" 또는 "p가 참이고 q가 거짓인 경우"를 모은 것이므로,
+        네 행 가운데 가운데 두 행에서만 1이 되는 것입니다.
+        진리표로 두 식을 각각 채워 보면 출력 열이 <span class="mi">0 1 1 0</span>으로 정확히 같아진다는 것을 확인할 수 있습니다.</p>
+      <p style="margin-top:0.6rem;">활동지에 네 개의 출력 열을 나란히 옮겨 적고, "XOR만 유독 다른 점"을 한 줄로 써 봅시다.</p>
+    </div>
+
+    <div class="info"><strong>정의 확인 — 논리 연산자와 진리표란 무엇인가</strong>
+      <p style="margin-top:0.5rem;">참 또는 거짓을 명확히 구분할 수 있는 문장이나 식을 <b>명제</b>, 명제의 참과 거짓을 <b>진릿값</b>이라고 합니다.
+        진릿값이 참이면 T, 거짓이면 F로 나타내는데, 프로그래밍에서는 참을 1, 거짓을 0으로 나타냅니다.
+        주어진 명제들을 결합하여 새로운 명제를 만들 때에는 다음과 같은 <b>논리 연산자</b>를 사용합니다.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>NOT(부정, ∼)</b> — 명제 p가 참이면 ∼p는 거짓, p가 거짓이면 ∼p는 참입니다.
+          예) p: "3은 짝수이다"(거짓) → ∼p: "3은 짝수가 아니다"(참).</li>
+        <li><b>OR(논리합, ∨)</b> — 두 명제 p와 q 중에서 하나라도 참이면 p∨q는 참, 모두 거짓이면 거짓입니다.
+          예) "오늘은 토요일이거나 일요일이다"는 둘 중 하루만 맞아도 참입니다.</li>
+        <li><b>AND(논리곱, ∧)</b> — 두 명제 p와 q가 모두 참이면 p∧q는 참, 하나라도 거짓이면 거짓입니다.
+          예) "비가 오고 바람이 분다"는 두 가지가 동시에 일어나야 참입니다.</li>
+        <li><b>XOR(배타적 논리합, ⊕)</b> — 두 명제 p와 q 중 하나만 참이면 p⊕q는 참, 모두 참이거나 모두 거짓이면 거짓입니다.
+          예) "동전을 던져 앞면이 나오거나 뒷면이 나온다"에서 둘 다 나오는 경우는 없습니다.
+          두 입력값이 <b>같으면 0, 다르면 1</b>이라고 기억해도 좋습니다.</li>
+      </ul>
+      <p style="margin-top:0.6rem;">두 명제 p, q의 진릿값이 주어질 때 합성 명제 ∼p, ∼q, p∨q, p∧q, p⊕q의 진릿값을
+        모든 경우에 대하여 정리한 표를 <b>진리표</b>라고 합니다.
+        입력이 2개이면 (0,0), (0,1), (1,0), (1,1)의 네 가지 경우가 있으므로 진리표는 네 행이 됩니다.
+        입력이 n개이면 2ⁿ행이 되므로, 규칙을 표로 다 적는 방식은 입력이 늘어날수록 급격히 커진다는 점도 함께 기억해 둡시다.</p>
+      <p style="margin-top:0.6rem;">전자 회로에서 이러한 논리 연산을 수행하는 부품을 <b>논리 게이트</b>, 게이트를 이어 붙여 만든 회로를 <b>논리 회로</b>라고 합니다.
+        컴퓨터의 중앙 처리 장치는 결국 수십억 개의 논리 게이트로 이루어진 거대한 논리 회로이며,
+        우리가 오늘 채운 네 줄짜리 진리표가 그 가장 작은 단위입니다.</p>
+      <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+        씨마스 「인공지능 수학」 Ⅰ단원 14~15쪽의 명제·진릿값·논리 연산자·진리표 서술을 재구성하였습니다.
+      </p>
+    </div>
+
+    <div class="card" id="lg-c-gate">
+      <h3>사례 — 논리 회로는 우리 주변 어디에 숨어 있는가</h3>
+      <p>진리표는 시험 문제 속에만 있는 것이 아닙니다. 우리가 매일 쓰는 기기의 동작 조건은 대부분 한 줄의 논리식으로 적을 수 있습니다.
+        아래 사례를 각각 진리표로 옮겨 보고, 어떤 연산에 해당하는지 판단해 봅시다.</p>
+      <ul style="margin:0.6rem 0 0 1.2rem;">
+        <li><b>자동차 안전벨트 경고음 (AND)</b> — p: 시동이 걸렸다, q: 안전벨트를 매지 않았다.
+          <b>p ∧ q</b>가 참일 때만 경고음이 울립니다. 시동을 끄면(p=0) 아무리 벨트를 풀어도 울리지 않습니다.</li>
+        <li><b>건물 자동문 (OR)</b> — p: 사람이 감지되었다, q: 열림 버튼을 눌렀다.
+          <b>p ∨ q</b>가 참이면 문이 열립니다. 둘 중 하나만 있어도 충분합니다.</li>
+        <li><b>계단 양쪽의 전등 스위치 (XOR)</b> — 아래층 스위치 p와 위층 스위치 q의 상태가 <b>서로 다를 때</b> 불이 켜집니다.
+          어느 쪽에서 눌러도 불이 켜지고 꺼지는 이 회로가 바로 <b>p ⊕ q</b>입니다.</li>
+        <li><b>화재 감지기 (NOT과 AND의 결합)</b> — "연기가 감지되었다 ∧ ∼(점검 모드이다)"일 때만 경보가 울리도록 설계합니다.</li>
+      </ul>
+      <div class="lg-tiles">
+        <div class="lg-tile"><span class="em">🚗</span><span class="tl">안전벨트 경고</span><span class="ts">p ∧ q — 둘 다 참일 때만</span></div>
+        <div class="lg-tile"><span class="em">🚪</span><span class="tl">자동문</span><span class="ts">p ∨ q — 하나라도 참이면</span></div>
+        <div class="lg-tile"><span class="em">💡</span><span class="tl">계단 전등</span><span class="ts">p ⊕ q — 서로 다를 때만</span></div>
+        <div class="lg-tile"><span class="em">🔥</span><span class="tl">화재 경보</span><span class="ts">p ∧ ∼q — 점검 중이 아닐 때</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>심화 — 교과서 진리표 한 장으로 보기</h3>
+      <p>교과서의 진리표를 그대로 옮기면 다음과 같습니다. 채점을 마친 뒤 스스로 채운 표와 비교해 보세요.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li>p=0, q=0 → ∼p=1, ∼q=1, p∨q=0, p∧q=0, p⊕q=0</li>
+        <li>p=0, q=1 → ∼p=1, ∼q=0, p∨q=1, p∧q=0, p⊕q=1</li>
+        <li>p=1, q=0 → ∼p=0, ∼q=1, p∨q=1, p∧q=0, p⊕q=1</li>
+        <li>p=1, q=1 → ∼p=0, ∼q=0, p∨q=1, p∧q=1, p⊕q=0</li>
+      </ul>
+      <p style="margin-top:0.6rem;">p⊕q의 출력 열 <b>0 1 1 0</b>을 좌표평면의 네 점 (0,0)·(0,1)·(1,0)·(1,1)에 그대로 옮겨 찍어 보세요.
+        1인 점과 0인 점을 <b>직선 하나로</b> 나눌 수 있을까요? 이 물음이 다음 차시의 출발점입니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>탐구 활동 — 논리식 카드로 목표 진리표 만들기</h3>
+      <p>두 명이 한 모둠이 되어 진행합니다. 아래 두 목표 진리표 가운데 하나를 고른 뒤,
+        <b>NOT · AND · OR · XOR</b> 연산자를 원하는 만큼 조합하여 그 출력 열과 <b>완전히 같은</b> 논리식을 만들어 봅니다.</p>
+      <div class="lg-scroll">
+        <table class="lg-tbl">
+          <tr><th>A</th><th>B</th><th>목표 ①</th><th>목표 ②</th></tr>
+          <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:0.5rem;">완성한 식을 모둠 칠판에 적어 보세요. 여러 식이 나올 수 있지만, <b>연산자 개수가 가장 적은 모둠</b>이 이깁니다.
+        (힌트 — 목표 ①의 출력 열은 오늘 배운 네 연산 가운데 하나와 정확히 같습니다. 목표 ②는 그 결과를 한 번 더 뒤집은 것입니다.)</p>
+      <p class="lg-dim" style="margin-top:0.4rem;">확인 — 목표 ① = A⊕B, 목표 ② = ∼(A⊕B). 두 목표가 정확히 반대되는 출력 열을 가진다는 점도 함께 확인해 보세요.</p>
+      <span class="cmn-note">씨마스 「인공지능 수학」 Ⅰ단원 23~24쪽의 탐구 활동 「논리 집합 카드로 게임하기」를 재구성하였습니다.</span>
+    </div>
+
+    <div class="card lg-read">
+      <h3>더 알아보기 — 진리표 한 줄이 부른 겨울</h3>
+      <p>1957년, 미국의 신경생물학자 프랭크 로젠블랫은 사람 두뇌의 뉴런이 작동하는 원리를 본떠
+        <b>단층 퍼셉트론</b>을 제안하였습니다. 여러 개의 입력을 받아 하나의 출력을 내보내는 이 장치는
+        논리곱과 논리합에 해당하는 논리 회로 연산을 실제로 수행해 냈고,
+        사람들은 기계가 사람처럼 논리적으로 사고할 날이 머지않았다고 기대하였습니다.</p>
+      <p style="margin-top:0.6rem;">그러나 1969년, 매사추세츠 공과 대학의 마빈 민스키와 시모어 페퍼트는 저서
+        『퍼셉트론들』에서 그 한계를 분명하게 짚어냈습니다. 퍼셉트론은 진릿값이 같은 점들을
+        <b>직선 하나로</b> 구분하는 장치입니다. 논리합과 논리곱은 네 점을 직선 하나로 나눌 수 있으므로 문제가 없지만,
+        배타적 논리합은 출력이 1인 점 (0,1)·(1,0)과 출력이 0인 점 (0,0)·(1,1)이 서로 대각선으로 마주 보기 때문에
+        어떤 직선으로도 나눌 수 없습니다.</p>
+      <p style="margin-top:0.6rem;">진리표의 네 줄 가운데 <span class="mi">0 1 1 0</span>이라는 한 열이,
+        인공신경망 연구 전체를 십수 년 동안 멈춰 세웠습니다. 이것이 흔히 <b>첫 번째 인공지능 겨울</b>이라고 부르는 시기입니다.
+        연구비가 끊기고 사람들이 떠난 자리에서, 남은 연구자들이 붙든 질문은 하나였습니다.
+        "직선 하나로 안 된다면, 직선을 여러 개 쓰면 어떨까?"</p>
+      <p style="margin-top:0.6rem;">그 답은 1986년에 나왔습니다. 데이비드 럼멜하트, 제프리 힌턴, 로널드 윌리엄스가
+        <b>오류 역전파 알고리즘</b>으로 다층 퍼셉트론을 학습시키는 데 성공하면서 배타적 논리합 문제가 풀렸고,
+        인공신경망 분야에 다시 활기가 돌기 시작하였습니다.
+        오늘 여러분이 채운 XOR의 진리표는, 다음 차시에서 여러분의 손으로 다시 넘게 될 벽입니다.</p>
+      <div class="q">
+        <h4>생각해 보기</h4>
+        <p>① 논리합과 논리곱은 직선 하나로 나눌 수 있는데 배타적 논리합만 그렇지 않은 까닭을,
+          네 점의 위치를 그려서 설명해 봅시다.</p>
+        <p>② "수학적으로 불가능하다는 증명"이 한 분야의 연구를 멈추게 할 수도, 새로운 방향을 열 수도 있습니다.
+          민스키와 페퍼트의 증명은 어느 쪽이었다고 생각하나요?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 전문가 시스템 ─────────────────────── -->
+  <div class="tpanel" id="lg1">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      전문가의 지식을 <b>IF-THEN 규칙</b>으로 적어 두면 기계가 어떻게 결론에 도달하는지, 그리고 어디에서 막히는지 확인합니다.
+      진행 순서: <b>단계 1 관찰</b>(사실 체크 → 규칙 발동 추적) → <b>단계 2 정리</b>(추론 과정 요약) → <b>단계 3 정의 확인</b>(전문가 시스템). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="chips" id="lg-es-modes">
+      <button class="chip on" onclick="lgEsMode(0,this)">모드 A · 증상으로 진단하기</button>
+      <button class="chip" onclick="lgEsMode(1,this)">모드 B · 나에게 맞는 반려동물 찾기</button>
+    </div>
+
+    <!-- 모드 A -->
+    <div id="lg-es-a">
+      <div class="card" id="lg-act1" data-no-toggle="1">
+        <h3>단계 1 · 관찰 — 사실을 켜면 규칙이 발동한다</h3>
+        <p>아래는 어떤 병원의 <b>지식 베이스</b>(전문가가 미리 적어 둔 규칙 모음)입니다.
+          환자에게서 관찰된 <b>사실(증상)</b>을 체크하면, <b>추론 엔진</b>이 조건에 맞는 규칙을 찾아 순서대로 발동시킵니다.
+          결론이 하나로 좁혀질 때까지 사실을 더해 보세요.</p>
+
+        <p class="mat-label" style="text-align:left;">사실 — 관찰된 증상</p>
+        <div class="lg-facts" id="lg-es-facts"></div>
+        <div class="btn-row">
+          <button class="btn" onclick="lgEsPreset(0)">사례 A · 코로나19</button>
+          <button class="btn" onclick="lgEsPreset(1)">사례 B · 좁혀지지 않음</button>
+          <button class="btn" onclick="lgEsPreset(2)">사례 C · 규칙 충돌</button>
+          <button class="btn" onclick="lgEsPreset(-1)">모두 지우기</button>
+        </div>
+
+        <div class="lg-two" style="margin-top:0.9rem;">
+          <div>
+            <p class="mat-label" style="text-align:left;">지식 베이스 — 규칙 (IF-THEN)</p>
+            <div id="lg-es-kb"></div>
+          </div>
+          <div>
+            <p class="mat-label" style="text-align:left;">추론 엔진 — 발동 순서</p>
+            <div id="lg-es-trace"></div>
+          </div>
+        </div>
+
+        <div class="lg-concl" id="lg-es-concl" style="display:none;margin-top:0.8rem;"></div>
+      </div>
+
+      <div class="math">추론 엔진이 하는 일
+      사실 집합 F  ──▶  조건이 F와 겹치는 규칙을 모두 발동
+      규칙 ①의 후보 ∩ 규칙 ②의 후보 ∩ …  ──▶  최종 후보 집합
+      후보가 1개  →  결론 확정      후보가 2개 이상  →  사실이 더 필요      후보가 ∅  →  규칙 충돌</div>
+    </div>
+
+    <!-- 모드 B -->
+    <div id="lg-es-b" style="display:none;">
+      <div class="card" data-no-toggle="1">
+        <h3>단계 1 · 관찰 — 질문 분기 트리로 추천받기</h3>
+        <p>교과서의 탐구 활동 '나에게 맞는 강아지 찾기'를 반려동물 전체로 넓힌 프로그램입니다.
+          질문에 답할 때마다 하나의 <b>IF-THEN 규칙</b>이 발동해 후보가 좁혀집니다. 내가 지나온 규칙을 끝까지 남겨 두고 확인해 보세요.</p>
+        <div class="lg-concl" id="lg-pet-q" style="margin-top:0.8rem;"></div>
+        <div class="btn-row" id="lg-pet-a"></div>
+        <div class="btn-row"><button class="btn" onclick="lgPetReset()">처음부터 다시</button></div>
+        <p class="mat-label" style="text-align:left;margin-top:0.6rem;">지나온 규칙 — 추론 경로</p>
+        <ul class="lg-path" id="lg-pet-path"></ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>정리 — 추론 과정을 말로 옮기면 어떻게 되는가</h3>
+      <p>두 모드를 모두 실행한 뒤 열어 보세요. 규칙 기반 추론은 언제나 같은 세 걸음으로 진행됩니다.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>사실을 모은다</b> — 관찰된 증상, 사용자의 대답. 이것이 추론의 출발 자료입니다.</li>
+        <li><b>조건이 맞는 규칙을 발동한다</b> — IF 부분이 사실과 겹치면 THEN 부분이 새로운 결론(후보 집합)이 됩니다.</li>
+        <li><b>후보를 좁힌다</b> — 여러 규칙이 각각 내놓은 후보 집합의 <b>교집합</b>을 구하면 결론이 좁혀집니다.
+          하나로 줄면 진단 완료, 둘 이상이면 사실이 더 필요합니다.</li>
+      </ul>
+      <p style="margin-top:0.7rem;">교과서의 코로나19 전문가 시스템도 정확히 이 순서로 움직입니다.
+        사실 ❶ 고열이 있음, ❷ 인후통이 있고 재채기를 함, ❸ 후각과 미각에 이상이 있음이 주어졌을 때,
+        결론 1은 ❶과 규칙 ①에 따라 "코로나19이거나 독감",
+        결론 2는 ❷와 규칙 ①·②에 따라 "코로나19이거나 독감, 비염이거나 감기",
+        결론 3은 ❸과 규칙 ③에 따라 "코로나19",
+        그리고 결론 4는 이 세 결론을 종합하여 최종적으로 <b>코로나19</b>가 됩니다.</p>
+      <p style="margin-top:0.6rem;"><b>그리고 한계</b> — 사례 C처럼 고열과 콧물이 함께 나타나면 규칙 ①과 규칙 ②가 서로 다른 결론을 가리켜
+        교집합이 <b>공집합</b>이 됩니다. 규칙만으로는 "둘 다 조금씩 그럴듯하다"를 표현할 수 없습니다.
+        그래서 실제 전문가 시스템에는 0과 1 사이의 값을 다루는 <b>퍼지 이론</b>과, 불확실한 문제를 표현하는 <b>확률적 방법</b>이 함께 쓰입니다.
+        규칙 기반 인공지능에도 이렇게 수학의 원리와 개념이 깊이 관여합니다.</p>
+    </div>
+
+    <div class="info"><strong>정의 확인 — 전문가 시스템은 어떻게 발전하였는가</strong>
+      <p style="margin-top:0.5rem;">인공지능 개발 초기에는 다양한 문제를 두루 다루는 연구가 활발하였습니다.
+        그러나 인공지능이 규모가 크고 복잡한 문제를 해결하지 못하면서 연구는 한동안 침체되었습니다.
+        이후 연구자들은 방향을 바꾸어, <b>특정 분야</b>의 문제들을 해결할 수 있는 <b>전문가 시스템</b> 개발에 집중하였습니다.</p>
+      <p style="margin-top:0.6rem;">항상 같은 순서로 문제를 처리하는 전통적 프로그램과 달리,
+        전문가 시스템은 전문적 지식과 정보를 이용해 대형 <b>지식 베이스</b>를 구축하고,
+        사용자가 해결해야 할 문제가 주어질 때 <b>추론</b>을 통해 응답하는 시스템입니다.
+        같은 프로그램이라도 입력된 사실이 달라지면 발동하는 규칙이 달라지고, 따라서 결론도 달라집니다.</p>
+      <p style="margin-top:0.6rem;">전문가 시스템에는 수학의 원리와 개념이 폭넓게 활용되었습니다.
+        0과 1 이외에도 그 사이에 있는 여러 값을 가질 수 있는 <b>퍼지(fuzzy) 이론</b>과,
+        불확실한 문제를 표현할 수 있도록 하는 <b>확률적 방법</b>이 대표적입니다.
+        "열이 조금 있다", "아마도 감기일 것이다" 같은 표현을 다루려면 참·거짓 두 값만으로는 부족하기 때문입니다.</p>
+      <p style="margin-top:0.6rem;">전문가 시스템은 다음 세 부분으로 구성됩니다.</p>
+      <ul style="margin:0.4rem 0 0 1.2rem;">
+        <li><b>사용자 인터페이스</b> — 질의에 대한 답변을 원하는 사용자와 전문가 시스템 사이의 통신을 담당합니다.</li>
+        <li><b>추론 엔진</b> — 전문가 시스템이 해답을 구할 수 있도록 추론하는 역할을 수행합니다.
+          주어진 규칙과 사실에서 새로운 사실을 탐색하는 프로그램입니다.</li>
+        <li><b>지식 베이스</b> — 전문가의 지식을 규칙의 형태로 담고 있으며, 조건을 만족하면 그 규칙이 실행됩니다.</li>
+      </ul>
+      <p style="margin-top:0.6rem;">전문가 시스템은 <b>1960년대에 개발되어 1980년대에 상업적으로 번영</b>하였으며,
+        현재는 예약 시스템, 질병 진단 시스템 등 여러 분야에서 널리 사용되고 있습니다.
+        다만 규칙을 사람이 하나하나 적어야 하고 예외를 모두 담을 수 없다는 한계가 있어,
+        1980년대 말에는 두 번째 인공지능 겨울의 배경이 되기도 하였습니다.
+        "규칙을 사람이 적는 대신 데이터에서 스스로 찾게 하자"는 발상의 전환이 바로 2차시에서 배운 기계학습입니다.</p>
+      <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+        씨마스 「인공지능 수학」 Ⅰ단원 19쪽의 전문가 시스템 서술을 재구성하였습니다.
+      </p>
+    </div>
+
+    <div class="card" id="lg-c-es">
+      <h3>사례 — 전문가 시스템은 실제로 무엇을 해냈는가</h3>
+      <p>전문가 시스템은 실험실의 구상이 아니라, 실제 현장에서 사람의 판단을 대신했던 프로그램입니다.
+        대표적인 네 가지 사례를 연대순으로 살펴보면, 규칙 기반 인공지능이 어디까지 갈 수 있었는지가 분명해집니다.</p>
+      <ul style="margin:0.6rem 0 0 1.2rem;">
+        <li><b>DENDRAL (1960년대, 화학)</b> — 스탠퍼드 대학에서 개발한 <b>최초의 전문가 시스템</b>입니다.
+          질량 분광 데이터를 입력받아 유기 화합물의 <b>분자 구조</b>를 추정하였습니다.
+          "이 봉우리가 이 위치에 있으면 이런 결합이 있다"는 화학자의 판단 규칙을 그대로 옮겨 적은 것으로,
+          과학 연구에서 데이터 분석의 새로운 방법을 제시하였습니다.</li>
+        <li><b>MYCIN (1970년대, 의료)</b> — 역시 스탠퍼드 대학에서 개발한 규칙 기반 전문가 시스템으로,
+          약 600개의 IF-THEN 규칙으로 <b>세균 감염을 진단하고 항생제를 처방</b>하였습니다.
+          우리 나라 교과서가 소개하는 '마이신'이 바로 이 시스템이며, 1972년 무렵에 개발되었습니다.
+          전문의에 견줄 만한 진단 성능을 보여 주어, 지식을 어떻게 표현하고 추론할 것인가가
+          인공지능의 핵심 문제임을 널리 알렸습니다.</li>
+        <li><b>세무 상담 시스템 (1980년대~, 조세)</b> — 세법의 공제 요건은 그 자체가 거대한 IF-THEN 규칙 모음입니다.
+          "부양가족이 있고, 소득이 일정 금액 이하이면, 공제 대상이다" 같은 조항을 규칙으로 옮기면
+          기계가 세액을 판정하고 상담해 줄 수 있습니다.
+          오늘날 연말정산 간소화 서비스의 자동 판정도 같은 원리를 따릅니다.</li>
+        <li><b>XCON (1980년대, 경영)</b> — 디지털 이큅먼트(DEC)사가 개발하여,
+          고객의 요구에 맞는 <b>컴퓨터 하드웨어 구성</b>을 자동으로 추천하였습니다.
+          수백만 가지 조합을 규칙으로 처리해 주문과 배송을 최적화하였고,
+          전문가 시스템의 상업적 성공을 대표하는 사례가 되었습니다.</li>
+      </ul>
+      <div class="lg-tiles">
+        <div class="lg-tile"><span class="em">🧪</span><span class="tl">DENDRAL</span><span class="ts">1960년대 · 화학 — 분광 데이터로 분자 구조 추정</span></div>
+        <div class="lg-tile"><span class="em">🧫</span><span class="tl">MYCIN</span><span class="ts">1970년대 · 의료 — 세균 감염 진단과 항생제 처방</span></div>
+        <div class="lg-tile"><span class="em">🧾</span><span class="tl">세무 상담</span><span class="ts">1980년대~ · 조세 — 공제 요건 규칙으로 세액 판정</span></div>
+        <div class="lg-tile"><span class="em">🖥️</span><span class="tl">XCON</span><span class="ts">1980년대 · 경영 — 하드웨어 구성 자동 추천</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>탐구 활동 — 우리 반 급식 추천 전문가 시스템 규칙 5개 만들기</h3>
+      <p>모둠별로 "오늘 급식으로 무엇을 추천할까?"를 판단하는 <b>나만의 지식 베이스</b>를 만들어 봅니다. 아래 순서를 따라가 보세요.</p>
+      <ol style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>사실 후보 5개를 정합니다.</b> 예) 매운 음식을 좋아한다 / 채식을 한다 / 오늘 급식에 국이 없다 / 후식이 있다 / 알레르기 식품이 있다.</li>
+        <li><b>IF-THEN 규칙 5개를 적습니다.</b> "IF 채식을 한다 THEN 나물 반찬을 추천한다"처럼, 사실 한 개 이상을 조건으로 하나의 결론을 정합니다.</li>
+        <li><b>다른 모둠과 규칙을 교환</b>하여, 같은 사실을 넣었을 때 결론이 하나로 좁혀지는지 서로 확인합니다.</li>
+        <li><b>규칙이 서로 충돌하는 경우를 일부러 하나 만들어</b> 보고, 그때 추론 엔진이 어떤 결론을 내려야 할지 모둠 토의로 정해 봅니다.</li>
+      </ol>
+      <p style="margin-top:0.6rem;">완성한 규칙은 탭 ②의 "모드 A" 구조(사실 체크 → 규칙 발동 → 결론)에 대입해 보고,
+        오늘 배운 <b>지식 베이스</b>와 <b>추론 엔진</b>의 역할을 각각 자신의 언어로 한 문장씩 설명해 보세요.</p>
+      <span class="cmn-note">씨마스 「인공지능 수학」 Ⅰ단원 20쪽의 탐구 활동 「전문가 시스템을 활용하여 나에게 맞는 강아지 찾기」를 재구성하였습니다.</span>
+    </div>
+
+    <div class="card lg-read">
+      <h3>더 알아보기 — DENDRAL에서 왓슨까지, 전문가 시스템의 60년</h3>
+      <p>전문가 시스템의 역사는 "사람의 지식을 어떻게 기계가 쓸 수 있는 형태로 옮길 것인가"라는 한 가지 질문의 역사입니다.</p>
+      <p style="margin-top:0.6rem;"><b>1960년대 — DENDRAL.</b> 최초의 전문가 시스템입니다.
+        화학 분야에서 분광 데이터로부터 분자 구조를 예측하였고, 과학 연구에 데이터 분석이라는 새로운 방법을 열어 주었습니다.</p>
+      <p style="margin-top:0.5rem;"><b>1970년대 — MYCIN.</b> 의료 분야를 위한 규칙 기반 전문가 시스템으로,
+        세균 감염 진단과 항생제 처방에 활용되었습니다. 전문가 수준의 진단이 가능하다는 것을 입증하여,
+        지식 표현과 추론의 중요성을 강조하는 계기가 되었습니다.</p>
+      <p style="margin-top:0.5rem;"><b>1980년대 — XCON(R1).</b> 디지털 이큅먼트사가 개발하여
+        복잡한 컴퓨터 시스템의 구성과 주문을 자동화하였습니다. 기업 업무를 최적화한 대표적 사례로,
+        전문가 시스템의 상업화 가능성을 보여 주었습니다. 같은 시기에 광물 탐사 시스템 프로스펙터를 비롯한
+        여러 분야의 전문가 시스템이 함께 유행하였습니다.</p>
+      <p style="margin-top:0.5rem;"><b>1990년대 — CLIPS.</b> 미국 항공 우주국(NASA)이 개발한 전문가 시스템 구축 도구입니다.
+        규칙 기반 시스템을 쉽게 만들 수 있도록 지원하여, 지식 기반 시스템 개발이 표준화되는 데 기여하였습니다.</p>
+      <p style="margin-top:0.5rem;"><b>2000년대 — IBM 왓슨.</b> 자연어 처리와 기계학습을 결합한 시스템으로,
+        2011년 미국 퀴즈 쇼 「제퍼디!」에서 우승하며 널리 알려졌습니다.
+        이후 의료·금융·법률 등 여러 분야에 적용되어, 빅데이터 분석으로 복잡한 문제를 푸는 길을 넓혔습니다.</p>
+      <p style="margin-top:0.5rem;"><b>2020년대 — 의료 인공지능.</b> 딥러닝과 전문가 시스템을 통합하여
+        의료 영상 분석, 암 조기 발견, 신약 개발 등에 활용되고 있습니다.
+        규칙은 사라진 것이 아니라, 데이터에서 학습한 모형과 함께 쓰이는 방식으로 남아 있습니다.</p>
+      <div class="q">
+        <h4>생각해 보기</h4>
+        <p>① MYCIN은 전문의에 견줄 만한 진단 성능을 보였지만 실제 병원에서 널리 쓰이지는 못하였습니다.
+          기술이 아닌 어떤 이유들이 있었을지 이야기해 봅시다.</p>
+        <p>② 세법처럼 규칙이 명확한 분야와, 진료처럼 예외가 많은 분야 가운데
+          어느 쪽이 규칙 기반 인공지능에 더 알맞을까요? 그렇게 판단한 근거를 적어 봅시다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 2 : 순서도 트레이서 ─────────────────────── -->
+  <div class="tpanel" id="lg2">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      이차방정식 ax²+bx+c=0의 <b>실근 개수</b>를 판정하는 순서도를 한 단계씩 따라가며, 기호의 뜻과 변수값의 변화를 설명합니다.
+      진행 순서: <b>단계 1 관찰</b>(예측 → 한 단계씩 추적) → <b>단계 2 정리</b>(판별식과 분기) → <b>단계 3 정의 확인</b>(알고리즘과 순서도). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" id="lg-act2" data-no-toggle="1">
+      <h3>단계 1 · 관찰 — 순서도를 한 단계씩 따라가기</h3>
+      <p>a, b, c를 정하고 <b>실근이 몇 개일지 먼저 예측</b>한 뒤, [한 단계]를 눌러 순서도를 따라가 보세요.
+        현재 위치한 기호가 강조되고, 오른쪽 변수값 표가 갱신됩니다.</p>
+
+      <div class="btn-row" style="align-items:center;">
+        <span style="font-family:var(--mono);font-size:0.95rem;">a =</span>
+        <input class="lg-num" id="lg-fc-a" type="number" value="1" step="1">
+        <span style="font-family:var(--mono);font-size:0.95rem;">b =</span>
+        <input class="lg-num" id="lg-fc-b" type="number" value="-3" step="1">
+        <span style="font-family:var(--mono);font-size:0.95rem;">c =</span>
+        <input class="lg-num" id="lg-fc-c" type="number" value="2" step="1">
+      </div>
+      <div class="chips" id="lg-fc-pre">
+        <button class="chip" onclick="lgFcPreset(1,-3,2,this)">1, −3, 2</button>
+        <button class="chip" onclick="lgFcPreset(1,-2,1,this)">1, −2, 1</button>
+        <button class="chip" onclick="lgFcPreset(1,1,1,this)">1, 1, 1</button>
+        <button class="chip" onclick="lgFcPreset(0,2,-4,this)">0, 2, −4</button>
+      </div>
+
+      <p class="mat-label" style="text-align:left;margin-top:0.7rem;">내 예측 — 실근은 몇 개일까?</p>
+      <div class="chips" id="lg-fc-preds">
+        <button class="chip" onclick="lgFcPred('2',this)">서로 다른 두 실근 (2개)</button>
+        <button class="chip" onclick="lgFcPred('1',this)">중근 (1개)</button>
+        <button class="chip" onclick="lgFcPred('0',this)">실근 없음 (0개)</button>
+        <button class="chip" onclick="lgFcPred('X',this)">이차방정식이 아니다</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn pri" onclick="lgFcStep()">한 단계 ▶</button>
+        <button class="btn" onclick="lgFcAll()">끝까지 실행</button>
+        <button class="btn" onclick="lgFcReset()">처음부터</button>
+      </div>
+
+      <div class="lg-fcgrid">
+        <div style="flex:2 1 17rem;">
+          <div class="lg-flowbox">
+            <svg class="lg-flow" viewBox="0 0 440 545" role="img" aria-label="이차방정식의 실근 개수를 판정하는 순서도">
+              <defs>
+                <marker id="lg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
+                </marker>
+              </defs>
+
+              <!-- 흐름선 -->
+              <line class="lg-fl" x1="132" y1="43" x2="132" y2="60" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="132" y1="96" x2="132" y2="116" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="194" y1="148" x2="248" y2="148" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="132" y1="178" x2="132" y2="198" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="132" y1="234" x2="132" y2="254" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="194" y1="286" x2="248" y2="286" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="132" y1="316" x2="132" y2="336" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="194" y1="368" x2="248" y2="368" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="132" y1="398" x2="132" y2="418" marker-end="url(#lg-arrow)"></line>
+              <line class="lg-fl" x1="132" y1="454" x2="132" y2="489" marker-end="url(#lg-arrow)"></line>
+              <polyline class="lg-fl" points="426,148 434,148 434,508"></polyline>
+              <polyline class="lg-fl" points="426,286 434,286"></polyline>
+              <polyline class="lg-fl" points="426,368 434,368"></polyline>
+              <line class="lg-fl" x1="434" y1="508" x2="184" y2="508" marker-end="url(#lg-arrow)"></line>
+
+              <!-- 분기 라벨 -->
+              <text class="lg-fy" x="204" y="142">예</text>
+              <text class="lg-fy" x="138" y="193">아니요</text>
+              <text class="lg-fy" x="204" y="280">예</text>
+              <text class="lg-fy" x="138" y="331">아니요</text>
+              <text class="lg-fy" x="204" y="362">예</text>
+              <text class="lg-fy" x="138" y="413">아니요</text>
+
+              <!-- 노드 -->
+              <ellipse id="lg-n-start" class="lg-nd" cx="132" cy="26" rx="50" ry="17"></ellipse>
+              <text class="lg-fx" x="132" y="30" text-anchor="middle">시작</text>
+
+              <rect id="lg-n-in" class="lg-nd" x="62" y="62" width="140" height="34" rx="2"></rect>
+              <text class="lg-fx" x="132" y="83" text-anchor="middle">a, b, c 값 입력</text>
+
+              <path id="lg-n-a0" class="lg-nd" d="M132,118 L194,148 L132,178 L70,148 Z"></path>
+              <text class="lg-fx" x="132" y="152" text-anchor="middle">a = 0 ?</text>
+
+              <rect id="lg-n-notq" class="lg-nd" x="250" y="131" width="176" height="34" rx="2"></rect>
+              <text class="lg-fx" x="338" y="152" text-anchor="middle">이차방정식이 아니다</text>
+
+              <rect id="lg-n-d" class="lg-nd" x="62" y="200" width="140" height="34" rx="2"></rect>
+              <text class="lg-fx" x="132" y="221" text-anchor="middle">D = b² − 4ac</text>
+
+              <path id="lg-n-dgt" class="lg-nd" d="M132,256 L194,286 L132,316 L70,286 Z"></path>
+              <text class="lg-fx" x="132" y="290" text-anchor="middle">D &gt; 0 ?</text>
+
+              <rect id="lg-n-two" class="lg-nd" x="250" y="269" width="176" height="34" rx="2"></rect>
+              <text class="lg-fx" x="338" y="290" text-anchor="middle">서로 다른 두 실근 2개</text>
+
+              <path id="lg-n-deq" class="lg-nd" d="M132,338 L194,368 L132,398 L70,368 Z"></path>
+              <text class="lg-fx" x="132" y="372" text-anchor="middle">D = 0 ?</text>
+
+              <rect id="lg-n-one" class="lg-nd" x="250" y="351" width="176" height="34" rx="2"></rect>
+              <text class="lg-fx" x="338" y="372" text-anchor="middle">중근 1개</text>
+
+              <rect id="lg-n-zero" class="lg-nd" x="62" y="418" width="140" height="36" rx="2"></rect>
+              <text class="lg-fx" x="132" y="440" text-anchor="middle">실근 없음 0개</text>
+
+              <ellipse id="lg-n-end" class="lg-nd" cx="132" cy="508" rx="50" ry="17"></ellipse>
+              <text class="lg-fx" x="132" y="512" text-anchor="middle">끝</text>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <p class="mat-label" style="text-align:left;">변수값 표</p>
+          <div class="lg-scroll"><table class="lg-tbl" id="lg-fc-vars"></table></div>
+          <p class="mat-label" style="text-align:left;margin-top:0.7rem;">실행 기록</p>
+          <div class="status" id="lg-fc-log" style="min-height:5rem;"></div>
+        </div>
+      </div>
+      <div class="status" id="lg-fc-st">a, b, c를 정하고 예측을 고른 뒤 [한 단계]를 눌러 보세요.</div>
+    </div>
+
+    <div class="card">
+      <h3>정리 — 순서도가 나눈 네 갈래는 무엇인가</h3>
+      <p>여러 값으로 실행한 뒤 열어 보세요. 이 순서도는 판단 기호(◇) 세 개로 경우를 네 갈래로 나눕니다.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>a = 0</b> — 이차항이 사라지므로 이차방정식이 아닙니다. 그래서 판별식을 계산하기 <b>전에</b> 먼저 확인해야 합니다.</li>
+        <li><b>D = b² − 4ac &gt; 0</b> — 서로 다른 두 실근 (2개)</li>
+        <li><b>D = 0</b> — 중근, 즉 실근이 1개</li>
+        <li><b>D &lt; 0</b> — 실근이 없습니다 (0개)</li>
+      </ul>
+      <p style="margin-top:0.7rem;">교과서에는 일차방정식 ax − b = 0의 해를 구하는 순서도가 실려 있습니다.
+        먼저 x의 계수인 a가 0인 경우와 그렇지 않은 경우로 나누고,
+        a = 0일 때 다시 b = 0이면 해가 무수히 많고 b ≠ 0이면 해가 없으며,
+        a ≠ 0이면 x = b/a입니다. 오늘의 순서도는 이 구조를 이차방정식으로 넓힌 것입니다.
+        <b>판단 기호를 겹겹이 두어 경우를 나눈다</b>는 뼈대는 완전히 같습니다.</p>
+      <p style="margin-top:0.6rem;">판단 기호의 <b>순서를 바꾸면</b> 어떻게 될까요? "D &gt; 0 ?"를 맨 앞에 두고 a=0 확인을 뒤로 미루면,
+        a=0인 입력에서 엉뚱한 답이 나옵니다. 순서도에서 <b>기호의 순서</b>는 곧 알고리즘의 정확성입니다.</p>
+    </div>
+
+    <div class="info"><strong>정의 확인 — 알고리즘과 순서도란 무엇인가</strong>
+      <p style="margin-top:0.5rem;">인공지능이 실생활 문제를 해결하려면 문제 해결 절차를 논리적인 순서로 기술하여 표현해야 합니다.
+        여기서 어떤 문제를 해결하는 계산 방법 또는 처리 과정의 순서를 <b>알고리즘(algorithm)</b>이라 하고,
+        알고리즘을 기호와 그림으로 나타낸 것을 <b>순서도(flowchart)</b>라고 합니다.</p>
+      <p style="margin-top:0.6rem;">순서도에 쓰이는 기호는 다음과 같습니다.</p>
+      <ul style="margin:0.4rem 0 0 1.2rem;">
+        <li><b>타원</b> — 순서도의 시작과 끝을 나타낼 때 사용합니다. 예) 시작, 끝</li>
+        <li><b>직사각형</b> — 여러 연산 및 데이터 이동 등 처리 기능을 나타냅니다. 예) D = b² − 4ac</li>
+        <li><b>마름모</b> — 자료를 비교·판단해 조건에 따라 경우를 분류합니다. 예) a = 0 ?</li>
+        <li><b>평행사변형</b> — 자료의 입력과 출력을 나타냅니다. 예) a, b, c 값 입력</li>
+        <li><b>화살표(흐름선)</b> — 처리의 흐름, 곧 다음에 어느 기호로 갈지를 나타냅니다.</li>
+      </ul>
+      <p style="margin-top:0.6rem;">좋은 알고리즘에는 세 가지 조건이 있습니다.
+        <b>입력과 출력이 분명할 것</b>, 각 단계가 <b>모호하지 않게</b> 적혀 있을 것,
+        그리고 반드시 <b>유한한 횟수 안에 끝날 것</b>입니다.
+        오늘 따라간 순서도가 어떤 a, b, c를 넣어도 반드시 [끝]에 도달한다는 사실을 확인해 봅시다.</p>
+      <p style="margin-top:0.6rem;">알고리즘과 순서도는 인공지능 프로그램을 개발할 때 많이 이용하며,
+        이 과정에서 수학의 다양한 원리가 활용됩니다.
+        규칙 기반 인공지능은 결국 "사람이 설계한 순서도를 기계가 성실히 따라 걷는 일"입니다.</p>
+      <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+        씨마스 「인공지능 수학」 Ⅰ단원 21쪽의 알고리즘·순서도 서술을 재구성하였습니다.
+      </p>
+    </div>
+
+    <div class="card" id="lg-c-flow">
+      <h3>사례 — 순서도는 교실 밖 어디에서 쓰이는가</h3>
+      <p>순서도는 프로그래밍 수업에서만 쓰는 도구가 아닙니다.
+        "누구든 같은 절차를 따르면 같은 결과에 이르러야 하는 일"이라면 어디에나 순서도가 있습니다.
+        아래 사례에서 <b>판단 기호(◇)에 해당하는 질문</b>이 무엇인지 찾아봅시다.</p>
+      <ul style="margin:0.6rem 0 0 1.2rem;">
+        <li><b>병원 문진표</b> — "발열이 있습니까? → 예: 호흡기 증상이 있습니까? → 예: 선별 진료소 안내".
+          예·아니요 분기가 이어지며 환자를 알맞은 진료과로 보냅니다.
+          오늘 탭 ②에서 본 전문가 시스템의 규칙을 종이에 옮긴 것과 같습니다.</li>
+        <li><b>자판기의 동작</b> — "투입 금액 ≥ 상품 가격인가? → 아니요: 대기, 예: 상품 배출 → 거스름돈 &gt; 0인가? → 예: 거스름돈 반환".
+          기계가 오작동하지 않으려면 판단의 순서가 정확해야 합니다.
+          거스름돈 확인을 상품 배출보다 앞에 두면 어떤 일이 생길지 생각해 봅시다.</li>
+        <li><b>재난 대피 요령</b> — "화재를 발견했는가? → 예: 비상벨을 누른다 → 연기가 있는가? → 예: 자세를 낮춘다".
+          긴급한 상황일수록 판단을 단순한 순서로 적어 두어야 실수가 줄어듭니다.</li>
+        <li><b>현금 자동 입출금기</b> — 카드 확인, 비밀번호 확인, 잔액 확인이라는 세 개의 판단 기호를
+          반드시 이 순서로 통과해야 출금이 이루어집니다.</li>
+      </ul>
+      <div class="lg-tiles">
+        <div class="lg-tile"><span class="em">📋</span><span class="tl">병원 문진표</span><span class="ts">예·아니요 분기로 진료과 안내</span></div>
+        <div class="lg-tile"><span class="em">🥤</span><span class="tl">자판기 동작</span><span class="ts">금액 판단 → 배출 → 거스름돈</span></div>
+        <div class="lg-tile"><span class="em">🧯</span><span class="tl">재난 대피 요령</span><span class="ts">상황 판단을 단순한 순서로</span></div>
+        <div class="lg-tile"><span class="em">🏧</span><span class="tl">현금 자동 입출금기</span><span class="ts">카드 → 비밀번호 → 잔액 확인</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="lg-step"><p class="mono">STEP 3 · 정리 — 배움 다지기</p></div>
+
+  <div class="card lg-ask" data-no-toggle="1">
+    <h3>정리 — 핵심 질문에 답하기</h3>
+    <ul class="lg-sum3">
+      <li>🧮 규칙 = 0과 1의 계산</li>
+      <li>🧩 쌓으면 전문가 시스템</li>
+      <li>🧱 예외 앞에서는 멈춤</li>
+    </ul>
+
+    <p style="margin-top:0.9rem;"><b>Q. 규칙만으로 생각하는 기계는 어디까지 똑똑해질 수 있는가?</b></p>
+    <div class="lg-scroll">
+      <table class="lg-sumtbl">
+        <tr><th>여기까지는 갑니다</th><th>여기에서 멈춥니다</th></tr>
+        <tr>
+          <td>진리표·IF-THEN 규칙·순서도만으로 판단을 <b>계산</b>합니다. MYCIN·XCON처럼 실제 산업에서 성공하였습니다.</td>
+          <td>규칙끼리 충돌하면 후보가 <b>공집합</b>이 됩니다. XOR의 출력 열 <span class="mi">0 1 1 0</span>은 다음 차시에서 넘을 벽입니다.</td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="margin-top:0.9rem;">오늘의 한 줄: <b>규칙 기반 AI는 사람이 쓴 진리표와 순서도를 성실히 따라 걷는 기계</b>입니다.
+      활동지에 "규칙만으로 풀리지 않는 문제의 예"를 하나 들고, 그 이유를 한 줄로 써 보세요.</p>
+  </div>
+
+  <div class="card">
+    <h3>자세히 보기 — 어디까지 갔고, 어디서 멈췄는가</h3>
+    <p>수업을 열며 던졌던 질문으로 돌아옵니다. 이제 우리는 답할 수 있습니다.</p>
+    <p style="margin-top:0.6rem;"><b>여기까지는 갑니다.</b> 명제의 참·거짓을 0과 1로 바꾸면, 논리 연산(∼, ∧, ∨, ⊕)과 진리표만으로
+      기계는 판단을 <b>계산</b>할 수 있습니다. 이 판단을 IF-THEN 규칙으로 쌓으면 전문가 시스템이 되고,
+      절차를 순서도로 적으면 어떤 문제든 같은 방식으로 반복해 풀 수 있습니다.
+      실제로 DENDRAL은 분자 구조를 추정하였고, MYCIN은 전문의에 견줄 진단을 해냈으며,
+      XCON은 수백만 가지 하드웨어 조합을 처리하였습니다. 1980년대의 전문가 시스템은 산업에서 크게 성공했습니다.</p>
+    <p style="margin-top:0.6rem;"><b>여기에서 멈춥니다.</b> 규칙은 사람이 하나하나 적어야 하고, 예외를 모두 담을 수 없습니다.
+      고열과 콧물이 함께 있을 때처럼 규칙끼리 충돌하면 후보가 <b>공집합</b>이 되어 답을 내지 못합니다.
+      그래서 실제 시스템은 0과 1 사이의 값을 다루는 퍼지 이론과 확률을 함께 씁니다.
+      그리고 XOR의 출력 열 <b>0 1 1 0</b> — 다음 차시에서 보게 될, 규칙 기반 인공지능이 부딪힌 가장 유명한 벽입니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.9rem;">한 문항씩 풀어 봅니다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에는 총점과 문항별 복기 목록을 볼 수 있습니다.</p>
+    <div id="lg-quiz"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" onclick="go('perceptron')">
+      <h3>다음 차시 · 4차시 퍼셉트론과 XOR의 벽</h3>
+      <p>오늘 만든 진리표를 이번엔 <b>기계가 계산하게</b> 만듭니다. 가중합과 활성화함수로 AND·OR를 구현하고,
+        XOR의 <span class="mi">0 1 1 0</span> 앞에서 직선 하나가 왜 무너지는지 직접 확인합니다.</p>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고</strong> —
+    4차시에서는 오늘 채운 진리표를 퍼셉트론으로 옮깁니다.
+    가중치 w₁, w₂와 임곗값 θ를 조절해 AND·OR를 완성한 뒤, 같은 방법으로 XOR에 도전합니다.
+    아무리 직선을 움직여도 <span class="mi">0 1 1 0</span>을 나눌 수 없다는 사실 — 1969년 AI 겨울을 부른 그 증명을
+    여러분의 손으로 재현하고, 은닉층을 더해 벽을 넘습니다.
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. 수업 시간에 다 다루지 못한 활동과 원자료를 모았습니다.
+      교사는 [+ 자료 추가]로 학급에 필요한 자료를 더할 수 있습니다.</p>
+    <div class="lg-refs" id="lg-refs"></div>
+    <div class="btn-row" id="lg-refform" style="display:none;align-items:center;">
+      <input class="lg-refadd" id="lg-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="참고 자료 주소">
+      <input class="lg-refadd" id="lg-ref-title" type="text" placeholder="제목 (선택)" aria-label="참고 자료 제목">
+      <button class="btn pri" onclick="lgRefAdd()">추가</button>
+      <button class="btn" onclick="lgRefForm(false)">취소</button>
+    </div>
+    <div class="btn-row"><button class="btn" id="lg-ref-open" onclick="lgRefForm(true)">+ 자료 추가</button></div>
+    <div class="status" id="lg-ref-st"></div>
+  </div>
+
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>우리 반 전문가 시스템 설계</h3>
+    <p class="sub">모둠별로 우리 학교·학급 생활 속 문제 하나를 골라, 그 문제를 판단해 주는 작은 전문가 시스템을 설계해 봅니다.
+      오늘 배운 지식 베이스·추론 엔진의 구조를 그대로 따라가면 됩니다.</p>
+    <dl>
+      <dt>수행 방법</dt><dd>주제 하나(급식 메뉴 추천, 동아리 배정, 등하교 옷차림 추천 등)를 정해 IF-THEN 규칙 5개 이상과
+        결론에 이르는 순서도를 그립니다. 규칙끼리 서로 충돌하는 경우를 1개 이상 포함하고,
+        그 상황에서 시스템이 어떻게 답해야 할지도 함께 설계합니다.</dd>
+      <dt>제출물</dt><dd>지식 베이스(규칙 목록), 순서도 1장, 규칙 충돌 사례와 해결 방안을 정리한 보고서 1쪽(A4)을 모둠당 1부 제출합니다.</dd>
+      <dt>평가 관점</dt><dd>논리 연산과 진리표를 규칙 표현에 정확히 활용했는가, 추론 과정과 순서도가 논리적으로 연결되는가,
+        규칙 기반 방식의 한계를 스스로 짚어냈는가를 살펴봅니다. <b>([12인수01-02])</b></dd>
+    </dl>
+  </div>
+
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>3차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>오늘 활동한 내용을 학습지에 직접 옮겨 적으며 정리합니다. [학습지 인쇄]를 누르면 A4 용지로 바로 인쇄할 수 있습니다.
+      교사는 학급에서 사용하는 학습지 파일을 아래에 링크로 추가할 수 있습니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('lg-sheet')">🖨 학습지 인쇄 <span class="sz">A4 1~2장</span></button>
+    </div>
+    <div id="lg-wslinks"></div>
+  </div>
+
+  <div class="ws-sheet" id="lg-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>3차시 학습지 — 규칙으로 생각하는 AI</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>① 마중 퀴즈 기록</h3>
+    <p class="note">오늘 처음 답한 생각을 적어 둡니다. 정답이 아니어도 괜찮습니다.</p>
+    <ol>
+      <li>"열이 나면 감기다", "기침을 하면 감기다" 같은 규칙(IF-THEN) 문장을 아주 많이 적어 두면, 컴퓨터가 진짜 의사를 대신해 진단할 수 있을까요?
+        <div class="rule sm"></div></li>
+      <li>명제 p가 참(1), 명제 q가 거짓(0)일 때 — "p 또는 q"(논리합)의 진릿값은 무엇일까요?
+        <div class="rule sm"></div></li>
+      <li>"이차방정식 ax²+bx+c=0의 실근이 몇 개인지 판정하라"를 컴퓨터에게 시키려면, 가장 먼저 필요한 것은 무엇일까요?
+        <div class="rule sm"></div></li>
+    </ol>
+
+    <h3>② 진리표 활동 — 빈 표 채우기</h3>
+    <p class="note">회로에서 확인하기 전에 먼저 예측값을 적고, 채점 후 정답을 옆 칸에 옮겨 적습니다.</p>
+    <table>
+      <tr><th>p</th><th>q</th><th>∼p</th><th>p∧q (AND)</th><th>p∨q (OR)</th><th>p⊕q (XOR)</th></tr>
+      <tr><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0</td><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1</td><td>0</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1</td><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">네 연산 가운데 출력 열이 가장 특이한 연산과 그 까닭을 한 줄로 적어 보세요.</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 전문가 시스템 규칙 작성</h3>
+    <p class="note">주제를 하나 정해(예: 급식 메뉴 추천) 사실 후보와 IF-THEN 규칙을 적어 봅니다.</p>
+    <table>
+      <tr><th>번호</th><th>IF (조건 · 사실)</th><th>THEN (결론)</th></tr>
+      <tr><td>1</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>4</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>5</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">두 규칙이 서로 충돌하는 경우를 하나 만들고, 그때 결론을 어떻게 정할지 적어 보세요.</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 순서도 추적 기록</h3>
+    <p class="note">a, b, c 값을 하나 정해 순서도를 따라가며 각 단계의 결과를 적어 봅니다.</p>
+    <table>
+      <tr><th>단계</th><th>기호(판단/처리)</th><th>결과값</th></tr>
+      <tr><td>1</td><td>a, b, c 값 입력 (a=___, b=___, c=___)</td><td class="blank"></td></tr>
+      <tr><td>2</td><td>a = 0 ?</td><td class="blank"></td></tr>
+      <tr><td>3</td><td>D = b² − 4ac</td><td class="blank"></td></tr>
+      <tr><td>4</td><td>D &gt; 0 ? / D = 0 ? / D &lt; 0 ?</td><td class="blank"></td></tr>
+      <tr><td>5</td><td>최종 결론(실근 개수)</td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑤ 형성평가 문항</h3>
+    <p class="note">고른 답과 그 이유를 간단히 적어 봅니다.</p>
+    <ol>
+      <li>p=1, q=0일 때 배타적 논리합 p⊕q의 진릿값은?
+        <br>① 0 (거짓) ② 1 (참) ③ 정할 수 없다
+        <div class="rule sm"></div></li>
+      <li>진리표의 출력 열이 0 0 0 1 (p, q가 0 0 → 0 1 → 1 0 → 1 1 순)인 논리 연산은?
+        <br>① 논리합(OR, ∨) ② 논리곱(AND, ∧) ③ 배타적 논리합(XOR, ⊕)
+        <div class="rule sm"></div></li>
+      <li>전문가 시스템에서 규칙 ①이 후보 {코로나19, 독감}을, 규칙 ③이 후보 {코로나19}를 내놓았습니다. 추론 엔진이 결론을 좁히는 방법은?
+        <br>① 두 후보 집합의 합집합을 구한다 ② 두 후보 집합의 교집합을 구한다 ③ 규칙 번호가 큰 쪽을 그대로 쓴다
+        <div class="rule sm"></div></li>
+      <li>순서도에서 마름모(◇) 기호의 뜻으로 알맞은 것은?
+        <br>① 순서도의 시작과 끝을 나타낸다 ② 여러 연산과 데이터 이동을 처리한다 ③ 조건에 따라 경우를 분류(판단)한다
+        <div class="rule sm"></div></li>
+      <li>다음 중 1970년대에 개발되어 세균 감염을 진단하고 항생제를 처방한 의료 전문가 시스템은?
+        <br>① DENDRAL ② MYCIN ③ XCON
+        <div class="rule sm"></div></li>
+      <li>마중 퀴즈로 돌아가서 — "규칙을 아주 많이 적으면 AI가 의사를 대신할 수 있을까?"에 대한 설명으로 가장 알맞은 것은?
+        <br>① 규칙 수가 1만 개를 넘으면 완전해진다 ② 규칙끼리 충돌하고 예외를 다 적을 수 없어 한계가 있다 ③ 규칙 기반 방식으로는 어떤 진단도 불가능하다
+        <div class="rule sm"></div></li>
+    </ol>
+
+    <h3>⑥ 핵심 질문 서술란</h3>
+    <p class="note">오늘 배운 내용을 바탕으로 자신의 언어로 답을 완성해 보세요.</p>
+    <p><b>규칙만으로 생각하는 기계는 어디까지 똑똑해질 수 있는가?</b></p>
+    <div class="rule lg"></div>
+  </div>
+</div>

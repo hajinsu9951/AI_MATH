@@ -1,0 +1,1124 @@
+<!-- ═══════════ REVIEW (11차시: 실생활 프로젝트 — 리뷰 분석과 추천) ═══════════
+     · 파일 위치: views/review.html  (신규)
+     · 전역 접두사 rv · 뷰 루트 id #v-review · 모든 스타일 규칙은 #v-review 하위로만 작성
+     · 로직은 core.js 끝의 「REVIEW(11차시) 블록」 참조
+     · 새 수학을 도입하지 않습니다 — 6~10차시가 만든 네 엔진(tp·tf·sm·st)을 재조합합니다.
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-review">
+  <style>
+  /* review 뷰 전용 스타일 (#v-review 스코프 한정 — 전역 누수 금지) */
+  #v-review .rv-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-review .rv-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-review .rv-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 · 다섯 자루의 자 */
+  #v-review .rv-hero{position:relative;}
+  #v-review .rv-wm{position:absolute;right:0;top:-0.6rem;width:16rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-review .rv-hero>*:not(.rv-wm){position:relative;}
+  #v-review .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-review .rv-rulers{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.9rem 0 1.4rem;}
+  #v-review .rv-rulers button{display:inline-flex;align-items:center;gap:0.35rem;min-height:44px;
+    font-family:var(--sans);font-size:0.95rem;padding:0.4rem 0.8rem;border:1px solid var(--border);
+    border-radius:9999px;background:var(--bg);color:var(--body);cursor:pointer;transition:all 0.2s;}
+  #v-review .rv-rulers button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-review .rv-rulers button.on{border-color:var(--fg);background:var(--card-h);color:var(--fg);font-weight:600;}
+  #v-review .rv-rulers button.on::after{content:'· 오늘 사용';font-family:var(--mono);font-size:0.68rem;color:var(--muted);}
+  #v-review .rv-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-review .rv-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-review .rv-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-review .rv-ask{border-left:4px solid var(--accent);}
+  #v-review .rv-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-review .rv-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-review .rv-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-review .rv-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-review .rv-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-review .rv-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-review .rv-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:pre;}
+  #v-review .rv-scroll{overflow-x:auto;max-width:100%;}
+  #v-review .rv-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-review .rv-tbl th,#v-review .rv-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-review .rv-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-review .rv-tbl td.hi{background:var(--card-h);font-weight:700;color:var(--fg);}
+  #v-review .rv-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-review .rv-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-review .rv-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-review .rv-fb b{color:var(--fg);}
+  #v-review .rv-fb:empty{display:none;}
+  #v-review .rv-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-review .rv-in{height:2.6rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-review .rv-in.num{width:5.2rem;text-align:center;}
+  #v-review .rv-ta{width:100%;min-height:3.4rem;border:1px solid var(--border);border-radius:var(--radius);
+    background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:0.98rem;line-height:1.8;padding:0.6rem 0.7rem;resize:vertical;}
+  #v-review .rv-badge{display:inline-flex;align-items:center;gap:0.3rem;font-family:var(--mono);font-size:0.74rem;
+    border:1px solid var(--border);border-radius:9999px;padding:0.25rem 0.65rem;background:var(--bg);color:var(--muted);
+    max-width:100%;min-width:0;line-height:1.6;overflow-wrap:anywhere;}
+  #v-review .rv-badge b{color:var(--fg);font-weight:700;}
+  #v-review .rv-badge.hot{border-color:var(--red);color:var(--red);}
+  #v-review .rv-badge.good{border-color:var(--green);color:var(--green);}
+  #v-review .rv-badge.mark{border-color:var(--fg);color:var(--fg);}
+  /* 조작 요소 확대 — 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-review .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-review .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-review .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-review .tabs{flex-wrap:wrap;}
+  #v-review .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-review .ws-btn{min-height:44px;}
+
+  /* 단계 토글(details) — 조작 전에는 잠깁니다 */
+  #v-review .rv-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-review .rv-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-review .rv-fold>summary::-webkit-details-marker{display:none;}
+  #v-review .rv-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-review .rv-fold[open]>summary::after{content:'▾';}
+  #v-review .rv-fold .bd{padding:0 0 0.9rem;}
+  #v-review .rv-fold .bd p,#v-review .rv-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-review .rv-fold.rv-locked{opacity:0.62;}
+  #v-review .rv-fold.rv-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-review .rv-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* STEP 1 — 의뢰서 */
+  #v-review .rv-brief{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:1.1rem;align-items:center;margin-top:0.8rem;}
+  #v-review .rv-brief svg{width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);}
+  #v-review .rv-letter{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.9rem 1.05rem;}
+  #v-review .rv-letter p{font-size:1.02rem;line-height:1.9;margin:0 0 0.35rem;color:var(--body);}
+  #v-review .rv-letter p.q{font-weight:700;color:var(--fg);margin-top:0.5rem;}
+  @media(max-width:640px){#v-review .rv-brief{grid-template-columns:1fr;}}
+
+  /* STEP 1 — 검색 카드 그리드(영상 카드와 같은 모양) */
+  #v-review .rv-vdgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin:0.8rem 0 0;}
+  @media(max-width:900px){#v-review .rv-vdgrid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){#v-review .rv-vdgrid{grid-template-columns:1fr;}}
+  #v-review .rv-vdlink{display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:0.7rem;overflow:hidden;background:var(--card);transition:all 0.2s;}
+  #v-review .rv-vdlink:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-review .rv-vdlink .th{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;
+    background:var(--card-h);font-size:2.2rem;}
+  #v-review .rv-vdlink .meta{display:block;padding:0.55rem 0.7rem 0.75rem;}
+  #v-review .rv-vdlink .meta b{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;}
+  #v-review .rv-vdlink .meta span{display:block;font-size:0.8rem;color:var(--muted);margin-top:0.2rem;line-height:1.6;}
+  #v-review .rv-again{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.6rem 0 0;}
+
+  /* 탭 ① 상단 고정 바 */
+  #v-review .rv-bar{position:sticky;top:0;z-index:5;}
+  #v-review .rv-barrow{display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;margin-top:0.6rem;}
+  #v-review .rv-guard{display:none;margin-top:0.7rem;border:2px solid var(--red);border-radius:var(--radius);
+    background:var(--bg);padding:0.75rem 0.9rem;font-size:1.0rem;line-height:1.8;color:var(--body);}
+  #v-review .rv-guard.on{display:block;}
+  #v-review .rv-guard b{color:var(--red);}
+  #v-review .rv-guard .sub{display:block;font-family:var(--mono);font-size:0.8rem;color:var(--muted);margin-top:0.35rem;}
+  #v-review .rv-paste{display:none;margin-top:0.7rem;}
+  #v-review .rv-paste.on{display:block;}
+  #v-review .rv-paste textarea{width:100%;min-height:7rem;font-family:var(--mono);font-size:0.85rem;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--fg);padding:0.6rem;line-height:1.7;}
+
+  /* 캔버스 공통 */
+  #v-review canvas.rv-cv{display:block;width:100%;max-width:min(100%,40rem);height:auto;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);margin:0.7rem auto 0.4rem;}
+  #v-review .rv-legend{display:flex;flex-wrap:wrap;gap:0.35rem 1rem;justify-content:center;
+    font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin-bottom:0.4rem;}
+  #v-review .rv-legend i{display:inline-block;width:1.6rem;height:0;border-top-width:3px;
+    border-top-style:solid;vertical-align:middle;margin-right:0.3rem;}
+
+  /* 두 칸 배치 */
+  #v-review .rv-2col{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(17rem,100%),1fr));gap:1rem;margin-top:0.8rem;}
+  #v-review .rv-pane{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem;min-width:0;}
+  #v-review .rv-pane>h4{font-size:1.0rem;margin:0 0 0.5rem;color:var(--fg);}
+
+  /* 막대(활동 3) */
+  #v-review .rv-bar1{display:flex;align-items:center;gap:0.5rem;margin:0.4rem 0;}
+  #v-review .rv-bar1 .nm{font-family:var(--mono);font-size:0.84rem;width:5.6rem;flex-shrink:0;color:var(--fg);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #v-review .rv-bar1 .tk{flex:1;min-width:2rem;height:1.1rem;background:var(--card);border:1px solid var(--border);
+    border-radius:9999px;overflow:hidden;}
+  #v-review .rv-bar1 .tk i{display:block;height:100%;width:0;background:var(--accent);border-radius:9999px;
+    transition:width 0.4s cubic-bezier(0.22,1,0.36,1);}
+  #v-review .rv-bar1.pick .tk i{background:var(--fg);}
+  #v-review .rv-bar1 .vl{font-family:var(--mono);font-size:0.82rem;font-weight:700;width:4.4rem;text-align:right;flex-shrink:0;}
+  #v-review .rv-bar1 button{all:unset;display:flex;align-items:center;gap:0.5rem;width:100%;cursor:pointer;min-height:44px;}
+  #v-review .rv-bar1 button:focus-visible{outline:2px solid var(--fg);outline-offset:2px;}
+
+  /* 리뷰 목록 */
+  #v-review .rv-list{max-height:26rem;overflow-y:auto;overflow-x:hidden;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);padding:0.5rem;}
+  #v-review .rv-item{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);
+    border-radius:0.45rem;padding:0.5rem 0.65rem;margin-bottom:0.4rem;cursor:pointer;min-height:44px;
+    font-family:var(--sans);font-size:0.95rem;line-height:1.7;color:var(--body);transition:all 0.15s;}
+  #v-review .rv-item:hover{border-color:var(--fg);}
+  #v-review .rv-item.on{border-color:var(--fg);background:var(--card-h);}
+  #v-review .rv-item .hd{display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;font-family:var(--mono);
+    font-size:0.76rem;color:var(--muted);margin-bottom:0.2rem;}
+  #v-review .rv-item .vd{font-weight:700;}
+  #v-review .rv-item .vd.p{color:var(--blue);}
+  #v-review .rv-item .vd.n{color:var(--red);}
+  #v-review .rv-item mark{background:var(--accent);color:var(--fg);border-radius:0.2rem;padding:0 0.12rem;}
+  #v-review .rv-more{width:100%;min-height:44px;border:1px dashed var(--border);border-radius:0.45rem;
+    background:transparent;color:var(--muted);cursor:pointer;font-family:var(--sans);font-size:0.9rem;}
+
+  /* 별점 격자 */
+  #v-review .rv-grid{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,26rem);}
+  #v-review .rv-grid th,#v-review .rv-grid td{border:1px solid var(--border);padding:0.2rem;text-align:center;}
+  #v-review .rv-grid th{background:var(--card-h);font-weight:600;font-size:0.8rem;line-height:1.4;padding:0.35rem 0.4rem;}
+  #v-review .rv-grid th.me{color:var(--fg);}
+  #v-review .rv-grid select{width:100%;min-height:44px;border:1px solid transparent;background:var(--bg);
+    color:var(--fg);font-family:var(--mono);font-size:0.95rem;text-align:center;border-radius:0.3rem;cursor:pointer;}
+  #v-review .rv-grid select:focus{outline:2px solid var(--fg);outline-offset:-2px;}
+  #v-review .rv-grid td.gap{background:repeating-linear-gradient(45deg,var(--card),var(--card) 5px,var(--card-h) 5px,var(--card-h) 10px);}
+
+  /* 히트맵(표) */
+  #v-review .rv-heat{border-collapse:collapse;font-family:var(--mono);font-size:0.9rem;min-width:min(100%,22rem);}
+  #v-review .rv-heat th,#v-review .rv-heat td{border:1px solid var(--border);padding:0.5rem 0.65rem;text-align:center;}
+  #v-review .rv-heat th{background:var(--card-h);font-weight:700;}
+  #v-review .rv-heat td.dg{outline:2px solid var(--fg);outline-offset:-2px;font-weight:700;}
+  #v-review .rv-heat td.up{position:relative;}
+  #v-review .rv-heat td.up::after{content:'▲';position:absolute;right:0.15rem;top:0.05rem;font-size:0.5rem;color:var(--muted);}
+  #v-review .rv-heat.fold td.lo{opacity:0.18;}
+
+  /* 추천 근거 카드 */
+  #v-review .rv-rec{border:1px solid var(--border);border-left:4px solid var(--green);border-radius:0 var(--radius) var(--radius) 0;
+    background:var(--bg);padding:0.8rem 0.95rem;margin-top:0.7rem;}
+  #v-review .rv-rec ol{margin:0.4rem 0 0 1.2rem;}
+  #v-review .rv-rec li{font-size:1.0rem;line-height:1.85;color:var(--body);margin-bottom:0.3rem;}
+
+  /* k 슬라이더 — 전역 .ns 는 트랙이 6px 뿐이어서 터치 타깃 44px 규약에 미달합니다.
+     10차시 senti 의 input[type=range].st-k 와 같은 방식으로 뷰 안에서만 높이를 올립니다
+     (전역 .ns 는 1~5차시가 함께 쓰므로 손대지 않습니다). */
+  #v-review input[type=range].ns{height:44px;background:transparent;cursor:pointer;}
+  #v-review input[type=range].ns::-webkit-slider-runnable-track{height:6px;
+    background:var(--border);border-radius:9999px;}
+  #v-review input[type=range].ns::-webkit-slider-thumb{-webkit-appearance:none;
+    width:1.3rem;height:1.3rem;background:var(--fg);border-radius:50%;margin-top:-0.45rem;}
+  #v-review input[type=range].ns::-moz-range-track{height:6px;
+    background:var(--border);border-radius:9999px;}
+  #v-review input[type=range].ns::-moz-range-thumb{width:1.3rem;height:1.3rem;
+    background:var(--fg);border:0;border-radius:50%;}
+
+  /* 인쇄 지면 2쪽 나눔 */
+  #v-review .rv-pb{break-before:page;page-break-before:always;}
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="rv-hero">
+    <svg class="rv-wm" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
+      <rect x="24" y="96" width="16" height="34" fill="var(--blue)" opacity="0.55"/>
+      <rect x="52" y="88" width="16" height="42" fill="var(--blue)" opacity="0.55"/>
+      <rect x="80" y="102" width="16" height="28" fill="var(--blue)" opacity="0.55"/>
+      <rect x="108" y="112" width="16" height="18" fill="var(--red)" opacity="0.55"/>
+      <rect x="136" y="118" width="16" height="12" fill="var(--red)" opacity="0.55"/>
+      <path d="M32 40 L60 44 L88 62 L116 94 L144 106 L200 112" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="88" cy="62" r="5" fill="var(--accent)"/>
+      <circle cx="116" cy="94" r="6" fill="var(--red)"/>
+      <path d="M20 130 H212" stroke="var(--fg)" stroke-width="2"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅱ 단원 · 11차시 · [12인수02-02] [12인수02-03] · 실생활 프로젝트</p>
+    <h2>리뷰 분석과 추천 — 100건 속에 숨은 한 단어를 찾아서</h2>
+    <p class="desc">
+      학교 앞 분식집의 별점이 다섯 달 만에 4.6에서 2.2로 떨어졌습니다.
+      사장님은 “맛은 그대로”라고 합니다. 리뷰 100건을 다 읽어도 “맛있다”만 반복됩니다.
+      오늘은 여섯 차시 동안 만든 <b>다섯 자루의 자</b>를 한꺼번에 꺼내, 원인을 수로 찾아냅니다.
+    </p>
+    <div class="rv-rulers" aria-label="2단원에서 만든 다섯 자루의 자">
+      <button type="button" class="on" onclick="rvGo('text','pre')">✂ 집합 · 6차시</button>
+      <button type="button" class="on" onclick="rvGo('text','freq')">→ 벡터 · 7차시</button>
+      <button type="button" class="on" onclick="rvGo('tfidf')">⚖ TF-IDF · 8차시</button>
+      <button type="button" class="on" onclick="rvGo('sim')">📐 유사도 · 9차시</button>
+      <button type="button" class="on" onclick="rvGo('senti')">💬 감성 · 10차시</button>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 리뷰 100건을 <b>빈도수 벡터와 TF-IDF</b>로 요약하여, 겉으로 드러나지 않은 유용한 정보를 추출할 수 있습니다. <b>[12인수02-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② <b>감성 점수·임계값·유사도</b>를 이용하여 텍스트를 분석하고 추천하는 수학적 방법을, 그 한계와 함께 <b>설명</b>할 수 있습니다. <b>[12인수02-03]</b>
+    </div>
+    <div class="rv-goalmap">
+      <button type="button" onclick="rvSee(0,'rv-act1')">├ 목표 ① → <b>활동 1</b>(감성 시계열) · <b>활동 3</b>(TF vs TF-IDF 상위어) →</button>
+      <button type="button" onclick="rvSee(0,'rv-act2')">└ 목표 ② → <b>활동 2</b>(사전과 k 조정) · <b>활동 4</b>(닮은 리뷰) · <b>활동 5·6</b>(추천과 필터 버블) →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips rv-keys" data-no-toggle="1">
+    <span class="chip">데이터 대시보드</span>
+    <span class="chip">시기별 문서와 TF-IDF</span>
+    <span class="chip">판정 가능 조건 n(A) ≥ k·n(P)</span>
+    <span class="chip">유사도 행렬(대칭)</span>
+    <span class="chip">추천의 근거와 필터 버블</span>
+  </div>
+
+  <div class="card rv-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>100건을 다 읽어도 보이지 않던 원인을, 수는 어떻게 찾아내는가?</li>
+      <li>“나와 잘 맞는 추천”은 언제나 “좋은 추천”인가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">두 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="rv-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>📩 학교 앞 분식집 사장님의 쪽지</h3>
+    <div class="rv-brief">
+      <svg viewBox="0 0 240 150" role="img" aria-label="1월 4.6에서 5월 2.2까지 내려가는 평균 별점 꺾은선 그래프">
+        <path d="M34 126 H222" stroke="var(--border)" stroke-width="1.5"/>
+        <path d="M34 126 V16" stroke="var(--border)" stroke-width="1.5"/>
+        <path d="M110 22 L156 22 L156 126 L110 126 Z" fill="var(--red)" opacity="0.10"/>
+        <path d="M42 30 L80 32 L118 55 L156 96 L194 110" fill="none" stroke="var(--blue)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="42" cy="30" r="4" fill="var(--blue)"/><circle cx="80" cy="32" r="4" fill="var(--blue)"/>
+        <circle cx="118" cy="55" r="4" fill="var(--blue)"/><circle cx="156" cy="96" r="5" fill="var(--red)"/>
+        <circle cx="194" cy="110" r="4" fill="var(--red)"/>
+        <text x="42" y="140" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">1월</text>
+        <text x="194" y="140" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">5월</text>
+        <text x="42" y="22" font-size="11" fill="var(--fg)" font-family="monospace" text-anchor="middle">4.6</text>
+        <text x="200" y="103" font-size="11" fill="var(--red)" font-family="monospace" text-anchor="middle">2.2</text>
+      </svg>
+      <div class="rv-letter">
+        <p>“가게를 연 지 다섯 달이 됐습니다. 처음에는 별점이 4.6이었는데 지금은 2.2예요.</p>
+        <p>국물 끓이는 법도, 재료 대는 곳도 바꾼 게 없습니다. 그런데 손님이 반으로 줄었어요.</p>
+        <p>리뷰는 100개나 쌓였는데, 읽어 봐도 ‘맛있다’, ‘좋다’, ‘별로다’ 뿐이라 뭘 고쳐야 할지 모르겠습니다.</p>
+        <p class="q">이 100개 안에 답이 있을까요?”</p>
+      </div>
+    </div>
+    <p class="rv-hint" style="margin-top:0.7rem;">이 리뷰 100건은 수업을 위해 집필진이 직접 지어낸 자료입니다.
+      실제 가게·상호와는 아무 관련이 없습니다.</p>
+    <span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.66 「리뷰 분석 서비스로 기업 가치 향상」의 상황 설정을 학교 앞 분식집으로 재구성
+      (가상의 가게이며 실제 업체와 무관합니다)</span>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 오늘 쓸 도구를 다시 확인하기</h3>
+    <p>11차시는 <b>종합 프로젝트 차시</b>이므로 새 영상을 더하지 않습니다.
+      아래 세 카드는 <b>6~10차시에서 이미 본 영상</b>이며, 기억이 흐릿한 학생만 복습용으로 다시 보세요.
+      카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).</p>
+    <div class="rv-again">
+      <span class="rv-badge mark">↺ 다시 보기 · 10차시</span>
+      <span class="rv-badge mark">↺ 다시 보기 · 8차시</span>
+      <span class="rv-badge mark">↺ 다시 보기 · 9차시</span>
+      <span class="rv-badge">새 자료가 아니라 <b>복습용</b>입니다</span>
+    </div>
+    <div id="rv-videos"></div>
+    <p class="rv-hint">아래 두 카드는 <b>유튜브 검색</b>이 새 탭으로 열립니다. 교육과정에 맞는 한국어 영상이
+      아직 확보되지 않아 검색 카드로 둡니다.</p>
+    <div class="rv-vdgrid">
+      <a class="rv-vdlink" href="https://www.youtube.com/results?search_query=%EC%B6%94%EC%B2%9C+%EC%8B%9C%EC%8A%A4%ED%85%9C+%EC%9B%90%EB%A6%AC+%EC%BD%94%EC%82%AC%EC%9D%B8+%EC%9C%A0%EC%82%AC%EB%8F%84"
+         target="_blank" rel="noopener">
+        <span class="th">🔎</span>
+        <span class="meta"><b>“추천 시스템은 어떻게 작동할까” 영상 찾기</b>
+          <span>유튜브 검색 · 오늘 탭 ②에서 할 계산이 실제 서비스에서 어떻게 쓰이는지 찾아봅시다.</span></span>
+      </a>
+      <a class="rv-vdlink" href="https://www.youtube.com/results?search_query=%ED%95%84%ED%84%B0+%EB%B2%84%EB%B8%94+%EC%B6%94%EC%B2%9C+%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98"
+         target="_blank" rel="noopener">
+        <span class="th">🔎</span>
+        <span class="meta"><b>“필터 버블”이 무엇인지 찾아보기</b>
+          <span>유튜브 검색 · 활동 6 토론 전 5분 과제로 지정할 수 있습니다.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="rv-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답이 오늘의 세 장면입니다.</b> 이제 리뷰 100건을 열어 봅시다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="rv-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="rvTab(0,this)">① 리뷰 대시보드</button>
+    <button class="tab" type="button" onclick="rvTab(1,this)">② 웹툰 추천</button>
+  </div>
+
+  <!-- ── 탭 ① 리뷰 대시보드 ────────────────────────────────────────── -->
+  <div class="tpanel on" id="rv-p0">
+
+    <div class="card rv-bar" data-no-toggle="1">
+      <h3>대시보드 조작판</h3>
+      <div class="btn-row" style="margin:0.5rem 0 0;">
+        <button class="btn pri" type="button" onclick="rvAnalyzeRun()">분석하기</button>
+        <button class="btn" type="button" onclick="rvPasteToggle()">리뷰 데이터 바꾸기 ▾</button>
+        <button class="btn" type="button" onclick="rvReset()">처음 상태로</button>
+      </div>
+      <div class="rv-barrow" id="rv-badges"></div>
+      <div class="rv-guard" id="rv-guard" role="status" aria-live="polite"></div>
+      <div class="rv-paste" id="rv-paste">
+        <p class="rv-hint">한 줄에 한 건씩 <b>날짜,별점,본문</b> 형식으로 붙여 넣으세요(예: <code>03-15,2,국물이 짜요</code>).
+          비우고 [적용]을 누르면 내장 100건으로 돌아옵니다. 씨마스 Ⅱ p.78~79 공학 도구의 “분석하고 싶은 텍스트 데이터를 업로드” 활동에 해당합니다.</p>
+        <textarea id="rv-paste-ta" aria-label="리뷰 데이터 붙여넣기"></textarea>
+        <div class="btn-row">
+          <button class="btn pri" type="button" onclick="rvPasteApply()">적용</button>
+          <button class="btn" type="button" onclick="rvPasteToggle()">닫기</button>
+        </div>
+        <p class="status" id="rv-paste-st"></p>
+      </div>
+    </div>
+
+    <!-- 활동 1 -->
+    <div class="card" id="rv-act1" data-no-toggle="1">
+      <h3>활동 1 · 「언제 꺾였나」 — 별점 꺾은선과 감성 꺾은선</h3>
+      <p>사장님이 준 자료는 리뷰 100건과 별점뿐입니다. 별점 평균은 <b>1월 4.60 → 5월 2.20</b>.
+        그런데 별점은 “떨어졌다”만 말해 줄 뿐, <b>언제부터, 얼마나 급하게</b> 떨어졌는지는 흐릿합니다.
+        여러분이 10차시에 만든 감성 점수로 같은 그림을 한 번 더 그려 봅시다. 두 선은 겹칠까요, 갈릴까요?</p>
+      <p class="mat-label" style="text-align:left;">먼저 예측하기 — 고르면 아래 그래프가 열립니다</p>
+      <div class="chips" id="rv-a1-guess">
+        <button class="chip" type="button" onclick="rvPredict1(0,this)">① 두 선이 거의 포개진다</button>
+        <button class="chip" type="button" onclick="rvPredict1(1,this)">② 감성 선이 먼저 꺾인다</button>
+        <button class="chip" type="button" onclick="rvPredict1(2,this)">③ 별점 선이 먼저 꺾인다</button>
+      </div>
+      <div class="rv-veil" id="rv-a1-panel">
+        <div class="rv-legend">
+          <span><i style="border-color:var(--blue);border-top-style:solid;"></i>평균 별점(왼쪽 눈금 1~5, 실선)</span>
+          <span><i style="border-color:var(--accent);border-top-style:dashed;"></i>평균 감성 점수(오른쪽 눈금, 긴 점선)</span>
+        </div>
+        <canvas class="rv-cv" id="rv-line" height="260" role="img"
+          aria-label="월별 평균 별점과 평균 감성 점수를 함께 그린 꺾은선 그래프"></canvas>
+        <div class="btn-row">
+          <button class="btn" type="button" onclick="rvMarkDrop()">꺾인 곳 표시</button>
+          <button class="btn" type="button" onclick="rvMonth('')">전체 보기</button>
+        </div>
+        <div class="rv-barrow" id="rv-a1-badges"></div>
+        <div class="chips" id="rv-a1-months">
+          <button class="chip" type="button" onclick="rvMonth('01')">1월</button>
+          <button class="chip" type="button" onclick="rvMonth('02')">2월</button>
+          <button class="chip" type="button" onclick="rvMonth('03')">3월</button>
+          <button class="chip" type="button" onclick="rvMonth('04')">4월</button>
+          <button class="chip" type="button" onclick="rvMonth('05')">5월</button>
+        </div>
+        <div class="rv-scroll"><table class="rv-tbl" id="rv-a1-tbl"></table></div>
+      </div>
+
+      <p class="rv-lockmsg" id="rv-a1-lock">🔒 [분석하기]를 누르면 아래 단계 토글이 열립니다.</p>
+      <details class="rv-fold rv-locked" id="rv-a1-f1"><summary>단계 1 · 관찰 — 두 선을 나란히 놓고 보면</summary>
+        <div class="bd"><p>별점은 1월 4.60 → 2월 4.55 → 3월 3.85 → 4월 2.65 → 5월 2.20으로 내려갑니다.
+          <b>가장 크게 꺾인 구간은 3월 → 4월</b>(−1.20)입니다. 감성 점수도 같은 구간에서 가장 크게 내려갑니다.
+          두 선은 대체로 같이 움직이지만 <b>감성 선이 3월에 먼저 완만해지기 시작</b>합니다.
+          별점은 1~5의 다섯 단계뿐이라 작은 불만을 담지 못하지만, 감성 점수는 단어를 세므로 더 미세한 변화를 잡습니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a1-f2"><summary>단계 2 · 정리 — 자료를 시간 순으로 놓는다는 것</summary>
+        <div class="bd"><p>리뷰 100건을 그냥 모아 놓으면 “긍정이 몇 %”밖에 알 수 없습니다.
+          <b>날짜를 축으로 세우는 순간</b> 자료는 이야기가 됩니다. 언제 좋았고, 언제부터 나빠졌고, 지금은 어떤지.
+          문제 해결의 첫걸음은 <b>문제가 시작된 시점을 좁히는 일</b>입니다. 우리가 좁힌 구간은 <b>4월</b>입니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a1-f3"><summary>단계 3 · 정의 확인 — 평균 감성 점수</summary>
+        <div class="bd"><p>어떤 달의 <b>평균 감성 점수</b>란, 그 달 리뷰들의 감성 점수 J(P, A) − J(N, A)를 모두 더해
+          리뷰 개수로 나눈 값입니다. 리뷰마다 길이가 달라도 각 점수가 −1 이상 1 이하이므로, 평균도 그 범위 안에 있습니다.</p></div></details>
+
+      <p style="margin-top:0.9rem;"><b>확인.</b> 위 그래프에서 <b>평균 별점이 가장 크게 떨어진 구간</b>은?</p>
+      <div class="btn-row" id="rv-a1-q">
+        <button class="btn" type="button" onclick="rvA1Check(0,this)">① 1월→2월</button>
+        <button class="btn" type="button" onclick="rvA1Check(1,this)">② 2월→3월</button>
+        <button class="btn" type="button" onclick="rvA1Check(2,this)">③ 3월→4월</button>
+        <button class="btn" type="button" onclick="rvA1Check(3,this)">④ 4월→5월</button>
+      </div>
+      <div class="rv-fb" id="rv-a1-fb"></div>
+      <span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.66~67(리뷰 분석과 감성 분석의 활용) 서술을 재구성</span>
+    </div>
+
+    <!-- 활동 2 -->
+    <div class="card" id="rv-act2" data-no-toggle="1">
+      <h3>활동 2 · 「손잡이는 두 개다」 — 감성 사전과 임계값 k ★ 오늘의 수학적 심장</h3>
+      <p>그런데 이상합니다. 오른쪽 도넛을 보세요. <b id="rv-a2-head">긍정 5건 · 중립 95건 · 부정 0건.</b>
+        별점 1점짜리 리뷰까지 전부 ‘중립’입니다. 10차시에서 그렇게 잘 되던 감성 분석이 왜 여기서는 아무 말도 하지 않을까요?
+        <b>계산이 틀린 걸까요, 기준이 틀린 걸까요?</b></p>
+
+      <div class="rv-2col">
+        <div class="rv-pane">
+          <h4>판정 분포</h4>
+          <canvas class="rv-cv" id="rv-donut" height="220" role="img"
+            aria-label="긍정·중립·부정 판정 개수를 나타낸 도넛 차트"></canvas>
+          <div class="chips" id="rv-a2-slice">
+            <button class="chip" type="button" onclick="rvDonutPick('긍정',this)">긍정만 보기</button>
+            <button class="chip" type="button" onclick="rvDonutPick('중립',this)">중립만 보기</button>
+            <button class="chip" type="button" onclick="rvDonutPick('부정',this)">부정만 보기</button>
+            <button class="chip on" type="button" onclick="rvDonutPick('',this)">전체</button>
+          </div>
+          <p class="rv-hint">도넛의 세 조각은 색뿐 아니라 <b>채움 무늬</b>(무지·사선·점)도 다릅니다.</p>
+        </div>
+        <div class="rv-pane">
+          <h4>한 건 열어 보기</h4>
+          <div class="rv-list" id="rv-a2-list"></div>
+          <div id="rv-a2-calc"></div>
+        </div>
+      </div>
+
+      <h4 style="margin-top:1.2rem;">넘을 수 없는 천장 — 수직선 위에서 보기</h4>
+      <p class="rv-hint">감성 점수들이 −k와 +k 사이의 회색 띠(중립)에 통째로 갇혀 있는지 확인해 보세요.</p>
+      <canvas class="rv-cv" id="rv-hist" height="200" role="img"
+        aria-label="감성 점수의 분포와 임계값 k가 만드는 중립 구간을 겹쳐 그린 수직선 도해"></canvas>
+
+      <h4 style="margin-top:1.2rem;">두 개의 손잡이</h4>
+      <div class="rv-2col">
+        <div class="rv-pane">
+          <h4>손잡이 A · 감성 사전</h4>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="rvDictWide(1)">사전 넓히기(＋16개 한 번에)</button>
+            <button class="btn" type="button" onclick="rvDictWide(0)">10차시 사전으로 되돌리기</button>
+          </div>
+          <p class="rv-hint">칩을 하나씩 눌러 넣고 뺄 수도 있습니다. 파랑 = 긍정 후보, 빨강 = 부정 후보.</p>
+          <div class="chips" id="rv-dict-p"></div>
+          <div class="chips" id="rv-dict-n"></div>
+          <p class="status" id="rv-dict-st"></p>
+        </div>
+        <div class="rv-pane">
+          <h4>손잡이 B · 임계값 k</h4>
+          <label class="rv-hint" for="rv-k">슬라이더 · 좌우 방향키 · 숫자 입력 세 가지 모두 됩니다.</label>
+          <input class="ns" id="rv-k" type="range" min="0" max="0.30" step="0.01" value="0.25"
+                 oninput="rvKSet(this.value)" aria-label="임계값 k">
+          <div class="btn-row" style="align-items:center;">
+            <input class="rv-in num" id="rv-k-num" type="number" min="0" max="0.30" step="0.01" value="0.25"
+                   onchange="rvKSet(this.value)" aria-label="임계값 k 직접 입력">
+            <span class="rv-badge" id="rv-k-lab"><b>k = 0.25</b></span>
+            <button class="btn" type="button" onclick="rvKSet(0.25)">0.25(10차시)</button>
+            <button class="btn" type="button" onclick="rvKSet(0.10)">0.10</button>
+          </div>
+          <p class="rv-hint" id="rv-k-need"></p>
+        </div>
+      </div>
+
+      <h4 style="margin-top:1.2rem;">네 조합 결과판 — 네 칸을 모두 채워야 단계 토글이 열립니다</h4>
+      <div class="rv-scroll">
+        <table class="rv-tbl" id="rv-a2-combo">
+          <tr><th></th><th>k = 0.25 (10차시 값)</th><th>k = 0.10</th></tr>
+          <tr><th>기본 사전 P10/N10</th><td id="rv-c-b25">—</td><td id="rv-c-b10">—</td></tr>
+          <tr><th>넓힌 사전 P18/N18</th><td id="rv-c-w25">—</td><td id="rv-c-w10">—</td></tr>
+        </table>
+      </div>
+      <p class="status" id="rv-a2-st"></p>
+
+      <p class="rv-lockmsg" id="rv-a2-lock">🔒 네 조합(사전 2가지 × k 2가지)을 모두 눌러 본 뒤에 열립니다.</p>
+      <details class="rv-fold rv-locked" id="rv-a2-f1"><summary>단계 1 · 관찰 — 사전만 넓혔더니 더 나빠졌다</summary>
+        <div class="bd"><p>사전을 P 10개에서 18개로 넓혔더니 중립이 95건에서 <b>100건으로 늘었습니다.</b> 상식과 반대입니다.
+          이유는 분모에 있습니다.</p>
+          <div class="rv-fml">J(P, A) = n(P∩A) ÷ { n(P) + n(A) − n(P∩A) }</div>
+          <p>에서 <b>n(P)가 커지면 분모가 커져 값 전체가 작아집니다.</b> 10차시 형성평가에서
+            “사전에서 단어가 빠지면 J가 작아진다”를 배웠는데, 그 반대 방향도 성립하는 것입니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a2-f2"><summary>단계 2 · 정리 — 넘을 수 없는 천장을 계산해 보자</summary>
+        <div class="bd">
+          <p>n(P∩A) ≤ n(A) 이므로</p>
+          <div class="rv-fml">J(P, A) = n(P∩A) ÷ { n(P) + n(A) − n(P∩A) } ≤ n(A) ÷ n(P)</div>
+          <p>입니다(등호는 A의 원소가 모두 P에 들어 있을 때). 곧 감성 점수의 최댓값은 <b>n(A) ÷ n(P)</b> 입니다.
+            우리 자료를 넣어 봅시다.</p>
+          <div class="rv-scroll"><table class="rv-tbl">
+            <tr><th>사전 크기 n(P)</th><th>k</th><th>긍정 판정에 필요한 n(A) (= k × n(P))</th><th>우리 리뷰의 실제 n(A)</th><th>가능?</th></tr>
+            <tr><td>10</td><td>0.25</td><td>2.5 → <b>3개 이상</b></td><td>대부분 2개</td><td>✗</td></tr>
+            <tr><td>18</td><td>0.25</td><td>4.5 → <b>5개 이상</b></td><td>대부분 2개</td><td>✗✗</td></tr>
+            <tr><td>10</td><td>0.10</td><td>1.0 → 1개 이상</td><td>2개</td><td>○ (그러나 부정어를 못 잡음)</td></tr>
+            <tr><td>18</td><td>0.10</td><td>1.8 → <b>2개 이상</b></td><td>2개</td><td class="hi">○</td></tr>
+          </table></div>
+          <p>계산이 틀린 적은 한 번도 없었습니다. <b>기준이 자료에 맞지 않았을 뿐입니다.</b></p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a2-f3"><summary>단계 3 · 정의 확인 — 판정 가능 조건</summary>
+        <div class="bd"><p>감성 사전 P와 리뷰의 감성 단어집합 A에 대하여, 그 리뷰가 <b>‘긍정’으로 판정될 수 있으려면</b></p>
+          <div class="rv-fml">n(A) ≥ k × n(P)</div>
+          <p>여야 합니다. 부정 쪽도 N에 대해 똑같습니다. 이 부등식은 “리뷰가 짧을수록(n(A)가 작을수록) k를 낮춰야 한다”는 뜻이며,
+            <b>k는 자료의 성질에 맞추어 정해야 하는 값</b>임을 보여 줍니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a2-f4"><summary>단계 4 · 관찰 — 왜 k만 낮추면 안 되는가</summary>
+        <div class="bd"><p>기본 사전에서 k만 0.10으로 낮추면 판정은 나오지만(긍 66 · 중 30 · 부 4)
+          <b>5월 평균 감성 점수가 여전히 +0.050으로 양수</b>입니다. 별점이 2.20인 달인데도 말이지요.
+          기본 사전 N에는 <span class="mi">식다</span> <span class="mi">짜다</span> <span class="mi">비다</span>
+          <span class="mi">실망하다</span>처럼 <b>이 가게에서 실제로 터진 불만 단어가 하나도 없기</b> 때문입니다.
+          <b>사전은 자료가 사는 세계를 담아야 합니다.</b> 두 손잡이는 함께 돌려야 합니다.</p></div></details>
+
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="rvFix()">이 설정으로 대시보드 고정</button>
+      </div>
+      <p class="status" id="rv-fix-st"></p>
+      <div class="rv-barrow" id="rv-neg-st" aria-live="polite"></div>
+      <div class="rv-scroll"><table class="rv-tbl" id="rv-a2-month"></table></div>
+      <span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.70~71 판정 기준 표를 근거로, 부등식 형태로 재구성(집필진 확장)</span>
+    </div>
+
+    <!-- 활동 3 -->
+    <div class="card" id="rv-act3" data-no-toggle="1">
+      <h3>활동 3 · 「흔한 칭찬 뒤에 숨은 한 단어」 — TF vs TF-IDF</h3>
+      <p>4월이 문제라는 것까지 알아냈습니다. 그런데 4월 리뷰 20건을 눈으로 읽어 봐도 “맛있다”, “별로다”, “줄이 길다”가 섞여 있을 뿐 뾰족한 게 없습니다.
+        리뷰 100건 전체에서 가장 많이 나온 단어를 세어 보면 <b>‘맛있다’ 36회</b>입니다. 이 결과만 보면 가게는 아주 잘되고 있는 것처럼 보입니다.
+        <b>가장 많이 나온 단어가 언제나 가장 중요한 단어일까요?</b> — 8차시의 그 질문이 여기서 다시 나옵니다.</p>
+
+      <p class="mat-label" style="text-align:left;">먼저 예측하기</p>
+      <p class="rv-hint">4월·5월 리뷰를 특징짓는 단어는 무엇일 것 같나요? 한 낱말로 적어 제출하면 아래 결과가 열립니다.</p>
+      <div class="btn-row">
+        <input class="rv-in" id="rv-a3-guess" type="text" placeholder="예: 줄" aria-label="예측 단어" style="min-width:10rem;">
+        <button class="btn pri" type="button" onclick="rvGuessSave()">제출</button>
+      </div>
+      <p class="status" id="rv-a3-st"></p>
+
+      <div class="rv-veil" id="rv-a3-panel">
+        <div class="chips" id="rv-a3-stop">
+          <button class="chip" type="button" onclick="rvStop(0,this)">불용어 기본</button>
+          <button class="chip on" type="button" onclick="rvStop(1,this)">＋메뉴·가게 이름 빼기</button>
+          <button class="chip" type="button" onclick="rvStop(2,this)">직접 편집</button>
+        </div>
+        <div id="rv-a3-stopedit" style="display:none;">
+          <input class="rv-in" id="rv-a3-stopin" type="text" style="width:100%;"
+                 aria-label="직접 편집할 불용어 목록" onchange="rvStopEdit()">
+          <p class="rv-hint">쉼표로 구분해 적습니다. 6차시에서 배웠지요 — 불용어는 목적에 맞게 사람이 정합니다.
+            분식집 리뷰를 분석하는데 ‘마라탕’이 1등이라면, 그 단어는 여기서 아무것도 알려 주지 않습니다.</p>
+        </div>
+
+        <div class="rv-2col">
+          <div class="rv-pane">
+            <h4>왼쪽 — 전체 100건 TF 상위 10 <span class="rv-badge">그냥 세기</span></h4>
+            <div id="rv-a3-tf"></div>
+          </div>
+          <div class="rv-pane">
+            <h4>오른쪽 — 시기별 문서 TF-IDF 상위 5</h4>
+            <div class="chips" id="rv-a3-months">
+              <button class="chip" type="button" onclick="rvPickMonth3('01',this)">1월</button>
+              <button class="chip" type="button" onclick="rvPickMonth3('02',this)">2월</button>
+              <button class="chip" type="button" onclick="rvPickMonth3('03',this)">3월</button>
+              <button class="chip" type="button" onclick="rvPickMonth3('04',this)">4월</button>
+              <button class="chip on" type="button" onclick="rvPickMonth3('05',this)">5월</button>
+            </div>
+            <div id="rv-a3-tfidf"></div>
+            <p class="rv-hint" id="rv-a3-move"></p>
+          </div>
+        </div>
+
+        <p class="rv-hint" style="margin-top:0.7rem;">막대를 누르면 8차시와 똑같은 <b>4단 계단표</b>가 열리고,
+          그 단어가 든 리뷰만 아래에 남습니다.</p>
+        <div class="rv-scroll"><table class="rv-tbl" id="rv-a3-stair"></table></div>
+        <div id="rv-a3-mini"></div>
+        <div class="rv-list" id="rv-a3-list" style="margin-top:0.6rem;"></div>
+      </div>
+
+      <p class="rv-lockmsg" id="rv-a3-lock">🔒 예측을 제출하고 달을 2개 이상 눌러 본 뒤에 열립니다.</p>
+      <details class="rv-fold rv-locked" id="rv-a3-f1"><summary>단계 1 · 관찰 — 왼쪽 표만 보면 아무 문제가 없다</summary>
+        <div class="bd"><p>전체 100건을 그냥 세면 이렇습니다(메뉴 이름 제외).</p>
+          <div class="rv-fml">맛있다 36 · 좋다 22 · 줄 21 · 많다 15 · 셀프바 15 · 친절 12 · 짜다 12 · 실망하다 11 · 식다 11 · 매콤하다 10</div>
+          <p>1위부터 4위까지가 전부 칭찬입니다. <b>‘셀프바’는 5위, 15회.</b> ‘맛있다’의 절반도 되지 않아 눈에 띄지 않습니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a3-f2"><summary>단계 2 · 관찰 — 오른쪽 표는 달마다 다른 이름을 부른다</summary>
+        <div class="bd"><p>같은 자료를 달별 문서 5개로 묶어 TF-IDF를 구하면 각 달의 1위가 이렇게 갈립니다.</p>
+          <div class="rv-scroll"><table class="rv-tbl">
+            <tr><th>문서</th><th>TF-IDF 1위</th><th>값</th><th>2위</th><th>3위</th></tr>
+            <tr><td>1월</td><td>최고</td><td>10.00</td><td>맛있다 9.00</td><td>매콤하다 8.33</td></tr>
+            <tr><td>2월</td><td>맛있다</td><td>9.00</td><td>매콤하다 5.00</td><td>넓다·좋다 5.00</td></tr>
+            <tr><td>3월</td><td class="hi">줄</td><td class="hi">12.50</td><td>맛있다 8.00</td><td>좋다 6.00</td></tr>
+            <tr><td>4월</td><td class="hi">셀프바</td><td class="hi">15.00</td><td>식다 12.50</td><td>비다 7.50</td></tr>
+            <tr><td>5월</td><td class="hi">셀프바</td><td class="hi">22.50</td><td>비다·식다 15.00</td><td>실망하다 10.00</td></tr>
+          </table></div>
+          <p>3월에는 <b>‘줄’</b>(대기·웨이팅)이, 4·5월에는 <b>‘셀프바’</b>가 1위로 올라옵니다.
+            가게에서 실제로 일어난 일의 순서 그대로입니다 — 인기가 오르며 줄이 길어졌고(3월),
+            그다음에 셀프바 관리가 무너졌습니다(4·5월). 여러분의 예측은 <b id="rv-a3-mine">—</b> 였습니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a3-f3"><summary>단계 3 · 정리 — 왜 ‘셀프바’가 올라왔는가</summary>
+        <div class="bd">
+          <div class="rv-scroll"><table class="rv-tbl">
+            <tr><th>단어</th><th>전체 횟수</th><th>DF(나온 달의 수)</th><th>IDF = 5 ÷ DF</th><th>5월 TF</th><th>5월 TF-IDF</th></tr>
+            <tr><td>맛있다</td><td>36</td><td>5</td><td>1.00</td><td>6</td><td>6.00</td></tr>
+            <tr><td>좋다</td><td>22</td><td>5</td><td>1.00</td><td>4</td><td>4.00</td></tr>
+            <tr><td>줄</td><td>21</td><td>4</td><td>1.25</td><td>3</td><td>3.75</td></tr>
+            <tr><td class="hi">셀프바</td><td class="hi">15</td><td class="hi">2</td><td class="hi">2.50</td><td class="hi">9</td><td class="hi">22.50</td></tr>
+          </table></div>
+          <p>‘맛있다’는 다섯 달 모두 나와 IDF가 1로 가장 작습니다. ‘셀프바’는 <b>4·5월에만</b> 나와 IDF가 2.5로 커집니다.
+            횟수는 절반도 안 되지만 <b>가중치가 2.5배</b>여서 결과가 뒤집힙니다.
+            8차시에서 배운 “흔한 단어의 무게를 덜어 그 문서만의 단어를 남긴다”가 바로 이 장면입니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a3-f4"><summary>단계 4 · 정의 확인 — 유용한 정보의 추출</summary>
+        <div class="bd"><p>100건을 다 읽는 대신, 빈도수 벡터를 만들고 가중치를 곱해 <b>다섯 개의 수의 나열</b>로 요약했습니다.
+          요약이란 버리는 일입니다. 무엇을 버릴지(불용어) 무엇에 무게를 줄지(IDF)를 정하는 사람이 곧 <b>분석하는 사람</b>입니다. <b>[12인수02-02]</b></p></div></details>
+
+      <h4 style="margin-top:1.1rem;">사장님께 보내는 한 줄 진단</h4>
+      <p class="rv-hint">빈칸을 채워 문장을 완성합니다. 학습지 1면 ⑤번에도 같은 문항이 있습니다.</p>
+      <div class="btn-row" style="align-items:center;">
+        <span>리뷰 100건을 분석한 결과,</span>
+        <input class="rv-in num" id="rv-diag-m" type="text" placeholder="4" aria-label="문제의 달">
+        <span>월부터 평균 감성 점수가 음수로 바뀌었고, 그 시기 리뷰에서 TF-IDF가 가장 큰 단어는</span>
+        <input class="rv-in" id="rv-diag-w" type="text" placeholder="셀프바" aria-label="특징어" style="width:8rem;">
+        <span>였습니다. 따라서 가장 먼저 점검할 곳은</span>
+        <input class="rv-in" id="rv-diag-a" type="text" placeholder="셀프바(재료 보충·정리 상태)" aria-label="점검할 곳" style="min-width:12rem;">
+        <span>입니다.</span>
+        <button class="btn pri" type="button" onclick="rvDiagSave()">저장</button>
+      </div>
+      <p class="status" id="rv-diag-st"></p>
+      <p><b>왜 사장님은 이걸 몰랐을까요?</b> 사장님은 국물 맛만 신경 썼습니다. 손님이 불만을 말한 곳은 국물이 아니라
+        셀프바였는데, 그 말이 “맛있다”는 칭찬 사이에 섞여 있어 <b>읽어서는 보이지 않았습니다.</b></p>
+      <span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.60~62(빈도수 벡터·주제어 추출) 및 8차시 IDF = n ÷ DF 규약을 재구성</span>
+    </div>
+
+    <!-- 활동 4 -->
+    <div class="card" id="rv-act4" data-no-toggle="1">
+      <h3>활동 4 · 「닮은 리뷰 찾기」 — 빈도수 벡터와 코사인 유사도</h3>
+      <p>원인을 찾았으니 이제 <b>비슷한 불만이 몇 건이나 되는지</b> 세어야 합니다. 그런데 사람들은 같은 불만도 다른 말로 씁니다.
+        “셀프바가 비어 있어요” / “재료가 없어서 고를 게 없었어요” / “셀프바 채소가 시들시들해요”.
+        이 셋이 <b>같은 이야기</b>임을 컴퓨터는 어떻게 알까요?</p>
+      <div class="rv-barrow" id="rv-a4-badges"></div>
+      <div class="btn-row">
+        <button class="btn on" type="button" id="rv-a4-cos" onclick="rvSimMode('cos')">방향으로 재기(코사인)</button>
+        <button class="btn" type="button" id="rv-a4-dist" onclick="rvSimMode('dist')">거리로도 재보기(유클리드)</button>
+      </div>
+      <div class="rv-2col">
+        <div class="rv-pane">
+          <h4>리뷰 카드 목록 <span class="rv-badge">누르면 닮은 리뷰가 뜹니다</span></h4>
+          <div class="rv-list" id="rv-a4-list"></div>
+        </div>
+        <div class="rv-pane">
+          <h4>닮은 리뷰 상위 5</h4>
+          <div id="rv-a4-out"><p class="rv-hint">왼쪽에서 리뷰를 하나 고르세요.</p></div>
+        </div>
+      </div>
+
+      <p class="rv-lockmsg" id="rv-a4-lock">🔒 리뷰를 2건 이상 눌러 본 뒤에 열립니다.</p>
+      <details class="rv-fold rv-locked" id="rv-a4-f1"><summary>단계 1 · 관찰 — 뽑힌 다섯 건</summary>
+        <div class="bd"><p>기준 <b>#81 (5월 4일, ★1)</b> “셀프바에 채소가 텅 비어 있었어요. 몇 번을 말해도 채워 주지 않아 실망했습니다.”
+          → <b>#61 (0.85) · #71 (0.68) · #78 (0.65) · #83 (0.65) · #86 (0.65)</b><br>
+          다섯 건 모두 셀프바 이야기이고, 날짜는 전부 4·5월입니다. <b>한 건의 불만이 아니라 두 달치의 흐름</b>이라는 사실이 수로 확인됩니다.</p>
+          <p>기준 <b>#1 (1월 6일, ★5)</b> “…마라탕이 진짜 맛있어요. 양도 많아서…”
+            → <b>#41 (0.87) · #11 (0.82) · #7 (0.67) · #17 (0.67) · #29 (0.67)</b> — 전부 1~3월의 칭찬 리뷰입니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a4-f2"><summary>단계 2 · 정리 — 단어가 겹치면 방향이 가까워진다</summary>
+        <div class="bd"><p>두 리뷰가 같은 단어를 많이 쓰면 그 성분들이 함께 커지므로 두 벡터가 <b>같은 방향</b>을 가리키게 되고,
+          코사인 유사도가 1에 가까워집니다. 반대로 겹치는 단어가 없으면 <b>성분끼리 곱해 더한 값</b>이 0이 되어 유사도도 0이 됩니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a4-f3"><summary>단계 3 · 정의 확인 — 왜 여기서는 코사인인가</summary>
+        <div class="bd"><p>리뷰는 길이가 제각각입니다. 같은 불만이라도 길게 쓴 사람의 벡터는 크기가 큽니다.
+          거리로 재면 <b>길게 쓴 리뷰가 무조건 멀어지는</b> 문제가 생깁니다(9차시 활동 4의 길이 편향 실험).
+          방향만 보는 코사인 유사도는 길이의 영향을 받지 않으므로 이 자료에 더 알맞습니다.</p></div></details>
+
+      <p style="margin-top:0.9rem;"><b>확인.</b> 리뷰 두 건에 <b>공통으로 나온 단어가 하나도 없다면</b> 코사인 유사도의 값은?</p>
+      <div class="btn-row" id="rv-a4-q">
+        <button class="btn" type="button" onclick="rvA4Check(0,this)">① 1</button>
+        <button class="btn" type="button" onclick="rvA4Check(1,this)">② 0</button>
+        <button class="btn" type="button" onclick="rvA4Check(2,this)">③ −1</button>
+        <button class="btn" type="button" onclick="rvA4Check(3,this)">④ 알 수 없다</button>
+      </div>
+      <div class="rv-fb" id="rv-a4-fb"></div>
+      <span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.73·p.75(유클리드·코사인 유사도) 정의를 9차시 엔진 그대로 적용</span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 웹툰 추천 ────────────────────────────────────────────── -->
+  <div class="tpanel" id="rv-p1">
+    <div class="info" data-no-toggle="1" style="margin-top:0;">
+      <strong>자는 똑같습니다</strong><br>
+      대시보드에서는 <b>문장</b>을 벡터로 바꿨습니다. 이번에는 <b>별점</b>을 벡터로 바꿉니다.
+      작품명·인물명은 모두 집필진이 지어낸 가상의 것이며 실존 작품·인물과 무관합니다.
+    </div>
+
+    <!-- 활동 5 -->
+    <div class="card" id="rv-act5" data-no-toggle="1">
+      <h3>활동 5 · 「별점 행렬로 추천하기」</h3>
+      <p>네 사람이 웹툰 다섯 편에 별점을 매겼습니다. 그런데 <b>지호는 두 편을 아직 보지 않았습니다.</b>
+        지호에게 다음에 볼 웹툰 한 편을 권한다면 무엇을 권해야 할까요? 그리고 <b>그 근거를 수로</b> 말할 수 있을까요?</p>
+
+      <p class="mat-label" style="text-align:left;">먼저 예측하기 — 고르면 계산 패널이 열립니다</p>
+      <div class="chips" id="rv-a5-guess">
+        <button class="chip" type="button" onclick="rvPredict5(0,this)">W4를 권한다</button>
+        <button class="chip" type="button" onclick="rvPredict5(1,this)">W5를 권한다</button>
+        <button class="chip" type="button" onclick="rvPredict5(2,this)">권할 수 없다</button>
+      </div>
+
+      <div class="rv-veil" id="rv-a5-panel">
+        <div class="rv-scroll"><table class="rv-grid" id="rv-mat"></table></div>
+        <div class="rv-barrow" id="rv-a5-badges"></div>
+        <div class="btn-row">
+          <button class="btn on" type="button" id="rv-m-cos" onclick="rvMatMode('cos')">코사인 유사도</button>
+          <button class="btn" type="button" id="rv-m-dist" onclick="rvMatMode('dist')">유클리드 유사도</button>
+          <button class="btn" type="button" onclick="rvSym()">대칭 확인</button>
+        </div>
+        <div class="rv-scroll"><table class="rv-heat" id="rv-heat"></table></div>
+        <p class="rv-hint">색이 진할수록 더 닮은 쌍입니다. <b>값이 칸 안에 그대로 적혀 있으므로</b> 색이 보이지 않아도 읽을 수 있습니다.</p>
+
+        <div class="btn-row">
+          <button class="btn pri" type="button" onclick="rvRecommend()">추천!</button>
+          <button class="btn" type="button" onclick="rvExp('A')">실험 A · 하윤의 「연습생 도시락」을 1점으로</button>
+          <button class="btn" type="button" onclick="rvExp('B')">실험 B · 하윤의 별점을 모두 2배로</button>
+          <button class="btn" type="button" onclick="rvExp('0')">원래대로</button>
+        </div>
+        <label class="rv-hint" style="display:flex;align-items:center;gap:0.4rem;min-height:44px;">
+          <input type="checkbox" id="rv-zero" onchange="rvZeroFill(this.checked)"> 빈칸을 0으로 채우기(5차원으로 계산)
+        </label>
+        <div id="rv-rec-out"></div>
+      </div>
+
+      <p class="rv-lockmsg" id="rv-a5-lock">🔒 예측 칩을 고르고 [추천!]을 누른 뒤에 열립니다.</p>
+      <details class="rv-fold rv-locked" id="rv-a5-f1"><summary>단계 1 · 관찰 — 두 자가 다른 사람을 1위로 뽑았다</summary>
+        <div class="bd"><p>공통으로 본 W1·W2·W3만 써서 지호 = (5, 4, 1)와 세 사람을 비교합니다.</p>
+          <div class="rv-scroll"><table class="rv-tbl">
+            <tr><th>비교</th><th>성분끼리 곱해 더한 값</th><th>벡터의 크기</th><th>유클리드 유사도 d</th><th>코사인 유사도 C</th></tr>
+            <tr><td>지호(5,4,1) ↔ 서연(4,5,2)</td><td>42</td><td>√42 ≒ 6.48 · √45 ≒ 6.71</td><td class="hi">1.73 ← 가장 작음</td><td>0.97</td></tr>
+            <tr><td>지호 ↔ 민준(1,2,5)</td><td>18</td><td>√30 ≒ 5.48</td><td>6.00</td><td>0.51</td></tr>
+            <tr><td>지호 ↔ 하윤(2,2,1)</td><td>19</td><td>3.00</td><td>3.61</td><td class="hi">0.98 ← 가장 큼</td></tr>
+          </table></div>
+          <p><b>거리로 재면 서연이 1위, 방향으로 재면 하윤이 1위</b>입니다.
+            9차시 활동 4에서 본 그 순위 역전이 사람 추천에서 그대로 일어났습니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a5-f2"><summary>단계 2 · 정리 — 왜 갈렸을까</summary>
+        <div class="bd"><p>하윤의 별점은 (2, 2, 1)로 <b>전체적으로 짭니다.</b> 최고점이 3점인 사람이지요.
+          그래서 지호(5, 4, 1)와의 <b>거리</b>는 멀지만, “앞의 두 작품을 뒤의 작품보다 좋아한다”는
+          <b>방향(취향의 모양)</b>은 거의 같습니다. 유클리드 유사도는 점수의 <b>크기</b>까지 함께 보고,
+          코사인 유사도는 크기를 지우고 <b>모양</b>만 봅니다.
+          후한 채점자와 짠 채점자가 섞여 있는 자료에서는 코사인 쪽이 취향을 더 잘 잡습니다.</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a5-f3"><summary>단계 3 · 정리 — 그런데 추천 결과는?</summary>
+        <div class="bd"><ul>
+          <li><b>서연 기준</b>(유클리드 1위): 서연은 W4에 1점, W5에 5점 → <b>W5 「연습생 도시락」 추천</b></li>
+          <li><b>하윤 기준</b>(코사인 1위): 하윤은 W4에 1점, W5에 3점 → 3점은 하윤의 <b>최고점</b>이므로 → <b>W5 「연습생 도시락」 추천</b></li>
+        </ul>
+          <p>자는 달랐지만 결론은 같았습니다. 다만 <b>근거의 강도가 다릅니다.</b>
+            서연은 “5점을 준 작품”이고, 하윤은 “자기 기준으로는 최고지만 3점인 작품”입니다.
+            <b>[실험 A]</b>를 눌러 하윤의 W5를 1점으로 바꾸면, 코사인 기준으로는 <b>권할 작품이 없어집니다.</b>
+            하윤이 안 본 작품에 준 최고 점수(1점)가 하윤 자신의 최고점(2점)에 못 미쳐 “높게 준 작품”이 되지 못하기 때문입니다.
+            자를 어떻게 고르느냐가 추천을 바꿉니다.</p>
+          <p><b>[실험 B]</b>는 하윤의 별점을 <b>정확히 2배</b>로 만듭니다. 공통으로 본 세 작품이 (2, 2, 1) → (4, 4, 2)가 되지요.
+            <b>유클리드 유사도는 3.61 → 1.41로 크게 줄지만, 코사인 유사도는 0.98 그대로</b>입니다.
+            크기만 바뀌고 방향은 그대로이기 때문입니다(9차시 L2 정규화의 재확인).</p></div></details>
+      <details class="rv-fold rv-locked" id="rv-a5-f4"><summary>단계 4 · 정의 확인 — 유사도 행렬과 대칭</summary>
+        <div class="bd"><div class="rv-scroll"><table class="rv-tbl">
+          <tr><th></th><th>지호</th><th>서연</th><th>민준</th><th>하윤</th></tr>
+          <tr><th>지호</th><td class="hi">1.00</td><td>0.97</td><td>0.51</td><td>0.98</td></tr>
+          <tr><th>서연</th><td>0.97</td><td class="hi">1.00</td><td>0.65</td><td>0.99</td></tr>
+          <tr><th>민준</th><td>0.51</td><td>0.65</td><td class="hi">1.00</td><td>0.67</td></tr>
+          <tr><th>하윤</th><td>0.98</td><td>0.99</td><td>0.67</td><td class="hi">1.00</td></tr>
+        </table></div>
+          <p>대각선은 모두 1이고, 대각선을 접으면 위아래가 포개집니다.
+            그러므로 실제로 계산할 값은 <b>6개</b>(4 × 3 ÷ 2)뿐입니다.</p></div></details>
+      <details class="rv-fold" id="rv-a5-f5"><summary>단계 5 · 심화 — 빈칸을 0점으로 두면 안 되는 이유</summary>
+        <div class="bd"><p>지호의 W4·W5를 0점으로 채워 넣고 5차원으로 계산하면 결과가 완전히 달라집니다.
+          <b>“아직 안 봤다”와 “보고 나서 0점을 줬다”는 전혀 다른 정보</b>이기 때문입니다.
+          자료에 비어 있는 칸이 있을 때, 그 칸을 어떤 수로 메울지(또는 메우지 않을지)를 정하는 것도 사람의 판단입니다.
+          위의 <b>[빈칸을 0으로 채우기]</b>로 직접 확인해 보세요.</p></div></details>
+
+      <h4 style="margin-top:1.1rem;">추천서 작성</h4>
+      <p class="rv-hint">아래 문장을 완성합니다. 학습지 2면 ⑧번에도 같은 문항이 있습니다.</p>
+      <div class="btn-row" style="align-items:center;">
+        <span>지호에게</span>
+        <input class="rv-in" id="rv-rec-w" type="text" placeholder="연습생 도시락" aria-label="추천 작품" style="width:9rem;">
+        <span>을(를) 추천합니다. 왜냐하면</span>
+        <input class="rv-in" id="rv-rec-k" type="text" placeholder="코사인" aria-label="유사도 종류" style="width:6rem;">
+        <span>유사도에서</span>
+        <input class="rv-in" id="rv-rec-p" type="text" placeholder="하윤" aria-label="이웃" style="width:5rem;">
+        <span>님이</span>
+        <input class="rv-in num" id="rv-rec-v" type="text" placeholder="0.98" aria-label="유사도 값">
+        <span>로 가장 가까웠고, 그분이 이 작품에</span>
+        <input class="rv-in num" id="rv-rec-s" type="text" placeholder="3" aria-label="그 사람이 준 점수">
+        <span>점을 주었기 때문입니다.</span>
+        <button class="btn pri" type="button" onclick="rvRecSave()">저장</button>
+      </div>
+      <p class="status" id="rv-rec-st"></p>
+      <span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.68(웹툰 리뷰 A~E)·p.81 발전 문제 05(선호도 벡터 사이 유사도 비교)를 4명 × 5작품으로 확장·재구성</span>
+    </div>
+
+    <!-- 활동 6 -->
+    <div class="card" id="rv-act6" data-no-toggle="1">
+      <h3>활동 6 · 「추천이 너무 잘 맞을 때」 — 필터 버블 토론</h3>
+      <p>추천은 성공했습니다. 그런데 지호가 「연습생 도시락」에 5점을 주면, 다음 추천은 또 그와 비슷한 작품이 됩니다.
+        그다음도, 그다음도. <b>한 학기 뒤 지호의 추천 목록에는 무엇이 남아 있을까요?</b></p>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="rvBubbleRun()">추천 5번 반복하기</button>
+        <button class="btn" type="button" onclick="rvBubbleReset()">처음으로</button>
+      </div>
+      <label class="rv-hint" style="display:flex;align-items:center;gap:0.4rem;min-height:44px;">
+        <input type="checkbox" id="rv-mix" onchange="rvBubbleMix(this.checked)"> 다양성 섞기 30% — 추천 12칸 중 4칸을 취향과 무관하게 배정
+      </label>
+      <canvas class="rv-cv" id="rv-bubble" height="230" role="img"
+        aria-label="회차가 지날수록 추천 목록의 장르 구성이 한쪽으로 쏠리는 과정을 나타낸 막대그래프"></canvas>
+      <div class="rv-barrow" id="rv-bubble-badges"></div>
+      <div class="rv-scroll"><table class="rv-tbl" id="rv-bubble-tbl"></table></div>
+
+      <p class="rv-lockmsg" id="rv-a6-lock">🔒 시뮬레이터를 한 번 이상 돌린 뒤에 열립니다.</p>
+      <details class="rv-fold rv-locked" id="rv-a6-f1"><summary>단계 1 · 읽을거리 — 거품 안에서</summary>
+        <div class="bd"><p>인공지능은 사용자가 표현한 만족도를 분석해 비슷한 콘텐츠를 추천합니다.
+          그 결과 <b>자신의 신념이나 관심사와 일치하는 정보에만 계속 노출되는 환경</b>이 만들어집니다.
+          이렇게 제한된 정보를 바탕으로 내리는 판단은 왜곡되기 쉽고, 추천 알고리즘의 정보를 무비판적으로 받아들이면
+          <b>개인의 편향이 강해지고 공동체의 인식이 희박해져 분열이 심화된다</b>고도 지적됩니다.</p>
+          <p>중요한 것은 이 현상이 <b>추천이 틀려서</b> 생기는 게 아니라는 점입니다. 오히려 <b>너무 잘 맞아서</b> 생깁니다.
+            유사도 계산에는 아무 잘못이 없습니다. “비슷한 것을 권한다”는 규칙 자체에 이 결과가 들어 있는 것입니다.</p>
+          <span class="rv-src">천재 「인공지능 수학」 교과서 p.172 「제한된 정보 환경을 조성하는 추천 서비스」 서술을 재구성</span></div></details>
+      <details class="rv-fold rv-locked" id="rv-a6-f2"><summary>단계 2 · 정리 — 수학은 어디까지 답하는가</summary>
+        <div class="bd"><p>유사도는 “누가 비슷한가”에 답합니다. 그러나 <b>“비슷한 것만 권하는 게 좋은가”</b>에는 답하지 않습니다.
+          앞의 물음은 계산의 영역이고, 뒤의 물음은 <b>결정의 영역</b>입니다.
+          2단원 여섯 차시 내내 되풀이된 이야기입니다 — 불용어 목록도, 벡터 표현도, 임계값 k도, 유사도의 종류도, 전부 사람이 정했습니다.</p></div></details>
+
+      <h4 style="margin-top:1.1rem;">모둠 토의</h4>
+      <p><b>토의 ①</b> 추천이 정확할수록 우리가 잃는 것은 무엇일까요? 구체적인 예를 하나 들어 적어 봅시다.</p>
+      <textarea class="rv-ta" id="rv-deb1" placeholder="예: 새로운 장르를 만날 기회를 잃는다. 나는 …"></textarea>
+      <p style="margin-top:0.6rem;"><b>토의 ②</b> “온라인 쇼핑몰의 추천 시스템이 사용자가 원하지 않는 제품을 계속 추천하는” 경우와,
+        “너무 잘 맞는 것만 추천하는” 경우 중 <b>어느 쪽이 더 위험</b>할까요? 이유와 함께 적어 봅시다.</p>
+      <textarea class="rv-ta" id="rv-deb2" placeholder="우리 모둠은 … 쪽이 더 위험하다고 보았다. 왜냐하면 …"></textarea>
+      <p style="margin-top:0.6rem;"><b>토의 ③</b> 우리 모둠이 추천 규칙을 만든다면, 어떤 장치를 넣어 거품을 막겠습니까?
+        규칙을 <b>한 문장</b>으로 적어 봅시다.</p>
+      <textarea class="rv-ta" id="rv-deb3" placeholder="예: 추천 5개 중 1개는 내가 한 번도 안 본 장르에서 고른다."></textarea>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="rvDebateSave()">저장</button>
+        <button class="btn" type="button" onclick="rvDebateExport()">모둠 의견 내보내기</button>
+      </div>
+      <p class="status" id="rv-deb-st"></p>
+      <span class="rv-src">천재 「인공지능 수학」 교과서 p.172 / 미래엔 「인공지능 수학」 p.158 생각 열기 사례 ㈏ 를 재구성</span>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="rv-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        리뷰를 <b>시간 축</b>에 세우면 언제 문제가 생겼는지 보이고, 그 시기의 리뷰를 한 문서로 묶어 <b>TF-IDF</b>를 구하면
+        무엇이 원인인지 보입니다. 흔한 칭찬에 묻혀 있던 단어가 <b>가중치 때문에</b> 위로 올라옵니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        감성 점수는 <b>n(A) ÷ n(P)</b>를 넘을 수 없으므로, 판정이 나오려면 <b>n(A) ≥ k × n(P)</b> 여야 합니다.
+        계산이 틀린 게 아니라 <b>기준이 자료에 맞지 않을 수 있다</b>는 것 — 이것이 오늘 얻은 가장 큰 수확입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        별점 벡터의 유사도로 추천을 만들 수 있지만, <b>거리로 잴 때와 방향으로 잴 때 이웃이 달라집니다.</b>
+        그리고 잘 맞는 추천이 반복되면 보는 세계가 좁아집니다. <b>자를 고르는 일도, 규칙을 정하는 일도 사람의 몫</b>입니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문 1. 100건을 다 읽어도 보이지 않던 원인을, 수는 어떻게 찾아내는가?</b></p>
+    <textarea class="rv-ta" id="rv-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="rv-fold"><summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd"><p>먼저 리뷰를 날짜별로 묶어 평균 감성 점수를 구하면 문제가 시작된 시기를 좁힐 수 있습니다.
+        그다음 그 시기의 리뷰를 하나의 문서로 보고 TF-IDF를 구하면, 모든 시기에 골고루 나오는 흔한 칭찬은 IDF가 작아 가라앉고
+        그 시기에만 몰려 나온 단어는 IDF가 커져 위로 올라옵니다.
+        사람이 읽을 때는 ‘맛있다’가 36번 나와 눈에 띄지만, 수로 요약하면 15번밖에 나오지 않은 ‘셀프바’가
+        5월 문서의 1위(22.50)로 드러납니다.</p></div></details>
+
+    <p style="margin-top:1rem;"><b>핵심 질문 2. “나와 잘 맞는 추천”은 언제나 “좋은 추천”인가?</b></p>
+    <textarea class="rv-ta" id="rv-ans2" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="rv-fold"><summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd"><p>아닙니다. 유사도는 “누가 나와 비슷한가”까지만 답할 수 있고, “비슷한 것만 권하는 것이 옳은가”에는 답하지 않습니다.
+        비슷한 것만 반복해서 권하면 내가 접하는 정보의 폭이 좁아지고(필터 버블), 그 좁아진 정보로 판단하면 편향이 강해집니다.
+        게다가 같은 자료라도 거리로 재느냐 방향으로 재느냐에 따라 1위 이웃이 달라지므로, 추천 결과는 ‘정답’이 아니라
+        <b>선택의 결과</b>입니다. 그러므로 추천 규칙에는 다양성을 지키는 장치를 사람이 일부러 넣어야 합니다.</p></div></details>
+    <div class="btn-row"><button class="btn" type="button" onclick="rvAnsSave()">내 답 저장</button></div>
+    <p class="status" id="rv-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="rv-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 12차시 · 이미지는 행렬이다</strong><br>
+    여섯 차시 동안 우리는 <b>문장을 수로</b> 바꾸었습니다. 문장을 자르고, 세고, 무게를 주고, 거리를 재고, 마음을 읽고, 마침내 추천까지 했습니다.
+    다음 시간부터는 <b>그림을 수로</b> 바꿉니다. 놀랍게도 방법은 거의 같습니다 —
+    사진 한 장을 28 × 28 = 784개의 수가 놓인 <b>행렬</b>로 보고, 그 수들 사이의 거리로 “이 손글씨는 3인가 8인가”를 판단합니다.
+    오늘 쓴 <b>유사도</b>라는 자가 그대로 따라갑니다. 재는 대상만 문장에서 그림으로 바뀔 뿐입니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('mnist')">12차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('quickdraw')">12차시 도입 · Quick Draw</button>
+      <button class="btn" type="button" onclick="go('senti')">돌아보기 · 10차시 감성 분석</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 반 리뷰 분석 보고서」 — 내가 고른 대상, 내가 만든 사전, 내가 정한 기준</h3>
+    <p class="sub">11차시는 그 자체가 프로젝트 차시입니다. 이 과제는 수업에서 한 일을
+      <b>학생 자신의 자료</b>로 한 번 더 수행하는 확장 과제입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 분석할 대상을 하나 정합니다. 학교 급식, 매점, 학교 앞 가게, 학급 문고 도서, 내가 본 영화·웹툰·게임 가운데 <b>하나</b>를 고르고,
+        그 대상에 대한 짧은 후기를 <b>30건 이상</b> 모읍니다. <b>개인을 특정할 수 있는 이름·별명·실제 상호는 지우고 옮깁니다.</b><br>
+        ② 후기를 <b>시기별로 3개 이상의 묶음</b>(예: 3월 / 4월 / 5월, 또는 1~10번 / 11~20번 / 21~30번)으로 나눕니다. 이 묶음 하나하나가 <b>문서</b>가 됩니다.<br>
+        ③ 각 묶음에 대해 <b>TF·DF·IDF·TF-IDF</b>를 구해 묶음마다 상위 3개 단어를 뽑습니다
+        (이 차시 도구의 [리뷰 데이터 바꾸기]에 붙여넣으면 자동 계산됩니다). <b>묶음마다 다른 단어가 나오는지</b> 확인합니다.<br>
+        ④ 우리 모둠의 <b>감성 사전 P·N</b>을 각각 12개 이상 만들고, <b>n(A) ≥ k × n(P)</b> 부등식을 이용해 <b>k값을 직접 계산해서 정합니다.</b>
+        (“우리 후기는 감성 단어가 평균 ___개이고 사전이 ___개이므로 k는 ___ 이하여야 한다”)<br>
+        ⑤ 정한 사전과 k로 후기 30건을 분류하고, <b>시기별 평균 감성 점수 꺾은선</b>을 그립니다.<br>
+        ⑥ 후기 중 한 건을 골라 <b>코사인 유사도 상위 3건</b>을 찾고, 왜 그 셋이 뽑혔는지 겹치는 단어로 설명합니다.<br>
+        ⑦ <i>(선택)</i> 모둠원 4명이 같은 대상 5개에 별점을 매겨 <b>4 × 5 별점 행렬</b>을 만들고, 한 사람에게 추천을 해 봅니다.
+        유클리드와 코사인 <b>두 방법 모두</b>로 계산해 결과를 비교합니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 후기 30건 원자료 목록(시기 묶음 표시) 1장<br>
+        · <b>TF-IDF 표</b>: 묶음별 상위 3개 단어와 그 TF·DF·IDF·TF-IDF 값 (A4 1장)<br>
+        · <b>감성 사전 P·N 목록</b>과 n(A) ≥ k × n(P)를 이용한 <b>k 결정 과정 계산식</b><br>
+        · 시기별 평균 감성 점수 <b>꺾은선 그래프</b> 1장 (손그림 가능)<br>
+        · <b>결론 5~8문장</b>: “우리가 분석한 대상은 ___이고, ___ 시기에 변화가 있었으며, 그 시기의 특징어는 ___였다.
+        우리가 정한 k는 ___이고 그 근거는 ___이다.”<br>
+        · <i>(선택)</i> 추천 결과 비교표와 <b>“우리 모둠의 추천 규칙 한 문장”</b>(필터 버블을 막는 장치 포함)</dd>
+      <dt>평가 관점</dt>
+      <dd>· 빈도수 벡터와 TF-IDF를 이용하여 텍스트 데이터를 요약하고 <b>시기마다 다른 유용한 정보를 추출</b>했는가 <b>[12인수02-02]</b><br>
+        · 감성 점수·임계값·유사도를 이용한 분석 절차를 <b>수학적으로 설명</b>했는가, 특히 <b>k값의 근거를 부등식으로</b> 제시했는가 <b>[12인수02-03]</b><br>
+        · 분석 결과를 <b>정답이 아니라 해석이 필요한 자료</b>로 다루었는가 — 판정이 어긋난 후기를 찾아 그 원인을 설명했는가<br>
+        · <i>(선택 과제)</i> 추천의 근거를 유사도로 제시하고, <b>다양성을 지키는 장치</b>를 스스로 제안했는가</dd>
+    </dl>
+    <details class="rv-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd"><p>계산의 정확성보다 <b>선택의 근거</b>를 봅니다. 어떤 단어를 불용어로 뺐는지, 왜 그 k를 골랐는지,
+        왜 그 유사도를 썼는지를 학생이 설명할 수 있으면 충분합니다.
+        자료 수집 단계에서 <b>개인정보와 실제 상호가 지워졌는지 반드시 확인</b>하고,
+        특정 가게·인물을 비방하는 내용이 되지 않도록 지도합니다.</p>
+        <span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.66·p.78~79(공학 도구 「분석하고 싶은 텍스트 데이터를 업로드해서 감성 점수를 계산해 보자」) 활동을 재구성</span></div></details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 추천과 필터 버블</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. 6~10차시 참고 자료에 이미 실린 자원은 여기에 다시 넣지 않았습니다.</p>
+    <div class="rv-vdgrid">
+      <a class="rv-vdlink" href="https://en.wikipedia.org/wiki/Filter_bubble" target="_blank" rel="noopener">
+        <span class="th">🫧</span>
+        <span class="meta"><b>Filter bubble (위키백과, 영문)</b>
+          <span>개념 · 필터 버블이라는 말이 언제 어떻게 생겼는지, 어떤 반론이 있는지 정리되어 있습니다. 활동 6 토론 전에 읽어 두면 좋습니다.</span></span>
+      </a>
+      <a class="rv-vdlink" href="https://en.wikipedia.org/wiki/Collaborative_filtering" target="_blank" rel="noopener">
+        <span class="th">🤝</span>
+        <span class="meta"><b>Collaborative filtering (위키백과, 영문)</b>
+          <span>개념 · 오늘 우리가 한 “나와 비슷한 사람이 좋아한 것을 권하기”가 실제 서비스에서 어떤 이름으로 불리는지 확인할 수 있습니다.</span></span>
+      </a>
+      <a class="rv-vdlink" href="https://ko.wikipedia.org/wiki/%EC%B6%94%EC%B2%9C_%EC%8B%9C%EC%8A%A4%ED%85%9C" target="_blank" rel="noopener">
+        <span class="th">📊</span>
+        <span class="meta"><b>추천 시스템 (위키백과, 한국어)</b>
+          <span>개념 · 추천 시스템의 종류와 활용 분야를 한국어로 볼 수 있습니다. 심화로 ‘콜드 스타트 문제’를 찾아보세요.</span></span>
+      </a>
+      <a class="rv-vdlink" href="https://en.wikipedia.org/wiki/Netflix_Prize" target="_blank" rel="noopener">
+        <span class="th">🏆</span>
+        <span class="meta"><b>Netflix Prize (위키백과, 영문)</b>
+          <span>사례 · 별점 행렬로 추천 정확도를 겨룬 공개 대회입니다. 우리가 만든 4 × 5 표가 실제로는 수억 칸짜리였다는 것을 알 수 있습니다.</span></span>
+      </a>
+      <div id="rv-room"></div>
+      <button class="rv-vdlink" type="button" style="cursor:pointer;text-align:left;" onclick="rvRefAdd()">
+        <span class="th">➕</span>
+        <span class="meta"><b>＋ 자료 추가</b>
+          <span>선생님이 URL과 제목을 입력해 자료를 1개 더 걸 수 있습니다. 이 기기에만 저장됩니다.</span></span>
+      </button>
+    </div>
+    <div class="btn-row" id="rv-room-form" style="display:none;">
+      <input class="rv-in" id="rv-room-u" type="url" style="min-width:16rem;"
+             placeholder="https://padlet.com/… 또는 https://drive.google.com/…" aria-label="학급 공유 자료함 주소">
+      <button class="btn pri" type="button" onclick="rvRoomSave()">저장</button>
+      <button class="btn" type="button" onclick="rvRoomForm(0)">취소</button>
+    </div>
+    <p class="status" id="rv-room-st"></p>
+    <p class="status" id="rv-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>11차시 학습지 — 프로젝트 기록지</h3>
+    <p>📄 <b>2단원 지필 자료는 10차시에 있습니다</b> — 「텍스트 분석 형성평가」와 활동지 3종은
+      10차시 학습지 섹션에서 내려받으세요. 오늘 차시의 지면 자료는 아래 <b>[학습지 인쇄]</b>로 출력하는
+      <b>프로젝트 기록지(A4 2쪽)</b>입니다. 웹에서 입력한 값이 해당 칸에 자동으로 채워집니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="rvPrint(1)">🖨 학습지 인쇄 <span class="sz">A4 2장 · 내 답 채워서</span></button>
+      <button class="ws-btn sec" type="button" onclick="rvPrint(0)">🖨 빈 양식으로 인쇄 <span class="sz">A4 2장</span></button>
+      <button class="ws-btn sec" type="button" onclick="go('senti')">📄 2단원 지필 자료 받으러 가기 <span class="sz">10차시</span></button>
+    </div>
+    <div id="rv-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="rv-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>11차시 · 리뷰 분석과 추천 — 프로젝트 기록지 (1/2)</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________ / 날짜 ___ / 모둠 ___</span>
+    </div>
+    <p class="note">학습 목표 ① 리뷰를 빈도수 벡터와 TF-IDF로 요약하여 유용한 정보를 추출할 수 있다. [12인수02-02]<br>
+      학습 목표 ② 감성 점수·임계값·유사도를 이용한 분석과 추천의 수학적 방법을 그 한계와 함께 설명할 수 있다. [12인수02-03]</p>
+
+    <h3>① 분석 대상</h3>
+    <p>무엇을 분석했나요? ☐ 내장 리뷰 100건(학교 앞 분식집)　☐ 우리가 모은 후기( ______ 건 )</p>
+    <p>자료의 기간: ____________ ~ ____________ ／ 문서로 묶은 단위: ☐ 월별 ☐ 주별 ☐ 기타 __________</p>
+    <p>문서의 개수 n = ________</p>
+
+    <h3>② 시기별 요약표</h3>
+    <table>
+      <tr><th>시기</th><th>리뷰 수</th><th>평균 별점</th><th>평균 감성 점수</th><th>긍정</th><th>중립</th><th>부정</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>③ 기준을 정한 근거 — 이 차시의 핵심</h3>
+    <p>우리가 쓴 사전의 크기: n(P) = <span id="rv-pr-np">______</span> ,　n(N) = <span id="rv-pr-nn">______</span></p>
+    <p>리뷰 한 건에서 잡힌 감성 단어의 개수는 대체로 n(A) = ________ 개였다.</p>
+    <p>판정 가능 조건 <b>n(A) ≥ k × n(P)</b> 에 넣으면 ________ ≥ k × ________ 이므로 <b>k ≤ __________</b></p>
+    <p>그래서 우리는 <b>k = <span id="rv-pr-k">______</span></b> 로 정했다.</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 발견 — TF vs TF-IDF</h3>
+    <table>
+      <tr><th style="width:34%;"></th><th>1위</th><th>2위</th><th>3위</th></tr>
+      <tr><td>전체를 그냥 셌을 때(TF)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>문제의 시기 문서(TF-IDF)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">두 줄이 다른 까닭을 <b>IDF</b> 라는 말을 써서 설명해 봅시다.</p>
+    <div class="rule"></div>
+    <p>계산 칸: TF = ______ ,　DF = ______ ,　IDF = n ÷ DF = ______ ÷ ______ = ______ ,　TF-IDF = ______ × ______ = ________</p>
+
+    <h3>⑤ 사장님께 보내는 한 줄 진단</h3>
+    <p id="rv-pr-diag">“리뷰 ______ 건을 분석한 결과, ______ 월부터 평균 감성 점수가 ____________로 바뀌었고,
+      그 시기 리뷰에서 TF-IDF가 가장 큰 단어는 ____________였습니다.
+      따라서 가장 먼저 점검할 곳은 ____________입니다.”</p>
+    <div class="rule sm"></div>
+
+    <div class="rv-pb"></div>
+    <div class="ws-h">
+      <h2>11차시 · 리뷰 분석과 추천 — 프로젝트 기록지 (2/2)</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+
+    <h3>⑥ 별점 행렬</h3>
+    <table>
+      <tr><th style="width:20%;">사람 ＼ 작품</th><th class="blank"></th><th class="blank"></th><th class="blank"></th><th class="blank"></th><th class="blank"></th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑦ 유사도 계산 칸</h3>
+    <table>
+      <tr><th>비교</th><th>성분끼리 곱해 더한 값</th><th>각 벡터의 크기</th><th>유클리드 유사도 d</th><th>코사인 유사도 C</th></tr>
+      <tr><td>나 ↔ (　　　)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>나 ↔ (　　　)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>나 ↔ (　　　)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>유클리드 기준 1위: __________ ／ 코사인 기준 1위: __________ ／ <b>두 순위가 같았나요?</b> ☐ 같다 ☐ 다르다</p>
+    <p class="note">다르다면 그 까닭을 <b>벡터의 크기와 방향</b>이라는 말을 써서 적어 봅시다.</p>
+    <div class="rule"></div>
+
+    <h3>⑧ 추천 근거 문장</h3>
+    <p id="rv-pr-rec">“__________ 에게 __________ 을(를) 추천합니다. 왜냐하면 __________ 유사도로 잰 값이
+      __________ 로 가장 __________ 했고, 그분이 이 작품에 ______ 점을 주었기 때문입니다.”</p>
+    <div class="rule sm"></div>
+
+    <h3>⑨ 유사도 행렬 채우기 — 위쪽 삼각형 6칸만 계산하고 대칭으로 옮겨 적기</h3>
+    <table>
+      <tr><th></th><th class="blank"></th><th class="blank"></th><th class="blank"></th><th class="blank"></th></tr>
+      <tr><th class="blank"></th><td>1.00</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th class="blank"></th><td class="blank"></td><td>1.00</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th class="blank"></th><td class="blank"></td><td class="blank"></td><td>1.00</td><td class="blank"></td></tr>
+      <tr><th class="blank"></th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td>1.00</td></tr>
+    </table>
+
+    <h3>⑩ 필터 버블 토론 (모둠 기록)</h3>
+    <p class="note">토의 ① 추천이 정확할수록 우리가 잃는 것은? (구체적인 예 1개 포함)</p>
+    <div class="rule" id="rv-pr-d1"></div>
+    <p class="note">토의 ② “원하지 않는 것을 계속 추천하는 경우”와 “너무 잘 맞는 것만 추천하는 경우” 중 더 위험한 쪽과 그 이유</p>
+    <div class="rule" id="rv-pr-d2"></div>
+    <p class="note">토의 ③ 우리 모둠의 추천 규칙 한 문장 — “우리는 ________________________ 하겠다.”</p>
+    <div class="rule" id="rv-pr-d3"></div>
+
+    <h3>⑪ 핵심 질문 되돌아보기</h3>
+    <p class="note">100건을 다 읽어도 보이지 않던 원인을, 수는 어떻게 찾아냈나요?</p>
+    <div class="rule" id="rv-pr-a1"></div>
+    <p class="note">“나와 잘 맞는 추천”은 언제나 “좋은 추천”인가요?</p>
+    <div class="rule" id="rv-pr-a2"></div>
+
+    <h3>⑫ 2단원을 마치며</h3>
+    <p class="note">여섯 차시 동안 배운 것 중 <b>사람이 정해야 했던 것</b>을 세 가지만 적어 봅시다.
+      (예: 불용어 / 벡터 표현 / 기준값 k / 유사도의 종류 / 추천 규칙)</p>
+    <div class="rule sm"></div>
+  </div>
+</div>

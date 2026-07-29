@@ -1,0 +1,1126 @@
+<!-- ═══════════ SENTI (10차시: 집합으로 마음 읽기 — 자카드 유사도와 감성 분석) ═══════════
+     · 파일 위치: views/senti.html  (신규)
+     · 전역 접두사 st · 뷰 루트 id #v-senti · 모든 스타일 규칙은 #v-senti 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-senti">
+  <style>
+  /* senti 뷰 전용 스타일 (#v-senti 스코프 한정 — 전역 누수 금지) */
+  #v-senti .st-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-senti .st-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-senti .st-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-senti .st-hero{position:relative;}
+  #v-senti .st-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-senti .st-hero>*:not(.st-wm){position:relative;}
+  #v-senti .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-senti .st-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-senti .st-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-senti .st-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-senti .st-ask{border-left:4px solid var(--accent);}
+  #v-senti .st-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-senti .st-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-senti .st-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-senti .st-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-senti .st-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-senti .st-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-senti .st-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;}
+  #v-senti .st-scroll{overflow-x:auto;max-width:100%;}
+  #v-senti .st-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-senti .st-tbl th,#v-senti .st-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-senti .st-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-senti .st-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-senti .st-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-senti .st-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-senti .st-fb b{color:var(--fg);}
+  #v-senti .st-fb:empty{display:none;}
+  #v-senti .st-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-senti .st-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-senti .st-in.num{width:4.6rem;text-align:center;}
+  #v-senti .st-in.shake{animation:st-shake 0.4s;}
+  @keyframes st-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+  /* 조작 요소 확대(§8-2) — 조작 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px. 뷰 안에서만 키웁니다. */
+  #v-senti .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-senti .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-senti .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-senti .tabs{flex-wrap:wrap;}
+  #v-senti .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-senti .ws-btn{min-height:44px;}
+  #v-senti .st-back{display:block;margin-top:0.5rem;font-size:0.9rem;}
+  #v-senti .st-back .btn{text-transform:none;font-family:var(--sans);letter-spacing:0;font-size:0.85rem;}
+
+  /* 단계 토글(details) — 조작 전에는 잠깁니다 */
+  #v-senti .st-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-senti .st-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-senti .st-fold>summary::-webkit-details-marker{display:none;}
+  #v-senti .st-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-senti .st-fold[open]>summary::after{content:'▾';}
+  #v-senti .st-fold .bd{padding:0 0 0.9rem;}
+  #v-senti .st-fold .bd p,#v-senti .st-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-senti .st-fold.st-locked{opacity:0.62;}
+  #v-senti .st-fold.st-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-senti .st-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 활동 1 — 전처리 파이프라인 */
+  #v-senti .st-pipe-row{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);
+    padding:0.7rem 0.85rem;margin-bottom:0.7rem;}
+  #v-senti .st-pipe-row .lb{display:inline-block;font-family:var(--mono);font-size:0.74rem;font-weight:700;
+    color:var(--fg);background:var(--card-h);border-radius:9999px;padding:0.16rem 0.6rem;margin-bottom:0.4rem;}
+  #v-senti .st-pipe-st{opacity:0;transform:translateY(6px);transition:opacity 0.35s ease,transform 0.35s ease;margin-top:0.35rem;}
+  #v-senti .st-pipe-st.on{opacity:1;transform:none;}
+  #v-senti .st-pipe-st .hd{display:block;font-family:var(--mono);font-size:0.7rem;letter-spacing:0.06em;color:var(--muted);}
+  #v-senti .st-pipe-st p{font-size:0.98rem;line-height:1.9;margin:0.15rem 0 0;color:var(--body);word-break:keep-all;}
+  #v-senti .st-w0{display:inline-block;margin:0.1rem 0.35rem 0.1rem 0;font-family:var(--mono);font-size:0.86rem;}
+  #v-senti .st-w0 s{color:var(--muted);}
+  #v-senti .st-w0 b{color:var(--fg);}
+  #v-senti .st-setline{font-family:var(--mono);font-size:0.95rem;}
+  #v-senti .st-w{display:inline-block;min-width:2.6rem;min-height:2.2rem;line-height:2.2rem;padding:0 0.45rem;
+    border-bottom:1px dashed var(--muted);background:var(--card);border-radius:0.3rem 0.3rem 0 0;cursor:text;}
+  #v-senti .st-w:focus{outline:2px solid var(--fg);outline-offset:1px;background:var(--card-h);}
+  #v-senti .st-setline .st-nn{font-family:var(--mono);color:var(--fg);white-space:nowrap;}
+  #v-senti canvas.st-venn{display:block;width:100%;max-width:min(100%,34rem);height:auto;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);margin:0.6rem auto 0.3rem;}
+  #v-senti .st-bars{display:none;margin-top:0.8rem;}
+  #v-senti .st-bars.on{display:block;}
+  #v-senti .st-bar{display:flex;align-items:center;gap:0.5rem;margin:0.45rem 0;}
+  #v-senti .st-bar .nm{font-family:var(--mono);font-size:0.8rem;width:6.6rem;flex-shrink:0;color:var(--fg);}
+  #v-senti .st-bar .tk{flex:1;min-width:2.5rem;height:1.1rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:9999px;overflow:hidden;}
+  #v-senti .st-bar .tk i{display:block;height:100%;width:0;background:var(--accent);border-radius:9999px;
+    transition:width 0.4s cubic-bezier(0.22,1,0.36,1);}
+  #v-senti .st-bar .vl{font-family:var(--mono);font-size:0.82rem;font-weight:700;width:7.2rem;text-align:right;flex-shrink:0;}
+  #v-senti .st-calc{display:flex;flex-wrap:wrap;gap:0.5rem 0.7rem;align-items:center;margin-top:0.8rem;}
+  #v-senti .st-calc label{font-family:var(--mono);font-size:0.88rem;color:var(--fg);display:inline-flex;align-items:center;gap:0.35rem;}
+
+  /* 활동 2 — 사전 편집 · 벤 · 게이지 */
+  #v-senti .st-a2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(16rem,100%),1fr));gap:1rem;margin-top:0.8rem;}
+  #v-senti .st-pane{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem;min-width:0;}
+  #v-senti .st-pane>h4{font-size:1.0rem;margin:0 0 0.5rem;color:var(--fg);}
+  #v-senti .st-dcount{display:flex;gap:0.8rem;flex-wrap:wrap;font-family:var(--mono);font-size:0.86rem;font-weight:700;margin-bottom:0.4rem;}
+  #v-senti .st-dcount .p{color:var(--blue);}
+  #v-senti .st-dcount .n{color:var(--red);}
+  #v-senti .st-dbox{min-height:5.4rem;border:1px dashed var(--border);border-radius:0.5rem;padding:0.45rem;
+    display:flex;flex-wrap:wrap;gap:0.35rem;align-content:flex-start;background:var(--card);}
+  #v-senti .st-dbox.over{border-color:var(--fg);background:var(--card-h);}
+  #v-senti .st-dchip{display:inline-flex;align-items:center;gap:0.25rem;font-family:var(--sans);font-size:0.95rem;
+    border:1px solid var(--border);border-radius:9999px;padding:0.2rem 0.55rem;background:var(--bg);color:var(--fg);
+    cursor:grab;min-height:44px;}
+  #v-senti .st-dchip.p{border-color:var(--blue);}
+  #v-senti .st-dchip.n{border-color:var(--red);}
+  #v-senti .st-dchip.armed{outline:2px solid var(--red);}
+  #v-senti .st-dchip button{border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.85rem;
+    line-height:1;padding:0.25rem;min-width:2.2rem;min-height:2.2rem;}
+  #v-senti .st-dchip button:hover{color:var(--fg);}
+  #v-senti .st-dsub{display:flex;gap:0.35rem;flex-wrap:wrap;margin-top:0.45rem;}
+  #v-senti .st-dsub .st-in{flex:1 1 7rem;}
+  #v-senti .st-achips{display:flex;flex-wrap:wrap;gap:0.35rem;margin:0.5rem 0;min-height:2.4rem;}
+  #v-senti .st-achip{font-family:var(--sans);font-size:0.95rem;border-radius:9999px;padding:0.28rem 0.6rem;
+    border:1px solid var(--border);background:var(--card);color:var(--body);}
+  #v-senti .st-achip.p{background:var(--blue);border-color:var(--blue);color:#fff;}
+  #v-senti .st-achip.n{background:var(--red);border-color:var(--red);color:#fff;}
+  #v-senti .st-achip.x{color:var(--muted);}
+  #v-senti textarea.st-ta{width:100%;min-height:5.5rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:1.0rem;line-height:1.75;background:var(--card);color:var(--fg);resize:vertical;}
+  #v-senti select.st-sel{height:2.4rem;border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);
+    color:var(--fg);font-family:var(--sans);font-size:0.95rem;padding:0 0.5rem;max-width:100%;}
+  #v-senti .st-fcard{font-family:var(--mono);font-size:0.88rem;line-height:2.1;color:var(--body);margin:0.4rem 0;
+    word-break:break-word;}
+  #v-senti .st-fcard b.v{color:var(--fg);font-size:1.0rem;}
+  #v-senti .st-fnum{font-family:var(--mono);font-size:0.95rem;font-weight:700;border:1px solid var(--border);
+    background:var(--card);color:var(--fg);border-radius:0.3rem;padding:0 0.45rem;cursor:pointer;
+    min-height:2.2rem;min-width:2.2rem;vertical-align:middle;}
+  #v-senti .st-fnum:hover{background:var(--fg);color:var(--bg);}
+  #v-senti .st-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.15;margin:0 0.2rem;}
+  #v-senti .st-frac i{font-style:normal;border-bottom:1.5px solid var(--fg);padding:0 0.25rem;}
+  #v-senti .st-frac b{padding:0 0.25rem;}
+
+  /* 감성 게이지 */
+  #v-senti .st-gauge{margin:1rem 0 0.3rem;}
+  #v-senti .st-g-track{position:relative;height:3.6rem;border-radius:0.6rem;border:1px solid var(--border);
+    background:linear-gradient(90deg,var(--red) 0%,var(--card) 50%,var(--blue) 100%);}
+  #v-senti .st-g-neu{position:absolute;top:0;bottom:0;background:rgba(120,114,106,0.55);
+    border-left:1px solid var(--muted);border-right:1px solid var(--muted);transition:left 0.3s ease,width 0.3s ease;}
+  #v-senti .st-g-zero{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed var(--fg);opacity:0.6;}
+  #v-senti .st-g-tick{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--fg);transition:left 0.3s ease;}
+  #v-senti .st-g-tick i{position:absolute;top:-1.15rem;left:-0.9rem;font-style:normal;font-family:var(--mono);
+    font-size:0.72rem;color:var(--fg);white-space:nowrap;}
+  #v-senti .st-g-nd{position:absolute;top:0;bottom:0;width:0;border-left:3px solid var(--fg);transition:left 0.4s cubic-bezier(0.22,1,0.36,1);}
+  #v-senti .st-g-nd b{position:absolute;bottom:-1.35rem;left:50%;transform:translateX(-50%);font-family:var(--sans);
+    font-size:0.78rem;white-space:nowrap;color:var(--fg);}
+  #v-senti .st-g-nd i{position:absolute;top:0.25rem;left:50%;transform:translateX(-50%);font-style:normal;
+    font-family:var(--mono);font-size:0.8rem;font-weight:700;background:var(--bg);border:1px solid var(--fg);
+    border-radius:9999px;padding:0.06rem 0.4rem;white-space:nowrap;}
+  #v-senti .st-g-nd.pos{border-left-color:var(--blue);}
+  #v-senti .st-g-nd.neg{border-left-color:var(--red);}
+  #v-senti .st-g-nd.blink{animation:st-blink 0.2s 3;}
+  @keyframes st-blink{50%{opacity:0.15;}}
+  #v-senti .st-g-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.72rem;
+    color:var(--muted);margin-top:1.5rem;}
+  #v-senti .st-g-badge{display:inline-block;font-weight:700;font-size:1.15rem;border-radius:9999px;
+    padding:0.28rem 1.05rem;margin:0.5rem 0 0;color:#fff;background:var(--muted);}
+  #v-senti .st-g-badge.pos{background:var(--blue);}
+  #v-senti .st-g-badge.neg{background:var(--red);}
+  #v-senti .st-edge{display:none;font-size:0.88rem;line-height:1.7;background:#fdf3d8;border:1px solid #e0c98a;
+    border-radius:0.4rem;padding:0.5rem 0.7rem;margin-top:0.5rem;color:#6b551f;}
+  #v-senti .st-edge.on{display:block;}
+
+  /* 활동 3 — 슬라이더 · 부등식 */
+  #v-senti .st-krow{display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;margin:0.7rem 0;}
+  #v-senti input[type=range].st-k{flex:1 1 14rem;min-width:0;height:44px;accent-color:var(--fg);cursor:pointer;background:transparent;}
+  #v-senti .st-kval{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--fg);white-space:nowrap;}
+  #v-senti .st-ineq{display:flex;flex-wrap:wrap;gap:0.3rem 0.7rem;align-items:baseline;border:1px solid var(--border);
+    border-radius:0.4rem;background:var(--bg);padding:0.5rem 0.7rem;margin:0.35rem 0;opacity:0.42;}
+  #v-senti .st-ineq.on{opacity:1;border-color:var(--fg);background:var(--card-h);}
+  #v-senti .st-ineq .nm{font-weight:700;font-size:0.98rem;color:var(--fg);width:2.6rem;flex-shrink:0;}
+  #v-senti .st-ineq .fm{font-family:var(--mono);font-size:0.85rem;color:var(--body);}
+  #v-senti .st-ineq .ck{font-family:var(--mono);font-size:0.85rem;color:var(--muted);}
+  #v-senti .st-ineq.on .ck{color:var(--fg);}
+
+  /* 활동 4 — 단어 on/off */
+  #v-senti .st-a4wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));gap:0.9rem;margin-top:0.7rem;}
+  #v-senti .st-a4col{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem;min-width:0;}
+  #v-senti .st-a4col .lb{font-family:var(--mono);font-size:0.8rem;font-weight:700;margin:0 0 0.4rem;}
+  #v-senti .st-a4col.p .lb{color:var(--blue);}
+  #v-senti .st-a4col.n .lb{color:var(--red);}
+  #v-senti .st-a4chips{display:flex;flex-wrap:wrap;gap:0.35rem;}
+  #v-senti .st-a4chips .st-dchip{cursor:pointer;}
+  #v-senti .st-a4chips .st-dchip.off{opacity:0.4;text-decoration:line-through;}
+  #v-senti .st-a4chips .st-dchip.hit{box-shadow:inset 0 0 0 2px var(--accent);}
+  #v-senti .st-a4chips .st-dchip .ic{font-size:0.8rem;}
+  #v-senti .st-scoreboard{display:inline-block;font-family:var(--mono);font-size:0.95rem;font-weight:700;
+    background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.3rem 0.9rem;margin-top:0.7rem;}
+  #v-senti .st-cd-it{display:flex;align-items:center;gap:0.5rem;font-size:0.95rem;padding:0.25rem 0;border-bottom:1px dashed var(--border);}
+  #v-senti .st-cd-it b{font-family:var(--mono);background:var(--card-h);border-radius:0.3rem;padding:0.05rem 0.4rem;}
+  #v-senti .st-cd-it span{flex:1;min-width:0;color:var(--muted);font-size:0.88rem;}
+  #v-senti .st-cd-it button{border:none;background:transparent;color:var(--muted);cursor:pointer;min-width:2.2rem;min-height:2.2rem;}
+  #v-senti textarea.st-json{display:none;width:100%;min-height:8rem;font-family:var(--mono);font-size:0.76rem;
+    border:1px solid var(--border);border-radius:0.4rem;padding:0.5rem;background:var(--card);color:var(--fg);}
+  #v-senti textarea.st-json.on{display:block;}
+
+  /* 사진 · 교과서 캡처 슬롯 */
+  #v-senti .st-photo{margin:0.9rem 0;max-width:15rem;}
+  #v-senti .st-photo img{display:block;width:100%;height:auto;border-radius:0.6rem;border:1px solid var(--border);}
+  #v-senti .st-photo .fb{display:none;align-items:center;justify-content:center;width:100%;min-height:8rem;
+    font-size:3rem;background:var(--bg);border:1px solid var(--border);border-radius:0.6rem;}
+  #v-senti .st-photo.nofoto img{display:none;}
+  #v-senti .st-photo.nofoto .fb{display:flex;}
+  #v-senti .st-photo figcaption{font-size:0.8rem;color:var(--muted);line-height:1.65;margin-top:0.35rem;}
+  #v-senti .st-tbrow{display:flex;flex-wrap:wrap;gap:0.7rem;margin-top:0.7rem;}
+  #v-senti .st-tbrow figure{margin:0;flex:1 1 13rem;min-width:0;}
+  #v-senti .st-tbrow img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;}
+  #v-senti .st-tbrow figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.25rem;}
+
+  /* 추천 영상 링크 카드(임베드 차단 · 검색) — 공통 .cmn-vd-grid 를 그대로 씁니다 */
+  #v-senti .st-vdlink{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    border:1px solid var(--border);border-radius:0.7rem;overflow:hidden;background:var(--card);transition:all 0.2s;}
+  #v-senti .st-vdlink:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-senti .st-vdlink .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.2rem;overflow:hidden;}
+  #v-senti .st-vdlink .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-senti .st-vdlink .lock{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.64rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;}
+  #v-senti .st-vdlink .meta{padding:0.55rem 0.7rem 0.75rem;}
+  #v-senti .st-vdlink .meta b{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;}
+  #v-senti .st-vdlink .meta span{display:block;font-size:0.8rem;color:var(--muted);margin-top:0.2rem;line-height:1.55;}
+
+  /* 참고 자료 카드 */
+  #v-senti .st-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-senti .st-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;
+    font-family:var(--sans);font-size:1rem;cursor:pointer;}
+  #v-senti .st-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-senti .st-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;}
+  #v-senti .st-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-senti .st-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-senti .st-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-senti .st-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+  #v-senti .st-refadd{border-style:dashed;background:transparent;}
+  #v-senti .st-roomwrap{display:flex;flex-direction:column;gap:0.5rem;min-width:0;}
+  #v-senti .st-roomwrap .btn{align-self:flex-start;}
+  #v-senti .st-roomform{display:none;gap:0.4rem;flex-wrap:wrap;align-items:center;margin-top:0.6rem;}
+  #v-senti .st-roomform.on{display:flex;}
+  #v-senti .st-roomform .st-in{flex:1 1 14rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-senti *{animation:none !important;transition:none !important;}
+    #v-senti .st-g-nd.blink{outline:3px solid var(--fg);}
+  }
+  @media (max-width:640px){
+    #v-senti .st-wm{display:none;}
+    #v-senti .st-bar .nm{width:5.2rem;font-size:0.72rem;}
+    #v-senti .st-bar .vl{width:5.6rem;font-size:0.72rem;}
+    #v-senti .st-fml{font-size:0.82rem;}
+    #v-senti .st-ineq .nm{width:100%;}
+    #v-senti .st-g-nd b{font-size:0.7rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="st-hero">
+    <svg class="st-wm" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
+      <circle cx="92" cy="70" r="52" fill="var(--blue)" opacity="0.5"/>
+      <circle cx="148" cy="70" r="52" fill="var(--red)" opacity="0.5"/>
+      <path d="M120 24 a52 52 0 0 1 0 92 a52 52 0 0 1 0 -92 z" fill="var(--accent)"/>
+      <rect x="103" y="68" width="34" height="4" rx="2" fill="var(--fg)"/>
+      <circle cx="120" cy="54" r="4.5" fill="var(--fg)"/>
+      <circle cx="120" cy="88" r="4.5" fill="var(--fg)"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅱ 단원 · 10차시 · [12인수02-03]</p>
+    <h2>집합으로 마음 읽기 — 자카드 유사도와 감성 분석</h2>
+    <p class="desc">
+      같은 문장을 두고도 어떤 AI는 "괜찮다"고, 어떤 AI는 "도움이 필요하다"고 말합니다.
+      그 차이는 <b>사전(辭典)</b>과 <b>기준선</b>이라는 두 개의 수학적 선택에서 옵니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 두 단어집합의 <b>교집합의 원소 개수와 합집합의 원소 개수의 비</b>로 자카드 유사도를 구할 수 있습니다. <b>[12인수02-03]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② <b>감성 사전</b>과 자카드 유사도를 이용하여 문장의 감성 정보를 분석하는 수학적 방법을 설명할 수 있습니다. <b>[12인수02-03]</b>
+    </div>
+    <div class="st-goalmap">
+      <button type="button" onclick="stSee(0,'st-act1')">├ 목표 ① → <b>활동 1</b>(세 후기의 자카드 유사도 구하기)·<b>활동 2</b>(벤다이어그램으로 확인) →</button>
+      <button type="button" onclick="stSee(1,'st-act2')">└ 목표 ② → <b>활동 2·3</b>(감성 사전 편집과 판정)·<b>활동 4</b>(사전과 기준선이 흔들릴 때) →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips st-keys" data-no-toggle="1">
+    <span class="chip">자카드 유사도 J(A, B)</span>
+    <span class="chip">교집합·합집합의 원소 개수</span>
+    <span class="chip">감성 사전 P, N</span>
+    <span class="chip">감성 점수 J(P, A) − J(N, A)</span>
+    <span class="chip">임계값 k와 판정 부등식</span>
+  </div>
+
+  <div class="card st-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>AI는 사람의 ‘마음’을 어떻게 수로 읽어내는가?</li>
+      <li>판정의 기준선(임계값)은 누가, 무엇을 근거로 정해야 하는가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">두 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="st-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 문장에서 마음을 읽어내는 방법</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기). 아래 줄의 세 카드는
+      <b>유튜브에서 새 탭으로</b> 열립니다.</p>
+    <div id="st-videos"></div>
+    <div class="cmn-vd-grid" style="margin-top:0.8rem;">
+      <a class="st-vdlink" href="https://www.youtube.com/watch?v=HWedKlJRvZg" target="_blank" rel="noopener">
+        <span class="th"><span class="lock">🔒 새 탭 ↗</span>
+          <img src="https://img.youtube.com/vi/HWedKlJRvZg/hqdefault.jpg" alt="" loading="lazy"
+               onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="meta"><b>인공지능과 수학교육 5. 인공지능에서 사용하는 유사도의 종류(유클리드·코사인·자카드)</b>
+          <span>수학교육학자 김정현(단국대) · 자카드를 정면으로 다루는 영상입니다.
+            이 영상은 외부 삽입이 막혀 있어 유튜브에서 열립니다.</span></span>
+      </a>
+      <a class="st-vdlink" href="https://www.youtube.com/watch?v=o9XDqhdLByk" target="_blank" rel="noopener">
+        <span class="th"><span class="lock">🔒 새 탭 ↗</span>
+          <img src="https://img.youtube.com/vi/o9XDqhdLByk/hqdefault.jpg" alt="" loading="lazy"
+               onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="meta"><b>인공지능과 수학교육 4. 텍스트 분류를 위한 분석; 감성 분석 (11:11)</b>
+          <span>수학교육학자 김정현 · 교사 사전 연수·심화 희망 학생용.
+            이 영상은 외부 삽입이 막혀 있어 유튜브에서 열립니다.</span></span>
+      </a>
+      <a class="st-vdlink" href="https://www.youtube.com/results?search_query=%EC%9E%90%EC%B9%B4%EB%93%9C+%EC%9C%A0%EC%82%AC%EB%8F%84+%EC%A7%91%ED%95%A9+%EA%B5%90%EC%A7%91%ED%95%A9+%ED%95%A9%EC%A7%91%ED%95%A9"
+         target="_blank" rel="noopener">
+        <span class="th">🔎</span>
+        <span class="meta"><b>"자카드 유사도" 영상 더 찾기</b>
+          <span>유튜브 검색 · 자카드만 단독으로 다루면서 삽입 재생까지 되는 한국어 영상은 아직 확보되지 않았습니다.
+            직접 찾아보고 좋은 영상을 발견하면 위 [＋ 선생님 영상 추가]에 등록해 주세요.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="st-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b>
+      이제 문장을 집합으로 바꾸어, 마음을 재는 자를 직접 만들어 봅시다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="st-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="stTab(0,this)">① 자카드 유사도</button>
+    <button class="tab" type="button" onclick="stTab(1,this)">② 감성 사전</button>
+    <button class="tab" type="button" onclick="stTab(2,this)">③ 임계값 k</button>
+    <button class="tab" type="button" onclick="stTab(3,this)">④ 사전의 힘</button>
+  </div>
+
+  <!-- ── 탭 ① 활동 1 ─────────────────────────────────────────────── -->
+  <div class="tpanel on" id="st0">
+    <div class="card" id="st-act1" data-no-toggle="1">
+      <h3>활동 1 · 「같은 사과, 다른 후기」 — 자카드 유사도로 재기</h3>
+      <p>어느 과일 가게에 세 개의 후기가 올라왔습니다.</p>
+      <div class="math">후기 A   나는 오늘 맛있는 사과를 먹었다.
+후기 B   나는 오늘 상큼한 사과를 먹었다.
+후기 C   나는 내일 새콤한 사과를 먹는다.</div>
+      <p>세 후기 중 <b>가장 비슷한 두 개</b>는 무엇일까요? 눈으로 먼저 골라 보세요.
+        그다음, 그 판단을 컴퓨터도 할 수 있도록 <b>수 하나</b>로 바꾸어 봅시다.</p>
+      <div class="chips" id="st-a1-eye">
+        <button class="chip" type="button" onclick="stA1Guess('AB',this)">A–B</button>
+        <button class="chip" type="button" onclick="stA1Guess('AC',this)">A–C</button>
+        <button class="chip" type="button" onclick="stA1Guess('BC',this)">B–C</button>
+      </div>
+      <p class="status" id="st-a1-eyemsg">먼저 눈으로 한 쌍을 고르면 아래 계산 패널이 열립니다.</p>
+      <span class="st-src">출처 — 교사 제작 활동지 「활동 3(자카드 유사도)」의 후기 A·B·C를 그대로 사용</span>
+    </div>
+
+    <div class="card st-veil" id="st-a1-panel" data-no-toggle="1">
+      <h3>조작 — 단어집합으로 바꾸고, 세어 보기</h3>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="stA1Build()">단어집합 만들기</button>
+      </div>
+      <p class="status" id="st-a1-st">버튼을 누르면 세 후기가 ① 원문 → ② 어절 분리 → ③ 조사·어미 정리 → ④ 단어집합의 네 단계로 바뀝니다.</p>
+      <div id="st-a1-pipe"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.1rem;">쌍 고르기</p>
+      <div class="chips" id="st-a1-pair">
+        <button class="chip on" type="button" onclick="stA1Pick('AB',this)">A와 B</button>
+        <button class="chip" type="button" onclick="stA1Pick('AC',this)">A와 C</button>
+        <button class="chip" type="button" onclick="stA1Pick('BC',this)">B와 C</button>
+      </div>
+      <canvas class="st-venn" id="st-venn1" aria-label="선택한 두 후기의 단어집합 벤다이어그램" role="img"></canvas>
+      <p class="st-hint" id="st-a1-info">[단어집합 만들기]를 먼저 눌러 주세요.</p>
+
+      <div class="st-calc">
+        <label>n(A∩B) = <input class="st-in num" id="st-a1-i" type="number" min="0" inputmode="numeric" aria-label="교집합의 원소 개수"></label>
+        <label>n(A∪B) = <input class="st-in num" id="st-a1-u" type="number" min="0" inputmode="numeric" aria-label="합집합의 원소 개수"></label>
+        <label>J = <input class="st-in num" id="st-a1-num" type="number" min="0" inputmode="numeric" aria-label="자카드 유사도의 분자">
+          / <input class="st-in num" id="st-a1-den" type="number" min="1" inputmode="numeric" aria-label="자카드 유사도의 분모"></label>
+        <button class="btn pri" type="button" onclick="stA1Check()">확인</button>
+      </div>
+      <div class="st-fb" id="st-a1-fb"></div>
+
+      <div class="btn-row" style="margin-top:0.9rem;">
+        <button class="btn" type="button" onclick="stA1All()">세 쌍 한꺼번에 보기</button>
+      </div>
+      <div class="st-bars" id="st-a1-bars"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="st-fold" data-lock="a1-obs" data-lockmsg="세 쌍의 값을 모두 맞게 계산하면 열립니다.">
+        <summary>단계 1 · 관찰 — 무엇이 분모를 키웠나요?</summary>
+        <div class="bd">
+          <p>세 후기의 단어집합은 모두 원소가 5개로 같습니다. 그런데 J 값은 달랐습니다.
+            A와 B는 ‘맛있다’와 ‘상큼하다’ 하나씩만 달랐으므로 합집합이 6으로 작았고,
+            A와 C는 ‘오늘/내일’, ‘맛있다/새콤하다’ 두 자리가 달라 합집합이 7로 커졌습니다.
+            <b>분자가 줄고 분모가 커지는 일이 동시에 일어나기 때문에</b>, 단어 하나 차이가 값에 생각보다 크게 작용합니다.</p>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a1-sum" data-lockmsg="손계산 [확인]에서 한 번이라도 맞히면 열립니다.">
+        <summary>단계 2 · 정리 — 계산 결과</summary>
+        <div class="bd">
+          <div class="st-scroll">
+            <table class="st-tbl">
+              <tr><th>쌍</th><th>교집합</th><th>n(A∩B)</th><th>n(A∪B)</th><th>J</th><th>소수</th></tr>
+              <tr><td>A와 B</td><td>{나, 오늘, 사과, 먹다}</td><td>4</td><td>5 + 5 − 4 = 6</td><td>4/6 = 2/3</td><td>≒ 0.67</td></tr>
+              <tr><td>A와 C</td><td>{나, 사과, 먹다}</td><td>3</td><td>5 + 5 − 3 = 7</td><td>3/7</td><td>≒ 0.43</td></tr>
+              <tr><td>B와 C</td><td>{나, 사과, 먹다}</td><td>3</td><td>5 + 5 − 3 = 7</td><td>3/7</td><td>≒ 0.43</td></tr>
+            </table>
+          </div>
+          <p style="margin-top:0.7rem;">따라서 J(A, B)가 가장 크므로 <b>후기 A와 B가 가장 유사</b>합니다. 눈으로 고른 답과 같았나요?
+            A와 C, B와 C의 값이 정확히 같다는 점도 눈여겨보세요. ‘오늘/내일’과 ‘맛있다/새콤하다’처럼
+            <b>다른 자리의 개수가 같으면 자카드 유사도도 같아집니다.</b>
+            자카드는 어떤 단어가 다른지가 아니라 <b>몇 개가 겹치는지</b>만 보기 때문입니다.</p>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a1-def" data-lockmsg="손계산 [확인]에서 한 번이라도 맞히면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 자카드 유사도란 무엇인가</summary>
+        <div class="bd">
+          <figure class="st-photo" style="float:right;margin:0 0 0.8rem 1.1rem;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/ETH-BIB-Jaccard%2C_Paul_%281868-1944%29-Portr_00152.tif/lossy-page1-500px-ETH-BIB-Jaccard%2C_Paul_%281868-1944%29-Portr_00152.tif.jpg"
+                 alt="폴 자카드 초상 사진" loading="lazy" referrerpolicy="no-referrer"
+                 onerror="this.closest('.st-photo').classList.add('nofoto');">
+            <span class="fb" aria-hidden="true">🌿</span>
+            <figcaption>폴 자카드(1868~1944). 스위스의 식물학자로, 알프스 식물 분포를 비교하려고 두 집합의 겹침 비율을 처음 정의했습니다.
+              사진 1933년 7월, Franz Schmelhaus 촬영. 출처 ETH-Bibliothek / Wikimedia Commons, CC BY-SA 4.0</figcaption>
+          </figure>
+          <p>두 텍스트 데이터에 모두 포함된 단어의 비율, 곧 <b>두 단어집합의 교집합의 원소 개수를 합집합의 원소 개수로 나눈 값</b>을
+            자카드 유사도라 하고, 기호로 J(A, B)와 같이 나타냅니다.</p>
+          <p class="st-fml">J(A, B) = n(A∩B) / n(A∪B) = n(A∩B) / { n(A) + n(B) − n(A∩B) }</p>
+          <p>값의 범위는 0 이상 1 이하이며, 1에 가까울수록 유사, 0에 가까울수록 유사하지 않다고 판단합니다.
+            특히 A = B이면 J = 1, A∩B = ∅이면 J = 0 입니다.</p>
+          <p>자카드 유사도는 스위스의 식물학자 <b>폴 자카드(Paul Jaccard, 1868~1944)</b> 가 서로 다른 지역의 식물 종 구성이
+            얼마나 겹치는지를 재기 위해 고안한 값입니다. 백 년 뒤 같은 식이 문장의 단어를 세는 데 쓰이고 있습니다.</p>
+          <div class="st-tbrow">
+            <figure>
+              <img src="assets/textbook-local/senti_jaccard_ssimas_p70.png" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 교과서 p.70 (수업용)</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/senti_jaccard_donga_p71.png" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아 교과서 p.71 (수업용)</figcaption>
+            </figure>
+          </div>
+          <span class="st-src">씨마스 「인공지능 수학」 Ⅱ. 텍스트 데이터 처리 p.70 서술을 재구성 / 동아출판 「인공지능 수학」 Ⅱ 단원 p.71 서술과 인물 소개를 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 미니 확인 문제</h3>
+      <p>어느 일기 예보 기사 제목 세 개의 단어집합입니다. 가장 유사한 두 기사를 고르세요.</p>
+      <div class="math">A = {전국, 장마, 시작, 일부, 지역, 폭우, 주의}
+B = {장마, 폭우, 침수, 피해, 출근길, 주의}
+C = {폭우, 예보, 일부, 지역, 장마, 지속}</div>
+      <div class="chips" id="st-a1-news">
+        <button class="chip" type="button" onclick="stA1News('AB',this)">A와 B</button>
+        <button class="chip" type="button" onclick="stA1News('AC',this)">A와 C</button>
+        <button class="chip" type="button" onclick="stA1News('BC',this)">B와 C</button>
+      </div>
+      <div class="st-fb" id="st-a1-newsfb"></div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 활동 2 ─────────────────────────────────────────────── -->
+  <div class="tpanel" id="st1">
+    <div class="card" id="st-act2" data-no-toggle="1">
+      <h3>활동 2 · 「감성 사전을 짓다」 — J(P, A)와 J(N, A)</h3>
+      <p>우리 학교에 <b>AI 상담 챗봇</b>을 들이려고 합니다. 이 챗봇은 학생이 남긴 짧은 글을 읽고,
+        지금 <b>괜찮은 상태</b>인지 <b>도움이 필요한 상태</b>인지 구분해야 합니다.</p>
+      <p>그런데 컴퓨터는 ‘힘들다’가 슬픈 말이라는 것을 스스로 알지 못합니다. 우리가 알려 주어야 합니다.
+        <b>먼저 사전을 만들고, 그다음에 문장을 봅니다.</b> 순서를 바꾸지 마세요.</p>
+      <details class="st-fold">
+        <summary>교수·학습 유의점 (교사용)</summary>
+        <div class="bd">
+          <p>예시 문장을 먼저 보여 주면 학생들이 그 문장에 맞추어 사전을 짜게 됩니다.
+            반드시 사전을 먼저 완성한 뒤 문장을 공개하세요.</p>
+          <span class="st-src">연수교재 합본 p.97 ‘교수학습 TIP’ 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 사전을 짓고, 문장을 넣고, 겹침을 본다</h3>
+      <div class="st-a2grid">
+
+        <!-- 좌 : 감성 사전 편집 -->
+        <div class="st-pane">
+          <h4>① 감성 사전 편집</h4>
+          <div class="st-dcount">
+            <span class="p" id="st-np">n(P) = 0</span>
+            <span class="n" id="st-nn2">n(N) = 0</span>
+          </div>
+          <div class="btn-row" style="align-items:center;">
+            <label class="st-hint" for="st-preset">기본 사전 불러오기</label>
+            <select class="st-sel" id="st-preset" onchange="stPreset(this.value)" aria-label="기본 사전 불러오기">
+              <option value="counsel">상담 챗봇 (기본값)</option>
+              <option value="food">음식점 리뷰</option>
+              <option value="movie">영화 리뷰</option>
+            </select>
+            <button class="btn" type="button" id="st-undo" onclick="stDictUndo()">되돌리기</button>
+          </div>
+          <p class="st-src" id="st-preset-src">출처 — 연수교재 합본 p.96 서술을 재구성</p>
+
+          <p class="mat-label" style="text-align:left;">긍정 단어 집합 P</p>
+          <div class="st-dbox" id="st-dict-p"></div>
+          <div class="st-dsub">
+            <input class="st-in" id="st-add-p" type="text" placeholder="긍정 단어 추가" aria-label="긍정 단어 추가">
+            <button class="btn" type="button" onclick="stDictAdd('p')">＋ 추가</button>
+          </div>
+
+          <p class="mat-label" style="text-align:left;margin-top:0.9rem;">부정 단어 집합 N</p>
+          <div class="st-dbox" id="st-dict-n"></div>
+          <div class="st-dsub">
+            <input class="st-in" id="st-add-n" type="text" placeholder="부정 단어 추가" aria-label="부정 단어 추가">
+            <button class="btn" type="button" onclick="stDictAdd('n')">＋ 추가</button>
+          </div>
+
+          <p class="status" id="st-dict-msg"></p>
+          <p class="st-hint">칩을 끌어다 반대쪽 칸에 놓으면 옮겨집니다. 마우스를 쓰기 어려우면 칩의 <b>⇄</b> 단추를 누르세요.
+            <b>✕</b>는 두 번 눌러야 지워지고, 지운 단어는 [되돌리기]로 3개까지 살릴 수 있습니다.</p>
+          <p class="st-hint" style="margin-top:0.4rem;"><b>이 사전은 11차시 리뷰 대시보드에서 다시 쓰입니다.</b></p>
+        </div>
+
+        <!-- 중 : 문장 입력 -->
+        <div class="st-pane">
+          <h4>② 문장 넣기 — 단어집합 A</h4>
+          <textarea class="st-ta" id="st-sent" placeholder="분석할 문장을 입력하세요."></textarea>
+          <div class="btn-row" style="margin-top:0.5rem;align-items:center;">
+            <button class="btn pri" type="button" onclick="stAnalyze()">분석</button>
+            <select class="st-sel" id="st-ex-sent" aria-label="예시 문장 고르기"></select>
+            <button class="btn" type="button" onclick="stExLoad()">예시 문장 불러오기</button>
+          </div>
+          <p class="status" id="st-a2-st">사전을 완성한 뒤 문장을 넣어 보세요.</p>
+          <p class="st-hint"><b id="st-na">n(A) = 0</b></p>
+          <div class="st-achips" id="st-a2-words">
+            <span class="st-hint">문장을 넣고 [분석]을 누르면 단어집합 A가 여기에 나타납니다.</span>
+          </div>
+          <p class="st-hint">파랑 = P와 겹친 단어 · 빨강 = N과 겹친 단어 · 회색 = 사전에 없는 단어(중립으로 처리)</p>
+          <p class="st-src" id="st-a2-src"></p>
+        </div>
+
+        <!-- 우 : 벤다이어그램 · 분수 카드 -->
+        <div class="st-pane">
+          <h4>③ 겹침 보기 — 벤다이어그램과 분수</h4>
+          <canvas class="st-venn" id="st-vennP" aria-label="긍정 사전 P와 문장 A의 벤다이어그램" role="img"></canvas>
+          <p class="st-fcard" id="st-fp">J(P, A) = —</p>
+          <canvas class="st-venn" id="st-vennN" aria-label="부정 사전 N과 문장 A의 벤다이어그램" role="img"></canvas>
+          <p class="st-fcard" id="st-fn">J(N, A) = —</p>
+          <p class="st-hint">분수 카드의 <b>수를 누르면</b> 그 수가 어느 영역에서 나왔는지 벤다이어그램이 점멸합니다.
+            소수는 소수점 아래 셋째 자리에서 반올림해 둘째 자리까지 나타냅니다.</p>
+        </div>
+      </div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.2rem;">감성 점수 게이지</p>
+      <div class="st-gauge" id="st-gauge2"></div>
+      <p class="st-fcard" id="st-a2-eq">J(P, A) − J(N, A) = —</p>
+      <p class="st-edge" id="st-a2-edge"></p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="st-fold" data-lock="a2-obs" data-lockmsg="문장을 한 번 이상 분석하면 열립니다.">
+        <summary>단계 1 · 관찰 — 왜 J 값이 이렇게 작을까요?</summary>
+        <div class="bd">
+          <p>문장에 긍정 단어가 다섯 개나 들어 있어도 J(P, A)는 0.42밖에 되지 않았습니다.
+            분모가 <b>문장의 단어 수만이 아니라 사전 전체의 단어 수까지 더한 값</b>이기 때문입니다.
+            사전이 커질수록 분모가 커지므로 J 값은 작아집니다.</p>
+          <p>그래서 감성 점수는 0.9, 0.8 같은 큰 값이 아니라 0.1~0.3 정도의 작은 값에서 판정이 갈립니다.
+            뒤에 나올 k = 0.25가 왜 ‘꽤 높은 기준’인지 여기서 미리 짐작해 보세요.</p>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a2-sum" data-lockmsg="문장을 한 번 이상 분석하면 열립니다.">
+        <summary>단계 2 · 정리 — 예시 문장 세 개의 계산</summary>
+        <div class="bd">
+          <p><b>(가) 음식점 리뷰 X</b> — "이 음식점은 매장이 청결하고 넓어서 편하게 식사할 수 있어요.
+            게다가 음식량도 많고 맛있어요. 하지만 서비스가 불친절한 점은 별로였어요."</p>
+          <p class="st-fml">X = {청결하다, 넓다, 편하다, 많다, 맛있다, 불친절, 별로다}, n(X) = 7</p>
+          <ul>
+            <li>P∩X = {청결하다, 넓다, 편하다, 많다, 맛있다} → J(P, X) = 5 / (10+7−5) = 5/12 ≒ 0.42</li>
+            <li>N∩X = {불친절, 별로다} → J(N, X) = 2 / (10+7−2) = 2/15 ≒ 0.13</li>
+            <li>감성 점수 = 0.42 − 0.13 = <b>0.29</b></li>
+          </ul>
+          <span class="st-src">씨마스 「인공지능 수학」 Ⅱ p.70~71의 리뷰 X 예를 재구성</span>
+
+          <p style="margin-top:0.9rem;"><b>(나) 상담 문장 A</b> — "요즘 공부가 조금 힘들고 피곤하지만, 그래도 잘 해내고 싶다."</p>
+          <p class="st-fml">A = {요즘, 공부, 조금, 힘들다, 피곤, 그래도, 잘하다, 해내다, 싶다}, n(A) = 9</p>
+          <ul>
+            <li>P∩A = {잘하다} → J(P, A) = 1 / (10+9−1) = 1/18 ≒ 0.06</li>
+            <li>N∩A = {힘들다, 피곤} → J(N, A) = 2 / (10+9−2) = 2/17 ≒ 0.12</li>
+            <li>감성 점수 = 0.06 − 0.12 = <b>−0.06</b></li>
+          </ul>
+
+          <p style="margin-top:0.9rem;"><b>(다) 상담 문장 B</b> — "아무것도 하기 싫고 너무 지쳐서 그냥 포기하고 싶다."</p>
+          <p class="st-fml">B = {아무것, 하다, 싫다, 너무, 지치다, 그냥, 포기, 싶다}, n(B) = 8</p>
+          <ul>
+            <li>P∩B = ∅ → J(P, B) = 0 / 18 = 0</li>
+            <li>N∩B = {싫다, 지치다, 포기} → J(N, B) = 3 / (10+8−3) = 3/15 = 0.2</li>
+            <li>감성 점수 = 0 − 0.2 = <b>−0.20</b></li>
+          </ul>
+          <span class="st-src">연수교재 합본 p.96~97 「AI 상담 챗봇의 감정 판단기 만들기」 예시 문장을 재구성</span>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a2-def" data-lockmsg="문장을 한 번 이상 분석하면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 자카드 유사도를 이용한 감성 분석의 다섯 단계</summary>
+        <div class="bd">
+          <p>① 긍정 단어 집합 P와 부정 단어 집합 N, 곧 <b>감성 사전</b>을 구성합니다.<br>
+            ② 분석할 문장을 전처리하여 <b>단어집합 A</b>를 만듭니다.<br>
+            ③ <b>J(P, A)</b> 와 <b>J(N, A)</b> 를 각각 구합니다.<br>
+            ④ 두 값의 차 <b>J(P, A) − J(N, A)</b> 를 구합니다.<br>
+            ⑤ 이 값을 판단 기준값 <b>k</b> 와 비교하여 긍정·중립·부정으로 판정합니다.</p>
+          <span class="st-src">연수교재 강의 PPT 「7~8. 유사도 측정의 수학적 원리와 실생활 적용」(최화식) ‘분석 과정’ 슬라이드를 재구성 / 씨마스 「인공지능 수학」 Ⅱ p.71 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 내 문장 넣어 보기</h3>
+      <p>오늘 아침에 친구에게 보낸 메시지 하나를 그대로 입력해 보세요.
+        사전에 없어서 회색으로 남은 단어 중, <b>사전에 넣었어야 했다고 생각하는 단어</b>를 두 개 골라
+        P나 N에 추가하고 값이 어떻게 달라지는지 기록합니다.</p>
+      <textarea class="st-ta" id="st-a2-note" style="min-height:4.4rem;"
+        placeholder="① 내가 넣은 단어와 그 이유 —&#10;② 값이 어떻게 달라졌나 —"></textarea>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ 활동 3 ─────────────────────────────────────────────── -->
+  <div class="tpanel" id="st2">
+    <div class="card" id="st-act3" data-no-toggle="1">
+      <h3>활동 3 · 「기준선을 움직이다」 — 임계값 k</h3>
+      <p>활동 2에서 상담 문장 B의 감성 점수는 <b>−0.20</b> 이었습니다.
+        교과서가 일반적으로 쓰는 기준값은 <b>k = 0.25</b> 입니다.</p>
+      <p>이 챗봇은 문장 B를 뭐라고 판정할까요? 먼저 예상해 보세요.</p>
+      <div class="chips" id="st-a3-guess">
+        <button class="chip" type="button" onclick="stA3Predict('긍정',this)">긍정</button>
+        <button class="chip" type="button" onclick="stA3Predict('중립',this)">중립</button>
+        <button class="chip" type="button" onclick="stA3Predict('부정',this)">부정</button>
+      </div>
+      <p class="status" id="st-a3-gmsg">예상을 고르기 전에는 슬라이더가 잠겨 있습니다.</p>
+    </div>
+
+    <div class="card st-veil" id="st-a3-panel" data-no-toggle="1">
+      <h3>조작 — k를 움직이면 무엇이 함께 움직이나</h3>
+      <div class="st-krow">
+        <label class="st-kval" for="st-k">임계값</label>
+        <input class="st-k" id="st-k" type="range" min="0" max="0.5" step="0.01" value="0.25"
+               oninput="stKSet(this.value)" aria-label="임계값 k">
+        <span class="st-kval" id="st-k-val">k = 0.25</span>
+      </div>
+
+      <div class="chips" id="st-a3-pick">
+        <button class="chip" type="button" onclick="stA3Sent(0,this)">문장 X (0.29)</button>
+        <button class="chip" type="button" onclick="stA3Sent(1,this)">문장 A (−0.06)</button>
+        <button class="chip on" type="button" onclick="stA3Sent(2,this)">문장 B (−0.20)</button>
+        <button class="chip" type="button" id="st-a3-tri" onclick="stA3Toggle()">문장 3개 동시 보기</button>
+      </div>
+
+      <div class="st-gauge" id="st-gauge3"></div>
+      <div id="st-a3-ineq"></div>
+
+      <div class="btn-row" style="margin-top:0.9rem;">
+        <button class="btn pri" type="button" onclick="stA3Record()">지금 판정 기록</button>
+      </div>
+      <p class="status" id="st-a3-st">기록 0행 — 3행 이상 기록하면 아래 단계 토글이 열립니다.</p>
+      <div id="st-a3-log"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="st-fold" data-lock="a3-obs" data-lockmsg="서로 다른 k값을 3개 이상 기록하면 열립니다.">
+        <summary>단계 1 · 관찰 — 어디에서 판정이 바뀌었나요?</summary>
+        <div class="bd">
+          <p>k를 0.25에서 천천히 내리다 보면, 문장 B는 <b>k = 0.20 이하</b>가 되는 순간 ‘중립’에서 ‘부정’으로 바뀝니다.
+            문장 A는 <b>k = 0.06 이하</b>에서 ‘부정’이 되고, 문장 X는 <b>k = 0.29 이하</b>일 때만 ‘긍정’입니다.
+            곧 각 문장에는 <b>자신의 판정이 뒤집히는 고유한 k값</b>이 있고, 그 값은 바로 감성 점수의 절댓값입니다.</p>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a3-sum" data-lockmsg="서로 다른 k값을 3개 이상 기록하면 열립니다.">
+        <summary>단계 2 · 정리 — k는 무엇을 조절하는가</summary>
+        <div class="bd">
+          <p>k는 <b>중립이라고 부르기로 한 구간의 반지름</b>입니다. k가 크면 중립 구간 (−k, k)가 넓어져
+            어지간한 문장은 다 ‘중립’이 되고, k가 작으면 구간이 좁아져 작은 기울기에도 긍정·부정 판정이 내려집니다.</p>
+          <p>그래서 k를 정하는 일은 계산이 아니라 <b>선택</b>입니다. 상담 챗봇처럼 <b>놓치면 위험한</b> 상황에서는
+            k를 낮추어 예민하게(위험 신호를 잘 잡도록) 만들고, 광고 문구 자동 분류처럼 <b>잘못 알리면 곤란한</b> 상황에서는
+            k를 높여 신중하게 만듭니다. 5차시에서 정확도의 기준을 어디에 두느냐가 결론을 바꿨던 것과 같은 구조입니다.</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="go('bias')">5차시 · 데이터 편향 보기</button></div>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a3-def" data-lockmsg="서로 다른 k값을 3개 이상 기록하면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 판정 부등식</summary>
+        <div class="bd">
+          <p>문장의 단어집합을 A, 감성 사전을 P, N이라 하고 양수 k를 임계값이라 할 때</p>
+          <ul>
+            <li>J(P, A) − J(N, A) ≥ k 이면 <b>긍정</b></li>
+            <li>−k &lt; J(P, A) − J(N, A) &lt; k 이면 <b>중립</b></li>
+            <li>J(P, A) − J(N, A) ≤ −k 이면 <b>부정</b></li>
+          </ul>
+          <p>으로 분류합니다. 일반적으로 k의 값은 <b>0.25</b>를 적용합니다.</p>
+          <span class="st-src">씨마스 「인공지능 수학」 Ⅱ p.71 판정 기준 표를 재구성 / 동아출판 「인공지능 수학」 Ⅱ p.73 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 모둠 토의</h3>
+      <p>우리 학교 상담 챗봇의 k값을 정한다면 얼마로 하겠습니까? 그 이유를 <b>한 문장</b>으로 쓰고,
+        모둠에서 하나로 모아 보세요.</p>
+      <details class="st-fold">
+        <summary>토의 도우미 질문 1 — 이 챗봇이 저지를 수 있는 두 가지 실수는 무엇인가요?</summary>
+        <div class="bd"><p>괜찮은 학생을 걱정하기 / 힘든 학생을 지나치기 — 두 실수는 성격이 전혀 다릅니다.</p></div>
+      </details>
+      <details class="st-fold">
+        <summary>토의 도우미 질문 2 — 두 실수 중 더 위험한 쪽은 어느 쪽인가요? 왜 그런가요?</summary>
+        <div class="bd"><p>어느 쪽을 더 무겁게 볼지 정하는 순간, k를 올릴지 내릴지가 함께 정해집니다.</p></div>
+      </details>
+      <details class="st-fold">
+        <summary>토의 도우미 질문 3 — 사전에 빠진 단어가 있다면 감성 점수는 실제보다 커질까요, 작아질까요?</summary>
+        <div class="bd"><p>그 사실은 k값 결정에 어떤 영향을 줄까요? 활동 4에서 직접 확인합니다.</p></div>
+      </details>
+      <textarea class="st-ta" id="st-a3-note" style="min-height:4.4rem;"
+        placeholder="우리 모둠이 정한 k값은 ___이고, 그 이유는 ___이다."></textarea>
+    </div>
+  </div>
+
+  <!-- ── 탭 ④ 활동 4 ─────────────────────────────────────────────── -->
+  <div class="tpanel" id="st3">
+    <div class="card" id="st-act4" data-no-toggle="1">
+      <h3>활동 4 · 「단어 하나가 판정을 뒤집는다」 — 사전의 힘</h3>
+      <p>상담 챗봇을 실제로 켰습니다. k는 모둠에서 정한 값입니다.</p>
+      <p>그런데 사전을 만들 때 <b>‘지치다’를 깜빡 빠뜨렸다면</b> 어떻게 될까요? 문장 B의 판정이 달라질까요?</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 단어를 껐다 켜 보기</h3>
+      <p class="mat-label" style="text-align:left;">시나리오 프리셋</p>
+      <div class="chips" id="st-a4-scn">
+        <button class="chip on" type="button" onclick="stA4Scen('counsel',this)">상담 챗봇</button>
+        <button class="chip" type="button" onclick="stA4Scen('food',this)">음식점 리뷰</button>
+        <button class="chip" type="button" onclick="stA4Scen('movie',this)">영화 리뷰</button>
+      </div>
+      <p class="st-hint">칩의 👁 를 누르면 그 단어만 <b>일시적으로</b> 사전에서 빠집니다(삭제가 아니라 켜기·끄기).
+        테두리가 강조된 칩은 지금 문장과 겹치는 단어입니다.</p>
+      <div class="st-a4wrap" id="st-a4-dict"></div>
+      <p class="st-scoreboard" id="st-a4-score">판정이 바뀐 횟수: 0회</p>
+      <div class="st-gauge" id="st-gauge4"></div>
+      <p class="st-fcard" id="st-a4-eq"></p>
+      <p class="st-edge" id="st-a4-edge"></p>
+      <div class="st-fb" id="st-a4-mission"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.2rem;">영화 리뷰 프리셋 — 세 후기 계산 결과</p>
+      <div class="st-scroll">
+        <table class="st-tbl">
+          <tr><th>후기</th><th>단어집합 n</th><th>J(P, ·)</th><th>J(N, ·)</th><th>감성 점수</th><th>판정(k=0.1)</th><th>판정(k=0.25)</th></tr>
+          <tr><td>A 스토리도 탄탄하고 … 연기력도 정말 완벽했다</td><td>10</td><td>2/18 ≒ 0.11</td><td>0</td><td>+0.11</td><td><b>긍정</b></td><td>중립</td></tr>
+          <tr><td>B 스토리도 빈약하고 … 연기력도 정말 최악이었다</td><td>10</td><td>0</td><td>2/18 ≒ 0.11</td><td>−0.11</td><td><b>부정</b></td><td>중립</td></tr>
+          <tr><td>C 스토리는 좋지만 … 연기력은 별로였다</td><td>9</td><td>1/18 ≒ 0.06</td><td>1/18 ≒ 0.06</td><td>0.00</td><td><b>중립</b></td><td>중립</td></tr>
+        </table>
+      </div>
+      <p class="st-hint" style="margin-top:0.5rem;">이 표는 <b>k = 0.25로는 세 후기가 모두 ‘중립’</b> 이 되어 버린다는 점을 직접 보게 하려고 배치한 것입니다.
+        사전이 10개로 작지 않고 문장이 짧을수록 J 값 자체가 작아지므로,
+        <b>k는 사전과 문장의 크기에 맞추어 다시 정해야 한다</b>는 결론으로 이어집니다.</p>
+      <span class="st-src">교사 제작 활동지 「활동 3(유사도분석)3」 뒷면 연습 문제와 1:1 대응</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="st-fold" data-lock="a4-obs" data-lockmsg="사전에서 단어를 한 개 이상 꺼 보면 열립니다.">
+        <summary>단계 1 · 관찰 — 단어를 뺐더니 무슨 일이 일어났나요?</summary>
+        <div class="bd">
+          <p>‘지치다’를 사전에서 빼면 N의 원소가 10개에서 9개로, 교집합이 3개에서 2개로 줄어듭니다.</p>
+          <p class="st-fml">J(N, B) = 3/15 = 0.20 → 2/(9+8−2) = 2/15 ≒ 0.13</p>
+          <p>감성 점수는 −0.20에서 −0.13으로 <b>0보다 가까워집니다.</b> 단어 하나가 빠졌을 뿐인데 부정 신호가 약해진 것입니다.
+            만약 k = 0.15로 정해 두었다면, 이 문장은 ‘부정’에서 ‘중립’으로 바뀌어 <b>상담 선생님께 연결되지 않습니다.</b></p>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a4-sum" data-lockmsg="사전에서 단어를 한 개 이상 꺼 보면 열립니다.">
+        <summary>단계 2 · 정리 — 사전이 결과를 만든다</summary>
+        <div class="bd">
+          <p>감성 분석의 결과는 <b>사전과 기준선이라는 두 개의 사람 선택</b> 위에 놓여 있습니다.
+            사전을 어떻게 짓느냐에 따라 같은 문장의 점수가 달라지고, 기준선을 어디에 두느냐에 따라 같은 점수의 판정이 달라집니다.</p>
+          <p>그래서 감성 분석의 결과는 <b>정답이 아니라 해석이 필요한 자료</b>입니다.
+            실제 연구에서는 국립국어원 사전 뜻풀이를 분석해 만든 KNU 한국어 감성 사전처럼 수만 개 단어를 담은 사전을 쓰지만,
+            그런 사전조차 "하나도 지루하지 않았다" 같은 문장은 놓칩니다(마중 퀴즈 질문 3).</p>
+          <span class="st-src">연수교재 합본 p.95 ‘지도상의 유의점’ 및 씨마스 지도서 Ⅱ p.150 예시 답안 서술을 재구성</span>
+        </div>
+      </details>
+
+      <details class="st-fold" data-lock="a4-def" data-lockmsg="사전에서 단어를 한 개 이상 꺼 보면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 감성 분석이란</summary>
+        <div class="bd">
+          <p>인공지능이 텍스트를 분석하여 그 안의 감정을 분류하고 감성을 파악하는 방법을 <b>감성 분석</b>이라고 합니다.
+            분석 방식에는 긍정·중립·부정으로 <b>극성</b>을 구분하는 방식과, 기쁨·슬픔·놀람·화남·두려움·혐오 등으로
+            <b>감정</b>을 분류하는 방식이 있습니다. 오늘 우리가 한 것은 앞의 방식이며, 그중에서도 사전과 집합만으로 판단하는
+            <b>단어 기반 감성 분석</b>입니다.</p>
+          <span class="st-src">씨마스 「인공지능 수학」 Ⅱ p.67·80 서술을 재구성 / 동아출판 「인공지능 수학」 Ⅱ p.64 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 우리 반 사전 기여</h3>
+      <p>내가 P나 N에 새로 넣은 단어 중 <b>가장 잘 골랐다고 생각하는 단어 한 개</b>와 그 이유를 적고
+        [학급 사전에 담기]를 누릅니다.</p>
+      <div class="btn-row" style="align-items:center;">
+        <input class="st-in" id="st-cd-w" type="text" placeholder="단어" aria-label="학급 사전에 담을 단어" style="flex:0 1 9rem;">
+        <select class="st-sel" id="st-cd-side" aria-label="어느 집합에 넣을지">
+          <option value="p">긍정 P</option>
+          <option value="n">부정 N</option>
+        </select>
+        <input class="st-in" id="st-cd-r" type="text" placeholder="그 단어를 고른 이유" aria-label="이유" style="flex:1 1 12rem;">
+        <button class="btn pri" type="button" onclick="stClassAdd()">학급 사전에 담기</button>
+        <button class="btn" type="button" onclick="stClassExport()">JSON 내보내기</button>
+      </div>
+      <p class="status" id="st-cd-st"></p>
+      <div id="st-cd-list"></div>
+      <textarea class="st-json" id="st-cd-json" readonly aria-label="학급 사전 JSON"></textarea>
+      <p class="st-hint" style="margin-top:0.5rem;">정적 웹앱이라 기기 간 자동 공유는 되지 않습니다.
+        수업 마무리에 <b>교사 단말에서 [JSON 내보내기]로 취합</b>하거나, 각자 내보낸 내용을
+        <b>학급 공유 자료함(패들렛)</b>에 붙여 넣어 모읍니다.</p>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="st-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        <b>자카드 유사도</b>는 두 단어집합의 <b>교집합의 원소 개수 ÷ 합집합의 원소 개수</b>이며, 언제나 0 이상 1 이하입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        문장의 단어집합 A와 감성 사전 P, N에 대해 <b>J(P, A) − J(N, A)</b> 를 구하면
+        그 문장이 어느 쪽으로 기울었는지 하나의 수로 나타낼 수 있습니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        그 수를 <b>임계값 k</b> 와 견주어 긍정·중립·부정을 정하며, <b>사전과 k는 사람이 정하는 값</b>입니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문 1. AI는 사람의 ‘마음’을 어떻게 수로 읽어내는가?</b></p>
+    <textarea class="st-ta" id="st-ans1" style="min-height:4.2rem;" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="st-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>문장을 단어집합으로 바꾼 뒤, 미리 만들어 둔 긍정 사전·부정 사전과 각각 얼마나 겹치는지를
+          자카드 유사도로 재고, 두 값의 차를 감성 점수로 삼아 마음의 방향을 하나의 수로 나타냅니다.</p>
+      </div>
+    </details>
+
+    <p style="margin-top:1rem;"><b>핵심 질문 2. 판정의 기준선(임계값)은 누가, 무엇을 근거로 정해야 하는가?</b></p>
+    <textarea class="st-ta" id="st-ans2" style="min-height:4.2rem;" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="st-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>k는 계산으로 정해지는 값이 아니라, <b>어떤 실수를 더 무겁게 볼 것인가</b>를 판단해 사람이 정하는 값입니다.
+          상담 챗봇처럼 위험 신호를 놓치는 쪽이 더 위험한 상황에서는 k를 낮게 잡아 민감하게 만들고,
+          그 결정의 근거와 책임은 시스템을 만든 사람들에게 있습니다.
+          또 감성 사전에 단어가 빠지면 점수가 실제보다 작게 나오므로, 이 점까지 고려해 k를 낮추는 것이 안전합니다.</p>
+        <span class="st-src">연수교재 합본 p.97 예시 답안 서술을 재구성</span>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="stAnsSave()">내 답 저장</button></div>
+    <p class="status" id="st-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="st-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 11차시 · 실생활 프로젝트: 리뷰 분석과 추천</strong><br>
+    학교 앞 마라탕 가게의 별점이 갑자기 떨어졌습니다. 리뷰 100건 속에서 사장님이 놓친 ‘진짜 원인’을 찾아야 합니다.
+    오늘 여러분이 만든 <b>감성 사전이 그대로 실려</b> 100건을 한꺼번에 분류하고,
+    8차시 TF-IDF가 흔한 칭찬 뒤에 숨은 단어 하나를 끌어올립니다.
+    사전을 고치면 대시보드의 그래프가 바뀌는 것을 직접 보게 됩니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('review')">11차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('sim')">돌아보기 · 9차시 유사도</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 반 감성 사전 만들기」 — 급식 리뷰 감성 분석기</h3>
+    <p class="sub">오늘 만든 사전과 기준선을 우리 학교 이야기에 그대로 얹어 봅니다.
+      계산의 정확성보다 <b>유사도의 개념을 실제 상황에 적용할 수 있는가</b>가 이 과제의 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 우리 학교 급식(또는 매점·학교 앞 분식집) 후기를 <b>10건 이상</b> 모읍니다.
+        직접 쓰거나, 친구들에게 한 줄씩 받거나, 학급 게시판에 올라온 글을 옮겨 적어도 좋습니다
+        (개인을 특정할 수 있는 이름·별명은 지우고 옮깁니다).<br>
+        ② 모은 후기에서 <b>감성을 드러내는 단어</b>를 뽑아 긍정 집합 P와 부정 집합 N을 각각 <b>8개 이상</b> 만듭니다.
+        어느 쪽에 넣을지 모둠원과 의견이 갈린 단어는 따로 표시해 둡니다.<br>
+        ③ 10차시 웹 도구(<b>senti</b>)에 사전을 입력하고 후기 10건을 차례로 분석하여, 후기별
+        <b>n(A), J(P,A), J(N,A), 감성 점수, 판정</b>을 표로 정리합니다(소수 둘째 자리까지).<br>
+        ④ <b>k값을 두 가지</b>(예: 0.25와 0.10)로 각각 판정해 보고, 결과가 달라진 후기를 표시합니다.<br>
+        ⑤ 사람이 읽고 매긴 판정(모둠원 3명의 다수결)과 AI의 판정을 비교해 <b>몇 건이 일치했는지</b> 셉니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 후기 10건 분석 표 1장(A4, 손글씨 또는 인쇄)<br>
+        · 감성 사전 P·N 목록과 <b>의견이 갈린 단어 2개 이상</b>에 대한 모둠의 결론 한 문단<br>
+        · "우리 모둠이 정한 k값은 ___이고, 그 이유는 ___이다"를 포함한 <b>결론 3~5문장</b><br>
+        · (선택) 웹 도구 화면 캡처 2장</dd>
+      <dt>평가 관점</dt>
+      <dd>· 두 단어집합의 교집합·합집합의 원소 개수의 비로 자카드 유사도를 <b>정확히</b> 구했는가 <b>[12인수02-03]</b><br>
+        · 감성 사전과 자카드 유사도로 문장의 감성을 분석하는 <b>수학적 방법을 절차에 따라 설명</b>했는가 <b>[12인수02-03]</b><br>
+        · k값 선택의 근거를 <b>상황의 위험도와 사전의 불완전성</b>에 비추어 타당하게 제시했는가<br>
+        · AI 판정과 사람 판정이 갈린 사례를 찾아 그 원인을 언어의 특성(부정어·반어·문맥)으로 설명했는가</dd>
+    </dl>
+    <details class="st-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>계산의 정확성보다 유사도의 개념을 실제 상황에 적용할 수 있는지, 감성 분석 결과를
+          정답이 아니라 해석이 필요한 자료로 다루는지를 중점적으로 봅니다.</p>
+        <span class="st-src">연수교재 합본 p.93 평가 개요·평가 유의 사항 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 사전을 더 넓히고, 개념을 더 깊이</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="st-refs">
+      <a class="st-ref" href="http://dilab.kunsan.ac.kr/knu/knu.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 도구</span>🧾</span>
+        <span class="bd"><span class="tt">KNU 한국어 감성 사전 체험</span>
+          <span class="ds">군산대 연구실이 공개한 한국어 감성 사전을 웹에서 직접 검색해 보고, 우리가 만든 10개짜리 사전과 규모를 비교해 봅니다.</span></span>
+      </a>
+      <a class="st-ref" href="https://github.com/park1200656/KnuSentiLex" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>📦</span>
+        <span class="bd"><span class="tt">KnuSentiLex — 감성 사전 원본 데이터</span>
+          <span class="ds">위 사전의 실제 단어 목록과 점수(−2~+2)가 공개된 저장소입니다. 프로젝트 과제에서 우리 사전을 넓힐 때 참고합니다.</span></span>
+      </a>
+      <a class="st-ref" href="https://en.wikipedia.org/wiki/Paul_Jaccard" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">인물</span>🌿</span>
+        <span class="bd"><span class="tt">Paul Jaccard (위키백과, 영문)</span>
+          <span class="ds">자카드 유사도를 만든 스위스 식물학자. 알프스 식물 분포를 비교하려던 문제가 어떻게 텍스트 분석의 도구가 되었는지 알 수 있습니다.</span></span>
+      </a>
+      <a class="st-ref" href="https://ko.wikipedia.org/wiki/%EC%9E%90%EC%B9%B4%EB%93%9C_%EC%A7%80%EC%88%98" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>📐</span>
+        <span class="bd"><span class="tt">자카드 지수 (위키백과, 한국어)</span>
+          <span class="ds">J(A,B)의 정의와 성질, 여러 분야의 활용 예를 한국어로 정리한 문서입니다. 심화로 ‘자카드 거리 1 − J’ 개념도 볼 수 있습니다.</span></span>
+      </a>
+      <a class="st-ref" href="https://en.wikipedia.org/wiki/Sentiment_analysis" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>💬</span>
+        <span class="bd"><span class="tt">Sentiment analysis (위키백과, 영문)</span>
+          <span class="ds">감성 분석의 여러 방식(사전 기반·기계학습 기반)과 한계가 정리되어 있습니다. 오늘 다룬 방법이 어디에 속하는지 확인해 보세요.</span></span>
+      </a>
+      <div class="st-roomwrap" id="st-room"></div>
+      <button class="st-ref st-refadd" type="button" onclick="stRefAdd()">
+        <span class="th">➕</span>
+        <span class="bd"><span class="tt">＋ 자료 추가</span>
+          <span class="ds">선생님이 URL과 제목을 입력해 자료를 1개 더 걸 수 있습니다. 이 기기에만 저장됩니다.</span></span>
+      </button>
+    </div>
+    <div class="st-roomform" id="st-room-form">
+      <input class="st-in" id="st-room-u" type="url" placeholder="https://padlet.com/… 또는 https://drive.google.com/…" aria-label="학급 공유 자료함 주소">
+      <button class="btn pri" type="button" onclick="stRoomSave()">저장</button>
+      <button class="btn" type="button" onclick="document.getElementById('st-room-form').classList.remove('on')">취소</button>
+    </div>
+    <p class="status" id="st-room-st"></p>
+    <p class="status" id="st-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>10차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>오늘 웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.
+      실물 활동지를 내려받거나, 웹 활동과 1:1로 대응하는 인쇄용 지면을 뽑아 채워 보세요.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('st-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/text/%ED%99%9C%EB%8F%993_%EC%9E%90%EC%B9%B4%EB%93%9C%EC%9C%A0%EC%82%AC%EB%8F%84.hwpx"
+         download="활동3_자카드유사도.hwpx">📄 활동 3 — 자카드 유사도 (HWPX) <span class="sz">HWPX · 약 55 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/%ED%99%9C%EB%8F%993_%EC%9E%90%EC%B9%B4%EB%93%9C%EC%9C%A0%EC%82%AC%EB%8F%84.pdf"
+         download="활동3_자카드유사도.pdf">📄 활동 3 — 자카드 유사도 (PDF) <span class="sz">PDF · 약 67 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/%ED%85%8D%EC%8A%A4%ED%8A%B8%EB%B6%84%EC%84%9D_%ED%98%95%EC%84%B1%ED%8F%89%EA%B0%80.hwp"
+         download="텍스트분석_형성평가.hwp">📝 텍스트 분석 형성평가 (HWP) <span class="sz">HWP · 약 301 KB</span></a>
+    </div>
+    <p class="st-hint" style="margin-top:0.6rem;">
+      <b>활동 3 — 자카드 유사도</b> : 오늘 STEP 2 활동 1·4와 <b>1:1 대응</b>하는 손계산 활동지입니다.
+      앞면은 사과 후기 A·B·C의 단어집합·교집합·합집합·J 계산, 뒷면은 영화 후기 A·B·C에 대해 P/Neu/N 사전을 직접 짜고
+      각 문장의 자카드 유사도를 구해 (긍정, 부정, 중립) 중 하나에 동그라미 치는 연습 문제입니다.<br>
+      <b>텍스트 분석 형성평가</b> : 2단원(6~10차시) 전체를 아우르는 지필 형성평가지입니다.
+      10차시 마무리 또는 11차시 프로젝트 직전에 배부합니다. 2단원 전체 평가지는 이 카드 한 곳에만 둡니다.</p>
+    <div id="st-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="st-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>10차시 학습지 — 집합으로 마음 읽기: 자카드 유사도와 감성 분석</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">학습 목표 ① 두 단어집합의 교집합의 원소 개수와 합집합의 원소 개수의 비로 자카드 유사도를 구할 수 있다. [12인수02-03]<br>
+      학습 목표 ② 감성 사전과 자카드 유사도를 이용하여 문장의 감성 정보를 분석하는 수학적 방법을 설명할 수 있다. [12인수02-03]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:52%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>A = {사과, 배, 감}, B = {사과, 배, 귤, 포도}의 교집합 ÷ 합집합은?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>자카드 유사도는 언제나 0 이상 1 이하인가? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>사전만으로 판단하기 가장 어려운 문장은?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — 세 후기를 단어집합으로</h3>
+    <p class="note">후기 A 나는 오늘 맛있는 사과를 먹었다. / 후기 B 나는 오늘 상큼한 사과를 먹었다. / 후기 C 나는 내일 새콤한 사과를 먹는다.</p>
+    <table>
+      <tr><th style="width:14%;">후기</th><th>단어집합</th><th style="width:12%;">n( )</th></tr>
+      <tr><td>A</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>B</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>C</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <table>
+      <tr><th>쌍</th><th>n(A∩B)</th><th>n(A∪B)</th><th>J</th><th>소수(둘째 자리)</th></tr>
+      <tr><td>A와 B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>A와 C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>B와 C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>가장 유사한 두 후기는 __________ 이다. 왜냐하면 ______________________________________________</p>
+    <p class="note">▼ 벤다이어그램 — 두 원을 그리고 왼쪽만·겹침·오른쪽만 세 영역에 단어를 직접 적어 넣으세요.</p>
+    <div class="rule lg"></div>
+
+    <h3>③ 활동 2 — 우리 모둠의 감성 사전과 계산</h3>
+    <table>
+      <tr><th style="width:12%;">P (긍정)</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th></th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th style="width:12%;">N (부정)</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th></th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <table>
+      <tr><th>문장</th><th>n(A)</th><th>J(P, A)</th><th>J(N, A)</th><th>감성 점수</th></tr>
+      <tr><td>음식점 리뷰 X</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>상담 문장 A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>상담 문장 B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>④ 활동 3 — 기준선을 옮기면</h3>
+    <table>
+      <tr><th>문장</th><th>k = 0.25</th><th>k = 0.10</th><th>우리 모둠 k = ____</th></tr>
+      <tr><td>문장 X (0.29)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>문장 A (−0.06)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>문장 B (−0.20)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>우리 모둠이 정한 k값은 ______ 이고, 그 이유는</p>
+    <div class="rule lg"></div>
+
+    <h3>⑤ 활동 4 — 사전에서 단어를 뺐더니</h3>
+    <table>
+      <tr><th style="width:26%;">사전에서 뺀 단어</th><th style="width:22%;">뺀 뒤 감성 점수</th><th>판정이 어떻게 바뀌었나</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑥ 형성평가</h3>
+    <ol>
+      <li>A = {전국, 장마, 시작, 일부, 지역, 폭우, 주의}, B = {장마, 폭우, 침수, 피해, 출근길, 주의}일 때 J(A, B)는?<br>
+        ① 3/7 &nbsp; ② 3/10 &nbsp; ③ 3/13 &nbsp; ④ 7/10 &nbsp;&nbsp; 답: ______</li>
+      <li>P·N이 음식점 사전이고 X = {청결하다, 넓다, 편하다, 많다, 맛있다, 불친절, 별로다}일 때, k = 0.25에서의 분류는?<br>
+        ① 긍정 &nbsp; ② 중립 &nbsp; ③ 부정 &nbsp; ④ 판단할 수 없다 &nbsp;&nbsp; 답: ______</li>
+      <li>감성 점수가 −0.20인 문장에서 k를 0.25 → 0.10으로 낮추면?<br>
+        ① 중립에서 부정으로 &nbsp; ② 부정에서 중립으로 &nbsp; ③ 바뀌지 않는다 &nbsp; ④ 긍정에서 중립으로 &nbsp;&nbsp; 답: ______</li>
+      <li>N에서 ‘지치다’가 빠지면 그 단어가 있던 문장의 J(N, A)는?<br>
+        ① 커진다 &nbsp; ② 작아진다 &nbsp; ③ 변하지 않는다 &nbsp; ④ 알 수 없다 &nbsp;&nbsp; 답: ______</li>
+      <li>감성 분석 절차의 올바른 순서는? (㉠ 단어집합 A 만들기 / ㉡ 사전 P·N 구성 / ㉢ k와 비교해 판정 / ㉣ J(P,A)·J(N,A) 구하기)<br>
+        ① ㉠→㉡→㉣→㉢ &nbsp; ② ㉡→㉠→㉣→㉢ &nbsp; ③ ㉡→㉣→㉠→㉢ &nbsp; ④ ㉠→㉣→㉡→㉢ &nbsp;&nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑦ 핵심 질문</h3>
+    <p><b>1. AI는 사람의 ‘마음’을 어떻게 수로 읽어내는가?</b></p>
+    <div class="rule sm"></div>
+    <p><b>2. 판정의 기준선(임계값)은 누가, 무엇을 근거로 정해야 하는가?</b></p>
+    <div class="rule sm"></div>
+  </div>
+</div>

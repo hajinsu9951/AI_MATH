@@ -1,5 +1,6 @@
 (async function () {
-  const order = ['home','intro','perceptron','text','mnist','hamming','conv','quickdraw','filter','pool','pipeline','detect'];
+  // 차시 순서와 일치시킵니다(§11) — 1~5차시 → 6~10차시 → 12~19차시.
+  const order = ['home','intro','mlplay','logic','perceptron','bias','text','tfidf','sim','senti','review','quickdraw','mnist','hamming','conv','filter','pool','pipeline','detect'];
   const container = document.getElementById('views');
   if (!container) return;
 

@@ -1,0 +1,1113 @@
+<!-- ═══════════ SIM (9차시: 얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까) ═══════════ -->
+<div class="view" id="v-sim">
+  <style>
+  /* sim 뷰 전용 스타일 — 모든 선택자는 #v-sim 하위로만 둡니다(전역 누수 금지). */
+  #v-sim .sm-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-sim .sm-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-sim .sm-step{flex-wrap:wrap;}
+  #v-sim .sm-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;
+    max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:keep-all;}
+  #v-sim .sm-step .mono b{display:block;font-family:var(--sans);font-size:0.95rem;letter-spacing:0;
+    font-weight:600;margin-top:0.2rem;text-transform:none;line-height:1.5;}
+
+  /* 표제부 — 워터마크는 core.js 의 aimBuildMarks 가 홈 카드 SVG(AIM_ART.sim)를 그대로 겹쳐 줍니다.
+     (뷰 안에서 따로 그리면 워터마크가 두 장이 되므로 여기서는 그리지 않습니다.) */
+  #v-sim .sm-hero{position:relative;}
+  #v-sim .sm-ask{border-left:4px solid var(--accent);}
+  #v-sim .sm-kclabel{text-align:left;margin:1.2rem 0 0;font-size:0.85rem;letter-spacing:0.06em;}
+  #v-sim .sm-kclabel span{text-transform:none;letter-spacing:0;}
+
+  /* 활동 머리 */
+  #v-sim .sm-act{scroll-margin-top:5rem;}
+  #v-sim .sm-actlb{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.12em;
+    background:var(--fg);color:var(--bg);padding:0.16rem 0.6rem;border-radius:9999px;margin-bottom:0.5rem;}
+
+  /* 단계 토글(관찰 → 정리 → 정의 확인) — 시도 전에는 잠깁니다. */
+  #v-sim .sm-stage{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.1rem 1.2rem;margin-bottom:0.7rem;}
+  #v-sim .sm-stage>summary{cursor:pointer;list-style:none;font-weight:600;font-size:1.02rem;color:var(--fg);
+    padding:0.75rem 1.8rem 0.75rem 0;min-height:44px;display:flex;align-items:center;position:relative;line-height:1.45;}
+  #v-sim .sm-stage>summary::-webkit-details-marker{display:none;}
+  #v-sim .sm-stage>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-sim .sm-stage[open]>summary::after{content:'▾';}
+  #v-sim .sm-stage>summary .rl{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;color:var(--muted);
+    margin-right:0.6rem;flex-shrink:0;}
+  #v-sim .sm-stage.locked>summary{color:var(--muted);cursor:not-allowed;}
+  #v-sim .sm-stage.locked>summary::before{content:'🔒';margin-right:0.45rem;font-size:0.9rem;}
+  #v-sim .sm-stage .bd{padding:0.1rem 0 0.9rem;}
+  #v-sim .sm-stage .bd p,#v-sim .sm-stage .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.7rem;}
+  #v-sim .sm-stage .bd p:last-child{margin-bottom:0;}
+  #v-sim .sm-lockmsg{font-family:var(--mono);font-size:0.72rem;color:var(--red);margin:0.2rem 0 0.7rem;min-height:1.2rem;}
+  #v-sim .sm-lockmsg:empty{display:none;}
+
+  /* 출처 줄 · 배지 */
+  #v-sim .sm-src{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.7rem;line-height:1.7;}
+  #v-sim .sm-badge{display:inline-block;font-family:var(--mono);font-size:0.64rem;letter-spacing:0.06em;
+    border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:9999px;
+    padding:0.14rem 0.55rem;margin-left:0.4rem;vertical-align:middle;}
+
+  /* 캔버스 · 계산 패널 */
+  #v-sim .sm-cvwrap{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start;margin-top:0.8rem;}
+  #v-sim .sm-cvbox{flex:1 1 20rem;min-width:0;max-width:100%;}
+  #v-sim .sm-cvhead{font-family:var(--mono);font-size:0.74rem;color:var(--muted);line-height:1.6;margin-bottom:0.35rem;}
+  #v-sim .sm-cvhead b{color:var(--fg);}
+  #v-sim canvas.sm-cv{display:block;width:100%;max-width:560px;height:auto;margin:0 auto;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--card);touch-action:manipulation;}
+  #v-sim .sm-cvnote{font-family:var(--mono);font-size:0.68rem;color:var(--muted);line-height:1.65;margin-top:0.4rem;
+    max-width:100%;overflow-wrap:anywhere;word-break:keep-all;}
+  #v-sim .sm-calc{flex:1 1 17rem;min-width:0;background:var(--bg);border:1px solid var(--border);
+    border-left:4px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:0.85rem 0.95rem;}
+  #v-sim .sm-calc .ti{font-size:0.98rem;font-weight:700;color:var(--fg);margin-bottom:0.4rem;}
+  #v-sim .sm-calc .ln{font-family:var(--mono);font-size:0.82rem;color:var(--body);line-height:1.95;
+    overflow-wrap:anywhere;word-break:keep-all;}
+  #v-sim .sm-calc .ln b{color:var(--fg);font-size:0.9rem;}
+  #v-sim .sm-calc .lk{font-size:0.95rem;color:var(--muted);line-height:1.8;}
+
+  /* 조작 요소 — 최소 0.95rem · 터치 타깃 44px */
+  #v-sim .sm-ctl{display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin:0.7rem 0 0.2rem;}
+  #v-sim .sm-ctl label{font-size:0.9rem;color:var(--muted);}
+  #v-sim select.sm-sel{font-family:var(--sans);font-size:0.95rem;min-height:44px;padding:0.35rem 0.6rem;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--fg);max-width:100%;}
+  #v-sim button.sm-chip{font-family:var(--sans);font-size:0.95rem;letter-spacing:0;text-transform:none;
+    min-height:44px;padding:0.45rem 1rem;border:1px solid var(--border);border-radius:9999px;
+    background:var(--card);color:var(--fg);cursor:pointer;transition:all 0.2s;}
+  #v-sim button.sm-chip:hover:not(:disabled){border-color:var(--fg);}
+  #v-sim button.sm-chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-sim button.sm-chip:disabled{opacity:0.45;cursor:not-allowed;}
+  #v-sim .sm-btn{font-family:var(--sans);font-size:0.95rem;letter-spacing:0;text-transform:none;min-height:44px;
+    padding:0.45rem 0.95rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);
+    color:var(--fg);cursor:pointer;transition:all 0.2s;}
+  #v-sim .sm-btn:hover{background:var(--card-h);}
+  #v-sim .sm-btn.pri{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-sim .sm-btn.pri:hover{opacity:0.88;}
+  #v-sim input.sm-num{width:6.2rem;min-height:44px;border:1px solid var(--border);border-radius:0.4rem;
+    text-align:center;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-sim input.sm-num::-webkit-outer-spin-button,#v-sim input.sm-num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #v-sim input.sm-rng{width:100%;max-width:20rem;min-height:44px;accent-color:var(--fg);}
+  #v-sim textarea.sm-ta{width:100%;max-width:100%;min-height:5.4rem;font-family:var(--sans);font-size:0.95rem;
+    line-height:1.7;padding:0.6rem 0.7rem;border:1px solid var(--border);border-radius:var(--radius);
+    background:var(--bg);color:var(--fg);resize:vertical;}
+  #v-sim .sm-fb{font-size:1.05rem;font-weight:700;line-height:1.8;padding:0.7rem 0.95rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.6rem 0 0;}
+  #v-sim .sm-fb:empty{display:none;}
+  #v-sim .sm-fb.ok{border-left:5px solid var(--green);color:var(--green);}
+  #v-sim .sm-fb.no{border-left:5px solid var(--red);color:var(--red);}
+  #v-sim .sm-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.3rem;font-size:0.98rem;line-height:1.8;}
+
+  /* 표 */
+  #v-sim .sm-scroll{overflow-x:auto;max-width:100%;margin:0.7rem 0;}
+  #v-sim table.sm-tbl{border-collapse:collapse;font-size:0.95rem;min-width:20rem;}
+  #v-sim table.sm-tbl th,#v-sim table.sm-tbl td{border:1px solid var(--border);padding:0.4rem 0.7rem;text-align:center;}
+  #v-sim table.sm-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-sim table.sm-tbl td.v{font-family:var(--mono);font-weight:700;color:var(--fg);}
+  #v-sim table.sm-tbl td input{width:4.4rem;min-height:44px;border:1px solid var(--border);border-radius:0.35rem;
+    text-align:center;font-family:var(--mono);font-size:0.95rem;font-weight:700;background:var(--bg);color:var(--fg);}
+  #v-sim table.sm-tbl td input::-webkit-outer-spin-button,#v-sim table.sm-tbl td input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #v-sim table.sm-tbl tr.hi td{background:var(--card-h);}
+  #v-sim .sm-sw{display:inline-block;width:0.7rem;height:0.7rem;border-radius:2px;margin-right:0.3rem;vertical-align:baseline;}
+
+  /* 순위표 */
+  #v-sim .sm-ranks{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0.8rem;margin-top:0.8rem;}
+  #v-sim .sm-rank{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 0.9rem;min-width:0;}
+  #v-sim .sm-rank h4{font-size:1.0rem;margin-bottom:0.45rem;color:var(--fg);}
+  #v-sim .sm-rank .r{display:flex;align-items:baseline;gap:0.5rem;font-size:0.98rem;padding:0.4rem 0.5rem;
+    border-radius:0.4rem;border:1px solid transparent;line-height:1.6;}
+  #v-sim .sm-rank .r .p{font-family:var(--mono);font-size:0.78rem;color:var(--muted);width:2.4rem;flex-shrink:0;}
+  #v-sim .sm-rank .r .n{font-weight:700;color:var(--fg);}
+  #v-sim .sm-rank .r .v{font-family:var(--mono);font-size:0.85rem;color:var(--body);margin-left:auto;}
+  #v-sim .sm-rank .r.top{border-color:var(--fg);background:var(--card-h);}
+  #v-sim .sm-rank .r.blink{animation:smBlink 0.4s ease-in-out 3;}
+  @keyframes smBlink{0%,100%{background:var(--card-h);}50%{background:var(--accent);}}
+  #v-sim .sm-flag{display:inline-flex;align-items:center;gap:0.4rem;font-size:1.0rem;font-weight:700;
+    border-radius:9999px;padding:0.45rem 1rem;margin-top:0.6rem;line-height:1.5;}
+  #v-sim .sm-flag.rev{background:var(--red);color:#fff;}
+  #v-sim .sm-flag.same{background:var(--green);color:#fff;}
+  #v-sim .sm-mission{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.7rem 0.9rem;margin-top:0.7rem;}
+  #v-sim .sm-mission .m{font-size:0.98rem;color:var(--body);line-height:1.75;margin-bottom:0.35rem;}
+  #v-sim .sm-mission .m:last-child{margin-bottom:0;}
+  #v-sim .sm-mission .m.done{color:var(--green);font-weight:700;}
+  #v-sim .sm-mission .m .st{font-family:var(--mono);font-size:0.74rem;margin-right:0.4rem;}
+
+  /* 활동 1 — 상황 사진 · 문장 목록 */
+  #v-sim .sm-sit{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start;margin-top:0.8rem;}
+  #v-sim .sm-sitL{flex:1 1 17rem;min-width:0;}
+  #v-sim .sm-sitR{flex:1 1 17rem;min-width:0;}
+  #v-sim .sm-sitimg{position:relative;border:1px solid var(--border);border-radius:0.6rem;overflow:hidden;background:var(--card);}
+  #v-sim .sm-sitimg img{display:block;width:100%;height:auto;max-width:100%;}
+  #v-sim .sm-sitimg .fb{display:none;align-items:center;justify-content:center;width:100%;min-height:9rem;font-size:2.6rem;}
+  #v-sim .sm-sitimg.nofoto .fb{display:flex;}
+  #v-sim .sm-thumbs{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.5rem;}
+  #v-sim .sm-thumb{width:4.2rem;height:3.2rem;border:2px solid var(--border);border-radius:0.4rem;overflow:hidden;
+    background:var(--card);cursor:pointer;padding:0;position:relative;flex-shrink:0;}
+  #v-sim .sm-thumb.on{border-color:var(--fg);}
+  #v-sim .sm-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-sim .sm-thumb .n{position:absolute;left:0;bottom:0;font-family:var(--mono);font-size:0.6rem;
+    background:rgba(26,23,20,0.62);color:#fff;padding:0.05rem 0.28rem;border-radius:0 0.3rem 0 0;}
+  #v-sim .sm-sent{list-style:none;margin:0.6rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.4rem;}
+  #v-sim .sm-sent li{position:relative;background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.5rem 2.4rem 0.5rem 0.7rem;font-size:0.95rem;line-height:1.65;color:var(--body);}
+  #v-sim .sm-sent li .no{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin-right:0.4rem;}
+  #v-sim .sm-sent li button{position:absolute;right:0.35rem;top:50%;transform:translateY(-50%);width:1.9rem;height:1.9rem;
+    border:none;border-radius:50%;background:var(--card-h);color:var(--fg);cursor:pointer;font-size:0.85rem;line-height:1;}
+  #v-sim .sm-sent li button:hover{background:var(--red);color:#fff;}
+  #v-sim .sm-sent:empty::after{content:'아직 담은 문장이 없습니다.';font-size:0.92rem;color:var(--muted);}
+
+  /* SVG 도해 */
+  #v-sim .sm-illu{display:block;width:100%;max-width:40rem;height:auto;margin:0.9rem auto 0.35rem;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);}
+  #v-sim .sm-illu text{font-family:var(--mono);}
+  #v-sim .sm-cap{font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.7;margin-bottom:0.4rem;}
+
+  /* 경고 배너 */
+  #v-sim .sm-warnbox{background:var(--bg);border:1px solid var(--red);border-left:5px solid var(--red);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.9rem 1.05rem;margin:1rem 0;}
+  #v-sim .sm-warnbox b{color:var(--red);}
+  #v-sim .sm-warnbox p{font-size:1.0rem;color:var(--body);line-height:1.85;margin:0;}
+
+  /* 참고 자료 카드 */
+  #v-sim .sm-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-sim .sm-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-sim .sm-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-sim .sm-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-sim .sm-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-sim .sm-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-sim .sm-ref .bd{padding:0.65rem 0.75rem;}
+  #v-sim .sm-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-sim .sm-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+
+  /* 심화 배지 카드 */
+  #v-sim .sm-adv{border-left:4px solid var(--blue);}
+  #v-sim .sm-adv>summary .rl{color:var(--blue);}
+
+  @media (max-width:640px){
+    #v-sim .sm-wm{display:none;}
+    #v-sim .sm-cvwrap{gap:0.9rem;}
+    #v-sim table.sm-tbl{font-size:0.88rem;}
+    #v-sim table.sm-tbl th,#v-sim table.sm-tbl td{padding:0.3rem 0.45rem;}
+    #v-sim table.sm-tbl td input{width:3.6rem;}
+    #v-sim .sm-thumb{width:3.6rem;height:2.8rem;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    #v-sim .sm-rank .r.blink{animation:none;border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red);}
+  }
+  </style>
+
+  <!-- ═════ STEP 0 · 표제부 ═════ -->
+  <div class="sm-hero">
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅱ. 텍스트 데이터 처리 · 9차시</p>
+    <h2>얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까</h2>
+    <p class="desc">
+      같은 데이터를 놓고도 '가장 비슷한 것'이 달라집니다.
+      오늘은 '비슷하다'를 두 가지 수로 정하고, 두 답이 갈리는 순간을 직접 만들어 봅니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 두 벡터 사이의 <b>유클리드 유사도</b>와 <b>코사인 유사도</b>를 구할 수 있습니다. <b>[12인수02-03]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 두 유사도가 서로 <b>다른 판단</b>을 내리는 상황을 관찰하고, 데이터의 특성에 따라 적절한 유사도를 선택하는 이유를 설명할 수 있습니다. <b>[12인수02-03]</b>
+    </div>
+    <div style="margin-top:0.6rem;font-size:0.95rem;">
+      목표 ① → <b>활동 2·3</b>에서 직접 계산합니다 　▸ 목표 ② → <b>활동 4</b>에서 순위가 뒤집히는 장면을 만들어 봅니다.
+    </div>
+  </div>
+
+  <p class="mono sm-kclabel">핵심 개념 <span>— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips sm-keys" data-no-toggle="1">
+    <span class="chip">유사도</span>
+    <span class="chip">벡터의 크기</span>
+    <span class="chip">유클리드 유사도</span>
+    <span class="chip">코사인 유사도</span>
+    <span class="chip">L2 정규화</span>
+  </div>
+
+  <div class="card sm-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p style="font-size:1.1rem;font-weight:600;color:var(--fg);">
+      "'비슷하다'를 수로 나타낸다면 <b>거리</b>로 재야 할까, <b>방향</b>으로 재야 할까?"</p>
+    <p style="font-size:0.92rem;color:var(--muted);margin-top:0.4rem;">이 질문의 답은 STEP 3 정리에서 여러분의 문장으로 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="sm-step"><p class="mono">STEP 1 · 도입<b>비슷하다는 말, 사람마다 다르게 쓰고 있었습니다</b></p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — '비슷하다'를 수로 재는 두 가지 방법</h3>
+    <p>카드를 누르면 전체 화면으로 재생됩니다(✕ 또는 ESC로 닫기). 세 영상 모두 오늘 수업의 도입 영상이며,
+      교과서의 유사도 단원을 그대로 따라가거나 거리와 각도의 직관을 짧게 잡아 줍니다.
+      선생님께서 다른 영상을 쓰실 때에는 <b>[+ 선생님 영상 추가]</b> 칸에 주소를 붙여 넣으면 됩니다.</p>
+    <div id="sm-videos"></div>
+    <p class="sm-src">① 11. 유사도 (8:41, mathT야나수 〈인공지능 수학〉) — 주 디딤영상. 교과서 유사도 단원을 그대로 따라갑니다.<br>
+      ② 자연어처리의 유사도 측정 방법(거리측정, 코사인 유사도) (3:58, Minsuk Heo 허민석) — 가장 짧습니다. 거리 vs 각도의 직관만 빠르게 잡고 싶을 때.<br>
+      ③ 12. 유사도 분석을 이용한 텍스트 분석 (8:20, mathT야나수) — 실제 문서 두 개를 비교하는 과정. 활동 4를 미리 보는 느낌으로.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="smWarm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 공통점은 하나입니다 — "비슷하다"를 수로 정하는 방법을 아직 약속하지 않았다는 것.</b>
+      오늘 수업에서 그 약속을 두 개 만들고, 두 약속이 서로 다른 답을 내놓는 순간까지 직접 만들어 봅니다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="sm-step"><p class="mono">STEP 2 · 전개<b>두 가지 자로 재어 봅니다 — 거리 자와 방향 자</b></p></div>
+
+  <div class="info" data-no-toggle="1"><strong>활동을 여는 방법</strong> —
+    각 활동은 <b>ⓐ 문제</b> → <b>ⓑ 조작</b> → <b>ⓒ 단계 토글</b>(관찰 → 정리 → 정의 확인) → <b>ⓓ 일반화</b> 순서로 이어집니다.
+    단계 토글의 정답·해설은 <b>한 번이라도 시도한 뒤에만</b> 열립니다(🔒 표시가 있으면 먼저 값을 넣거나 예상을 골라 보세요).
+    설명 카드는 제목만 보이는 상태가 기본이며, 제목을 누르면 본문이 열립니다.
+  </div>
+
+  <!-- ───────── 활동 1 ───────── -->
+  <div class="sm-act" id="sm-act1">
+    <div class="card" data-no-toggle="1">
+      <span class="sm-actlb">활동 1 · 7~8분</span>
+      <h3>"비슷하다"를 우리가 먼저 정해 봅시다</h3>
+      <p><b>문제</b> 사진 속 말풍선에 들어갈 문장을 한 문장으로 써 봅시다.
+        그리고 옆 친구가 쓴 문장과 내 문장이 <b>얼마나 비슷한지</b> 수 하나로 나타낸다면, 무엇을 세어야 할까요?</p>
+
+      <div class="sm-sit">
+        <div class="sm-sitL">
+          <figure class="sm-sitimg" id="sm-sitfig" style="margin:0;">
+            <img id="sm-sitimg" src="assets/situations/상황1.jpg" alt="상황 사진 — 말풍선이 비어 있는 장면" loading="lazy"
+                 onerror="this.style.display='none';this.closest('.sm-sitimg').classList.add('nofoto');">
+            <span class="fb" aria-hidden="true">🖼️</span>
+          </figure>
+          <div class="sm-thumbs" id="sm-thumbs" role="group" aria-label="상황 사진 고르기"></div>
+          <p class="sm-cap" style="text-align:left;margin-top:0.4rem;" id="sm-sitcap">
+            상황 1 — 축구를 하다 무릎이 까진 친구와 그 옆에서 말을 거는 친구(말풍선 1개).
+            상황 사진은 저장소 로컬 자산(assets/situations/)으로만 제공합니다.</p>
+        </div>
+        <div class="sm-sitR">
+          <label for="sm-mysent" style="font-size:0.9rem;color:var(--muted);">내 문장 (1~2문장)</label>
+          <textarea class="sm-ta" id="sm-mysent" placeholder="예) 괜찮아? 많이 아프겠다. 보건실 같이 가자."></textarea>
+          <div class="sm-ctl">
+            <button class="sm-btn pri" type="button" id="sm-add">내 문장 담기</button>
+            <button class="sm-btn" type="button" id="sm-ex5">예시 문장 5개 불러오기</button>
+            <a class="sm-btn" style="text-decoration:none;display:inline-flex;align-items:center;"
+               href="https://tjdgus1121.github.io/Text_mining.html" target="_blank" rel="noopener">Text_mining으로 학급 문장 모으기 ↗</a>
+          </div>
+          <p class="sm-src">담은 문장은 이 기기에 저장되어(공통 말뭉치) 6·7차시에서 모은 문장과 함께 쓰입니다.
+            Text_mining은 선생님이 안내하는 <b>방코드</b>를 입력하면 학급 전체 문장이 한곳에 모입니다 —
+            활동지 「활동 2(유사도분석)」 1~4번 문항이 그 화면과 1:1로 대응합니다.</p>
+          <ul class="sm-sent" id="sm-sentlist"></ul>
+          <div class="sm-ctl">
+            <button class="sm-btn pri" type="button" id="sm-tovec">벡터로 보기</button>
+            <button class="sm-btn" type="button" id="sm-clr">목록 비우기</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="sm-a1vec"></div>
+
+      <p style="margin-top:1rem;"><b>내 기준 제안하기</b> — "두 문장이 비슷한 정도를 어떻게 수로 나타낼까요?"
+        아래에 내 생각을 적고, 보기 칩 가운데 하나를 눌러 그 기준으로 계산한 값을 확인해 봅시다.</p>
+      <textarea class="sm-ta" id="sm-myrule" style="min-height:3.4rem;" placeholder="예) 같은 단어가 몇 개 겹치는지 세면 될 것 같다."></textarea>
+      <div class="sm-ctl" id="sm-rules" role="group" aria-label="비슷함의 기준 고르기">
+        <button class="sm-chip" type="button" data-rule="ov">겹치는 단어의 개수</button>
+        <button class="sm-chip" type="button" data-rule="ab">성분의 차이의 합</button>
+        <button class="sm-chip" type="button" data-rule="d">두 점 사이의 거리</button>
+      </div>
+      <div class="sm-fb" id="sm-rulefb"></div>
+    </div>
+
+    <details class="sm-stage"><summary><span class="rl">단계 1 · 관찰</span>겹치는 단어를 세어 보면 무슨 일이 일어나나요?</summary>
+      <div class="bd">
+        <p>문장 ①과 ②는 겹치는 단어가 2개, ①과 ③도 2개로 같은 값이 나옵니다.
+          그런데 ①·②는 둘 다 "보건실에 가자"고 하고, ③은 "괜찮으니 계속하자"고 합니다.
+          개수만 세는 기준은 <b>문장이 길수록 무조건 유리해지고, 뜻이 반대여도 구분하지 못합니다.</b></p>
+      </div>
+    </details>
+
+    <details class="sm-stage"><summary><span class="rl">단계 2 · 정리</span>그래서 무엇이 더 필요한가요?</summary>
+      <div class="bd">
+        <p>겹치는 단어의 개수는 ⓐ 문장 길이에 휘둘리고 ⓑ 단어를 <b>몇 번</b> 썼는지를 반영하지 못합니다.
+          7차시에서 우리는 이미 문장을 빈도수 벡터로 바꾸는 법을 배웠습니다.</p>
+        <p>벡터로 바꾸면 문장은 <b>공간 위의 한 점</b>이 되고, 그때부터는 수학이 이미 가지고 있는 두 개의 자를 쓸 수 있습니다 —
+          <b>점과 점 사이의 거리</b>, 그리고 <b>화살표와 화살표가 이루는 각</b>입니다.</p>
+      </div>
+    </details>
+
+    <details class="sm-stage"><summary><span class="rl">단계 3 · 정의 확인</span>유사도란 무엇인가</summary>
+      <div class="bd">
+        <p>두 텍스트 데이터 사이의 유사한 정도를 <b>수치로 나타낸 것</b>을 유사도라고 합니다.</p>
+        <p>유사도를 정량화하는 방법에는 집합을 이용하여 정의하는 자카드 유사도(10차시)와,
+          벡터를 이용하여 정의하는 <b>유클리드 유사도·코사인 유사도</b>(오늘)가 있습니다.
+          어떤 유사도를 쓸지는 정해진 정답이 없으며, <b>분석하는 대상과 목적에 따라 선택</b>합니다.</p>
+        <p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72, 동아출판 「인공지능 수학」 Ⅱ 단원 p.66 서술을 재구성</p>
+      </div>
+    </details>
+
+    <svg class="sm-illu" viewBox="0 0 680 168" role="img"
+         aria-label="문장에서 단어집합, 빈도수 벡터를 거쳐 좌표평면 위의 점이 되는 네 단계 흐름도">
+      <rect width="680" height="168" fill="var(--bg)"/>
+      <g>
+        <rect x="14" y="40" width="132" height="70" rx="10" fill="var(--card)" stroke="var(--border)"/>
+        <text x="80" y="66" text-anchor="middle" font-size="12" fill="var(--muted)">① 문장</text>
+        <text x="80" y="88" text-anchor="middle" font-size="12.5" fill="var(--fg)">"보건실 같이</text>
+        <text x="80" y="104" text-anchor="middle" font-size="12.5" fill="var(--fg)">가자"</text>
+      </g>
+      <path d="M150 75 h22" stroke="var(--fg)" stroke-width="2.4"/><polygon points="178,75 168,70 168,80" fill="var(--fg)"/>
+      <g>
+        <rect x="182" y="40" width="140" height="70" rx="10" fill="var(--card)" stroke="var(--border)"/>
+        <text x="252" y="66" text-anchor="middle" font-size="12" fill="var(--muted)">② 단어집합</text>
+        <text x="252" y="90" text-anchor="middle" font-size="13" fill="var(--fg)">{보건실, 같이,</text>
+        <text x="252" y="106" text-anchor="middle" font-size="13" fill="var(--fg)">가자}</text>
+      </g>
+      <path d="M326 75 h22" stroke="var(--fg)" stroke-width="2.4"/><polygon points="354,75 344,70 344,80" fill="var(--fg)"/>
+      <g>
+        <rect x="358" y="40" width="142" height="70" rx="10" fill="var(--card)" stroke="var(--border)"/>
+        <text x="429" y="66" text-anchor="middle" font-size="12" fill="var(--muted)">③ 빈도수 벡터</text>
+        <text x="429" y="92" text-anchor="middle" font-size="14" fill="var(--fg)">(1, 1, 0, 1, 0)</text>
+      </g>
+      <path d="M504 75 h22" stroke="var(--fg)" stroke-width="2.4"/><polygon points="532,75 522,70 522,80" fill="var(--fg)"/>
+      <g>
+        <rect x="536" y="34" width="128" height="100" rx="10" fill="var(--card)" stroke="var(--border)"/>
+        <text x="600" y="52" text-anchor="middle" font-size="12" fill="var(--muted)">④ 공간 위의 점</text>
+        <path d="M556 122 H652" stroke="var(--border)" stroke-width="1.4"/>
+        <path d="M556 122 V62" stroke="var(--border)" stroke-width="1.4"/>
+        <line x1="556" y1="122" x2="620" y2="78" stroke="var(--fg)" stroke-width="2.6"/>
+        <polygon points="620,78 608,79 613,88" fill="var(--fg)"/>
+        <circle cx="620" cy="78" r="4" fill="var(--fg)"/>
+      </g>
+      <text x="340" y="152" text-anchor="middle" font-size="12.5" fill="var(--muted)">문장이 점이 되면, 거리와 각이라는 두 개의 자를 쓸 수 있습니다</text>
+    </svg>
+    <p class="sm-cap">▲ 문장 → 단어집합 → 빈도수 벡터 → 공간 위의 점 (개념도: 자체 제작 인라인 SVG)</p>
+  </div>
+
+  <!-- ───────── 활동 2 ───────── -->
+  <div class="sm-act" id="sm-act2">
+    <div class="card" data-no-toggle="1">
+      <span class="sm-actlb">활동 2 · 8~10분</span>
+      <h3>거리로 재기 — 유클리드 유사도</h3>
+
+      <figure class="phz phz-r">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/68/Screen_time.jpg"
+             alt="스마트폰을 보며 걸어가는 사람들" loading="lazy" referrerpolicy="no-referrer"
+             onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+        <span class="fb" aria-hidden="true">📱</span>
+        <figcaption><b>스마트폰을 보며 걸어가는 사람들입니다. 이번 활동의 데이터는 이렇게 하루에 쌓이는 사용 시간 기록을 항목별로 정리한 것입니다.</b>
+          <span class="src">출처: Wikimedia Commons, Rawpixel, CC0</span></figcaption>
+      </figure>
+
+      <p><b>문제</b> 세 학생 A, B, C의 주말 스마트폰 사용 시간(단위: 시간)을 조사했습니다.
+        <b>A와 가장 비슷하게 사용한 학생</b>은 누구일까요? 먼저 눈으로 어림잡아 예상해 보고, 그 다음 계산으로 확인합시다.</p>
+
+      <div class="sm-ctl" id="sm-guess2" role="group" aria-label="활동 2 예상 고르기">
+        <span style="font-size:0.95rem;color:var(--muted);">내 예상:</span>
+        <button class="sm-chip" type="button" data-g="B">B일 것 같다</button>
+        <button class="sm-chip" type="button" data-g="C">C일 것 같다</button>
+      </div>
+      <p class="sm-lockmsg" id="sm-lock2">예상을 고르기 전에는 계산 결과와 단계 카드가 열리지 않습니다.</p>
+
+      <div class="sm-scroll">
+        <table class="sm-tbl" id="sm-dtbl">
+          <thead><tr><th>학생</th><th>SNS</th><th>게임</th><th>영상 시청</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="sm-ctl">
+        <button class="sm-btn" type="button" id="sm-reset">초기값으로 되돌리기</button>
+        <span style="font-size:0.9rem;color:var(--muted);">아홉 칸 모두 직접 고칠 수 있습니다(0~10, 소수 첫째 자리까지).</span>
+      </div>
+
+      <div class="sm-ctl">
+        <label for="sm-ax">가로축</label>
+        <select class="sm-sel" id="sm-ax"></select>
+        <label for="sm-ay">세로축</label>
+        <select class="sm-sel" id="sm-ay"></select>
+        <span style="font-size:0.9rem;color:var(--muted);">3차원 데이터를 2차원 면에 투영해서 봅니다.</span>
+      </div>
+      <div class="sm-ctl" id="sm-mode2" role="group" aria-label="재는 방법 고르기">
+        <button class="sm-chip on" type="button" data-m="dist">거리로 재기</button>
+        <button class="sm-chip" type="button" data-m="cos" disabled title="활동 3에서 사용합니다">방향으로 재기</button>
+      </div>
+      <div class="sm-ctl" id="sm-pair2" role="group" aria-label="비교할 두 학생 고르기">
+        <span style="font-size:0.95rem;color:var(--muted);">비교 대상:</span>
+        <button class="sm-chip on" type="button" data-p="AB">A–B</button>
+        <button class="sm-chip" type="button" data-p="AC">A–C</button>
+        <button class="sm-chip" type="button" data-p="BC">B–C</button>
+      </div>
+
+      <div class="sm-cvwrap">
+        <div class="sm-cvbox">
+          <p class="sm-cvhead">지금 보고 있는 면: <b id="sm-plane2">SNS × 영상 시청</b></p>
+          <canvas class="sm-cv" id="sm-cv2" role="img"
+                  aria-label="원점에서 세 학생으로 뻗은 화살표와 두 끝점을 잇는 점선을 그린 좌표평면"></canvas>
+          <p class="sm-cvnote">
+            <span class="sm-sw" style="background:var(--fg);"></span>A(실선)
+            <span class="sm-sw" style="background:var(--blue);"></span>B(긴 점선)
+            <span class="sm-sw" style="background:var(--red);"></span>C(짧은 점선)
+          </p>
+        </div>
+        <div class="sm-calc">
+          <p class="ti">계산 과정</p>
+          <div class="ln" id="sm-calc2"></div>
+        </div>
+      </div>
+
+      <p style="margin-top:1rem;"><b>직접 계산해 봅시다</b> — d(A, C)의 값을 소수 둘째 자리까지 입력하세요.</p>
+      <div class="sm-ctl">
+        <input class="sm-num" id="sm-ans2" type="number" step="0.01" placeholder="?" aria-label="d(A, C)의 값">
+        <button class="sm-btn pri" type="button" id="sm-chk2">확인</button>
+      </div>
+      <div class="sm-fb" id="sm-fb2"></div>
+    </div>
+
+    <details class="sm-stage locked" data-lock="a2"><summary><span class="rl">단계 1 · 관찰</span>세 거리를 모두 구해 봅시다</summary>
+      <div class="bd">
+        <p>d(A, B) = √2 ≈ <b>1.41</b> 　 d(A, C) = √11 ≈ <b>3.32</b> 　 d(B, C) = √9 = <b>3.00</b></p>
+        <p>A에게 가장 가까운 학생은 <b>B</b>입니다. 캔버스에서도 A와 B의 끝점을 잇는 점선이 가장 짧습니다.</p>
+      </div>
+    </details>
+
+    <details class="sm-stage locked" data-lock="a2"><summary><span class="rl">단계 2 · 정리</span>이 값은 무엇을 비교한 것인가</summary>
+      <div class="bd">
+        <p>거리는 <b>각 항목을 얼마나 비슷한 양으로 썼는가</b>를 비교합니다.
+          A와 B는 SNS 6시간·5시간, 영상 2시간·3시간처럼 <b>절대적인 사용량 자체가 비슷</b>합니다.</p>
+        <p>반면 C는 A와 사용 습관이 비슷해 보이지만 전체 사용량이 절반이라 거리가 멀어졌습니다.
+          그래서 유클리드 유사도는 <b>양(크기)이 중요한 상황</b>에 알맞습니다.</p>
+      </div>
+    </details>
+
+    <details class="sm-stage locked" data-lock="a2"><summary><span class="rl">단계 3 · 정의 확인</span>유클리드 유사도</summary>
+      <div class="bd">
+        <p>두 텍스트 데이터를 나타내는 위치벡터의 <b>끝점 사이의 거리</b>를 유클리드 유사도라고 하고,
+          두 텍스트 데이터 A, B를 각각 벡터 a=(a₁, a₂, …, aₙ), b=(b₁, b₂, …, bₙ)으로 나타낼 때
+          기호로 d(a, b)와 같이 나타냅니다.</p>
+        <div class="math">d(a, b) = |b − a| = √((b₁−a₁)² + (b₂−a₂)² + … + (bₙ−aₙ)²)</div>
+        <p>유클리드 유사도의 값이 <b>0에 가까울수록</b> 두 텍스트 데이터가 유사하다고 판단합니다. 또한 d(a, a) = 0입니다.</p>
+        <p><b>예시 1</b> a=(0, 1, 1), b=(1, 1, 2), c=(2, 0, 1)일 때 d(a,b)=√2, d(a,c)=√5, d(b,c)=√3이므로 A와 B가 가장 유사합니다.<br>
+          <b>예시 2</b> 두 점 A(1, 4), B(5, 1)에 대해 d = √(4² + (−3)²) = 5입니다.</p>
+        <p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.73, 동아출판 「인공지능 수학」 Ⅱ 단원 p.68 서술을 재구성</p>
+      </div>
+    </details>
+
+    <div class="card">
+      <h3>읽을거리 — 거리에 이름을 남긴 사람, 유클리드</h3>
+      <figure class="phz phz-r">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/EuclidStatueOxford.jpg"
+             alt="옥스퍼드 대학 자연사박물관의 유클리드 석상" loading="lazy" referrerpolicy="no-referrer"
+             onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+        <span class="fb" aria-hidden="true">📐</span>
+        <figcaption><b>영국 옥스퍼드 대학 자연사박물관에 있는 유클리드 석상입니다. 두 점 사이의 거리를 선분의 길이로 정의하는 방식에 그의 이름이 붙어 '유클리드 거리'라고 불립니다.</b>
+          <span class="src">출처: Wikimedia Commons, 촬영 Mark A. Wilson, 퍼블릭 도메인</span></figcaption>
+      </figure>
+      <p>우리가 오늘 쓴 "두 점 사이의 거리"는 사실 <b>여러 가지 거리 중 하나</b>입니다.
+        선분의 길이로 거리를 정의하는 방식을 고대 그리스의 수학자 유클리드의 이름을 따 <b>유클리드 거리</b>라고 부릅니다.</p>
+      <p>인공지능에서는 이 밖에도 각 성분의 차이의 절댓값을 모두 더하는 맨해튼 거리,
+        서로 다른 자리의 개수를 세는 해밍 거리(13차시), 겹치는 정도를 비율로 보는 자카드 유사도(10차시) 등을 상황에 맞게 골라 씁니다.
+        <b>유사도는 세 가지뿐이 아니며, 문제의 목적이 자를 고릅니다.</b></p>
+      <p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.73 지식 Plus, 연수교재 합본 「여러 가지 유사도」 참고 자료를 재구성</p>
+    </div>
+  </div>
+
+  <!-- ───────── 활동 3 ───────── -->
+  <div class="sm-act" id="sm-act3">
+    <div class="card" data-no-toggle="1">
+      <span class="sm-actlb">활동 3 · 8~10분</span>
+      <h3>방향으로 재기 — 코사인 유사도</h3>
+      <p><b>문제</b> 같은 표를 그대로 두고 질문만 바꾸겠습니다.
+        <b>"A와 사용 습관(패턴)이 가장 비슷한 학생"</b>은 누구일까요?
+        사용 시간의 총량이 아니라 <b>SNS·게임·영상에 시간을 나누어 쓴 비율</b>이 비슷한 학생을 찾는 것입니다.</p>
+
+      <div class="sm-ctl" id="sm-guess3" role="group" aria-label="활동 3 예상 고르기">
+        <span style="font-size:0.95rem;color:var(--muted);">내 예상:</span>
+        <button class="sm-chip" type="button" data-g="B">역시 B</button>
+        <button class="sm-chip" type="button" data-g="C">이번엔 C</button>
+      </div>
+      <p class="sm-lockmsg" id="sm-lock3">예상을 고르기 전에는 계산 결과와 단계 카드가 열리지 않습니다.</p>
+
+      <div class="sm-ctl" id="sm-pair3" role="group" aria-label="비교할 두 학생 고르기">
+        <span style="font-size:0.95rem;color:var(--muted);">비교 대상:</span>
+        <button class="sm-chip on" type="button" data-p="AB">A–B</button>
+        <button class="sm-chip" type="button" data-p="AC">A–C</button>
+        <button class="sm-chip" type="button" data-p="BC">B–C</button>
+      </div>
+
+      <div class="sm-cvwrap">
+        <div class="sm-cvbox">
+          <p class="sm-cvhead">방향으로 재기 · 지금 보고 있는 면: <b id="sm-plane3">SNS × 영상 시청</b></p>
+          <canvas class="sm-cv" id="sm-cv3" role="img"
+                  aria-label="원점에서 뻗은 두 화살표 사이에 사잇각 호를 그린 좌표평면"></canvas>
+          <p class="sm-cvnote">끝점을 잇던 점선이 사라지고, 원점을 중심으로 두 화살표 사이에 <b>사잇각 호</b>가 그려집니다.
+            호 옆의 각과 값은 <b>지금 보고 있는 두 항목의 면</b>에서 잰 것이고,
+            오른쪽 계산 과정의 C(a, b)는 <b>세 항목 전체</b>로 구한 값입니다.</p>
+          <div class="sm-ctl" style="flex-direction:column;align-items:stretch;">
+            <label for="sm-rot" style="font-size:0.95rem;">각 확인 슬라이더 — B의 화살표만 원점을 중심으로 돌려 보기
+              (<span id="sm-rotv" style="font-family:var(--mono);font-weight:700;">0.0°</span>)</label>
+            <input class="sm-rng" id="sm-rot" type="range" min="-40" max="40" step="0.5" value="0"
+                   aria-label="B 화살표 회전 각도">
+            <div><button class="sm-btn" type="button" id="sm-rotrst">원래대로</button></div>
+          </div>
+          <p class="sm-cvnote">회전은 <b>미리보기</b>입니다 — 지금 보고 있는 두 항목의 면에서만 각과 값을 다시 계산해 보여 주며,
+            표의 값은 바뀌지 않습니다. 각이 커지면 값이 1에서 멀어지고, 사잇각이 0°가 되면 정확히 1이 됩니다.</p>
+        </div>
+        <div class="sm-calc">
+          <p class="ti">계산 과정</p>
+          <div class="ln" id="sm-calc3"></div>
+        </div>
+      </div>
+
+      <p style="margin-top:1rem;"><b>직접 계산해 봅시다</b> — C(B, C)의 값을 소수 둘째 자리까지 입력하세요.</p>
+      <div class="sm-ctl">
+        <input class="sm-num" id="sm-ans3" type="number" step="0.01" placeholder="?" aria-label="C(B, C)의 값">
+        <button class="sm-btn pri" type="button" id="sm-chk3">확인</button>
+      </div>
+      <div class="sm-fb" id="sm-fb3"></div>
+    </div>
+
+    <details class="sm-stage locked" data-lock="a3"><summary><span class="rl">단계 1 · 관찰</span>값이 1이 나왔습니다</summary>
+      <div class="bd">
+        <p>C(A, C) = 1.00 — 두 화살표가 <b>완전히 같은 방향</b>입니다.
+          실제로 C=(3, 1, 1)은 A=(6, 2, 2)의 정확히 절반이므로, 원점에서 같은 반직선 위에 놓입니다.
+          사잇각이 0°이므로 코사인 값은 1입니다.</p>
+        <p>한편 C(A, B) ≈ 0.98로 B도 매우 비슷하지만 1에는 못 미칩니다.</p>
+      </div>
+    </details>
+
+    <details class="sm-stage locked" data-lock="a3"><summary><span class="rl">단계 2 · 정리</span>거리와 답이 갈렸습니다</summary>
+      <div class="bd">
+        <p>활동 2에서 거리로 재었을 때 A와 가장 가까운 학생은 <b>B</b>였습니다.
+          그런데 방향으로 재니 답이 <b>C</b>로 바뀌었습니다.</p>
+        <p>C는 A와 <b>전체 사용량은 절반이지만 시간을 나누어 쓴 비율이 똑같기</b> 때문입니다.
+          두 답이 모두 옳습니다 — 다만 <b>묻는 질문이 다릅니다.</b></p>
+      </div>
+    </details>
+
+    <details class="sm-stage locked" data-lock="a3"><summary><span class="rl">단계 3 · 정의 확인</span>코사인 유사도</summary>
+      <div class="bd">
+        <p>두 텍스트 데이터를 나타내는 <b>벡터의 방향이 비슷한 정도</b>를 코사인 유사도라고 하고
+          기호로 C(a, b)와 같이 나타냅니다.</p>
+        <div class="math">C(a, b) = (a₁b₁ + a₂b₂ + … + aₙbₙ) ÷ (√(a₁²+…+aₙ²) × √(b₁²+…+bₙ²))
+          = (성분끼리 곱해 더한 값) ÷ (두 벡터의 크기의 곱)</div>
+        <p>이 값은 두 벡터가 이루는 각 θ에 대한 cos θ의 값과 같음이 알려져 있습니다.
+          따라서 값이 <b>1에 가까울수록</b>(θ가 0°에 가까울수록) 유사하고,
+          <b>0에 가까울수록</b>(θ가 90°에 가까울수록) 유사하지 않다고 판단합니다.</p>
+        <p>빈도수 벡터는 성분이 모두 0 이상이므로 코사인 유사도는 <b>0 이상 1 이하</b>의 값을 가집니다. 또한 C(a, a) = cos 0° = 1입니다.</p>
+        <p><b>예시</b> a=(1, 0), b=(3, 0), c=(3, 2), d=(0, 2)일 때 →
+          a와 b: 0°, 값 1 　a와 c: 약 33.7°, 값 3√13⁄13 ≈ 0.83 　a와 d: 90°, 값 0</p>
+        <div class="tbshot-wrap">
+          <div class="tbshot-head">교과서로 확인하기 — 코사인 유사도 도해</div>
+          <div class="tbshot-row">
+            <figure class="tbshot">
+              <img src="assets/textbook-local/동아2_p69_코사인유사도.jpg" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('.tbshot');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아출판 「인공지능 수학」 p.69 (수업용)
+                <span class="src">교과서 지면(수업용) — 공개 게시하지 않습니다.</span></figcaption>
+            </figure>
+          </div>
+        </div>
+        <p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.75, 동아출판 「인공지능 수학」 Ⅱ 단원 p.69 서술을 재구성</p>
+      </div>
+    </details>
+
+    <div class="card">
+      <h3>읽을거리 — 음식점 리뷰 하나를 긍정·부정으로 나누기</h3>
+      <p>어느 음식점 리뷰에 나오는 긍정 단어와 부정 단어를 모아 전체집합을 만들었습니다.</p>
+      <div class="math">U = {청결하다, 빠르다, 맛있다, 많다, 불편하다, 별로다, 불친절, 최악}
+긍정 단어 p = (1, 1, 1, 1, 0, 0, 0, 0)
+부정 단어 n = (0, 0, 0, 0, 1, 1, 1, 1)</div>
+      <p><b>리뷰 X</b> "이 음식점은 매장이 청결하고 서비스도 빨랐지만, 음식이 별로고 직원들도 불친절해서 불편했습니다."<br>
+        리뷰 X의 빈도수 벡터 x = (1, 1, 0, 0, 1, 1, 1, 0)</p>
+      <p><b>거리로 재면</b> d(x, p) = √5 ≈ 2.24, d(n, x) = √3 ≈ 1.73 → 부정 쪽이 더 가깝습니다.<br>
+        <b>방향으로 재면</b> C(x, p) = 2 ÷ (√5 × 2) ≈ 0.45, C(n, x) = 3 ÷ (√5 × 2) ≈ 0.67 → 부정 쪽이 더 큽니다.</p>
+      <p>두 방법 모두 리뷰 X를 <b>'부정'</b>으로 분류합니다.
+        이렇게 문장 하나를 긍정·부정 단어 벡터와 견주는 방식이 10차시 감성 분석의 출발점입니다.</p>
+      <p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.73~76 서술을 재구성</p>
+    </div>
+
+    <div class="sm-warnbox" data-no-toggle="1">
+      <p>⚠️ <b>두 값을 직접 비교해 우열을 가리지 마세요.</b>
+        d(A, B) ≈ 1.41과 C(A, B) ≈ 0.98은 <b>재는 대상도, 좋은 방향도 서로 다른 값</b>입니다(거리는 작을수록, 코사인은 클수록 유사).
+        "어느 유사도의 값이 더 크니까 더 비슷하다"는 말은 성립하지 않습니다.
+        우리가 판단할 것은 <b>이 상황에서 어느 자가 더 알맞은가</b>입니다.</p>
+      <p class="sm-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅱ 및 연수교재 합본 교수·학습 TIP을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ───────── 활동 4 ───────── -->
+  <div class="sm-act" id="sm-act4">
+    <div class="card" data-no-toggle="1">
+      <span class="sm-actlb">활동 4 · 10~12분</span>
+      <h3>순위가 뒤집히는 순간, 그리고 크기를 1로 맞추기</h3>
+      <p>활동 2·3에서 쓴 표의 값이 그대로 이어집니다. 세 개의 패널을 차례로 열어 보세요.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" type="button" onclick="smTab(0,this)">4-1 순위표</button>
+      <button class="tab" type="button" onclick="smTab(1,this)">4-2 크기를 1로</button>
+      <button class="tab" type="button" onclick="smTab(2,this)">4-3 길이 편향 실험</button>
+    </div>
+
+    <!-- 4-1 -->
+    <div class="tpanel on" id="sm4-0">
+      <div class="card" data-no-toggle="1">
+        <h3>답이 갈리는 장면을 눈으로 잡기</h3>
+        <p>왼쪽은 <b>거리로 잰 순위</b>(작을수록 유사), 오른쪽은 <b>방향으로 잰 순위</b>(클수록 유사)입니다.
+          활동 2의 표를 고치면 두 순위가 즉시 다시 계산됩니다.</p>
+        <div class="sm-ranks" id="sm-ranks"></div>
+        <div id="sm-flagbox"></div>
+        <div class="sm-mission" id="sm-missions">
+          <div class="m" data-m="1"><span class="st">미션 ①</span>C의 값을 고쳐 두 순위가 <b>같아지게</b> 만들어 보세요. (예: C를 B에 가깝게)</div>
+          <div class="m" data-m="2"><span class="st">미션 ②</span>B의 값만 고쳐 <b>역전이 더 뚜렷해지게</b> 만들어 보세요.</div>
+        </div>
+        <div class="sm-fb" id="sm-missfb"></div>
+        <div class="sm-ctl">
+          <button class="sm-btn" type="button" onclick="smGo('sm-act2')">활동 2 표로 이동해서 값 고치기</button>
+        </div>
+      </div>
+
+      <details class="sm-stage"><summary><span class="rl">단계 · 정리</span>왜 갈렸는가</summary>
+        <div class="bd">
+          <p>유클리드 유사도는 <b>끝점의 위치</b>를 비교하고, 코사인 유사도는 <b>화살표의 방향</b>을 비교합니다.</p>
+          <p>C는 A와 방향이 같지만 길이가 절반이라, 방향 기준으로는 1위·거리 기준으로는 꼴찌가 됩니다.
+            즉 <b>크기 정보를 쓰느냐 버리느냐</b>가 두 자의 결정적 차이입니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 4-2 -->
+    <div class="tpanel" id="sm4-1">
+      <div class="card" data-no-toggle="1">
+        <h3>크기를 1로 맞추기 — L2 정규화와 단위원 수렴</h3>
+        <div class="sm-ctl">
+          <label style="display:inline-flex;align-items:center;gap:0.55rem;font-size:1.0rem;color:var(--fg);cursor:pointer;min-height:44px;">
+            <input type="checkbox" id="sm-normsw" style="width:1.2rem;height:1.2rem;accent-color:var(--fg);cursor:pointer;">
+            크기를 1로 맞추기
+          </label>
+        </div>
+        <div class="sm-cvwrap">
+          <div class="sm-cvbox">
+            <p class="sm-cvhead">지금 보고 있는 면: <b id="sm-plane4">SNS × 영상 시청</b></p>
+            <canvas class="sm-cv" id="sm-cv4" role="img"
+                    aria-label="단위원 위로 세 화살표가 모이는 좌표평면"></canvas>
+            <p class="sm-cvnote">그림은 <b>지금 보고 있는 두 항목의 면</b>에서 크기를 1로 맞춘 모습입니다.
+              아래 Â, B̂, Ĉ와 거리 값은 <b>세 항목 전체</b>로 계산한 값입니다.</p>
+          </div>
+          <div class="sm-calc">
+            <p class="ti">정규화한 벡터</p>
+            <div class="ln" id="sm-normout"></div>
+          </div>
+        </div>
+        <div class="sm-ctl">
+          <button class="sm-btn" type="button" onclick="smTab(0,document.querySelector('#v-sim .tabs .tab'))">4-1 순위표에서 결과 확인하기</button>
+        </div>
+      </div>
+
+      <details class="sm-stage"><summary><span class="rl">단계 · 정의 확인</span>L2 정규화</summary>
+        <div class="bd">
+          <p>벡터의 각 성분을 그 벡터의 크기로 나누어 <b>크기가 1인 벡터</b>로 고치는 것을 L2 정규화라고 합니다.</p>
+          <p>정규화한 벡터의 끝점은 원점에서 거리가 1인 곳에 모이므로, 2차원에서는 모두 <b>단위원 위</b>에 놓입니다.
+            이때 <b>크기 정보는 사라지고 방향 정보만 남기 때문에</b>,
+            정규화한 두 벡터의 거리로 재는 것은 사실상 방향을 비교하는 것과 같아집니다.</p>
+        </div>
+      </details>
+
+      <details class="sm-stage sm-adv"><summary><span class="rl">선택 심화</span>거리와 코사인은 사실 같은 이야기였습니다<span class="sm-badge">평가 제외</span></summary>
+        <div class="bd">
+          <p>크기가 1인 두 벡터 â, b̂ 사이의 거리를 제곱해 보면</p>
+          <div class="math">d(â, b̂)² = |â|² + |b̂|² − 2 × (성분끼리 곱해 더한 값)
+          = 1 + 1 − 2 C(a, b) = 2 − 2 C(a, b)</div>
+          <p>이므로 <b>d(â, b̂) = √(2 − 2 C(a, b))</b> 입니다. 코사인 유사도가 커질수록 정규화한 두 벡터의 거리는 작아집니다.
+            실제로 C(A, B) ≈ 0.9783이므로 √(2 − 2×0.9783) ≈ 0.21로, 위에서 구한 값과 정확히 일치합니다.</p>
+          <p class="sm-src">※ 이 토글은 형성평가·지필평가 대상이 아닙니다. 〈기하〉·〈미적분〉을 이수한 학생을 위한 선택 심화입니다.</p>
+        </div>
+      </details>
+
+      <svg class="sm-illu" viewBox="0 0 460 300" role="img"
+           aria-label="단위원 위로 세 화살표가 모이고 A와 C가 포개진 정지 도해">
+        <rect width="460" height="300" fill="var(--bg)"/>
+        <path d="M50 258 H430" stroke="var(--border)" stroke-width="1.6"/>
+        <path d="M50 258 V30" stroke="var(--border)" stroke-width="1.6"/>
+        <path d="M230 258 A180 180 0 0 0 50 78" fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-dasharray="6 5"/>
+        <text x="246" y="252" font-size="12" fill="var(--muted)">1</text>
+        <text x="34" y="84" font-size="12" fill="var(--muted)">1</text>
+        <line x1="50" y1="258" x2="221" y2="201" stroke="var(--fg)" stroke-width="3.4"/>
+        <polygon points="221,201 208,199 213,210" fill="var(--fg)"/>
+        <line x1="50" y1="258" x2="196" y2="153" stroke="var(--blue)" stroke-width="3.4" stroke-dasharray="10 5"/>
+        <polygon points="196,153 184,155 191,164" fill="var(--blue)"/>
+        <circle cx="221" cy="201" r="5" fill="var(--red)"/>
+        <text x="232" y="197" font-size="14" font-weight="700" fill="var(--fg)">A = C</text>
+        <text x="206" y="148" font-size="14" font-weight="700" fill="var(--blue)">B</text>
+        <text x="240" y="286" text-anchor="middle" font-size="12.5" fill="var(--muted)">크기를 1로 맞추면 세 화살표의 끝점이 모두 단위원 위에 모입니다</text>
+        <text x="240" y="46" text-anchor="middle" font-size="12.5" fill="var(--muted)">A와 C는 방향이 같으므로 완전히 포개집니다</text>
+      </svg>
+      <p class="sm-cap">▲ 단위원 위로 모이는 세 화살표 — 애니메이션을 쓰지 않는 환경에서도 같은 장면을 확인할 수 있습니다. (개념도: 자체 제작 인라인 SVG)</p>
+    </div>
+
+    <!-- 4-3 -->
+    <div class="tpanel" id="sm4-2">
+      <div class="card" data-no-toggle="1">
+        <h3>길이 편향 실험 — 같은 이야기를 길게 쓰면 멀어질까</h3>
+        <p><b>문제</b> 같은 주제를 다룬 <b>짧은 글</b>과 <b>긴 글</b>, 그리고 주제가 다른 <b>짧은 글</b>이 있습니다.
+          짧은 글 ①에게 더 비슷한 글은 무엇일까요?</p>
+        <div class="math">전체 단어집합 U = {도서관, 과학, 책, 우주, 로봇, 축구}</div>
+        <div id="sm-len-in"></div>
+        <div class="sm-ctl">
+          <button class="sm-btn pri" type="button" id="sm-dup">문장 ①을 두 번 이어 붙이기</button>
+          <button class="sm-btn" type="button" id="sm-lenrst">초기 문장으로 되돌리기</button>
+        </div>
+        <div class="sm-scroll">
+          <table class="sm-tbl" id="sm-lenvec">
+            <thead><tr><th>글</th><th>도서관</th><th>과학</th><th>책</th><th>우주</th><th>로봇</th><th>축구</th><th>크기</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="sm-scroll">
+          <table class="sm-tbl" id="sm-lenres">
+            <thead><tr><th>비교</th><th>거리 d</th><th>코사인 C</th><th>정규화 후 거리</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="sm-fb" id="sm-lenfb"></div>
+      </div>
+
+      <details class="sm-stage"><summary><span class="rl">단계 · 관찰</span>거리 기준이 잘못된 답을 냈습니다</summary>
+        <div class="bd">
+          <p>거리로 재면 ③(2.00)이 ②(2.83)보다 가깝다고 나옵니다.
+            그러나 ②는 ①과 <b>같은 이야기를 길게 쓴 글</b>이고, ③은 <b>주제가 다른 글</b>입니다.</p>
+        </div>
+      </details>
+
+      <details class="sm-stage"><summary><span class="rl">단계 · 정리</span>길이 편차가 크면 거리를 믿기 어렵습니다</summary>
+        <div class="bd">
+          <p>글이 길어지면 빈도수 벡터의 성분이 함께 커지므로 <b>벡터의 크기 자체가 커집니다.</b>
+            거리로 재는 유사도는 이 크기 차이를 그대로 떠안기 때문에, <b>길이 편차가 큰 텍스트에서는 신뢰하기 어렵습니다.</b></p>
+          <p>그래서 텍스트 분석에서는 방향을 비교하는 <b>코사인 유사도를 주로 사용하고</b>,
+            굳이 거리를 쓰고 싶다면 먼저 <b>크기를 1로 맞춘 뒤(L2 정규화)</b> 사용합니다.</p>
+          <p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.77 「더 알아보기」, 동아출판 「인공지능 수학」 Ⅱ 단원 p.66, 씨마스 지도서 Ⅱ 교수·학습 TIP을 재구성</p>
+        </div>
+      </details>
+
+      <details class="sm-stage"><summary><span class="rl">단계 · 되짚기</span>그런데 언제나 코사인이 옳은가?</summary>
+        <div class="bd">
+          <p>그렇지 않습니다. 학생 A의 국어·영어·수학이 90, 90, 90점이고 학생 B가 40, 40, 40점이라면
+            두 사람의 <b>패턴은 완전히 똑같아</b> 코사인 유사도는 1이 됩니다.
+            그러나 두 사람을 "학업 성취도가 비슷한 그룹"으로 묶는 것은 곤란합니다.</p>
+          <p>이처럼 <b>절대적인 크기 자체가 의미를 갖는 데이터</b>(점수, 키, 몸무게, 판매량 등)에서는
+            유클리드 유사도가 알맞습니다.</p>
+          <p class="sm-src">출처 — 연수교재 합본 7~8차시(유사도 측정의 수학적 원리와 실생활 적용) 서술을 재구성</p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="sm-step"><p class="mono">STEP 3 · 정리<b>오늘의 답 — 자를 고르는 것이 곧 판단입니다</b></p></div>
+
+  <div class="card sm-ask" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ul style="list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;">
+      <li style="font-size:1.06rem;font-weight:700;color:var(--fg);">① <b>유클리드 유사도</b>는 두 벡터 끝점 사이의 <b>거리</b> d(a, b)로 재며, <b>0에 가까울수록</b> 유사합니다.</li>
+      <li style="font-size:1.06rem;font-weight:700;color:var(--fg);">② <b>코사인 유사도</b>는 두 벡터가 이루는 각의 코사인 값 C(a, b)로 재며, <b>1에 가까울수록</b> 유사합니다.</li>
+      <li style="font-size:1.06rem;font-weight:700;color:var(--fg);">③ 같은 데이터라도 <b>어떤 유사도를 쓰느냐에 따라 1위가 달라집니다.</b> 크기가 중요하면 거리를, 패턴이 중요하면 방향을 씁니다.</li>
+    </ul>
+
+    <p style="margin-top:1.1rem;font-size:1.08rem;font-weight:700;color:var(--fg);">
+      핵심 질문 — "'비슷하다'를 수로 나타낸다면 거리로 재야 할까, 방향으로 재야 할까?"</p>
+    <p style="margin-top:0.4rem;"><b>답</b> 둘 중 하나가 옳은 것이 아니라, <b>무엇을 비슷하다고 볼 것인지 먼저 정해야</b> 자가 정해집니다.
+      사용량·점수처럼 값의 크기 자체가 의미를 가지면 거리로, 문서처럼 길이 편차가 크고 구성 비율이 중요하면 방향으로 잽니다.
+      거리로 재고 싶은데 길이 차이가 걸린다면 크기를 1로 맞춘 뒤(L2 정규화) 재면 됩니다.</p>
+
+    <p style="margin-top:0.9rem;font-size:0.95rem;color:var(--muted);">▸ 내 문장으로 답을 완성해 봅시다(2~3문장). 입력한 내용은 이 기기에 자동 저장됩니다.</p>
+    <textarea class="sm-ta" id="sm-answer" placeholder="예) 나는 ○○을 비교하고 싶으므로 ○○ 유사도를 고르겠다. 왜냐하면 …"></textarea>
+    <div class="sm-ctl">
+      <button class="sm-btn pri" type="button" id="sm-toprint">내 답을 학습지에 넣기</button>
+      <span class="sm-src" id="sm-answerst">자동 저장됩니다.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>자세히 보기 — 두 유사도의 장단점 한눈에</h3>
+    <svg class="sm-illu" viewBox="0 0 660 300" role="img"
+         aria-label="왼쪽은 거리 기준, 오른쪽은 방향 기준으로 나와 민서, 민준의 위치를 비교한 도해">
+      <rect width="660" height="300" fill="var(--bg)"/>
+      <text x="165" y="28" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--fg)">거리로 판단하면</text>
+      <path d="M40 250 H300" stroke="var(--border)" stroke-width="1.5"/>
+      <path d="M40 250 V50" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="40" y1="250" x2="180" y2="140" stroke="var(--fg)" stroke-width="3"/>
+      <polygon points="180,140 168,141 173,151" fill="var(--fg)"/>
+      <circle cx="180" cy="140" r="4.5" fill="var(--fg)"/><text x="188" y="136" font-size="12.5" fill="var(--fg)">나</text>
+      <circle cx="205" cy="122" r="4.5" fill="var(--blue)"/><text x="213" y="118" font-size="12.5" fill="var(--blue)">민서</text>
+      <circle cx="118" cy="94" r="4.5" fill="var(--red)"/><text x="86" y="90" font-size="12.5" fill="var(--red)">민준</text>
+      <line x1="180" y1="140" x2="205" y2="122" stroke="var(--blue)" stroke-width="2" stroke-dasharray="5 4"/>
+      <line x1="180" y1="140" x2="118" y2="94" stroke="var(--red)" stroke-width="2" stroke-dasharray="5 4"/>
+      <text x="196" y="160" font-size="12" fill="var(--blue)">1</text>
+      <text x="140" y="126" font-size="12" fill="var(--red)">2</text>
+      <text x="165" y="278" text-anchor="middle" font-size="12" fill="var(--muted)">가까운 쪽 = 민서</text>
+
+      <line x1="330" y1="40" x2="330" y2="266" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="4 4"/>
+
+      <text x="495" y="28" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--fg)">방향으로 판단하면</text>
+      <path d="M370 250 H630" stroke="var(--border)" stroke-width="1.5"/>
+      <path d="M370 250 V50" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="370" y1="250" x2="530" y2="140" stroke="var(--fg)" stroke-width="3"/>
+      <polygon points="530,140 518,141 523,151" fill="var(--fg)"/>
+      <text x="536" y="136" font-size="12.5" fill="var(--fg)">나</text>
+      <line x1="370" y1="250" x2="600" y2="120" stroke="var(--blue)" stroke-width="2.6" stroke-dasharray="10 5"/>
+      <text x="606" y="116" font-size="12.5" fill="var(--blue)">민서</text>
+      <line x1="370" y1="250" x2="512" y2="128" stroke="var(--red)" stroke-width="2.6" stroke-dasharray="4 4"/>
+      <text x="470" y="118" font-size="12.5" fill="var(--red)">민준</text>
+      <path d="M436 200 A80 80 0 0 0 428 188" fill="none" stroke="var(--red)" stroke-width="2.2"/>
+      <text x="446" y="188" font-size="12" fill="var(--red)">10°</text>
+      <path d="M470 180 A130 130 0 0 1 486 214" fill="none" stroke="var(--blue)" stroke-width="2.2"/>
+      <text x="492" y="200" font-size="12" fill="var(--blue)">45°</text>
+      <text x="495" y="278" text-anchor="middle" font-size="12" fill="var(--muted)">각이 작은 쪽 = 민준</text>
+    </svg>
+    <p class="sm-cap">▲ 같은 세 사람인데 자를 바꾸면 "가장 비슷한 사람"이 달라집니다. (씨마스 「인공지능 수학」 Ⅱ 단원 p.77 도표를 재구성)</p>
+
+    <div class="sm-scroll">
+      <table class="sm-tbl" style="min-width:34rem;">
+        <thead><tr><th></th><th>유클리드 유사도</th><th>코사인 유사도</th></tr></thead>
+        <tbody>
+          <tr><th>재는 것</th><td>두 끝점 사이의 거리</td><td>두 벡터가 이루는 각</td></tr>
+          <tr><th>유사할 때 값</th><td class="v">0에 가까움</td><td class="v">1에 가까움 (빈도수 벡터는 0~1)</td></tr>
+          <tr><th>장점</th><td style="text-align:left;">공간에서의 거리라 직관적으로 해석됩니다. 차원이 작거나 <b>벡터의 크기가 중요한 경우</b>에 유용합니다.</td>
+              <td style="text-align:left;">크기는 고려하지 않고 각도로 재므로, <b>차원이 커져도 성능이 크게 떨어지지 않습니다.</b></td></tr>
+          <tr><th>단점</th><td style="text-align:left;">차원이 커질수록 신뢰성이 떨어지고, <b>방향이 같아도 거리가 멀면 다르다고 판단</b>할 수 있습니다.</td>
+              <td style="text-align:left;">직관적 해석이 어렵고, <b>크기 정보가 중요한 경우에는 알맞지 않을 수 있습니다.</b></td></tr>
+          <tr><th>주 사용처</th><td style="text-align:left;">점수·사용량·좌표처럼 절대적 크기가 의미 있는 데이터</td>
+              <td style="text-align:left;">길이 편차가 큰 문서 비교, 추천 시스템</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>크기가 비슷한 벡터를 비교할 때는 유클리드 유사도가 유용할 수 있지만, 텍스트에서는 일반적으로 코사인 유사도의 정확도가 더 높은 편이며
+      값의 범위가 0 이상 1 이하로 정해져 있어 해석도 쉽습니다. 그래서 코사인 유사도가 더 많이 쓰입니다.</p>
+    <p><b>유사도가 쓰이는 곳</b> — 지문 인식, 홍채 인식, 손글씨 인식, 얼굴 인식, 동영상 분석, 의료 이미지 분석, 고객 세분화, 개인별 추천 시스템 등</p>
+
+    <figure class="phz">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Biometric_Fingerprint_Scanner.jpg"
+           alt="출입 관리에 쓰이는 지문 인식기" loading="lazy" referrerpolicy="no-referrer"
+           onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+      <span class="fb" aria-hidden="true">🔒</span>
+      <figcaption><b>출입·근태 관리에 쓰이는 지문 인식기입니다. 등록된 지문 데이터와 새로 찍힌 지문이 얼마나 비슷한지를 수로 재어 본인 여부를 판정합니다.</b>
+        <span class="src">출처: Wikimedia Commons, Sanskritibharti1398, CC BY-SA 4.0</span></figcaption>
+    </figure>
+
+    <div class="tbshot-wrap">
+      <div class="tbshot-head">교과서로 확인하기 — 두 유사도의 비교</div>
+      <div class="tbshot-row">
+        <figure class="tbshot">
+          <img src="assets/textbook-local/씨마스2_p77_두유사도비교.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('.tbshot');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 「인공지능 수학」 p.77 (수업용)
+            <span class="src">교과서 지면(수업용) — 공개 게시하지 않습니다.</span></figcaption>
+        </figure>
+      </div>
+    </div>
+    <p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.77 서술을 재구성</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다. <b>선택 심화(정규화-코사인 관계식)는 출제하지 않습니다.</b></p>
+    <div id="smQuiz"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" onclick="go('senti')">
+      <h3>다음 차시 · 10차시 — 집합으로 마음 읽기</h3>
+      <p>자카드 유사도와 감성 분석. 벡터에서 다시 집합으로 돌아가, 겹치는 원소의 개수로 마음을 읽습니다.</p>
+    </div>
+    <div class="card-link" onclick="go('tfidf')">
+      <h3>돌아보기 · 8차시 — 중요한 단어 찾기</h3>
+      <p>TF-IDF로 만든 가중치 벡터가 오늘 비교의 재료였습니다. 흔한 단어의 무게를 깎는 방법을 다시 확인해 봅시다.</p>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 10차시 · 집합으로 마음 읽기</strong> —
+    오늘은 문장을 <b>벡터</b>로 바꿔 거리와 방향으로 비교했습니다.
+    다음 시간에는 문장을 <b>집합</b>으로 바꿔, 겹치는 원소의 개수를 합집합의 개수로 나누는 <b>자카드 유사도</b>를 배웁니다.
+    그리고 그 값으로 문장이 '긍정'인지 '부정'인지 판정하는 AI 상담 챗봇의 기준선(임계값 k)을 여러분이 직접 정하게 됩니다.
+    <span style="display:block;margin-top:0.5rem;">
+      <button class="sm-btn pri" type="button" onclick="go('senti')">10차시로 가기 →</button></span>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 쓴 영상 세 편은 여기에 다시 싣지 않았습니다.</p>
+    <div class="sm-refs">
+      <a class="sm-ref" href="https://tjdgus1121.github.io/Text_mining.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🔗</span>
+        <span class="bd"><span class="tt">Text_mining — 활동 2 유사도 분석</span>
+          <span class="ds">방코드를 입력해 우리 반 문장을 한곳에 모으고, 워드클라우드와 두 유사도 결과를 함께 확인하는 학급 공동 말뭉치 도구입니다. 활동지 「활동 2」 1~5번 문항이 이 화면과 그대로 이어집니다.</span></span>
+      </a>
+      <a class="sm-ref" href="https://www.youtube.com/watch?v=Rd3OnBPDRbM" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">영상</span>
+          <img src="https://img.youtube.com/vi/Rd3OnBPDRbM/hqdefault.jpg" alt="" loading="lazy" referrerpolicy="no-referrer"
+               onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="bd"><span class="tt">TF-IDF 문서 유사도 측정 (8:09, Minsuk Heo 허민석)</span>
+          <span class="ds">8차시에서 만든 TF-IDF 값을 그대로 코사인 유사도에 넣어 문서를 비교하는 과정을 보여 줍니다. 8차시와 9차시를 잇는 다리 역할의 영상입니다.</span></span>
+      </a>
+      <a class="sm-ref" href="https://www.geogebra.org/calculator" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">공학 도구</span>📐</span>
+        <span class="bd"><span class="tt">GeoGebra 계산기</span>
+          <span class="ds">벡터 두 개를 직접 찍어 길이와 사잇각을 눈으로 확인할 수 있습니다. 계산이 복잡해질 때 공학 도구로 검산하는 습관을 들여 봅시다.</span></span>
+      </a>
+      <a class="sm-ref" href="https://ko.wikipedia.org/wiki/코사인_유사도" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">백과사전</span>📖</span>
+        <span class="bd"><span class="tt">위키백과 「코사인 유사도」</span>
+          <span class="ds">정의·성질과 실제 활용 분야를 간결하게 정리한 문서입니다. 심화 탐구 주제를 찾을 때 출발점으로 삼기 좋습니다.</span></span>
+      </a>
+      <a class="sm-ref" href="https://ko.wikipedia.org/wiki/유클리드_거리" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">백과사전</span>📖</span>
+        <span class="bd"><span class="tt">위키백과 「유클리드 거리」</span>
+          <span class="ds">거리를 정의하는 여러 방식 가운데 유클리드 거리가 어떤 위치에 있는지 확인할 수 있습니다(맨해튼 거리 등과 비교).</span></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>내 하루를 벡터로 — 우리 모둠 생활 패턴 지도</h3>
+    <p class="sub">오늘 배운 두 개의 자를 내 생활 데이터에 직접 대어 봅니다.
+      두 유사도가 같은 답을 낼지, 다른 답을 낼지는 데이터의 성격이 결정합니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 3일 동안 자신의 하루를 네 항목(<b>공부 / 운동 / 영상·게임 / 잠</b>)으로 나누어 시간을 기록하고,
+        3일 평균을 소수 첫째 자리까지 구해 <b>나의 벡터 (공부, 운동, 영상·게임, 잠)</b>을 만듭니다.<br>
+        ② 모둠원 3명의 벡터를 모아, 나와 각 모둠원 사이의 <b>유클리드 유사도</b>와 <b>코사인 유사도</b>를
+        손으로 계산합니다(계산기 사용 가능, 소수 둘째 자리까지).<br>
+        ③ 두 유사도로 각각 "나와 가장 비슷한 모둠원"을 뽑고, <b>두 결과가 같은지 다른지</b> 확인합니다.<br>
+        ④ 결과가 달랐다면 <b>왜 달랐는지</b>, 같았다면 <b>어떤 데이터 특성 때문에 같았는지</b>를 설명합니다.<br>
+        ⑤ 마지막으로 "우리 모둠의 생활을 비교하는 데에는 어느 자가 더 알맞은가?"에 대한 자기 의견을 근거와 함께 씁니다.</dd>
+      <dt>제출물</dt>
+      <dd>3일 기록표(손글씨 또는 표 캡처) 1장 / 두 유사도의 <b>계산 과정이 보이는</b> 계산지 1장(식 → 대입 → 값 순서) /
+        결론 한 문단(5~7문장): 두 결과의 비교 + 어느 유사도를 택할지와 그 이유</dd>
+      <dt>평가 관점</dt>
+      <dd><b>A수준</b> 두 유사도를 정확히 계산하고, 결과가 갈리는 이유를 데이터의 크기·패턴 특성과 연결하여 설명하며, 상황에 맞는 유사도를 근거를 들어 선택한다.<br>
+        <b>B수준</b> 두 유사도를 정확히 계산하고, 어느 쪽이 더 유사한지 판단한다.<br>
+        <b>C수준</b> 한 가지 유사도를 정확히 계산한다. <b>[12인수02-03]</b><br>
+        <span style="color:var(--red);">※ 두 유사도의 값의 크기를 직접 비교해 우열을 매긴 서술은 감점 요소입니다.</span></dd>
+      <dt>확장(선택)</dt>
+      <dd>항목을 네 개에서 여섯 개로 늘려 보고, 항목이 늘었을 때 어느 유사도의 판단이 더 안정적인지 관찰해 봅시다.</dd>
+    </dl>
+  </div>
+
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>9차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>이번 차시 주 학습지는 「활동 2(유사도분석)」입니다.
+      Text_mining 접속·방코드 입력부터 친구 문장과의 손계산까지, 웹 활동과 1:1로 이어집니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('sm-print')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/text/활동2_유사도분석.hwpx" download="활동2_유사도분석.hwpx">📄 활동 2(유사도분석) <span class="sz">HWPX · 약 408 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/활동2_유사도분석.pdf" download="활동2_유사도분석.pdf">📄 활동 2(유사도분석) <span class="sz">PDF · 약 240 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/활동2_유사도분석_변형본.hwpx" download="활동2_유사도분석_변형본.hwpx">📄 활동 2 변형본 <span class="sz">HWPX · 약 75 KB</span></a>
+    </div>
+    <p class="sm-src" id="sm-teachernote">교사용 — 활동지 2쪽의 보조 설명 상자에는 2022 개정 교육과정 「인공지능 수학」 [12인수02-03]에서
+      사용하지 않기로 한 용어·기호가 들어 있습니다. 배포 전에 해당 상자를 가리거나,
+      <b>"두 벡터의 성분끼리 곱해 더한 값"</b>이라는 표현으로 바꾸어 안내해 주십시오.
+      웹 뷰의 모든 계산 과정은 이 표현으로만 제시되어 있으므로, 학습지도 같은 표현으로 통일하면 학생 혼란이 없습니다.</p>
+    <div id="sm-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (#sm-print · A4 2장) ═════ -->
+  <div class="ws-sheet" id="sm-print" aria-hidden="true">
+    <div class="ws-h"><h2>9차시 학습지 — 얼마나 비슷한가: 거리로 잴까, 방향으로 잴까</h2>
+      <span class="ws-id">___학교 ___학년 ___반 ___번 이름 __________</span></div>
+    <p class="note">성취기준 [12인수02-03] 인공지능이 텍스트를 특성에 따라 분석하는 수학적 방법을 설명할 수 있다.
+      · 이 학습지에서 두 벡터의 곱셈적 결합은 "성분끼리 곱해 더한 값"으로만 씁니다.</p>
+
+    <h3>① 마중 퀴즈 기록 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:46%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>세 문장 중 서로 가장 비슷한 두 문장은?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>유클리드 유사도는 값이 클수록 비슷하다? (O/X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>A(1, 4)와 B(5, 1) 사이의 거리는?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — "비슷하다"를 우리가 먼저 정해 봅시다</h3>
+    <p class="note">상황 사진을 붙이거나 간단히 그린 뒤, 말풍선에 들어갈 내 문장을 씁니다.</p>
+    <table>
+      <tr><th style="width:34%;">상황 사진(작게 그리거나 붙이기)</th><th>내가 쓴 문장</th></tr>
+      <tr><td class="blank" style="height:26mm;"></td><td class="blank" style="height:26mm;"></td></tr>
+    </table>
+    <table>
+      <tr><th style="width:50%;">우리 모둠이 정한 "비슷하다"의 기준</th><th>그 기준의 한계 (2줄)</th></tr>
+      <tr><td class="blank" style="height:14mm;"></td><td class="blank" style="height:14mm;"></td></tr>
+    </table>
+
+    <h3>③ 활동 2 — 거리로 재기</h3>
+    <table>
+      <tr><th>학생</th><th>SNS</th><th>게임</th><th>영상 시청</th></tr>
+      <tr><td>A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">d(A, B), d(A, C), d(B, C)를 식 → 대입 → 값 순서로 각각 3줄씩 풉니다.</p>
+    <div class="rule"></div>
+    <table>
+      <tr><th style="width:50%;">내가 예상한 학생</th><th>계산으로 확인한 학생</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>④ 활동 3 — 방향으로 재기</h3>
+    <p class="note">분자에는 <b>성분끼리 곱해 더한 값</b>을, 분모에는 <b>두 벡터의 크기의 곱</b>을 나누어 씁니다.</p>
+    <table>
+      <tr><th style="width:16%;"></th><th>분자 — 성분끼리 곱해 더한 값</th><th>분모 — 두 벡터의 크기의 곱</th><th style="width:16%;">값</th></tr>
+      <tr><td>C(A, B)</td><td class="blank" style="height:16mm;"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>C(A, C)</td><td class="blank" style="height:16mm;"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑤ 활동 4 — 순위표 · 정규화 · 길이 편향</h3>
+    <table>
+      <tr><th style="width:50%;">거리로 잰 순위 (작을수록 유사)</th><th>방향으로 잰 순위 (클수록 유사)</th></tr>
+      <tr><td class="blank">1위 　　　　　　2위 　　　　　　3위</td><td class="blank">1위 　　　　　　2위 　　　　　　3위</td></tr>
+    </table>
+    <table>
+      <tr><th style="width:25%;">Â = A ÷ |A|</th><th style="width:25%;">B̂ = B ÷ |B|</th><th style="width:25%;">Ĉ = C ÷ |C|</th><th>정규화 후 d(Â, B̂)</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">길이 편향 실험 — U = {도서관, 과학, 책, 우주, 로봇, 축구}</p>
+    <table>
+      <tr><th>비교</th><th>거리 d</th><th>코사인 C</th><th>정규화 후 거리</th></tr>
+      <tr><td>① ↔ ② (같은 주제·긴 글)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>① ↔ ③ (다른 주제·짧은 글)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑥ 형성평가</h3>
+    <ol>
+      <li>두 텍스트 데이터를 나타내는 벡터가 a = (0, 1, 1), b = (1, 1, 2)일 때, 유클리드 유사도 d(a, b)의 값은?<br>
+        ① 1 &nbsp; ② √2 &nbsp; ③ √3 &nbsp; ④ √5 &nbsp; 답: ______</li>
+      <li>코사인 유사도의 값이 1에 가까울수록 뜻하는 것은?<br>
+        ① 두 벡터의 크기가 서로 같다 &nbsp; ② 두 벡터가 이루는 각이 0°에 가깝다 &nbsp;
+        ③ 두 벡터가 서로 수직이다 &nbsp; ④ 두 벡터 끝점 사이의 거리가 멀다 &nbsp; 답: ______</li>
+      <li>세 학생의 주말 스마트폰 사용 시간이 A(6, 2, 2), B(5, 2, 3), C(3, 1, 1)일 때, A와 가장 유사한 학생을 두 유사도로 각각 고르면?<br>
+        ① 둘 다 B &nbsp; ② 둘 다 C &nbsp; ③ 유클리드는 B, 코사인은 C &nbsp; ④ 유클리드는 C, 코사인은 B &nbsp; 답: ______</li>
+      <li>뉴스 포털이 읽은 기사(호우 1, 장마 3, 침수 1, 피해 0)와 비슷한 기사를 추천하려 합니다.
+        후보 A(3, 7, 3, 0), 후보 B(1, 0, 2, 1) 중 어느 기사를 추천하는 것이 알맞은지와 그 근거로 옳은 것은?<br>
+        ① A — 유클리드 유사도가 더 작기 때문 &nbsp;
+        ② A — 두 기사의 단어 수 차이가 크므로 코사인 유사도로 판단해야 하며, 그 값이 0.99로 가장 크기 때문 &nbsp;
+        ③ B — 유클리드 유사도가 더 작기 때문 &nbsp; ④ B — 코사인 유사도가 더 크기 때문 &nbsp; 답: ______</li>
+      <li>벡터 A = (6, 2, 2)를 크기가 1인 벡터로 고치는(L2 정규화) 식으로 옳은 것은?<br>
+        ① (6, 2, 2) ÷ 10 &nbsp; ② (6, 2, 2) ÷ √44 &nbsp; ③ (6, 2, 2) ÷ 44 &nbsp; ④ (1, 1, 1) &nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑦ 핵심 질문</h3>
+    <p><b>"'비슷하다'를 수로 나타낸다면 거리로 재야 할까, 방향으로 재야 할까?"</b></p>
+    <div class="rule lg" id="sm-printans"></div>
+
+    <h3>⑧ 프로젝트 과제 안내</h3>
+    <p class="note">「내 하루를 벡터로 — 우리 모둠 생활 패턴 지도」
+      ① 3일 동안 공부·운동·영상/게임·잠 네 항목의 시간을 기록해 나의 벡터를 만든다.
+      ② 모둠원과의 유클리드 유사도·코사인 유사도를 손으로 계산한다.
+      ③ 두 결과가 갈렸다면 그 이유를 데이터의 크기·패턴 특성과 연결해 설명한다.
+      ※ 두 유사도의 값의 크기를 직접 비교해 우열을 매긴 서술은 감점 요소입니다.</p>
+    <table>
+      <tr><th style="width:30%;">제출 기한</th><td class="blank"></td></tr>
+    </table>
+  </div>
+</div>
