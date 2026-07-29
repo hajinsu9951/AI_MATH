@@ -1,0 +1,201 @@
+<!-- ═══════════ CONV ═══════════ -->
+<div class="view" id="v-conv">
+  <p class="mono" style="margin-bottom:0.4rem;">합성곱 연산</p>
+  <h2>CNN의 핵심 — 아다마르 곱</h2>
+  <p class="desc">
+    같은 크기의 두 행렬에서 동일 위치의 성분끼리 곱한 후 모두 더하는 연산입니다.
+    필터가 이미지 위를 한 칸씩 이동하며 이 연산을 반복하여 특징 맵을 생성합니다.
+  </p>
+
+  <div class="card">
+    <h3>📐 아다마르 곱 vs 행렬의 곱 — 어떻게 다를까?</h3>
+    <p style="margin-bottom:1.1rem;">
+      행렬을 다루는 “곱”은 크게 두 가지가 있습니다.
+      생긴 건 비슷해 보이지만 <b>계산 방법</b>도 다르고 <b>의미</b>도 완전히 달라요.
+      특히 합성곱은 <span class="mi">아다마르 곱 → 합산</span> 구조로 이해하면 가장 빨리 감이 잡힙니다.
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;">
+      <!-- Hadamard -->
+      <div style="background:var(--bg);border-radius:var(--radius);padding:1.05rem;border:1.5px solid var(--blue);">
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--blue);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.5rem;">Hadamard Product</div>
+        <div style="font-size:0.95rem;font-weight:700;margin-bottom:0.55rem;">같은 위치끼리 곱하기 ⊙</div>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:0.8rem;">
+          두 행렬의 <strong>크기가 반드시 같아야</strong> 하고,
+          (i, j) <strong>같은 위치 성분끼리만</strong> 곱합니다. 결과 크기는 입력과 동일합니다.
+        </p>
+        <div class="math" style="font-size:0.74rem;line-height:2;">
+(A ⊙ B)ᵢⱼ  =  Aᵢⱼ × Bᵢⱼ
+
+예)  A = [1  2]    B = [5  6]
+         [3  4]        [7  8]
+A ⊙ B = [1×5   2×6]
+        [3×7   4×8]
+        </div>
+        <div class="cr" style="margin-top:0.7rem;">
+          <strong>CNN에서</strong> — 이미지의 작은 창(패치)과 커널을 <b>자리별로 곱</b>해 “얼마나 닮았는지”를 먼저 계산합니다.
+        </div>
+      </div>
+
+      <!-- Matmul -->
+      <div style="background:var(--bg);border-radius:var(--radius);padding:1.05rem;border:1.5px solid var(--red);">
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--red);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.5rem;">Matrix Multiplication</div>
+        <div style="font-size:0.95rem;font-weight:700;margin-bottom:0.55rem;">행 × 열 내적 ×</div>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:0.8rem;">
+          앞 행렬의 <strong>열 수 = 뒤 행렬의 행 수</strong>여야 하며,
+          각 원소는 <strong>행과 열의 내적(곱해서 더하기)</strong>으로 만들어집니다. 결과 크기가 달라질 수 있어요.
+        </p>
+        <div class="math" style="font-size:0.74rem;line-height:2;">
+(AB)ᵢⱼ  =  Σₖ Aᵢₖ × Bₖⱼ
+
+예)  A = [1  2]    B = [5  6]
+         [3  4]        [7  8]
+AB = [1×5+2×7   1×6+2×8]
+     [3×5+4×7   3×6+4×8]
+        </div>
+        <div class="cr" style="margin-top:0.7rem;">
+          <strong>CNN에서</strong> — 마지막 분류(완전연결층)는 특징 벡터와 가중치 행렬을 곱해 <b>클래스 점수(logit)</b>를 만듭니다.
+        </div>
+      </div>
+    </div>
+
+    <table style="border-collapse:collapse;width:100%;font-size:0.82rem;overflow:hidden;border-radius:0.6rem;border:1px solid var(--border);">
+      <thead>
+        <tr style="background:var(--fg);color:var(--bg);">
+          <th style="padding:0.55rem 0.6rem;text-align:left;">구분</th>
+          <th style="padding:0.55rem 0.6rem;text-align:left;">아다마르 곱 ⊙</th>
+          <th style="padding:0.55rem 0.6rem;text-align:left;">행렬의 곱 ×</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">조건</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">두 행렬의 크기가 동일</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">A의 열 수 = B의 행 수</td></tr>
+        <tr><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">계산</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">같은 위치 성분끼리 곱</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">행×열 내적 후 합산</td></tr>
+        <tr><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">결과 크기</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">입력과 동일 (m×n)</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">m×n · n×p → m×p</td></tr>
+        <tr><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">교환법칙</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">✅ A ⊙ B = B ⊙ A</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">❌ AB ≠ BA (일반적)</td></tr>
+        <tr><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">CNN에서</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">합성곱층(필터 적용)</td><td style="padding:0.55rem 0.6rem;border-top:1px solid var(--border);">완전연결층(분류)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="math" style="font-size:0.76rem;line-height:2.1;margin-top:1rem;">
+// 합성곱 한 칸의 계산 순서
+Step 1.  픽셀 창과 커널을 아다마르 곱 ⊙ → 자리별 곱셈
+Step 2.  곱셈 결과를 모두 합산 (Σ) → 출력값 하나
+Step 3.  필터를 한 칸 이동 → Step 1 반복
+
+출력값 Y = Σᵢⱼ (Kᵢⱼ × Xᵢⱼ)
+    </div>
+
+    <div class="info" style="margin-top:1rem;margin-bottom:0;">
+      <strong>정리:</strong> 합성곱의 핵심은 <em>아다마르 곱 → 합산</em>의 두 단계입니다.
+      자리별로 “얼마나 닮았는지”를 측정하고, 그 값을 하나의 숫자로 압축합니다.
+      즉, <strong>합성곱 = 아다마르 곱의 전체 합 = 두 행렬의 내적</strong>으로 이해할 수 있습니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>합성곱이 왜 중요한가?</h3>
+    <p>기존 방식(해밍 거리)은 픽셀 위치를 하나하나 비교하기 때문에, 같은 숫자라도 위치가 조금만 달라지면 전혀 다른 것으로 판단합니다. 합성곱은 이미지의 부분적 패턴(가로선, 세로선, 모서리 등)을 찾아내기 때문에 위치 변화에 강하고, 이것이 CNN이 이미지 인식에 뛰어난 핵심 이유입니다.</p>
+    <p style="margin-top:0.5rem;">합성곱 신경망(CNN)은 1989년 얀 르쿤(Yann LeCun)이 손글씨 숫자 인식을 위해 제안한 이래, 의료 영상 진단, 자율주행 차량의 물체 인식, 얼굴 인식, 위성 사진 분석 등 시각 정보를 다루는 거의 모든 AI 분야에서 사용됩니다.</p>
+  </div>
+
+  <!-- ═══ Interactive Eye vs CNN comparison ═══ -->
+  <div class="card">
+    <h3>인간의 시각 vs CNN — 단계별 비교</h3>
+    <p>이전/다음 버튼을 눌러 각 단계가 누적됩니다. 두 화면이 같은 단계로 함께 진행되며, 각 캔버스는 드래그로 이동하고 스크롤(또는 핀치)로 확대/축소할 수 있습니다.</p>
+    <div style="display:flex;justify-content:center;gap:0.5rem;margin:0.8rem 0;flex-wrap:wrap;">
+      <button class="btn" onclick="ecPrev()">← 이전</button>
+      <span id="ec-label" style="font-family:var(--mono);font-size:0.82rem;font-weight:600;min-width:4rem;text-align:center;line-height:2.2;">0 / 5</span>
+      <button class="btn pri" onclick="ecNext()">다음 →</button>
+    </div>
+
+    <div id="ec-dual" class="ec-dual">
+      <div class="ec-col">
+        <div class="ec-title">인간의 시각</div>
+        <div class="ec-canvas-wrap" id="ec-wrap-eye" style="position:relative;overflow:hidden;border-radius:var(--radius);border:1px solid var(--border);cursor:grab;touch-action:none;height:420px;">
+          <canvas id="eye-cv" width="800" height="520" style="position:absolute;top:0;left:0;transform-origin:0 0;"></canvas>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn" onclick="ecZoom('eye',-1)" style="padding:0.2rem 0.6rem;font-size:0.75rem;">−</button>
+          <button class="btn" onclick="ecZoom('eye',0)" style="padding:0.2rem 0.6rem;font-size:0.75rem;">맞춤</button>
+          <button class="btn" onclick="ecZoom('eye',1)" style="padding:0.2rem 0.6rem;font-size:0.75rem;">+</button>
+        </div>
+        <div id="eye-desc" style="margin-top:0.5rem;"></div>
+      </div>
+
+      <div class="ec-col">
+        <div class="ec-title">CNN 인공신경망</div>
+        <div class="ec-canvas-wrap" id="ec-wrap-cnn" style="position:relative;overflow:hidden;border-radius:var(--radius);border:1px solid var(--border);cursor:grab;touch-action:none;height:420px;">
+          <canvas id="cnn-cv" width="800" height="400" style="position:absolute;top:0;left:0;transform-origin:0 0;"></canvas>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn" onclick="ecZoom('cnn',-1)" style="padding:0.2rem 0.6rem;font-size:0.75rem;">−</button>
+          <button class="btn" onclick="ecZoom('cnn',0)" style="padding:0.2rem 0.6rem;font-size:0.75rem;">맞춤</button>
+          <button class="btn" onclick="ecZoom('cnn',1)" style="padding:0.2rem 0.6rem;font-size:0.75rem;">+</button>
+        </div>
+        <div id="cnn-desc" style="margin-top:0.5rem;"></div>
+      </div>
+    </div>
+  </div>
+<div class="tabs">
+    <button class="tab on" onclick="ctab(0,this)">직접 계산</button>
+    <button class="tab" onclick="ctab(1,this)">단계별 시각화</button>
+  </div>
+
+  <!-- TAB 0: manual -->
+  <div class="tpanel on" id="ct0">
+    <div class="card">
+      <h3>합성곱 결과를 직접 계산해보세요</h3>
+      <p>입력 행렬과 커널의 값을 편집할 수 있습니다. 출력에 답을 입력한 뒤 정답을 확인하세요.</p>
+    </div>
+
+    <div class="grid-wrap">
+      <div style="text-align:center;"><p class="mat-label">입력 (4×4) — 편집 가능</p><div class="eg" id="mi" style="grid-template-columns:repeat(4,1fr);"></div></div>
+      <div class="op">*</div>
+      <div style="text-align:center;"><p class="mat-label">커널 (3×3) — 편집 가능</p><div class="eg" id="mk" style="grid-template-columns:repeat(3,1fr);"></div></div>
+      <div class="op">=</div>
+      <div style="text-align:center;"><p class="mat-label">출력 (2×2) — 답 입력</p><div class="eg" id="mo" style="grid-template-columns:repeat(2,1fr);"></div></div>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn pri" onclick="chkMan()">정답 확인</button>
+      <button class="btn" onclick="newMan()">새 문제</button>
+    </div>
+    <div id="mres" class="info" style="text-align:center;display:none;"></div>
+    <div id="msol" style="display:none;margin-top:0.8rem;"></div>
+  </div>
+
+  <!-- TAB 1: auto viz -->
+  <div class="tpanel" id="ct1">
+    <div class="card">
+      <h3>5×5 입력에 3×3 필터를 적용하는 과정</h3>
+      <p>각 단계마다 어떤 성분이 곱해지고 합산되어 출력값이 되는지 확인하세요.</p>
+    </div>
+
+    <div class="grid-wrap">
+      <div style="text-align:center;"><p class="mat-label">입력 (5×5)</p><div class="mat" id="ai" style="grid-template-columns:repeat(5,1fr);"></div></div>
+      <div class="op">×</div>
+      <div style="text-align:center;"><p class="mat-label">필터 (3×3)</p><div class="mat" id="ak" style="grid-template-columns:repeat(3,1fr);"></div></div>
+      <div class="op">=</div>
+      <div style="text-align:center;"><p class="mat-label">특징 맵 (3×3)</p><div class="mat" id="ao" style="grid-template-columns:repeat(3,1fr);"></div></div>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="aReset()">리셋</button>
+      <button class="btn" onclick="aStep()">한 단계</button>
+      <button class="btn pri" onclick="aAuto()">자동 재생</button>
+    </div>
+    <div id="ast" class="status" style="text-align:center;"></div>
+    <div id="acalc" class="info" style="text-align:center;">시작 버튼을 눌러 연산 과정을 확인하세요.</div>
+  </div>
+
+  <div class="math" style="margin-top:2rem;">Y = Σᵢ Σⱼ (Kᵢⱼ × Xᵢⱼ)
+
+K: 필터(커널)  X: 입력의 일부  Y: 출력값
+벡터로 펼치면 내적과 동일 — Y가 클수록 해당 영역이 필터 패턴과 유사</div>
+
+  <div class="info" style="margin-top:1.5rem;">
+    <strong>참고 자료</strong>
+    <div style="margin-top:0.8rem; display:flex; flex-direction:column; gap:0.9rem;">
+      <img src="cnnimg1.png" alt="인간의 시각과 CNN 인식 과정" style="width:100%; max-width:980px; border-radius:0.6rem; border:1px solid var(--border); background:#fff; display:block;">
+    </div>
+  </div>
+
+</div>

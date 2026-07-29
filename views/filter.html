@@ -1,0 +1,48 @@
+<!-- ═══════════ FILTER ═══════════ -->
+<div class="view" id="v-filter">
+  <p class="mono" style="margin-bottom:0.4rem;">이미지 필터 실습</p>
+  <h2>커널을 적용하여 특징 추출하기</h2>
+  <p class="desc">
+    이미지에 다양한 3×3 커널을 적용하여 결과를 확인하세요.
+    직접 이미지를 업로드하거나, 커널 값을 편집하여 커스텀 필터를 만들 수 있습니다.
+  </p>
+
+  <div class="card">
+    <h3>필터는 무엇을 하는가?</h3>
+    <p>스마트폰 카메라 앱에서 사진을 선명하게 만들거나 흐리게 만드는 기능을 사용해본 적이 있을 것입니다.
+      이것이 바로 커널(필터)을 이미지에 적용하는 합성곱 연산입니다.
+      커널의 숫자 배치에 따라 세로선만 강조하거나, 가로선만 추출하거나, 전체를 흐리게 만들 수 있습니다.</p>
+    <p style="margin-top:0.5rem;">CNN에서는 이러한 커널 값을 사람이 직접 정하지 않고, 학습 과정에서 AI가 스스로 최적의 값을 찾아냅니다.
+      수천 장의 고양이 사진을 보여주면, 고양이의 귀 모양, 눈의 형태, 수염 패턴 등을 검출하는 필터가 자동으로 만들어집니다.</p>
+  </div>
+
+  <div class="upz" id="upz">
+    <p style="font-weight:500;color:var(--fg);margin-bottom:0.2rem;">이미지를 드래그하거나 클릭하여 업로드하세요</p>
+    <p style="font-size:0.7rem;margin-top:0.15rem;">jpg, png 등 이미지 파일을 지원합니다</p>
+    <input type="file" id="fup" accept="image/*">
+  </div>
+  <div id="up-status" class="status"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="createDefImg();applyF();document.getElementById('up-status').textContent='기본 도형 이미지가 적용되었습니다.';">기본 이미지 사용</button>
+  </div>
+
+  <div class="chips" id="fc"></div>
+
+  <div class="card" style="text-align:center;">
+    <p class="mono" style="margin-bottom:0.4rem;">적용 커널 — 값을 편집할 수 있습니다</p>
+    <div style="display:flex;justify-content:center;align-items:center;gap:0.45rem;flex-wrap:wrap;">
+      <span id="fmult" class="mono" style="font-size:0.8rem;color:var(--muted);"></span>
+      <div class="eg" id="fk" style="grid-template-columns:repeat(3,1fr);display:inline-grid;"></div>
+    </div>
+    <p id="fd" style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;max-width:30rem;margin-left:auto;margin-right:auto;"></p>
+    <div class="btn-row" style="justify-content:center;margin-top:0.5rem;">
+      <button class="btn pri" onclick="applyCustom()">커스텀 커널 적용</button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;margin:1.5rem 0;">
+    <div style="text-align:center;"><p class="mono" style="margin-bottom:0.3rem;">입력</p><canvas id="fin" class="cv" width="240" height="240"></canvas></div>
+    <div style="display:flex;align-items:center;color:var(--muted);">→</div>
+    <div style="text-align:center;"><p class="mono" style="margin-bottom:0.3rem;">출력 (필터 적용 후)</p><canvas id="fout" class="cv" width="240" height="240"></canvas></div>
+  </div>
+</div>

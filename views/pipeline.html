@@ -1,0 +1,125 @@
+<!-- ═══════════ CNN PIPELINE ═══════════ -->
+<div class="view" id="v-pipeline" data-no-toggle="1">
+  <p class="mono" style="margin-bottom:0.4rem;">CNN 파이프라인 체험</p>
+  <h2>업로드한 이미지가 CNN을 지나가는 전체 과정</h2>
+  <p class="desc">
+    합성곱 → 활성화(ReLU) → 풀링 → 더 깊은 층 → 분류(Softmax)까지,
+    업로드한 이미지가 처리되는 흐름을 단계별로 확인해봅니다.
+  </p>
+
+  <div class="card">
+    <h3>이미지 업로드</h3>
+    <p>이미지를 업로드하면 CNN(합성곱 신경망)이 처리하는 각 단계를 시각적으로 확인할 수 있습니다.</p>
+    <div class="upz" id="cnn-upz" style="margin-top:0.8rem;">
+      <p style="font-weight:500;color:var(--fg);margin-bottom:0.2rem;">이미지를 드래그하거나 클릭하여 업로드</p>
+      <p style="font-size:0.7rem;margin-top:0.15rem;">jpg, png 등 이미지 파일</p>
+      <input type="file" id="cnn-fup" accept="image/*">
+    </div>
+
+    <div class="info" style="margin-top:0.95rem;">
+      <strong>인식 가능한 이미지 예시</strong>
+      <p class="desc" style="margin-top:0.5rem;">
+        이 체험은 <span class="mi">ImageNet</span>으로 학습된 <span class="mi">MobileNet V2</span> 분류 모델을 사용합니다.
+        정면·선명·단일 객체 사진일수록 결과가 잘 나와요. (아래는 예시)
+      </p>
+      <div class="chips" style="margin-top:0.65rem;">
+        <span class="chip" style="cursor:default;">cat</span>
+        <span class="chip" style="cursor:default;">golden retriever</span>
+        <span class="chip" style="cursor:default;">car</span>
+        <span class="chip" style="cursor:default;">bicycle</span>
+        <span class="chip" style="cursor:default;">bus</span>
+        <span class="chip" style="cursor:default;">chair</span>
+        <span class="chip" style="cursor:default;">cup</span>
+        <span class="chip" style="cursor:default;">clock</span>
+        <span class="chip" style="cursor:default;">laptop</span>
+        <span class="chip" style="cursor:default;">keyboard</span>
+        <span class="chip" style="cursor:default;">banana</span>
+        <span class="chip" style="cursor:default;">apple</span>
+        <span class="chip" style="cursor:default;">daisy</span>
+        <span class="chip" style="cursor:default;">bird</span>
+      </div>
+    </div>
+    <div id="cnn-status" class="status"></div>
+  </div>
+
+  <div id="cnn-controls" style="display:none;">
+    <div id="cnn-timeline" style="display:flex;gap:2px;margin-bottom:0.8rem;overflow-x:auto;padding:0.3rem 0;">
+      <button class="cnn-tl-btn" onclick="cnnShowStep(0)" data-step="0">입력<br>이미지</button>
+      <button class="cnn-tl-btn" onclick="cnnShowStep(1)" data-step="1">Conv2D<br>합성곱</button>
+      <button class="cnn-tl-btn" onclick="cnnShowStep(2)" data-step="2">ReLU<br>활성화</button>
+      <button class="cnn-tl-btn" onclick="cnnShowStep(3)" data-step="3">MaxPool<br>풀링</button>
+      <button class="cnn-tl-btn" onclick="cnnShowStep(4)" data-step="4">Deep<br>깊은 층</button>
+      <button class="cnn-tl-btn" onclick="cnnShowStep(5)" data-step="5">Softmax<br>분류</button>
+    </div>
+    <div style="display:flex;justify-content:center;gap:1rem;margin-bottom:1rem;">
+      <button class="btn" onclick="cnnPrevStep()">← 이전</button>
+      <button class="btn pri" onclick="cnnNextStep()">다음 →</button>
+    </div>
+  </div>
+
+  <div id="cnn-step-0" class="cnn-step" style="display:none;">
+    <div class="card">
+      <h3>1단계: 입력</h3>
+      <p>이미지를 224×224로 조정하고 RGB 값을 정규화합니다.</p>
+      <div style="text-align:center;margin:1rem 0;">
+        <canvas id="cnn-input-cv" width="224" height="224" style="border-radius:var(--radius);border:1px solid var(--border);max-width:224px;"></canvas>
+        <p style="font-size:0.78rem;color:var(--muted);margin-top:0.4rem;">224 × 224 × 3 (RGB)</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="cnn-step-1" class="cnn-step" style="display:none;">
+    <div class="card">
+      <h3>2단계: 합성곱 — 저수준 특징 추출</h3>
+      <p>여러 필터(커널)가 이미지에서 기본 패턴(가장자리, 방향, 질감)을 감지합니다. 밝은 영역 = 해당 특징이 강하게 존재하는 곳.</p>
+      <div id="cnn-conv1-maps" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1rem;justify-content:center;"></div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-top:0.5rem;text-align:center;" id="cnn-conv1-info"></p>
+    </div>
+  </div>
+
+  <div id="cnn-step-2" class="cnn-step" style="display:none;">
+    <div class="card">
+      <h3>3단계: ReLU 활성화</h3>
+      <p>음수를 0으로 바꿔 "특징 있음/없음"으로 단순화합니다. 2단계와 비교하면 어두운(음수) 부분이 완전한 검정으로 바뀝니다.</p>
+      <div class="math" style="text-align:center;">ReLU(x) = max(0, x)</div>
+      <div id="cnn-relu-maps" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1rem;justify-content:center;"></div>
+    </div>
+  </div>
+
+  <div id="cnn-step-3" class="cnn-step" style="display:none;">
+    <div class="card">
+      <h3>4단계: 맥스 풀링</h3>
+      <p>2×2 영역에서 최대값만 선택하여 크기를 절반으로 줄입니다. (224×224 → 112×112)</p>
+      <div id="cnn-pool-maps" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1rem;justify-content:center;"></div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-top:0.5rem;text-align:center;" id="cnn-pool-info"></p>
+    </div>
+  </div>
+
+  <div id="cnn-step-4" class="cnn-step" style="display:none;">
+    <div class="card">
+      <h3>5단계: 깊은 층 — 고수준 특징</h3>
+      <p>Conv→ReLU→Pool을 반복하면 점점 추상적인 패턴(눈, 바퀴, 꽃잎)을 인식합니다.</p>
+      <div id="cnn-deep-maps" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1rem;justify-content:center;"></div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-top:0.5rem;text-align:center;" id="cnn-deep-info"></p>
+    </div>
+  </div>
+
+  <div id="cnn-step-5" class="cnn-step" style="display:none;">
+    <div class="card">
+      <h3>6단계: Softmax 분류</h3>
+      <p>모든 특징을 종합하여 각 클래스의 확률을 계산합니다.</p>
+      <div class="math" style="text-align:center;font-size:0.72rem;">Softmax(zᵢ) = exp(zᵢ) / Σ exp(zⱼ)</div>
+      <div id="cnn-predictions" style="margin-top:1rem;">
+        <p style="color:var(--muted);font-size:0.85rem;">이미지를 업로드하면 분류 결과가 표시됩니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="info" style="margin-top:1.5rem;">
+    <strong>팁</strong>
+    <p style="margin-top:0.55rem;">
+      같은 이미지라도 <span class="mi">필터(커널)</span>가 다르면 다른 특징을 강조하게 됩니다.
+      업로드한 이미지로 단계별 결과를 비교해보세요.
+    </p>
+  </div>
+</div>

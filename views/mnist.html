@@ -1,0 +1,108 @@
+<div class="view" id="v-mnist">
+  <p class="mono" style="margin-bottom:0.4rem;">숫자 인식과 MNIST</p>
+  <h2>AI는 어떻게 손글씨를 읽을까?</h2>
+  <p class="desc">
+    손글씨 숫자 인식은 AI 역사에서 가장 중요한 벤치마크 문제 중 하나입니다.
+    MNIST 데이터셋과 함께 AI의 이미지 인식 원리를 알아봅니다.
+  </p>
+
+  <div class="card">
+    <h3>MNIST 데이터셋이란?</h3>
+    <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+      <img
+        src="%EC%96%80%20%EB%A5%B4%EC%BF%A4.jpeg"
+        alt="얀 르쿤 (Yann LeCun)"
+        style="width:160px;max-width:42vw;border-radius:0.8rem;border:1px solid var(--border);background:#fff;display:block;"
+      >
+      <div style="flex:1;min-width:240px;">
+        <p>MNIST(Modified National Institute of Standards and Technology)는 손글씨 숫자 이미지 데이터셋입니다.
+          0부터 9까지의 숫자를 28×28 픽셀 흑백 이미지로 표현하며, 학습용 60,000장과 테스트용 10,000장, 총 70,000장으로 구성됩니다.</p>
+        <p style="margin-top:0.5rem;">MNIST는 "AI의 Hello World"라 불릴 만큼, 거의 모든 머신러닝 입문 교재에서 가장 먼저 다루는 데이터셋입니다.
+          단순한 문제처럼 보이지만, 이 데이터셋을 통해 이미지를 행렬로 표현하는 방법, 합성곱의 작동 원리, 분류 알고리즘의 평가 등
+          핵심 개념을 자연스럽게 학습할 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>이미지를 숫자로 바꾸기</h3>
+    <p>컴퓨터에게 이미지는 픽셀 값의 행렬입니다. MNIST의 28×28 이미지는 784개의 숫자(0~255)로 이루어진 행렬이 됩니다.
+      0은 완전한 검정, 255는 완전한 흰색을 의미합니다.
+      AI는 이 숫자들의 패턴을 분석하여 어떤 숫자인지를 판단합니다.</p>
+    <div class="math" style="text-align:center;font-size:0.75rem;">이미지 (28×28 픽셀)  →  행렬 (28×28 = 784개의 숫자)  →  AI 모델  →  "이것은 숫자 3이다"</div>
+    <p style="margin-top:0.5rem;">이 과정을 개선하기 위해 해밍 거리(단순 비교), 합성곱(특징 추출), 퍼셉트론(분류) 등의 기법이 사용되며,
+      이 웹사이트의 각 섹션에서 이 기법들을 하나씩 체험할 수 있습니다.</p>
+  </div>
+
+  <div class="card">
+    <h3>숫자 인식의 어려움</h3>
+    <p>같은 "7"이라도 사람마다 쓰는 방식이 다릅니다. 가로획을 긋는 사람, 기울여 쓰는 사람, 크게 쓰는 사람 등
+      무한한 변형이 존재합니다. AI는 이 모든 변형을 "7"로 인식해야 합니다.
+      단순히 픽셀을 하나하나 비교하는 방법(해밍 거리)은 위치가 조금만 달라져도 실패하기 때문에,
+      이미지의 부분적 특징(선의 방향, 모서리, 곡선 등)을 찾아내는 CNN이 훨씬 효과적입니다.</p>
+  </div>
+
+  <div class="card">
+    <h3>실습: 나만의 손글씨 데이터셋 만들기</h3>
+    <p>손글씨를 직접 그리고, 28×28 픽셀(=784개 숫자)로 변환해 <b>작은 데이터셋</b>을 만들어봅시다.
+      아래 실습은 서버 없이 브라우저에서만 동작하며, 저장한 샘플은 내 컴퓨터(LocalStorage)에 남습니다.</p>
+
+    <div class="mn-ds">
+      <div class="mn-left">
+        <div class="mn-cvbox">
+          <canvas id="mn-cv" width="280" height="280" aria-label="digit canvas"></canvas>
+          <div class="mn-tools">
+            <div class="mn-row">
+              <span class="mono" style="font-size:0.8rem;color:var(--muted);">라벨</span>
+              <div class="mn-labs" id="mn-labs"></div>
+            </div>
+            <div class="mn-row" style="gap:0.5rem;flex-wrap:wrap;">
+              <button class="btn" onclick="mnClear()">지우기</button>
+              <button class="btn pri" onclick="mnAdd()">샘플 추가</button>
+              <button class="btn" onclick="mnExport()">JSON 다운로드</button>
+              <button class="btn" onclick="mnReset()">전체 초기화</button>
+              <span class="status" id="mn-stat" style="margin-left:auto;">샘플 0개</span>
+            </div>
+          </div>
+        </div>
+        <div class="info" style="margin-top:0.9rem;">
+          <strong>변환 규칙:</strong> 캔버스(280×280)에서 <b>28×28</b>로 축소 후, 픽셀 밝기(0~255)를 추출합니다.
+          MNIST와 비슷하게 쓰기 위해 <b>배경은 0(검정), 글자는 255(흰색)</b>이 되도록 자동으로 반전합니다.
+        </div>
+      </div>
+
+      <div class="mn-right">
+        <div class="mn-prev">
+          <p class="mono" style="margin:0 0 0.4rem;">28×28 미리보기</p>
+          <canvas id="mn-prev" width="140" height="140"></canvas>
+          <p class="desc" style="margin:0.6rem 0 0;color:var(--muted);font-size:0.78rem;">
+            샘플 추가 시 자동 갱신됩니다.
+          </p>
+        </div>
+
+        <div class="mn-list card" style="margin-top:1rem;">
+          <h3 style="margin-top:0;">내 데이터셋</h3>
+          <div id="mn-list" class="mn-samples"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info" style="margin-top:1.5rem;">
+    <strong>참고 자료</strong>
+    <div style="margin-top:0.8rem; display:flex; flex-direction:column; gap:1.1rem;">
+      <div>
+        <img src="%EC%88%AB%EC%9E%90%EC%9D%B8%EC%8B%9D.png" alt="숫자 인식 참고 이미지" style="width:100%; max-width:980px; border-radius:0.6rem; border:1px solid var(--border); background:#fff; display:block;">
+        <p class="desc" style="margin:0.45rem 0 0;color:var(--muted);font-size:0.82rem;">
+          그림과 같이 MNIST에서 손글씨 숫자 '8'은 28×28 픽셀, 총 784개의 숫자(0~255)로 이루어진 행렬로 구성되어 집니다. 검은 픽셀은 0, 밝을수록 255에 가깝습니다. 이 행렬을 한 줄로 펼쳐지는 flatten 784차원 벡터로 변환 뒤 신경망의 입력층에 넣으면, 은닉층을 거쳐 '이것은 8이다'라는 결론을 출력층에서 도출할 수 있게 됩니다.
+        </p>
+      </div>
+
+      <div>
+        <img src="Mnist%20참고%20사진1.png" alt="MNIST 데이터셋 예시" style="width:100%; max-width:980px; border-radius:0.6rem; border:1px solid var(--border); background:#fff; display:block;">
+        <p class="desc" style="margin:0.45rem 0 0;color:var(--muted);font-size:0.82rem;">Mnist 데이터셋 예시</p>
+      </div>
+    </div>
+  </div>
+
+</div>

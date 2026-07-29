@@ -1,0 +1,427 @@
+<!-- ═══════════ INTRO (1차시: 인공지능의 개념과 역사) ═══════════ -->
+<div class="view" id="v-intro">
+  <style>
+  /* intro 뷰 전용 스타일 (#v-intro 스코프 한정) */
+  #v-intro .it-chat{display:flex;flex-direction:column;gap:0.55rem;margin:1rem 0;max-width:34rem;}
+  #v-intro .it-bb{padding:0.55rem 0.95rem;border-radius:0.9rem;font-size:0.88rem;line-height:1.7;max-width:88%;}
+  #v-intro .it-bb.q{align-self:flex-end;background:var(--fg);color:var(--bg);border-bottom-right-radius:0.2rem;}
+  #v-intro .it-bb.a{align-self:flex-start;background:var(--card);border:1px solid var(--border);border-bottom-left-radius:0.2rem;}
+  #v-intro .it-num{width:3.6rem;height:2rem;border:1px solid var(--border);border-radius:0.4rem;text-align:center;font-family:var(--mono);font-size:0.8rem;background:var(--bg);color:var(--fg);}
+  #v-intro select.it-sel{height:2rem;border:1px solid var(--border);border-radius:0.4rem;font-family:var(--mono);font-size:0.8rem;background:var(--bg);color:var(--fg);}
+  #v-intro .it-tbl{border-collapse:collapse;font-family:var(--mono);font-size:0.72rem;margin:0.6rem 0;}
+  #v-intro .it-tbl th,#v-intro .it-tbl td{border:1px solid var(--border);padding:0.25rem 0.55rem;text-align:center;}
+  #v-intro .it-obs{max-height:13rem;overflow-y:auto;}
+  #v-intro .it-slots{display:flex;gap:0.4rem;flex-wrap:wrap;margin:0.8rem 0;}
+  #v-intro .it-slot{min-width:7.4rem;min-height:2.5rem;border:1px dashed var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:0.66rem;color:var(--muted);padding:0.2rem 0.45rem;cursor:pointer;text-align:center;transition:all 0.2s;}
+  #v-intro .it-slot.filled{border-style:solid;color:var(--fg);background:var(--card);}
+  #v-intro .it-slot.ok{border:2px solid var(--green);color:var(--green);}
+  #v-intro .it-slot.bad{border:2px solid var(--red);color:var(--red);}
+  #v-intro #it-tl-cv{cursor:pointer;display:block;}
+  #v-intro .it-rule{font-family:var(--mono);font-size:0.78rem;display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;margin:0.7rem 0;}
+  #v-intro .cmp-c{min-width:0;}
+  #v-intro #it-ml-cv{max-width:100%;height:auto;}
+  #v-intro .it-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-intro .it-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-intro .it-step .mono{font-size:0.68rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+  #v-intro .it-vid-in{flex:1 1 14rem;min-width:0;height:2.2rem;border:1px solid var(--border);border-radius:var(--radius);padding:0 0.65rem;font-family:var(--mono);font-size:0.74rem;background:var(--bg);color:var(--fg);}
+  #v-intro .it-vid-frame{position:relative;width:100%;max-width:38rem;aspect-ratio:16/9;background:var(--fg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:0.4rem;}
+  #v-intro .it-vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  #v-intro .it-vid-ph{border:2px dashed var(--border);border-radius:var(--radius);padding:1.5rem 1rem;text-align:center;color:var(--muted);font-size:0.84rem;line-height:1.7;margin-top:0.4rem;background:var(--bg);}
+  /* 표제부 — 학습 목표 · 핵심 개념 · 핵심 질문 */
+  #v-intro .it-keys .chip{cursor:default;background:var(--card);color:var(--fg);}
+  #v-intro .it-keys .chip:hover{border-color:var(--border);}
+  #v-intro .it-ask{border-left:4px solid var(--accent);}
+  #v-intro .it-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-intro .it-ask li{position:relative;padding-left:1.5rem;margin-bottom:0.55rem;font-weight:500;color:var(--fg);}
+  #v-intro .it-ask li::before{content:'?';position:absolute;left:0;top:0;font-family:var(--mono);font-weight:700;color:var(--accent);}
+  #v-intro .it-ask li:last-child{margin-bottom:0;}
+  @media (max-width:640px){
+    #v-intro .it-slot{min-width:5.6rem;}
+  }
+  </style>
+
+  <p class="mono" style="margin-bottom:0.4rem;">1단원 · 인공지능과 빅데이터</p>
+  <h2>1차시 — 인공지능의 개념과 역사</h2>
+  <p class="desc">
+    인공지능은 마법이 아니라 수학입니다. 이번 시간에는 인공지능의 학습을
+    "입력 x와 출력 y를 연결하는 함수 f 찾기"로 해석하고,
+    70년 역사의 붐과 겨울을 수학적 전환점과 연결해 봅니다.
+  </p>
+
+  <!-- ═════ 표제부 · 학습 목표 / 핵심 개념 / 핵심 질문 ═════ -->
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 인공지능의 개념을 입력과 출력의 대응(함수) 관점에서 이해하고 규칙 기반 방식과 학습 기반 방식의 차이를 설명할 수 있다. <b>[12인수01-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 튜링 테스트와 AI 붐·겨울 등 인공지능에서 수학을 활용한 역사적 사례를 탐구하고 설명할 수 있다. <b>[12인수01-02]</b>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념</p>
+  <div class="chips it-keys">
+    <span class="chip">함수 f(입력→출력)</span>
+    <span class="chip">규칙 기반 vs 학습 기반</span>
+    <span class="chip">튜링 테스트</span>
+    <span class="chip">AI 붐·겨울</span>
+  </div>
+
+  <div class="card it-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p>오늘 수업은 이 두 물음에 답하기 위한 여정입니다. STEP 3에서 다시 만나 답을 완성합니다.</p>
+    <ul>
+      <li>기계가 '지능이 있다'고 판단하는 기준은 무엇이어야 하는가?</li>
+      <li>AI의 역사는 왜 붐과 겨울을 반복했는가?</li>
+    </ul>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="it-step"><p class="mono">STEP 1 · 도입 — 생각 열기</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>디딤 영상 — 수업 열기</h3>
+    <p>디딤 영상 URL을 연결하세요. 유튜브 URL은 화면에 바로 임베드되고, 그 외 링크는 새 탭 버튼으로 열립니다.
+      연결한 영상은 이 기기에 저장되어 다음 방문 때 자동으로 복원됩니다.</p>
+    <div class="btn-row" style="align-items:center;">
+      <input class="it-vid-in" id="it-vid-url" type="url" placeholder="https://www.youtube.com/watch?v=..." aria-label="디딤 영상 URL">
+      <button class="btn pri" onclick="itVidSet()">영상 연결</button>
+      <button class="btn" id="it-vid-clear" onclick="itVidClear()" style="display:none;">해제</button>
+    </div>
+    <div id="it-vid-box"></div>
+    <div class="status" id="it-vid-st"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요. 선택하는 순간 해설이 나타납니다.</p>
+
+    <p style="margin-bottom:0.8rem;">W1. 세탁물의 흐림(오염) 정도를 감지해 세탁 시간을 스스로 조절하는 세탁기의 "퍼지 제어" — 인공지능일까?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itWarm(0,0,this)">O — 인공지능이다</button>
+      <button class="btn" onclick="itWarm(0,1,this)">X — 그냥 기계 장치다</button>
+    </div>
+    <div class="status" id="it-wfb0"></div>
+
+    <p style="margin:1rem 0 0.8rem;">W2. 내비게이션이 수많은 길 가운데 최단 경로를 찾아 주는 기능 — 인공지능일까?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itWarm(1,0,this)">O — 인공지능이다</button>
+      <button class="btn" onclick="itWarm(1,1,this)">X — 단순 계산일 뿐이다</button>
+    </div>
+    <div class="status" id="it-wfb1"></div>
+
+    <p style="margin:1rem 0 0.8rem;">W3. "학습하는 프로그램"이 "규칙대로 실행하는 프로그램"과 결정적으로 다른 점은?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itWarm(2,0,this)">더 빠른 컴퓨터를 쓴다</button>
+      <button class="btn" onclick="itWarm(2,1,this)">데이터(경험)를 보고 스스로 규칙을 찾는다</button>
+      <button class="btn" onclick="itWarm(2,2,this)">오류 없이 완벽하게 작동한다</button>
+    </div>
+    <div class="status" id="it-wfb2"></div>
+
+    <p style="margin-top:1.1rem;"><b>오늘 수업이 끝나면, 이 질문들에 정확하게 답할 수 있게 됩니다.</b>
+      "인공지능이란 무엇이고, 학습이란 무엇인가"를 수학의 언어로 정리해 봅시다.</p>
+  </div>
+
+  <div class="card">
+    <h3>인공지능이란 무엇일까</h3>
+    <p>인공지능(Artificial Intelligence)은 인식·학습·추론·행동과 같은 인간의 지적 능력을
+      컴퓨터로 구현하는 기술입니다. 이 이름은 1956년 다트머스 회의에서 존 매카시가 처음 제안했습니다.</p>
+    <p style="margin-top:0.5rem;">오늘날의 인공지능은 <b>데이터 · 모델 · 학습</b>의 세 요소로 작동합니다.
+      데이터는 경험의 기록이고, 모델은 입력을 출력으로 바꾸는 <b>함수</b>이며,
+      학습은 데이터에 가장 잘 맞는 함수를 찾아가는 과정입니다.
+      즉, 인공지능을 이해하는 열쇠는 우리가 이미 배운 <b>함수</b> 개념입니다.</p>
+  </div>
+
+  <div class="math">인공지능을 수학의 눈으로 보면
+    입력 x  ──▶  모형(함수) f  ──▶  출력 y
+    학습 = 데이터 (x, y)를 가장 잘 설명하는 함수 f 를 찾는 일</div>
+
+  <div class="info"><strong>학습 목표는 어떤 활동으로 이어지나</strong> —
+    목표 ① [12인수01-01]은 전개 탭 ②에서 — 같은 함수를 규칙기반(A)과 학습기반(B)으로 각각 만들어 보며
+    "규칙을 찾는 주체가 누구인가"의 차이를 몸으로 익힙니다.
+    목표 ② [12인수01-02]는 전개 탭 ①·③에서 — 튜링 테스트 판별 게임과 역사 타임라인으로
+    각 사건에 숨은 수학(논리 연산, 부등식, 미분, 행렬, 확률)을 확인합니다.
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="it-step"><p class="mono">STEP 2 · 전개 — 탐구 활동</p></div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="itTab(0,this)">① 튜링 테스트 게임</button>
+    <button class="tab" onclick="itTab(1,this)">② 규칙 vs 학습</button>
+    <button class="tab" onclick="itTab(2,this)">③ 역사 타임라인</button>
+  </div>
+
+  <!-- ── TAB 0 : 튜링 테스트 판별 게임 ─────────────────────── -->
+  <div class="tpanel on" id="it0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      대화 기록만 보고 답변자가 사람인지 AI인지 판별하고, 판단의 <b>근거</b>를 말로 정리합니다.
+      진행 순서: <b>단계 1 관찰</b>(판별 게임) → <b>단계 2 정리</b>(단서 정리) → <b>단계 3 정의 확인</b>(튜링 테스트). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 1 · 관찰 — 사람일까, AI일까?</h3>
+      <p>당신은 심사관입니다. 아래 대화의 <b>답변자</b>가 사람인지 AI인지 판별해 보세요.
+        무엇을 근거로 판단했는지가 점수보다 중요합니다.</p>
+      <div class="status">진행 <span id="it-tt-prog">1 / 7</span> &nbsp;·&nbsp; 점수 <span id="it-tt-score">0</span></div>
+      <div class="it-chat" id="it-tt-chat"></div>
+      <div class="btn-row">
+        <button class="btn pri" id="it-tt-bh" onclick="itTTAnswer(false)">사람이다</button>
+        <button class="btn pri" id="it-tt-ba" onclick="itTTAnswer(true)">AI다</button>
+        <button class="btn" id="it-tt-bn" onclick="itTTNext()" style="display:none;">다음 대화 →</button>
+      </div>
+      <div class="info" id="it-tt-fb" data-no-toggle="1" style="display:none;margin:0.8rem 0;"></div>
+    </div>
+
+    <div class="card" id="it-tt-result" data-no-toggle="1" style="display:none;">
+      <h3>판별 결과</h3>
+      <p id="it-tt-rtext"></p>
+      <p style="margin-top:0.6rem;">나는 무엇을 근거로 판단했나요? 해당하는 것을 모두 눌러 보세요. (활동지에 2가지를 서술합니다)</p>
+      <div class="chips">
+        <button class="chip" onclick="this.classList.toggle('on')">문맥을 계속 유지하는가</button>
+        <button class="chip" onclick="this.classList.toggle('on')">구체적 경험이 담겼는가</button>
+        <button class="chip" onclick="this.classList.toggle('on')">감정 표현이 자연스러운가</button>
+        <button class="chip" onclick="this.classList.toggle('on')">오타·말버릇 같은 오류 패턴</button>
+        <button class="chip" onclick="this.classList.toggle('on')">같은 문형의 반복</button>
+        <button class="chip" onclick="this.classList.toggle('on')">어려운 질문의 회피</button>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="itTTRestart()">처음부터 다시</button></div>
+    </div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 무엇이 판별의 단서였나</h3>
+      <p>게임을 마친 뒤 열어 보세요. 판별의 단서는 크게 세 갈래였습니다.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>불완전함</b> — 오타·말버릇·감정의 요동은 사람의 흔적입니다. 규칙은 "틀리는 법"까지 흉내 내기 어렵습니다.</li>
+        <li><b>구체적 경험</b> — 급식·검산·산책 같은 개인의 체험은 데이터로 뭉뚱그려지지 않은 "한 사람의 기록"입니다.</li>
+        <li><b>회피와 반복</b> — 같은 문형의 반복(ELIZA), 어려운 질문 회피(유진 구스트만)는 규칙기반 챗봇의 전형적 전략입니다.</li>
+      </ul>
+      <p style="margin-top:0.5rem;">그런데 마지막 문항(생성형 AI)은 판별이 어려웠지요? 활동지에 <b>내가 쓴 판별 기준 2가지</b>와 "그 기준이 최신 AI에도 통할까"를 적어 봅시다.</p>
+    </div>
+
+    <div class="info"><strong>단계 3 · 정의 확인 — 튜링 테스트 (1950)</strong> —
+      앨런 튜링은 "기계가 생각할 수 있는가?"라는 물음을
+      "대화만으로 기계와 사람을 구별할 수 있는가?"라는 판별 문제로 바꾸었습니다.
+      2014년에는 챗봇 '유진 구스트만'이 심사위원 33%를 속여 통과 논란이 있었는데,
+      13세 외국인 소년이라는 설정으로 어려운 질문을 회피하는 전략을 썼습니다.
+      최신 생성형 AI의 답변은 판별이 훨씬 어렵습니다 — 여러분이 틀렸다면 바로 그것이 오늘의 교훈입니다.
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 규칙기반 vs 학습기반 ─────────────────────── -->
+  <div class="tpanel" id="it1">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      같은 함수를 "사람이 규칙을 쓰는 방식"과 "기계가 데이터에서 찾는 방식"으로 각각 만들어 보고 차이를 설명합니다.
+      진행 순서: <b>단계 1 관찰</b>(A·B 실험) → <b>단계 2 정리</b>(비교) → <b>단계 3 정의 확인</b>(기계학습). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 1 · 관찰 — 같은 함수, 두 가지 만들기</h3>
+      <p>왼쪽(A)은 <b>사람이 규칙을 알고 직접 쓰는</b> 기존 프로그램 방식,
+        오른쪽(B)은 <b>데이터에서 기계가 규칙을 찾는</b> 기계학습 방식입니다.
+        두 방식 모두 결과는 "함수"라는 점에 주목하세요.</p>
+    </div>
+
+    <div class="cmp" data-no-toggle="1">
+      <div class="cmp-c">
+        <h4>A. 규칙을 사람이 쓴다 — 규칙기반</h4>
+        <p class="cr">주어진 규칙: <strong>"입력 x가 3보다 작으면 0, 그렇지 않으면 1"</strong></p>
+        <p class="cr">이 규칙을 아래 형식으로 옮겨 적고(코딩), 테스트를 통과시켜 보세요.</p>
+        <div class="it-rule">
+          IF&nbsp;x
+          <select class="it-sel" id="it-rb-op"><option value="lt">&lt;</option><option value="ge">≥</option></select>
+          <input class="it-num" id="it-rb-c" type="number" value="0">
+          THEN&nbsp;y&nbsp;=
+          <input class="it-num" id="it-rb-then" type="number" value="0">
+          ELSE&nbsp;y&nbsp;=
+          <input class="it-num" id="it-rb-else" type="number" value="0">
+        </div>
+        <div class="btn-row"><button class="btn pri" onclick="itRBTest()">테스트 실행</button></div>
+        <div style="overflow-x:auto;"><table class="it-tbl" id="it-rb-tbl"></table></div>
+        <div class="status" id="it-rb-st">규칙을 완성하고 테스트를 실행하세요.</div>
+      </div>
+
+      <div class="cmp-c">
+        <h4>B. 규칙을 기계가 찾는다 — 학습기반</h4>
+        <p class="cr">이 기계 안에는 <strong>숨은 규칙</strong>이 있습니다.
+          x 버튼을 눌러 (x, y) 데이터를 모으고, 규칙이 보이면 예측에 도전하세요.</p>
+        <div class="chips" id="it-ml-rounds">
+          <button class="chip on" onclick="itMLRound(0,this)">라운드 1</button>
+          <button class="chip" onclick="itMLRound(1,this)">라운드 2 · 조건형</button>
+          <button class="chip" onclick="itMLRound(2,this)">라운드 3 · 잡음</button>
+        </div>
+        <div class="chips" id="it-ml-xs"></div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;">
+          <div class="it-obs" style="flex:1;min-width:9rem;">
+            <p class="mat-label" style="text-align:left;">관찰 기록</p>
+            <table class="it-tbl" id="it-ml-log"><tr><th>x</th><th>y</th></tr></table>
+          </div>
+          <div>
+            <p class="mat-label">데이터 그래프</p>
+            <canvas id="it-ml-cv" class="cv" width="300" height="210"></canvas>
+          </div>
+        </div>
+        <div id="it-ml-quiz" style="margin-top:0.8rem;"></div>
+        <div class="status" id="it-ml-st"></div>
+      </div>
+    </div>
+
+    <div class="math">기존 프로그램 : 사람이 규칙을 안다  →  규칙을 코드로 쓴다  →  f 완성
+    기계학습     : 규칙을 모른다      →  데이터 (x, y)를 모은다  →  잘 맞히는 f 를 찾는다</div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 두 방식 비교하기</h3>
+      <p>실험을 마친 뒤 열어 보세요. A와 B에서 "규칙을 찾은 주체"가 누구였는지 비교합니다.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li><b>A 규칙기반</b> — 규칙을 아는 것은 <b>사람</b>. 사람이 규칙을 코드로 옮겨 적으면 함수 f가 완성됩니다.</li>
+        <li><b>B 학습기반</b> — 규칙을 아는 사람이 없습니다. 데이터 (x, y)를 모아 <b>규칙(함수)을 추측</b>한 것은 바로 여러분 — 기계학습이 하는 일을 여러분이 체험한 것입니다.</li>
+        <li><b>라운드 3의 교훈</b> — 잡음이 있으면 "완벽한 규칙"은 없습니다. 가장 잘 맞는 함수를 찾을 뿐이며, 이것이 이후 배울 "오차 줄이기(최적화)"의 출발점입니다.</li>
+      </ul>
+    </div>
+
+    <div class="info"><strong>단계 3 · 정의 확인 — 왜 학습이 필요할까?</strong> —
+      <b>기계학습(Machine Learning)</b>은 규칙을 사람이 적는 대신,
+      데이터 (x, y)에서 규칙(함수 f)을 컴퓨터가 스스로 찾게 하는 방법입니다.
+      라운드 3에서 보았듯 현실 데이터에는 잡음이 있고, 손글씨 인식처럼
+      규칙을 말로 다 적을 수 없는 문제가 대부분입니다.
+      규칙을 쓸 수 없을 때, 데이터에서 함수를 찾는 것 — 그것이 기계학습입니다.
+    </div>
+  </div>
+
+  <!-- ── TAB 2 : AI 역사 타임라인 ─────────────────────── -->
+  <div class="tpanel" id="it2">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      70년 역사의 붐(봄)과 겨울을 훑고, 각 전환점에 숨은 <b>수학</b>을 찾아 연결합니다.
+      진행 순서: <b>단계 1 관찰</b>(연표 탐색) → <b>단계 2 정리</b>(연대 배치 게임) → <b>단계 3 정의 확인</b>(겨울과 봄의 수학). 아래 단계 카드를 순서대로 열어 보세요.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 1 · 관찰 — AI 붐과 겨울, 연표 탐색</h3>
+      <p>곡선은 인공지능에 대한 세상의 기대(관심도)입니다.
+        점을 클릭하면 그 사건에 숨은 <b>수학</b>이 나타납니다.
+        두 번의 겨울이 왜 왔고, 무엇이 다시 봄을 불렀는지 찾아보세요.</p>
+      <div style="overflow-x:auto;margin:1rem 0;border:1px solid var(--border);border-radius:var(--radius);">
+        <canvas id="it-tl-cv" width="1150" height="260"></canvas>
+      </div>
+      <div class="info" id="it-tl-detail" data-no-toggle="1">타임라인의 점을 클릭해 보세요.</div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 2 · 정리 — 연대 배치 게임</h3>
+      <p>여섯 개의 사건 카드를 <b>일어난 순서대로</b> 슬롯에 배치하세요.
+        카드를 누르면 빈 슬롯에 들어가고, 슬롯의 카드를 누르면 되돌아옵니다. 기회는 2번!</p>
+      <div class="it-slots" id="it-tl-slots"></div>
+      <p class="mat-label" style="text-align:left;">사건 카드</p>
+      <div class="chips" id="it-tl-pool"></div>
+      <div class="btn-row">
+        <button class="btn pri" onclick="itTLGrade()">채점</button>
+        <button class="btn" onclick="itTLReset()">다시 섞기</button>
+      </div>
+      <div class="status" id="it-tl-st"></div>
+    </div>
+
+    <div class="info"><strong>단계 3 · 정의 확인 — 겨울은 왜 오고, 봄은 왜 왔나</strong> —
+      <b>AI 겨울</b>은 기대가 무너져 연구비와 관심이 끊긴 시기(1974~1980, 1987~1993)를 말합니다.
+      1차 겨울의 계기는 <b>수학적 한계의 증명</b>(단층 퍼셉트론은 XOR을 표현하지 못한다)이었고,
+      봄을 되돌린 것도 <b>새로운 수학</b>(다층 구조 + 미분을 이용한 역전파, GPU의 행렬 연산)이었습니다.
+      즉 AI의 역사는 "수학의 한계 발견 → 새 수학으로 돌파"의 반복입니다.
+    </div>
+
+    <div class="card">
+      <h3>심화 — 사건마다 숨은 수학 한눈에 보기</h3>
+      <p>연표의 사건과 수학 개념을 짝지어 정리했습니다. 시험 대비 겸 훑어 보세요.</p>
+      <ul style="margin:0.5rem 0 0 1.2rem;">
+        <li>1943 인공 뉴런 — <b>논리 연산</b> (∧, ∨, ∼)</li>
+        <li>1958 퍼셉트론 — <b>가중합과 부등식</b> (w₁x₁+w₂x₂ ≥ θ)</li>
+        <li>1969 XOR의 벽 — <b>연립부등식의 모순</b> (직선 하나로 분리 불가)</li>
+        <li>1986 역전파 — <b>미분</b> (변화율로 오차 줄이기)</li>
+        <li>2012 AlexNet — <b>합성곱과 행렬 연산</b></li>
+        <li>2016 알파고 — <b>확률과 보상</b> (강화학습)</li>
+        <li>2022 생성형 AI — <b>조건부확률</b> (다음 단어 예측)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="it-step"><p class="mono">STEP 3 · 정리 — 배움 다지기</p></div>
+
+  <div class="card it-ask">
+    <h3>정리 — 핵심 질문에 답하기</h3>
+    <p>수업을 열며 던졌던 두 질문으로 돌아옵니다. 이제 우리는 답할 수 있습니다.</p>
+
+    <p style="margin-top:0.9rem;"><b>Q1. 기계가 '지능이 있다'고 판단하는 기준은 무엇이어야 하는가?</b></p>
+    <p>튜링은 "생각하는가"라는 답할 수 없는 물음을 <b>"대화만으로 사람과 구별할 수 있는가"</b>라는
+      판별 가능한 문제로 바꾸었습니다. 즉 기준은 기계의 내부가 아니라 <b>겉으로 드러난 행동</b>입니다.
+      다만 판별 게임에서 보았듯 최신 생성형 AI 앞에서 이 기준은 흔들립니다 —
+      기준을 정하는 일 자체가 여전히 열린 물음입니다.</p>
+
+    <p style="margin-top:0.9rem;"><b>Q2. AI의 역사는 왜 붐과 겨울을 반복했는가?</b></p>
+    <p>겨울은 <b>수학적 한계</b>(단층 퍼셉트론은 XOR을 표현하지 못한다는 부등식의 모순)와
+      과장된 기대의 붕괴에서 왔고, 봄은 언제나 <b>새로운 수학</b>(다층 구조와 미분을 이용한 역전파,
+      GPU의 행렬 연산, 확률과 보상)으로 돌아왔습니다.
+      AI의 역사는 "수학의 한계 발견 → 새 수학으로 돌파"의 반복입니다.</p>
+
+    <p style="margin-top:0.9rem;">오늘의 한 줄: <b>인공지능은 입력 x를 출력 y로 잇는 함수 f를 데이터에서 찾는 일</b>입니다.
+      활동지에 "AI의 겨울은 왜 왔고, 무엇이 녹였는가"를 한 줄로 써 보세요.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" onclick="go('perceptron')">
+      <h3>미리 체험 · 퍼셉트론 (1958)</h3>
+      <p>타임라인의 1958년 사건을 직접 조작해 봅니다. 가중치와 임곗값의 의미는 4차시에 자세히 다룹니다.</p>
+    </div>
+    <div class="card-link" onclick="go('conv')">
+      <h3>미리 체험 · 합성곱 (2012)</h3>
+      <p>2012년 AlexNet을 부활시킨 핵심 연산, 합성곱을 미리 구경해 봅니다. 이미지 단원에서 다시 만납니다.</p>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성 체크 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">Q1. 기계학습이 기존 프로그램(규칙기반)과 다른 점은?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itQuiz(0,0,this)">사람이 규칙을 직접 입력한다</button>
+      <button class="btn" onclick="itQuiz(0,1,this)">데이터에서 규칙(함수)을 스스로 찾는다</button>
+      <button class="btn" onclick="itQuiz(0,2,this)">규칙 없이 무작위로 답한다</button>
+    </div>
+    <div class="status" id="it-qfb0"></div>
+
+    <p style="margin:1rem 0 0.8rem;">Q2. 1969년 "단층 퍼셉트론은 XOR을 못 푼다"는 지적이 가져온 결과는?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itQuiz(1,0,this)">AI 연구가 더 활발해졌다</button>
+      <button class="btn" onclick="itQuiz(1,1,this)">AI 겨울이 왔고, 뒤에 다층 구조로 극복했다</button>
+      <button class="btn" onclick="itQuiz(1,2,this)">컴퓨터 개발이 완전히 중단되었다</button>
+    </div>
+    <div class="status" id="it-qfb1"></div>
+
+    <p style="margin:1rem 0 0.8rem;">Q3. 튜링 테스트가 판정하려는 것은?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itQuiz(2,0,this)">기계의 계산 속도</button>
+      <button class="btn" onclick="itQuiz(2,1,this)">기계의 저장 용량</button>
+      <button class="btn" onclick="itQuiz(2,2,this)">대화만으로 기계와 사람을 구별할 수 있는가</button>
+    </div>
+    <div class="status" id="it-qfb2"></div>
+
+    <p style="margin:1rem 0 0.8rem;">Q4. 인공지능을 수학의 눈으로 볼 때, "학습"이란?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itQuiz(3,0,this)">규칙을 코드로 정확히 옮겨 적는 일</button>
+      <button class="btn" onclick="itQuiz(3,1,this)">데이터 (x, y)를 가장 잘 설명하는 함수 f를 찾는 일</button>
+      <button class="btn" onclick="itQuiz(3,2,this)">컴퓨터의 계산 속도를 높이는 일</button>
+    </div>
+    <div class="status" id="it-qfb3"></div>
+
+    <p style="margin:1rem 0 0.8rem;">Q5. 마중 퀴즈로 돌아가서 — 세탁기의 퍼지 제어, 내비게이션의 경로 탐색에 대한 설명으로 가장 알맞은 것은?</p>
+    <div class="btn-row">
+      <button class="btn" onclick="itQuiz(4,0,this)">로봇 몸체가 없으므로 인공지능이 아니다</button>
+      <button class="btn" onclick="itQuiz(4,1,this)">감지·판단 같은 지적 능력을 구현한 생활 속 인공지능 사례다</button>
+      <button class="btn" onclick="itQuiz(4,2,this)">사람이 매번 직접 조작해야 하는 기능이다</button>
+    </div>
+    <div class="status" id="it-qfb4"></div>
+  </div>
+
+  <div class="info"><strong>다음 차시 예고</strong> —
+    2차시에서는 인공지능이 배우는 세 가지 방식(지도·비지도·강화학습)을
+    거리, 평균, 상대도수라는 수학 언어로 해부합니다.
+    "김치찌개를 토마토 수프로 착각한 AI" 사건의 범인을 찾으러 갑니다.
+  </div>
+</div>

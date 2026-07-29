@@ -1,0 +1,71 @@
+<!-- ═══════════ PERCEPTRON ═══════════ -->
+<div class="view" id="v-perceptron">
+  <p class="mono" style="margin-bottom:0.4rem;">퍼셉트론</p>
+  <h2>신경망의 기본 단위</h2>
+  <p class="desc">
+    퍼셉트론은 입력값에 가중치를 곱하고 편향을 더한 뒤, 활성화 함수를 통과시켜 출력을 결정합니다.
+    아래에서 입력, 가중치, 편향, 활성화 함수를 직접 조작해보세요.
+  </p>
+
+  <div class="card">
+    <h3>퍼셉트론에서 딥러닝까지</h3>
+    <p>1957년 프랭크 로젠블라트(Frank Rosenblatt)가 발명한 퍼셉트론은 인간 뇌의 뉴런을 수학적으로 모방한 것입니다.
+      뉴런이 여러 신호를 받아 일정 임계값을 넘으면 활성화되는 것처럼, 퍼셉트론도 입력의 가중합이 임계값을 넘으면 1을 출력합니다.</p>
+    <p style="margin-top:0.5rem;">하나의 퍼셉트론은 단순한 예/아니오 판단만 가능하지만(선형 분류),
+      여러 퍼셉트론을 층으로 쌓으면 복잡한 패턴도 학습할 수 있습니다.
+      이것이 바로 <strong>다층 퍼셉트론(MLP)</strong>이며, 현대 딥러닝의 기초입니다.</p>
+    <p style="margin-top:0.5rem;">활성화 함수는 퍼셉트론에 비선형성을 부여하는 핵심 요소입니다.
+      계단 함수는 가장 단순하지만, 미분이 불가능하여 학습에 제약이 있습니다.
+      시그모이드는 부드러운 곡선으로 이 문제를 해결했고, ReLU는 학습 속도가 빨라 현대 딥러닝에서 가장 많이 사용됩니다.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+    <!-- LEFT: Controls -->
+    <div>
+      <div class="card">
+        <h3>입력과 가중치</h3>
+        <p style="margin-bottom:1rem;">슬라이더로 입력값을, 숫자 입력으로 가중치를 조절하세요.</p>
+        <div id="pc-inputs"></div>
+      </div>
+
+      <div class="card">
+        <h3>편향 (Bias)</h3>
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.5rem;">
+          <span class="mono" style="width:1rem;">b</span>
+          <input type="range" class="ns" id="pc-bias" min="-5" max="5" step="0.1" value="0" style="max-width:12rem;">
+          <span id="pc-bias-val" style="font-family:var(--mono);font-size:0.8rem;min-width:3rem;text-align:right;">0.0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>활성화 함수</h3>
+        <div class="chips" id="pc-act-chips"></div>
+        <div id="pc-threshold-wrap" style="margin-top:0.8rem;">
+          <div style="display:flex;align-items:center;gap:0.8rem;">
+            <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">임계값 (θ)</span>
+            <input type="range" class="ns" id="pc-theta" min="-5" max="5" step="0.1" value="0" style="max-width:10rem;">
+            <span id="pc-theta-val" style="font-family:var(--mono);font-size:0.8rem;min-width:3rem;text-align:right;">0.0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="pc-result-card">
+        <h3>계산 과정</h3>
+        <div id="pc-calc" style="font-family:var(--mono);font-size:0.78rem;line-height:2.2;color:var(--muted);"></div>
+        <div style="margin-top:0.8rem;display:flex;align-items:baseline;gap:0.5rem;">
+          <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">출력 y =</span>
+          <span id="pc-output" style="font-family:var(--mono);font-size:1.6rem;font-weight:700;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Graph -->
+    <div>
+      <div class="card" style="height:100%;display:flex;flex-direction:column;">
+        <h3>활성화 함수 그래프</h3>
+        <p style="margin-bottom:0.5rem;">빨간 점은 현재 가중합 x와 출력 y의 위치입니다.</p>
+        <canvas id="pc-graph" width="560" height="400" style="width:100%;aspect-ratio:560/400;border-radius:var(--radius);border:1px solid var(--border);background:#fff;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>

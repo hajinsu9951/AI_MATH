@@ -1,0 +1,68 @@
+<!-- ═══════════ TEXT DATA ═══════════ -->
+<div class="view" id="v-text">
+  <p class="mono" style="margin-bottom:0.4rem;">텍스트 데이터</p>
+  <h2>자연어의 수치 표현</h2>
+  <p class="desc">
+    인공지능이 텍스트를 처리하려면 단어를 숫자로 변환해야 합니다.
+    문장을 입력하면 원-핫 벡터와 빈도수 벡터로 변환하는 과정을 확인할 수 있습니다.
+  </p>
+
+  <div class="card">
+    <h3>컴퓨터는 왜 문자를 이해하지 못할까?</h3>
+    <p>컴퓨터는 본질적으로 숫자 계산기입니다. "고양이"라는 단어를 보고 귀엽고 작은 동물을 떠올리는 것은 인간만의 능력이며,
+      컴퓨터에게 "고양이"는 의미 없는 문자 코드의 나열일 뿐입니다.
+      AI가 텍스트를 처리하려면 단어를 숫자 벡터(숫자의 나열)로 변환해야 하며, 이 과정을 <strong>텍스트 벡터화</strong>라 합니다.</p>
+    <p style="margin-top:0.5rem;">원-핫 인코딩은 가장 직관적인 변환 방법으로, 단어 집합에서 해당 단어의 위치만 1이고 나머지는 0인 벡터를 만듭니다.
+      이해하기 쉽지만 단어 간 관계(예: "왕"과 "여왕"이 유사하다는 것)를 표현할 수 없고, 단어가 많아지면 벡터가 매우 커지는 단점이 있습니다.</p>
+    <p style="margin-top:0.5rem;">빈도수 벡터(BoW)는 문장에서 각 단어가 몇 번 등장했는지를 세어 벡터로 표현합니다.
+      스팸 메일 필터, 뉴스 기사 분류, 감성 분석 등에 널리 사용되었으며, TF-IDF, Word2Vec, BERT 등 더 발전된 기법의 기초가 됩니다.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="ttab(0,this)">원-핫 인코딩</button>
+    <button class="tab" onclick="ttab(1,this)">빈도수 벡터</button>
+  </div>
+
+  <!-- TAB 0: One-Hot -->
+  <div class="tpanel on" id="tt0">
+    <div class="card">
+      <h3>원-핫 인코딩 (One-Hot Encoding)</h3>
+      <p>단어 집합에서 각 단어의 위치만 1이고 나머지는 모두 0인 벡터로 표현합니다.
+        아래에 문장을 입력하면 각 단어의 원-핫 벡터를 확인할 수 있습니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>문장 입력</h3>
+      <input type="text" id="oh-input" placeholder="예: 나는 인공지능 수학을 좋아한다" value="나는 인공지능 수학을 좋아한다"
+        style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--sans);font-size:0.88rem;background:var(--bg);color:var(--fg);margin-top:0.5rem;">
+      <div class="btn-row">
+        <button class="btn pri" onclick="ohVocabUser=null;ohEncode()">인코딩</button>
+      </div>
+    </div>
+
+    <div id="oh-result"></div>
+  </div>
+
+  <!-- TAB 1: BoW -->
+  <div class="tpanel" id="tt1">
+    <div class="card">
+      <h3>빈도수 벡터 (Bag of Words)</h3>
+      <p>문장을 띄어쓰기 기준으로 분리하고, 각 단어의 등장 횟수를 벡터로 표현합니다.
+        여러 문장을 입력하면 각 문장의 빈도수 벡터를 비교할 수 있습니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>문장 입력 (줄바꿈으로 여러 문장 입력)</h3>
+      <textarea id="bow-input" rows="4" placeholder="문장 1&#10;문장 2&#10;..."
+        style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--sans);font-size:0.86rem;background:var(--bg);color:var(--fg);resize:vertical;margin-top:0.5rem;">오늘 날씨가 좋다
+오늘 공부를 한다
+인공지능 수학 공부가 재미있다</textarea>
+      <div class="btn-row">
+        <button class="btn pri" onclick="bowAnalyze()">분석</button>
+        <button class="btn" onclick="bowAnimate()">단계별 애니메이션</button>
+      </div>
+    </div>
+
+    <div id="bow-result"></div>
+  </div>
+</div>

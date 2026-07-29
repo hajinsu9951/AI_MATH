@@ -1,0 +1,76 @@
+<!-- ═══════════ POOL + NORM ═══════════ -->
+<div class="view" id="v-pool">
+  <p class="mono" style="margin-bottom:0.4rem;">데이터 처리</p>
+  <h2>풀링과 정규화</h2>
+  <p class="desc">
+    풀링은 이미지 크기를 줄이면서 핵심 정보를 보존하고,
+    정규화는 학습 효율을 높이기 위해 값의 범위를 조정합니다.
+  </p>
+
+  <div class="card">
+    <h3>왜 데이터를 줄이고 변환해야 할까?</h3>
+    <p>스마트폰으로 찍은 사진 한 장은 보통 1,200만 개 이상의 픽셀로 이루어져 있습니다.
+      이 모든 픽셀을 그대로 처리하면 연산량이 폭발적으로 늘어납니다.
+      풀링은 이미지의 핵심 특징은 유지하면서 크기를 줄이는 기법으로, CNN의 각 합성곱층 뒤에 배치되어
+      연산 효율을 높이고, 작은 위치 변화에 흔들리지 않는 안정적인 인식을 가능하게 합니다.</p>
+    <p style="margin-top:0.5rem;">정규화는 서로 다른 범위의 데이터를 일정한 범위로 맞추는 과정입니다.
+      키(cm)와 몸무게(kg)처럼 단위가 다른 데이터를 함께 학습시키려면 같은 스케일로 변환해야
+      특정 값이 학습을 지배하는 것을 방지할 수 있습니다.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="ptab(0,this)">맥스 풀링</button>
+    <button class="tab" onclick="ptab(1,this)">정규화</button>
+  </div>
+
+  <!-- TAB 0: pooling -->
+  <div class="tpanel on" id="pt0">
+    <div class="card">
+      <h3>맥스 풀링 (Max Pooling)</h3>
+      <p>4×4 입력에서 2×2씩 묶어 최대값만 선택하여 2×2로 압축합니다.
+        입력값을 직접 편집하여 다양한 경우를 실험해보세요.</p>
+    </div>
+
+    <div class="grid-wrap">
+      <div style="text-align:center;"><p class="mat-label">입력 (4×4) — 편집 가능</p><div class="eg" id="pi" style="grid-template-columns:repeat(4,1fr);"></div></div>
+      <div class="op">→</div>
+      <div style="text-align:center;"><p class="mat-label">출력 (2×2)</p><div class="mat" id="po" style="grid-template-columns:repeat(2,1fr);"></div></div>
+    </div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="pRst()">리셋</button>
+      <button class="btn" onclick="pStp()">한 단계</button>
+      <button class="btn pri" onclick="pAut()">자동 실행</button>
+    </div>
+    <div id="pst" class="status" style="text-align:center;"></div>
+    <div class="info">
+      <strong>효과:</strong> 이미지 크기는 줄지만 주요 특징은 유지됩니다.
+      연산량을 줄이고, 물체 위치가 조금 바뀌어도 동일하게 인식하는 이동 불변성을 제공합니다.
+    </div>
+  </div>
+
+  <!-- TAB 1: normalization -->
+  <div class="tpanel" id="pt1">
+    <div class="card">
+      <h3>데이터 정규화 (Normalization)</h3>
+      <p>이미지 픽셀은 0(검은색)~255(흰색)의 정수값을 가집니다.
+        AI 모델 학습 시 0.0~1.0 사이의 실수로 변환합니다. 이는 행렬의 실수배 연산입니다.</p>
+    </div>
+    <div class="math" style="text-align:center;">X_normalized = X / 255</div>
+    <div style="text-align:center;margin:2rem 0;">
+      <p class="mono" style="margin-bottom:0.6rem;">슬라이더를 움직여 정규화를 체험하세요</p>
+      <input type="range" class="ns" id="nsl" min="0" max="255" value="128">
+      <div class="nout">
+        <div class="nb"><div class="v" id="ni">128</div><div class="l">Integer (0–255)</div></div>
+        <div class="nb"><div style="font-size:1.2rem;color:var(--muted);padding-top:0.3rem;">÷ 255 =</div></div>
+        <div class="nb"><div class="v" id="nf">0.502</div><div class="l">Float (0.0–1.0)</div></div>
+        <div class="nb"><div class="sw" id="nsw" style="background:rgb(128,128,128);"></div><div class="l">실제 색상</div></div>
+      </div>
+    </div>
+    <div class="info">
+      <strong>왜 필요한가:</strong> 정규화를 하지 않으면, 큰 값을 가진 특성이 학습을 지배하여
+      모델이 편향되게 학습될 수 있습니다. 정규화는 경사 하강법의 수렴 속도를 높이고,
+      수치 오버플로우를 방지하며, 다양한 특성을 공평하게 반영할 수 있게 합니다.
+      이미지 외에도 음성, 센서 데이터 등 거의 모든 AI 입력 데이터에 정규화가 적용됩니다.
+    </div>
+  </div>
+</div>
