@@ -1,0 +1,1529 @@
+<!-- ═══════════ TREND (22~23차시: 산점도·추세선 / 곡선·과적합) ═══════════
+     · 파일 위치: views/trend.html  (신규 뷰 — 4단원 V13)
+     · 전역 접두사 tr (차시별 세부는 tr22 · tr23) · 뷰 루트 id #v-trend
+     · 22차시 [12인수04-02] 산점도와 추세선으로 예측하기
+     · 23차시 [12인수04-02] 어떤 추세선이 좋은가 — 곡선과 과적합
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-trend">
+  <style>
+  /* trend 뷰 전용 스타일 (#v-trend 스코프 한정 — 전역 누수 금지) */
+
+  /* ── 차시 선택 바 (한 뷰가 22·23차시를 담당) ── */
+  #v-trend .tr-lbar{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;background:var(--card);
+    border:1px solid var(--border);border-radius:9999px;padding:0.4rem 0.5rem;margin:0 0 1.4rem;}
+  #v-trend .tr-lbar .lb{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.14em;color:var(--muted);padding:0 0.5rem;}
+  #v-trend .tr-lchip{font-family:var(--sans);font-size:0.98rem;font-weight:600;padding:0.5rem 1.1rem;min-height:44px;
+    border:1px solid var(--border);border-radius:9999px;background:var(--bg);color:var(--body);cursor:pointer;transition:all 0.2s;}
+  #v-trend .tr-lchip:hover{border-color:var(--fg);color:var(--fg);}
+  #v-trend .tr-lchip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-trend .tr-sec{display:none;}
+  #v-trend .tr-sec.on{display:block;}
+
+  /* ── STEP 구분선 ── */
+  #v-trend .tr-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-trend .tr-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-trend .tr-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* ── 표제부 ── */
+  #v-trend .tr-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-trend .tr-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;width:100%;}
+  #v-trend .tr-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-trend .tr-ask{border-left:4px solid var(--accent);}
+  #v-trend .tr-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-trend .tr-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;
+    color:var(--fg);font-size:1.03rem;line-height:1.7;}
+  #v-trend .tr-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-trend .tr-ask li:last-child{margin-bottom:0;}
+
+  /* ── 공통 조각 ── */
+  #v-trend .tr-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;
+    line-height:1.7;display:block;}
+  #v-trend .tr-hint{font-size:0.88rem;color:var(--muted);line-height:1.7;}
+  #v-trend .tr-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;}
+  #v-trend .tr-scroll{overflow-x:auto;max-width:100%;}
+  #v-trend .tr-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-trend .tr-tbl th,#v-trend .tr-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;
+    text-align:center;line-height:1.6;}
+  #v-trend .tr-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-trend .tr-tbl td.lf,#v-trend .tr-tbl th.lf{text-align:left;}
+  #v-trend .tr-tbl td.hi{background:var(--card-h);font-weight:700;color:var(--fg);}
+  #v-trend .tr-tbl td.num{font-family:var(--mono);}
+  #v-trend .tr-tbl tr.win td{background:rgba(90,122,90,0.14);}
+  #v-trend .tr-tbl tr.bad td{background:rgba(180,65,51,0.12);}
+  #v-trend .tr-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-trend .tr-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-trend .tr-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-trend .tr-fb b{color:var(--fg);}
+  #v-trend .tr-fb:empty{display:none;}
+  #v-trend .tr-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-trend .tr-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-trend .tr-in.num{width:5rem;text-align:center;}
+  #v-trend .tr-in.ok{border-color:var(--green);box-shadow:inset 0 0 0 2px var(--green);}
+  #v-trend .tr-in.no{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red);}
+  #v-trend textarea.tr-ta{width:100%;min-height:4.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:1rem;line-height:1.75;
+    background:var(--card);color:var(--fg);resize:vertical;}
+
+  /* ── 조작 요소 확대 — 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px ── */
+  #v-trend .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-trend .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-trend .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-trend .tabs{flex-wrap:wrap;}
+  #v-trend .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-trend .ws-btn{min-height:44px;}
+
+  /* ── 단계 토글(details) ── */
+  #v-trend .tr-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-trend .tr-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-trend .tr-fold>summary::-webkit-details-marker{display:none;}
+  #v-trend .tr-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-trend .tr-fold[open]>summary::after{content:'▾';}
+  #v-trend .tr-fold .bd{padding:0 0 0.9rem;}
+  #v-trend .tr-fold .bd p,#v-trend .tr-fold .bd li{font-size:1rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-trend .tr-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* ── 도해 2단 배치 — 좌(그림) / 우(짧은 설명) ── */
+  #v-trend .tr-two{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:1.1rem;align-items:start;margin-top:0.6rem;}
+  #v-trend .tr-two>figure{margin:0;min-width:0;}
+  #v-trend .tr-two svg{display:block;width:100%;height:auto;border:1px solid var(--border);
+    border-radius:0.6rem;background:var(--bg);}
+  #v-trend .tr-two figcaption{font-size:0.84rem;color:var(--muted);line-height:1.65;margin-top:0.35rem;}
+  #v-trend .tr-two p{font-size:1rem;line-height:1.85;margin-bottom:0.5rem;}
+  @media(max-width:720px){#v-trend .tr-two{grid-template-columns:1fr;}}
+
+  /* ── 캔버스 (산점도) ── */
+  #v-trend .tr-cvbox{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.7rem;margin:0.8rem 0 0.4rem;}
+  #v-trend canvas.tr-cv{display:block;width:100%;max-width:640px;height:auto;margin:0 auto;
+    touch-action:none;cursor:crosshair;border-radius:0.4rem;background:var(--card);}
+  #v-trend .tr-read{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(9rem,100%),1fr));
+    gap:0.55rem;margin-top:0.7rem;}
+  #v-trend .tr-rd{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.55rem 0.7rem;text-align:center;min-width:0;}
+  #v-trend .tr-rd .k{font-family:var(--mono);font-size:0.66rem;letter-spacing:0.08em;color:var(--muted);
+    text-transform:uppercase;display:block;line-height:1.5;}
+  #v-trend .tr-rd .v{font-family:var(--mono);font-size:1.12rem;font-weight:700;color:var(--fg);
+    display:block;margin-top:0.15rem;word-break:break-all;}
+  #v-trend .tr-rd.go .v{color:var(--green);}
+  #v-trend .tr-rd.bad .v{color:var(--red);}
+  #v-trend .tr-lg{display:flex;flex-wrap:wrap;gap:0.4rem 1rem;justify-content:center;margin-top:0.5rem;}
+  #v-trend .tr-lg span{font-family:var(--mono);font-size:0.74rem;color:var(--muted);display:inline-flex;
+    align-items:center;gap:0.35rem;}
+  #v-trend .tr-lg i{width:1.2rem;height:0.2rem;border-radius:9999px;display:inline-block;}
+  #v-trend .tr-lg i.dot{width:0.65rem;height:0.65rem;border-radius:50%;}
+
+  /* ── 손잡이 버튼 조작(접근성) ── */
+  #v-trend .tr-nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem;margin-top:0.7rem;}
+  #v-trend .tr-nudge button{font-family:var(--sans);font-size:0.92rem;min-height:44px;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--fg);
+    cursor:pointer;transition:all 0.2s;padding:0.4rem 0.3rem;line-height:1.3;}
+  #v-trend .tr-nudge button:hover{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+
+  /* ── 경고 배너 (무상관 데이터) ── */
+  #v-trend .tr-warn{display:none;align-items:flex-start;gap:0.6rem;background:rgba(180,65,51,0.1);
+    border:1px solid var(--red);border-left-width:5px;border-radius:var(--radius);
+    padding:0.75rem 0.9rem;margin:0.8rem 0 0;font-size:0.98rem;line-height:1.8;color:var(--body);}
+  #v-trend .tr-warn.on{display:flex;}
+  #v-trend .tr-warn .ic{font-size:1.4rem;line-height:1.3;flex:0 0 auto;}
+  #v-trend .tr-warn b{color:var(--red);}
+
+  /* ── 미니 곡선 3종 (다양한 형태의 추세선) ── */
+  #v-trend .tr-curves{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(11rem,100%),1fr));
+    gap:0.8rem;margin-top:0.8rem;}
+  #v-trend .tr-curve{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem;min-width:0;}
+  #v-trend .tr-curve svg{display:block;width:100%;height:auto;}
+  #v-trend .tr-curve h4{font-size:0.98rem;margin:0.45rem 0 0.25rem;color:var(--fg);}
+  #v-trend .tr-curve p{font-size:0.88rem;color:var(--muted);line-height:1.7;margin:0;}
+
+  /* ── 상관/인과 판정 문항 ── */
+  #v-trend .tr-cc{display:flex;flex-direction:column;gap:0.8rem;margin-top:0.8rem;}
+  #v-trend .tr-ccit{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 0.95rem;}
+  #v-trend .tr-ccit .q{font-size:1rem;font-weight:600;line-height:1.75;color:var(--fg);margin:0 0 0.5rem;}
+  #v-trend .tr-ccit .btn-row{margin:0.3rem 0 0;}
+
+  /* ── 예측 도전 입력 줄 ── */
+  #v-trend .tr-pd{display:flex;flex-direction:column;gap:0.6rem;margin:0.8rem 0;}
+  #v-trend .tr-pdit{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;background:var(--bg);
+    border:1px solid var(--border);border-radius:var(--radius);padding:0.6rem 0.75rem;}
+  #v-trend .tr-pdit .bd{font-family:var(--mono);font-size:0.68rem;letter-spacing:0.06em;padding:0.12rem 0.5rem;
+    border-radius:9999px;background:var(--fg);color:var(--bg);flex:0 0 auto;}
+  #v-trend .tr-pdit .bd.out{background:var(--red);}
+  #v-trend .tr-pdit .tx{flex:1 1 12rem;min-width:0;font-size:0.98rem;line-height:1.7;}
+  #v-trend .tr-pdit .tx b{font-family:var(--mono);}
+
+  /* ── 참고 자료 카드 ── */
+  #v-trend .tr-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-trend .tr-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;}
+  #v-trend .tr-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-trend .tr-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.3rem;}
+  #v-trend .tr-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-trend .tr-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-trend .tr-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-trend .tr-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-trend *{animation:none !important;transition:none !important;}
+  }
+  @media (max-width:640px){
+    #v-trend .tr-lbar{border-radius:var(--radius);}
+    /* .phz-row 는 minmax(13rem,…) 이라 375px 에서 넘칩니다 — 이 뷰에서만 1열로 내립니다. */
+    #v-trend .phz-row{grid-template-columns:1fr;}
+    #v-trend .tr-nudge{grid-template-columns:repeat(2,1fr);}
+    #v-trend .tr-fml{font-size:0.8rem;}
+    #v-trend .tr-in.num{width:4.4rem;}
+    #v-trend .tr-read{grid-template-columns:repeat(auto-fit,minmax(min(7.4rem,100%),1fr));}
+  }
+  </style>
+
+  <!-- ═════ 차시 선택 ═════ -->
+  <div class="tr-lbar" id="tr-lbar" data-no-toggle="1" role="group" aria-label="차시 선택">
+    <span class="lb">Ⅳ 단원 · 차시</span>
+    <button type="button" class="tr-lchip on" id="tr-l22" onclick="trLesson(22)">22차시 · 산점도와 추세선</button>
+    <button type="button" class="tr-lchip" id="tr-l23" onclick="trLesson(23)">23차시 · 곡선과 과적합</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       22차시 · 산점도와 추세선으로 예측하기
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tr-sec on" id="tr22-root">
+
+    <!-- ═════ 표제부 ═════ -->
+    <div class="tr-hero">
+      <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 22차시 · [12인수04-02]</p>
+      <h2>산점도와 추세선으로 예측하기 — 흩어진 점에서 내일을 읽다</h2>
+      <p class="desc">
+        20·21차시에서는 <b>범주형</b> 자료를 확률로 예측했습니다. 이제 기온·주가·출산율처럼
+        <b>연속형</b> 수치 자료를 다룹니다. 점들 사이에 직선 하나를 그으면, 아직 관측하지 않은 값까지 말할 수 있습니다.
+      </p>
+    </div>
+
+    <div class="info" data-no-toggle="1" style="margin-top:0;">
+      <strong>오늘의 학습 목표</strong>
+      <div style="margin-top:0.5rem;">
+        ① 공학 도구를 사용하여 데이터의 경향성을 <b>산점도와 추세선 y = ax + b</b>로 나타낼 수 있습니다. <b>[12인수04-02]</b>
+      </div>
+      <div style="margin-top:0.35rem;">
+        ② <b>추세선</b>을 이용하여 예측값을 구하고 <b>실제값과의 오차</b>를 해석할 수 있습니다. <b>[12인수04-02]</b>
+      </div>
+      <div class="tr-goalmap">
+        <button type="button" onclick="tr22See(0,'tr22-act1')">├ 목표 ① → <b>활동 1</b> 점을 끌어 산점도를 만들고 내 추세선을 긋기 →</button>
+        <button type="button" onclick="tr22See(1,'tr22-act2')">├ 목표 ② → <b>활동 2</b> 예측값과 오차를 표에 직접 채워 채점하기 →</button>
+        <button type="button" onclick="tr22See(2,'tr22-act3')">└ 목표 ② → <b>활동 3</b> 아직 관측하지 않은 x를 예측하고 실제와 견주기 →</button>
+      </div>
+    </div>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+      <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+    <div class="chips tr22-keys" data-no-toggle="1">
+      <span class="chip">산점도</span>
+      <span class="chip">추세선 y = ax + b</span>
+      <span class="chip">예측값 f(x)</span>
+      <span class="chip">오차 y − f(x)</span>
+      <span class="chip">오차의 크기</span>
+      <span class="chip">내삽과 외삽</span>
+    </div>
+
+    <div class="card tr-ask" data-no-toggle="1">
+      <h3>핵심 질문</h3>
+      <ul>
+        <li>흩어진 점들 속에서 아직 오지 않은 ‘미래’를 어떻게 읽어낼 수 있는가?</li>
+      </ul>
+      <p style="margin-top:0.7rem;">이 질문에는 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+    </div>
+
+    <!-- ═════ STEP 1 · 도입 ═════ -->
+    <div class="tr-step"><p class="mono">STEP 1 · 도입</p></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>추천 영상 — 경향성을 직선으로 읽는다는 것</h3>
+      <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+        첫 영상은 오늘 배울 내용과 순서가 거의 같고, 세 번째 영상은 실제 천문 데이터를
+        지오지브라로 분석한 사례입니다.</p>
+      <div id="tr22-videos"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>마중 퀴즈 — 내 생각은?</h3>
+      <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+        답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+      <div id="tr22-warm"></div>
+      <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b></p>
+    </div>
+
+    <div class="card">
+      <h3>누구의 직선이 옳은가 — 세 학생의 주장</h3>
+      <div class="tr-two">
+        <figure>
+          <svg viewBox="0 0 320 200" role="img" aria-label="중간고사 점수와 기말고사 점수의 산점도 위에 세 직선을 그린 그림. 수평선, 몇 점만 지나는 직선, 모든 점에 고르게 가까운 직선">
+            <rect width="320" height="200" fill="var(--bg)"/>
+            <g stroke="var(--border)" stroke-width="1">
+              <path d="M44 24V166H304"/>
+              <path d="M44 130H304M44 94H304M44 58H304" stroke-dasharray="3 4"/>
+            </g>
+            <g fill="var(--fg)">
+              <circle cx="76" cy="146" r="4.2"/><circle cx="98" cy="132" r="4.2"/><circle cx="118" cy="140" r="4.2"/>
+              <circle cx="140" cy="112" r="4.2"/><circle cx="162" cy="118" r="4.2"/><circle cx="186" cy="92" r="4.2"/>
+              <circle cx="208" cy="96" r="4.2"/><circle cx="232" cy="70" r="4.2"/><circle cx="256" cy="76" r="4.2"/>
+              <circle cx="280" cy="50" r="4.2"/>
+            </g>
+            <path d="M52 104H300" stroke="var(--blue)" stroke-width="2.4" stroke-dasharray="8 5"/>
+            <text x="60" y="98" font-size="10" font-family="monospace" fill="var(--blue)">l₁</text>
+            <path d="M60 156L296 44" stroke="var(--red)" stroke-width="2.4" stroke-dasharray="3 4"/>
+            <text x="292" y="40" font-size="10" font-family="monospace" fill="var(--red)">l₂</text>
+            <path d="M56 150L300 56" stroke="var(--green)" stroke-width="3"/>
+            <text x="256" y="52" font-size="10" font-family="monospace" fill="var(--green)">l₃</text>
+            <text x="170" y="184" font-size="10.5" font-family="monospace" fill="var(--muted)" text-anchor="middle">중간고사(점)</text>
+            <text x="20" y="96" font-size="10.5" font-family="monospace" fill="var(--muted)">기말</text>
+            <text x="20" y="110" font-size="10.5" font-family="monospace" fill="var(--muted)">고사</text>
+          </svg>
+          <figcaption>학생 10명의 중간고사 x점, 기말고사 y점을 순서쌍 (x, y)로 찍은 <b>산점도</b>와 세 직선.
+            <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.140~141 산점도와 세 직선 l₁, l₂, l₃ 도표를 재구성</span></figcaption>
+        </figure>
+        <div>
+          <p><b>A</b> “기말고사 평균이 60점이니까, 경향성을 가장 잘 나타내는 직선은 <b>수평선 l₁</b>이야.”</p>
+          <p><b>B</b> “동시에 지나는 점이 가장 많은 <b>l₂</b>가 맞지~”</p>
+          <p><b>C</b> “모든 점을 전체적으로 가깝게 지나는 <b>l₃</b>인데?”</p>
+          <p>l₁·l₂는 몇몇 점과는 아주 가깝지만 나머지 점과는 매우 멉니다. l₃는 <b>모든 점과 거리가 고르게 가깝습니다.</b>
+            이처럼 산점도에서 두 변량 사이의 경향성을 잘 나타내는 직선 또는 곡선을 <b>추세선</b>이라고 합니다.</p>
+          <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.141 「산점도에서 두 변량 사이의 경향성을 잘 나타내는 직선 또는 곡선을 추세선이라고 한다」 서술을 재구성</span>
+        </div>
+      </div>
+      <div id="tr22-tb1"></div>
+    </div>
+
+    <div class="card">
+      <h3>왜 지금 이 수업인가 — 30년 기온이 말해 준 것</h3>
+      <figure class="phz" style="max-width:min(100%,30rem);margin-left:auto;margin-right:auto;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Global_Temperature_Anomaly.svg/500px-Global_Temperature_Anomaly.svg.png"
+             alt="1880년부터 최근까지의 지구 평균 기온 편차를 점과 매끄러운 곡선으로 함께 나타낸 그래프"
+             loading="lazy" referrerpolicy="no-referrer"
+             onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+        <span class="fb" aria-hidden="true">🌡️</span>
+        <figcaption><b>1880년 이후 지구 평균 기온의 편차입니다. 해마다 오르내리는 <i>점</i>들 사이로 매끄러운 <i>선</i> 하나가 지나갑니다.
+          점은 사실이고, 선은 사람이 찾아낸 경향성입니다.</b>
+          <span class="src">출처: Wikimedia Commons, NASA Goddard Institute for Space Studies, “Global Temperature Anomaly”, Public domain</span></figcaption>
+      </figure>
+      <p>씨마스 교과서는 이 단원을 이렇게 엽니다. “지구 온난화로 이상 기후가 심해지면서 변화를 정확히 예측하고
+        대비할 필요성이 커지고 있다. 인공지능은 수학을 이용하여 데이터를 분석하고 기온이나 강수량을 예측한다.”</p>
+      <p>실제로 1993~2022년 서울의 연평균 기온 30개를 지오지브라에 넣으면 추세선
+        <b>y = 0.02x − 26.57</b>이 나옵니다. 여기에 x = 2050을 넣으면 14.43 ℃, 2050년 서울의 예측 기온입니다.</p>
+      <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.140 생각 열기, p.142~143 서울 지역 연평균 기온 30년 데이터(기상자료개방포털)와 p.145 f(2050) = 14.43 서술을 재구성</span>
+    </div>
+
+    <!-- ═════ STEP 2 · 전개 ═════ -->
+    <div class="tr-step"><p class="mono">STEP 2 · 전개</p></div>
+
+    <div class="tabs">
+      <button class="tab on" type="button" onclick="trTab22(0,this)">① 추세선 놀이터</button>
+      <button class="tab" type="button" onclick="trTab22(1,this)">② 예측값과 오차</button>
+      <button class="tab" type="button" onclick="trTab22(2,this)">③ 예측 도전</button>
+    </div>
+
+    <!-- ── TAB 0 : 추세선 놀이터 ────────────────────────────────────────── -->
+    <div class="tpanel on" id="tr22p0">
+
+      <div class="card" id="tr22-act1" data-no-toggle="1">
+        <h3>활동 1 · 「내 추세선」을 긋기 전에 — 예상을 골라 보세요</h3>
+        <p>아래 조작판에서 여러분은 <b>직선 하나</b>를 직접 움직여 데이터의 경향성을 나타낼 것입니다.
+          그리고 그 직선으로 <b>아직 없는 해</b>의 값을 예측합니다.</p>
+        <p><b>내가 눈대중으로 그은 직선</b>과 <b>공학 도구가 계산해 주는 최적선</b> 중
+          어느 쪽이 <b>오차의 제곱의 평균</b>을 더 작게 만들까요?</p>
+        <div class="chips" id="tr22-a1-guess">
+          <button class="chip" type="button" onclick="tr22Guess(0,this)">내가 그은 직선</button>
+          <button class="chip" type="button" onclick="tr22Guess(1,this)">공학 도구의 최적선</button>
+          <button class="chip" type="button" onclick="tr22Guess(2,this)">자료에 따라 다르다</button>
+        </div>
+        <p class="status" id="tr22-a1-gmsg">예상을 고르기 전에는 아래 조작판이 잠겨 있습니다.
+          정답은 직접 조작해 본 뒤 [최적선 보기]를 누르면 공개됩니다.</p>
+        <div class="tr-fb" id="tr22-a1-gfb"></div>
+      </div>
+
+      <div class="card tr-veil" id="tr22-a1-panel" data-no-toggle="1">
+        <h3>조작 — 점을 끌고, 직선의 양 끝을 올리고 내려 보세요</h3>
+        <p class="mat-label" style="text-align:left;">데이터 고르기</p>
+        <div class="chips" id="tr22-ds">
+          <button class="chip on" type="button" onclick="tr22Ds('stock',this)">S기업 주가 (2013~2022)</button>
+          <button class="chip" type="button" onclick="tr22Ds('birth',this)">합계 출산율 (2017~2022)</button>
+          <button class="chip" type="button" onclick="tr22Ds('sleep',this)">스마트폰 사용과 수면 (9명)</button>
+          <button class="chip" type="button" onclick="tr22Ds('free',this)">직접 입력</button>
+        </div>
+        <p class="tr-hint" id="tr22-dsnote"></p>
+
+        <div class="tr-cvbox">
+          <canvas class="tr-cv" id="tr22-cv" role="img"
+                  aria-label="데이터 점과 내가 그은 추세선을 함께 나타낸 좌표평면. 점을 끌어 옮기고 직선 양 끝의 손잡이를 올리거나 내릴 수 있습니다."></canvas>
+          <div class="tr-lg">
+            <span><i class="dot" style="background:var(--fg);"></i>주어진 자료</span>
+            <span><i style="background:var(--blue);"></i>내 추세선</span>
+            <span><i style="background:var(--green);"></i>최적선(최소제곱)</span>
+            <span><i class="dot" style="background:var(--red);"></i>공개된 실제값</span>
+            <span><i style="background:var(--red);"></i>오차 막대</span>
+          </div>
+        </div>
+        <p class="status" id="tr22-cvst">빈 곳을 누르면 점이 추가되고, 점을 두 번 누르면 지워집니다.</p>
+        <p class="mat-label" style="text-align:left;">마우스를 쓰기 어려울 때 — 버튼으로 직선 움직이기</p>
+        <div class="tr-nudge" role="group" aria-label="내 추세선의 양 끝 높이 조절">
+          <button type="button" onclick="tr22Nudge(1,1)">왼쪽 끝 ▲</button>
+          <button type="button" onclick="tr22Nudge(1,-1)">왼쪽 끝 ▼</button>
+          <button type="button" onclick="tr22Nudge(2,1)">오른쪽 끝 ▲</button>
+          <button type="button" onclick="tr22Nudge(2,-1)">오른쪽 끝 ▼</button>
+        </div>
+
+        <div class="tr-read" id="tr22-read"></div>
+
+        <div class="btn-row" style="margin-top:0.9rem;">
+          <button class="btn pri" type="button" onclick="tr22Reveal()" id="tr22-revbtn">실제값 공개</button>
+          <button class="btn" type="button" onclick="tr22Best()" id="tr22-bestbtn">최적선 보기</button>
+          <button class="btn" type="button" onclick="tr22Level()">직선을 평균 수평선으로</button>
+          <button class="btn" type="button" onclick="tr22Reset()">원래 자료로</button>
+        </div>
+
+        <div id="tr22-errwrap" style="display:none;margin-top:0.9rem;">
+          <p class="mat-label" style="text-align:left;">공개된 실제값과 내 예측값 — 오차 = (실제값) − (예측값)</p>
+          <div class="tr-scroll"><table class="tr-tbl" id="tr22-errtbl"></table></div>
+        </div>
+        <span class="tr-src" id="tr22-dssrc"></span>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+        <p class="tr-lockmsg" id="tr22-a1-lock">※ [실제값 공개]를 한 번 누르면 아래 토글이 열립니다.</p>
+
+        <details class="tr-fold" id="tr22-a1-f1">
+          <summary>단계 1 관찰 — 내 직선은 최적선과 얼마나 달랐나</summary>
+          <div class="bd">
+            <p>직선의 한쪽 끝만 올려도 <b>기울기 a와 y절편 b가 동시에</b> 바뀝니다. 화면의 a, b 값을 보며 확인해 보세요.</p>
+            <p>화면의 <b>오차의 제곱의 평균</b>이 작아지는 방향으로 직선을 움직였다면, 그 직선은 최적선에 가까워집니다.
+              [최적선 보기]를 눌러 초록 점선과 겹쳐 보세요.</p>
+            <p>주가 자료에서 최적선은 <b>y = 5.70x − 52.70</b>입니다. 이때
+              <b>오차의 절댓값의 평균은 약 8.4</b>(천 원), <b>오차의 제곱의 평균은 약 109.8</b>입니다.
+              <b>오차의 제곱의 평균은 어떤 직선으로도 이보다 작게 만들 수 없습니다.</b>
+              공학 도구의 ‘적합선’이 바로 이 값을 최소로 만드는 직선입니다.</p>
+            <p class="tr-hint">주의 — 최적선은 <b>제곱</b>의 평균을 최소로 만드는 직선입니다.
+              절댓값의 평균만 보면 여러분이 그은 직선이 더 작아지는 경우도 있습니다. 어떤 기준으로 재는지가 늘 먼저입니다.</p>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr22-a1-f2">
+          <summary>단계 2 정리 — 2023년은 맞혔는데 2024·2025년은 왜 크게 틀렸나</summary>
+          <div class="bd">
+            <p>주가 최적선으로 예측하면 f(23) = 5.70×23 − 52.70 ≈ <b>78.5</b>(천 원)이고, 실제 2023년 연말 종가는
+              <b>78</b>(천 원)이었습니다. <b>거의 정확히 맞았습니다.</b></p>
+            <p>그런데 같은 직선으로 f(24) ≈ <b>84.2</b>, f(25) ≈ <b>89.9</b>인데 실제는 <b>53</b>과 <b>121</b>이었습니다.
+              오차가 각각 −31, +31에 이릅니다.</p>
+            <p>출산율 자료도 같습니다. 최적선은 f(23) ≈ <b>0.70</b>으로 실제 <b>0.72</b>에 가까웠지만,
+              f(24) ≈ <b>0.65</b>인데 실제 2024년 출산율은 오히려 올라 <b>0.75</b>였습니다.</p>
+            <p><b>추세선은 유효한 예측 도구이지만 모든 미래를 정확히 설명하지는 못합니다.</b>
+              특히 관측 구간에서 멀어질수록 예측은 빠르게 흔들립니다.</p>
+            <span class="tr-src">출처 — KERIS 연수교재 「예측과 최적화」 p.235 교수학습 TIP(2023년 78, 2024년 53, 2025년 121)·p.237 교사 발문(2023년 출산율 0.72, 2024년 0.75) 서술을 재구성</span>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr22-a1-f3">
+          <summary>단계 3 정의 확인 — 산점도 · 추세선 · 예측값 · 오차</summary>
+          <div class="bd">
+            <p><b>산점도</b>는 서로 대응하는 두 변량 x, y의 순서쌍 (x, y)를 좌표평면 위의 점으로 나타낸 그래프입니다.</p>
+            <p><b>추세선</b>은 산점도에서 두 변량 사이의 경향성을 잘 나타내는 직선 또는 곡선입니다.
+              직선일 때 그 식은 <b>f(x) = ax + b</b> (a, b는 상수) 꼴의 일차함수로 씁니다.</p>
+            <p>f(x)를 입력값 x에 대응하는 실제 측정값 y의 <b>예측값</b>이라 하고,
+              실제 측정값에서 예측값을 뺀 값을 <b>오차</b>라고 합니다.</p>
+            <div class="tr-fml">(오차) = (실제 측정값) − (예측값) = y − f(x) = y − (ax + b)</div>
+            <div class="tr-fml">(오차의 크기) = |오차| = | y − f(x) |</div>
+            <p>예 ① 실제 3, 예측 3.6 → 오차 −0.6, 오차의 크기 0.6<br>
+               예 ② 실제 12.7, 예측 13.43 → 오차 −0.73, 오차의 크기 0.73</p>
+            <p><b>오차의 크기가 전체적으로 작을수록</b> 추세선이 데이터의 경향성을 잘 나타낸다고 판단합니다.</p>
+            <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.145 오차·오차의 크기 정의, 미래엔 「인공지능 수학」 p.131 「(오차) = (y의 값) − (y의 예측값)」, 동아출판 「인공지능 수학」 p.133 오차의 크기 서술을 재구성</span>
+          </div>
+        </details>
+        <div id="tr22-tb2"></div>
+      </div>
+    </div>
+
+    <!-- ── TAB 1 : 예측값과 오차 ────────────────────────────────────────── -->
+    <div class="tpanel" id="tr22p1">
+
+      <div class="card" id="tr22-act2" data-no-toggle="1">
+        <h3>활동 2 · 야구 선수의 연봉을 예측하기 — 표를 직접 채워 봅시다</h3>
+        <p>어느 야구팀의 네 선수 A~D의 지난 시즌 <b>승리 기여도 x</b>와 <b>실제 연봉 y억 원</b>입니다.
+          이 팀이 쓰는 추세선은 원점을 지나는 <b>f(x) = 1.2x</b>입니다.</p>
+        <div class="tr-fml">f(x) = 1.2x&nbsp;&nbsp;/&nbsp;&nbsp;(오차) = y − f(x)</div>
+        <p>아래 표의 <b>예측값</b> 칸과 <b>오차</b> 칸을 채운 뒤 [채점]을 누르세요. (소수 첫째 자리까지)</p>
+        <div class="tr-scroll">
+          <table class="tr-tbl" id="tr22-bb">
+            <tr><th>선수</th><th>승리 기여도 x</th><th>실제 연봉 y</th><th>연봉의 예측값 f(x)</th><th>오차 y − f(x)</th></tr>
+          </table>
+        </div>
+        <div class="btn-row">
+          <button class="btn pri" type="button" onclick="tr22BbCheck()">채점</button>
+          <button class="btn" type="button" onclick="tr22BbFill()">정답 보기</button>
+          <button class="btn" type="button" onclick="tr22BbClear()">지우기</button>
+        </div>
+        <div class="tr-fb" id="tr22-bb-fb"></div>
+        <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.146 함께 하기 2(야구팀 네 선수의 승리 기여도와 연봉, f(x) = 1.2x) 자료를 재구성</span>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>이어서 — 새 선수 E의 연봉을 예측하면?</h3>
+        <p>선수 E의 승리 기여도가 <b>3.5</b>일 때, 같은 추세선으로 예측한 E의 연봉은 얼마입니까?</p>
+        <div class="chips" id="tr22-bbE">
+          <button class="chip" type="button" onclick="tr22BbE(0,this)">3.5억 원</button>
+          <button class="chip" type="button" onclick="tr22BbE(1,this)">4.2억 원</button>
+          <button class="chip" type="button" onclick="tr22BbE(2,this)">4.7억 원</button>
+          <button class="chip" type="button" onclick="tr22BbE(3,this)">알 수 없다</button>
+        </div>
+        <div class="tr-fb" id="tr22-bbE-fb"></div>
+      </div>
+
+      <div class="card">
+        <h3>오차를 그림으로 — 예측값 · 실제값 · 오차의 크기</h3>
+        <div class="tr-two">
+          <figure>
+            <svg viewBox="0 0 320 190" role="img" aria-label="추세선 위의 예측값과 그 위쪽 실제값을 잇는 수직선으로 오차의 크기를 표시한 그림">
+              <rect width="320" height="190" fill="var(--bg)"/>
+              <path d="M44 22V160H306" stroke="var(--border)" stroke-width="1"/>
+              <path d="M52 148L298 44" stroke="var(--green)" stroke-width="3"/>
+              <text x="248" y="40" font-size="10.5" font-family="monospace" fill="var(--green)">f(x)=ax+b</text>
+              <g fill="var(--fg)">
+                <circle cx="88" cy="128" r="4"/><circle cx="126" cy="122" r="4"/>
+                <circle cx="200" cy="72" r="4"/><circle cx="248" cy="82" r="4"/>
+              </g>
+              <circle cx="164" cy="62" r="5" fill="var(--red)"/>
+              <circle cx="164" cy="101" r="5" fill="none" stroke="var(--green)" stroke-width="2.4"/>
+              <path d="M164 66V97" stroke="var(--red)" stroke-width="3" stroke-dasharray="4 3"/>
+              <path d="M164 160V106" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="172" y="60" font-size="10.5" font-family="monospace" fill="var(--red)">실제 측정값 y</text>
+              <text x="172" y="116" font-size="10.5" font-family="monospace" fill="var(--green)">예측값 f(x)</text>
+              <text x="118" y="86" font-size="10.5" font-family="monospace" fill="var(--red)">오차의 크기</text>
+              <text x="160" y="176" font-size="10.5" font-family="monospace" fill="var(--muted)" text-anchor="middle">x</text>
+            </svg>
+            <figcaption>같은 x에서 <b>위아래로 벌어진 만큼</b>이 오차의 크기입니다.
+              <span class="tr-src">출처 — 미래엔 「인공지능 수학」 p.131 오차 도해, 동아출판 「인공지능 수학」 p.133 오차의 크기 도해를 재구성</span></figcaption>
+          </figure>
+          <div>
+            <p>오차는 <b>부호가 있는 값</b>입니다. 실제값이 예측값보다 크면 양수(추세선이 낮게 예측), 작으면 음수입니다.</p>
+            <p>그래서 오차를 그냥 더하면 <b>서로 상쇄되어 0에 가까워집니다.</b>
+              방금 표에서도 −0.2 + 0.6 + (−0.6) + 0.2 = <b>0</b>이었습니다.</p>
+            <p>“전체적으로 얼마나 벗어났는가”를 하나의 수로 재려면 <b>절댓값</b>을 씌우거나 <b>제곱</b>을 해야 합니다.
+              이 이야기는 24차시 <b>손실함수</b>에서 이어집니다.</p>
+          </div>
+        </div>
+        <div id="tr22-tb3"></div>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+        <p class="tr-lockmsg" id="tr22-a2-lock">※ 활동 2를 한 번 채점하면 아래 토글이 열립니다.</p>
+
+        <details class="tr-fold" id="tr22-a2-f1">
+          <summary>단계 1 관찰 — 오차의 합은 왜 0이 되었나</summary>
+          <div class="bd">
+            <p>네 오차는 −0.2, 0.6, −0.6, 0.2였습니다. 양수와 음수가 서로 상쇄되어 합이 <b>정확히 0</b>입니다.</p>
+            <p>추세선은 점들의 <b>가운데</b>를 지나므로, 위로 벗어난 만큼과 아래로 벗어난 만큼이 비슷해집니다.
+              합이 0이라는 것은 “오차가 없다”는 뜻이 결코 아닙니다.</p>
+            <p>절댓값을 씌우면 0.2 + 0.6 + 0.6 + 0.2 = <b>1.6</b>, 오차의 크기의 평균은 <b>0.4</b>억 원입니다.</p>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr22-a2-f2">
+          <summary>단계 2 정리 — 오차의 크기가 작다는 것의 의미</summary>
+          <div class="bd">
+            <p>같은 자료를 두 추세선으로 예측하면, 어떤 점에서는 A가, 다른 점에서는 B가 더 정확할 수 있습니다.
+              그래서 <b>한 점의 오차만으로는</b> 두 추세선을 견줄 수 없습니다.</p>
+            <p>미래엔 교과서는 수확량과 매출액 자료에서 추세선 B(fB(x) = 1.1x)와 C(fC(x) = 0.9x)를 비교합니다.
+              64 kg·88 kg에서는 B가, 67·83·98 kg에서는 C가 오차의 크기가 더 작습니다.</p>
+            <p>그래서 <b>오차의 제곱의 평균</b>을 구해 견줍니다. B는 205.764, C는 179.524로 C가 더 작아
+              C를 더 적합한 추세선으로 판단합니다. 이 값이 곧 24차시의 <b>손실함수</b>입니다.</p>
+            <span class="tr-src">출처 — 미래엔 「인공지능 수학」 p.132~133 생각 열기와 오차의 제곱의 평균(추세선 B 205.764, C 179.524) 서술을 재구성</span>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr22-a2-f3">
+          <summary>단계 3 정의 확인 — 예측값과 오차, 다시 한 번</summary>
+          <div class="bd">
+            <p>두 변량 x, y 사이의 경향성을 나타내는 추세선을 f(x) = ax + b라 할 때,
+              <b>f(x)</b>는 입력값 x에 대응하는 실제 측정값 y의 <b>예측값</b>입니다.</p>
+            <p>일반적으로 예측값 f(x)와 실제 측정값 y 사이에는 <b>차이가 존재합니다.</b>
+              이 차이를 오차라 하고, (오차) = y − f(x)로 구합니다.</p>
+            <p>예 ① f(x) = 1.2x, x = 3, y = 3 → 예측값 3.6, 오차 −0.6<br>
+               예 ② f(x) = −1.24x + 440, x = 30, y = 360 → 예측값 402.8, 오차 −42.8, 오차의 크기 42.8</p>
+            <p>인공지능은 학습용 데이터를 분석하여 추세선 y = f(x)를 생성하고 예측에 이용합니다.</p>
+            <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.145 「인공지능은 학습용 데이터를 분석하여 추세선 y = f(x)를 생성하고 예측에 이용한다」, 동아출판 p.133~134 f(30) = 402.8, 오차 −42.8 서술을 재구성</span>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- ── TAB 2 : 예측 도전 ───────────────────────────────────────────── -->
+    <div class="tpanel" id="tr22p2">
+
+      <div class="card" id="tr22-act3" data-no-toggle="1">
+        <h3>활동 3 · 예측 도전 — 아직 관측하지 않은 x</h3>
+        <p>추세선의 진짜 쓸모는 <b>자료에 없는 x</b>에 답할 수 있다는 것입니다.
+          아래 문항의 x값은 활동 1에서 고른 자료에 <b>들어 있지 않은 값</b>만 골라 출제됩니다.
+          점을 추가·삭제하면 문항도 다시 만들어집니다.</p>
+        <p class="tr-hint">자료 안쪽의 빈틈을 메우는 예측을 <b>내삽</b>, 자료 밖으로 뻗는 예측을 <b>외삽</b>이라고 부릅니다.</p>
+        <div class="tr-fml" id="tr22-pd-eq">최적선을 계산 중입니다…</div>
+        <div class="tr-pd" id="tr22-pd"></div>
+        <div class="btn-row">
+          <button class="btn pri" type="button" onclick="tr22PdCheck()">채점</button>
+          <button class="btn" type="button" onclick="tr22PdNew()">문항 다시 만들기</button>
+          <button class="btn" type="button" onclick="tr22PdReal()">실제값과 비교</button>
+        </div>
+        <div class="tr-fb" id="tr22-pd-fb"></div>
+        <div id="tr22-pd-real"></div>
+      </div>
+
+      <div class="card">
+        <h3>내삽과 외삽 — 같은 직선인데 믿음의 크기는 다르다</h3>
+        <div class="tr-two">
+          <figure>
+            <svg viewBox="0 0 320 190" role="img" aria-label="자료가 모인 구간 안쪽의 내삽과 자료 밖으로 뻗는 외삽을 구분해 표시한 그림">
+              <rect width="320" height="190" fill="var(--bg)"/>
+              <rect x="86" y="26" width="130" height="130" fill="var(--accent)" opacity="0.2"/>
+              <rect x="216" y="26" width="90" height="130" fill="var(--red)" opacity="0.09"/>
+              <path d="M44 22V158H306" stroke="var(--border)" stroke-width="1"/>
+              <path d="M56 146L300 46" stroke="var(--green)" stroke-width="2.8"/>
+              <g fill="var(--fg)">
+                <circle cx="92" cy="132" r="4"/><circle cx="112" cy="126" r="4"/><circle cx="132" cy="116" r="4"/>
+                <circle cx="172" cy="104" r="4"/><circle cx="192" cy="94" r="4"/><circle cx="210" cy="92" r="4"/>
+              </g>
+              <circle cx="152" cy="112" r="5.4" fill="none" stroke="var(--blue)" stroke-width="2.6"/>
+              <circle cx="272" cy="60" r="5.4" fill="none" stroke="var(--red)" stroke-width="2.6"/>
+              <text x="150" y="46" font-size="10.5" font-family="monospace" fill="var(--blue)" text-anchor="middle">내삽 구간</text>
+              <text x="262" y="46" font-size="10.5" font-family="monospace" fill="var(--red)" text-anchor="middle">외삽</text>
+              <text x="152" y="176" font-size="10" font-family="monospace" fill="var(--blue)" text-anchor="middle">빈틈 메우기</text>
+              <text x="268" y="176" font-size="10" font-family="monospace" fill="var(--red)" text-anchor="middle">자료 밖</text>
+            </svg>
+            <figcaption>같은 직선이라도 자료가 모인 구간 <b>안</b>과 <b>밖</b>은 신뢰도가 다릅니다.</figcaption>
+          </figure>
+          <div>
+            <p><b>내삽</b>은 이웃한 관측값들이 양쪽에서 답을 붙들어 주므로 비교적 안전합니다.</p>
+            <p><b>외삽</b>은 붙들어 줄 점이 한쪽에만 있습니다. 주가 자료에서 2023년(한 칸 밖)은 잘 맞았지만
+              2024·2025년(두·세 칸 밖)은 크게 틀린 이유가 여기 있습니다.</p>
+            <p>인공지능도 마찬가지입니다. <b>학습한 범위를 벗어난 입력</b>에서는 아무리 좋은 모델도 흔들립니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>일반화 — 내 문장으로</h3>
+        <p>“추세선으로 예측할 때 특히 조심해야 하는 경우”를 한두 문장으로 적어 보세요.
+          STEP 3의 핵심 질문에 그대로 쓸 수 있습니다.</p>
+        <textarea class="tr-ta" id="tr22-a3-note" placeholder="예: 자료가 모인 구간에서 멀리 벗어난 x를 예측할 때는…"></textarea>
+        <div class="btn-row"><button class="btn" type="button" onclick="tr22NoteSave('tr22-a3-note','tr22-a3-nst')">저장</button></div>
+        <p class="status" id="tr22-a3-nst"></p>
+      </div>
+    </div>
+
+    <!-- ═════ STEP 3 · 정리 ═════ -->
+    <div class="tr-step"><p class="mono">STEP 3 · 정리</p></div>
+
+    <div class="card">
+      <h3>오늘의 핵심 3줄 — 찍고, 긋고, 견준다</h3>
+      <ol style="margin:0.7rem 0 0 1.2rem;">
+        <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+          두 변량의 순서쌍을 점으로 찍은 것이 <b>산점도</b>, 그 경향성을 잘 나타내는 직선·곡선이 <b>추세선</b>입니다.
+          직선일 때 <b>f(x) = ax + b</b>로 씁니다.</li>
+        <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+          추세선에 x를 넣은 값이 <b>예측값 f(x)</b>이고, <b>오차 = 실제값 − 예측값</b>입니다.
+          오차의 크기가 전체적으로 작을수록 좋은 추세선입니다.</li>
+        <li style="font-size:1.06rem;font-weight:600;">
+          오차는 <b>부호가 있어 서로 상쇄</b>됩니다. 그래서 절댓값이나 제곱으로 모아야 “얼마나 좋은가”를 하나의 수로 말할 수 있습니다.</li>
+      </ol>
+      <p class="mat-label" style="text-align:left;margin-top:1.2rem;">오늘 다룬 세 자료 한눈에</p>
+      <div class="tr-scroll">
+        <table class="tr-tbl">
+          <tr><th>자료</th><th>경향</th><th>최적선</th><th>예측</th><th>실제</th><th>해석</th></tr>
+          <tr><td class="lf">S기업 주가</td><td>양의 상관</td><td class="num">y = 5.70x − 52.70</td>
+              <td class="num">f(23) ≈ 78.5</td><td class="num hi">78</td><td class="lf">거의 정확</td></tr>
+          <tr><td class="lf">S기업 주가</td><td>양의 상관</td><td class="num">〃</td>
+              <td class="num">f(25) ≈ 89.9</td><td class="num hi">121</td><td class="lf">외삽이 멀어져 크게 벗어남</td></tr>
+          <tr><td class="lf">합계 출산율</td><td>음의 상관</td><td class="num">y = −0.055x + 1.978</td>
+              <td class="num">f(23) ≈ 0.70</td><td class="num hi">0.72</td><td class="lf">근사하게 맞음</td></tr>
+          <tr><td class="lf">합계 출산율</td><td>음의 상관</td><td class="num">〃</td>
+              <td class="num">f(24) ≈ 0.65</td><td class="num hi">0.75</td><td class="lf">추세가 꺾여 방향까지 틀림</td></tr>
+          <tr><td class="lf">스마트폰·수면</td><td>음의 상관</td><td class="num">y = −1.29x + 440.2</td>
+              <td class="num">f(55) ≈ 369</td><td class="num hi">390</td><td class="lf">내삽이라 오차가 작음</td></tr>
+        </table>
+      </div>
+      <span class="tr-src">출처 — KERIS 연수교재 「예측과 최적화」 p.232·p.236 S기업 주가·합계 출산율 자료와 p.235·p.237 실제값, 동아출판 「인공지능 수학」 p.133 스마트폰 사용 시간·수면 시간 자료를 재구성(최적선은 최소제곱법으로 직접 계산)</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>핵심 질문에 답하기</h3>
+      <p><b>흩어진 점들 속에서 아직 오지 않은 ‘미래’를 어떻게 읽어낼 수 있는가?</b></p>
+      <textarea class="tr-ta" id="tr22-ans" placeholder="내 문장으로 답해 보세요."></textarea>
+      <details class="tr-fold">
+        <summary>자세히 보기 — 예시 답안</summary>
+        <div class="bd">
+          <p>흩어진 점들에는 <b>공통된 방향</b>이 숨어 있습니다. 모든 점에서 고르게 가까운 직선
+            f(x) = ax + b 하나를 찾으면, 그 방향을 하나의 식으로 붙잡을 수 있습니다.</p>
+          <p>그 식에 아직 관측하지 않은 x를 넣으면 예측값이 나옵니다. 다만 예측값과 실제값 사이에는
+            언제나 <b>오차</b>가 있고, 자료가 모인 구간에서 <b>멀어질수록</b> 오차는 커집니다.
+            그래서 예측은 ‘정답’이 아니라 ‘근거 있는 짐작’입니다.</p>
+        </div>
+      </details>
+      <div class="btn-row"><button class="btn" type="button" onclick="tr22AnsSave()">내 답 저장</button></div>
+      <p class="status" id="tr22-ans-st"></p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>형성평가 — 스스로 확인하기</h3>
+      <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+        마지막에 총점과 문항별 복기가 표시됩니다.</p>
+      <div id="tr22-quiz"></div>
+    </div>
+
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 23차시 · 어떤 추세선이 좋은가: 곡선과 과적합</strong><br>
+      오늘은 직선 하나로 경향성을 읽었습니다. 그런데 <b>모든 점을 정확히 지나는 곡선</b>을 찾으면 더 좋은 예측 모델이 될까요?
+      다음 차시에는 직선부터 9차 곡선까지 모델을 갈아 끼우며 <b>훈련 오차는 0인데 검증 오차는 폭발하는</b> 장면을 직접 만들고,
+      “함께 변한다”와 “원인이 된다”가 왜 다른지 따져 봅니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="trLesson(23)">23차시로 이동 →</button>
+        <button class="btn" type="button" onclick="trPrev21(this)">돌아보기 · 21차시 조건과 상대도수</button>
+      </span>
+    </div>
+
+    <!-- ═════ 프로젝트 과제 ═════ -->
+    <div class="pj" data-no-toggle="1">
+      <span class="lb">프로젝트 과제 · 생각 키우기</span>
+      <h3>「우리 동네 30년 기온 추세선」 — 공공 데이터로 2050년을 예측하기</h3>
+      <p class="sub">교과서가 서울로 한 일을 여러분의 지역으로 해 봅니다.
+        데이터는 기상자료개방포털에서 누구나 무료로 받을 수 있습니다.</p>
+      <dl>
+        <dt>수행 방법</dt>
+        <dd>① 기상자료개방포털(data.kma.go.kr)에서 <b>우리 지역의 연평균 기온</b>을 최근 30년치 내려받습니다.
+          (지점을 못 찾으면 가까운 관측소로 대체하고 그 사실을 적습니다.)<br>
+          ② 스프레드시트 또는 지오지브라에 연도 x, 기온 y를 입력해 <b>산점도</b>를 그립니다.<br>
+          ③ <b>추세선 y = ax + b</b>를 구하고, a와 b가 각각 무엇을 뜻하는지 한 문장으로 씁니다.<br>
+          ④ f(2050)을 계산해 2050년 예측 기온을 구합니다.<br>
+          ⑤ <b>검증</b>: 최근 5년(2018~2022 등)을 <b>빼고</b> 추세선을 다시 구한 뒤, 그 직선으로 최근 5년을 예측해
+          <b>오차와 오차의 크기</b>를 표로 정리합니다.</dd>
+        <dt>제출물</dt>
+        <dd>· 산점도 + 추세선 화면 캡처 1장<br>
+          · 추세선의 식과 a, b의 해석 (각 1문장)<br>
+          · 최근 5년 예측값·오차·오차의 크기 표 (A4 1장)<br>
+          · “우리 동네 2050년 예측 기온은 ___ ℃이고, 이 예측을 ___만큼 믿을 수 있다. 왜냐하면 ___” 결론 3~5문장</dd>
+        <dt>평가 관점</dt>
+        <dd>· 공학 도구로 산점도와 추세선을 정확히 나타냈는가 <b>[12인수04-02]</b><br>
+          · 추세선을 이용해 예측값을 구하고 <b>오차를 부호까지</b> 정확히 해석했는가 <b>[12인수04-02]</b><br>
+          · a, b의 의미를 자료의 문맥으로 설명했는가<br>
+          · 외삽의 한계를 근거를 들어 서술했는가</dd>
+      </dl>
+    </div>
+
+    <!-- ═════ 참고 자료 ═════ -->
+    <div class="card" data-no-toggle="1">
+      <h3>참고 자료 — 산점도와 추세선을 더 깊이</h3>
+      <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+      <div class="tr-refs">
+        <a class="tr-ref" href="https://www.geogebra.org/classic#spreadsheet" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">공학 도구</span>📐</span>
+          <span class="bd"><span class="tt">지오지브라 클래식 — 스프레드시트로 적합선 구하기</span>
+            <span class="ds">교과서가 쓰는 도구입니다. 표를 붙여 넣고 [점의 리스트] → [적합선]을 고르면 추세선 식이 바로 나옵니다.</span></span>
+        </a>
+        <a class="tr-ref" href="https://data.kma.go.kr/climate/StatisticsSearch/selectStatisticsSearch.do" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">공공 데이터</span>🌦️</span>
+          <span class="bd"><span class="tt">기상자료개방포털 — 기온·강수량 통계 검색</span>
+            <span class="ds">프로젝트 과제에 쓸 우리 지역 30년 기온을 여기서 내려받습니다. 교과서 p.142 자료의 원본 출처입니다.</span></span>
+        </a>
+        <a class="tr-ref" href="https://tong.mods.go.kr/" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">공학 도구</span>📊</span>
+          <span class="bd"><span class="tt">통그라미 — 통계청 학생용 통계 분석 도구</span>
+            <span class="ds">회원가입 없이 산점도와 추세선을 그릴 수 있습니다. 지오지브라가 무거운 기기에서 대안으로 쓰세요.</span></span>
+        </a>
+        <a class="tr-ref" href="https://tjdgus1121.github.io/log_ruler.html" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">웹 활동</span>📏</span>
+          <span class="bd"><span class="tt">눈금자 맞춰보기 — 눈대중과 계산의 차이</span>
+            <span class="ds">“눈으로 어림한 값”과 “계산한 값”이 얼마나 다른지 체험합니다. 내 추세선과 최적선의 차이와 같은 감각입니다.</span></span>
+        </a>
+        <a class="tr-ref" href="https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1B81A17" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">공공 데이터</span>👶</span>
+          <span class="bd"><span class="tt">KOSIS 국가통계포털 — 합계출산율</span>
+            <span class="ds">오늘 쓴 출산율 자료의 원본입니다. 2023·2024년 값을 직접 확인해 보세요.</span></span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═════ 학습지 ═════ -->
+    <div class="ws" data-no-toggle="1">
+      <span class="lb">학습지</span>
+      <h3>22차시 학습지 — 손으로 긋고, 손으로 계산하기</h3>
+      <p>웹에서는 직선을 끌었지만, 지면에서는 <b>모눈 위에 직접 긋고 오차를 계산</b>합니다.
+        아래 인쇄용 지면은 오늘의 활동 1·2·3과 <b>1:1로 대응</b>합니다.</p>
+      <div class="ws-dl">
+        <button class="ws-btn" type="button" onclick="wsPrint('tr22-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      </div>
+      <p class="tr-hint" style="margin-top:0.6rem;">
+        4단원 배부용 활동지 실물 파일은 아직 없습니다. 교사가 자기 학습지(구글 드라이브 등)를 쓰려면 아래에 링크를 추가하세요.</p>
+      <div id="tr22-wslinks"></div>
+    </div>
+
+    <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+    <div class="ws-sheet" id="tr22-sheet" aria-hidden="true">
+      <div class="ws-h">
+        <h2>22차시 학습지 — 산점도와 추세선으로 예측하기</h2>
+        <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+      </div>
+      <p class="note">학습 목표 ① 공학 도구를 사용하여 데이터의 경향성을 산점도와 추세선 y = ax + b로 나타낼 수 있다. [12인수04-02]<br>
+        학습 목표 ② 추세선을 이용하여 예측값을 구하고 실제값과의 오차를 해석할 수 있다. [12인수04-02]</p>
+
+      <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+      <table>
+        <tr><th style="width:54%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+        <tr><td>점들의 경향성을 가장 잘 나타내는 직선은 어떤 직선인가?</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>예측값과 실제 측정값의 차이를 무엇이라 하는가?</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>10년치 자료로 3년 뒤를 예측하면 잘 맞을까? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+
+      <h3>② 활동 1 — S기업 주가 산점도와 내 추세선</h3>
+      <p class="note">연도 x는 20□□년의 □□, 주가 y의 단위는 천 원이다. (출처: KERIS 연수교재 「예측과 최적화」 p.232 〈표1〉)</p>
+      <table>
+        <tr><th>x</th><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td></tr>
+        <tr><th>y</th><td>27</td><td>26</td><td>25</td><td>36</td><td>50</td><td>38</td><td>55</td><td>81</td><td>78</td><td>55</td></tr>
+      </table>
+      <p>⑴ 아래 모눈에 산점도를 그리고, 모든 점에 고르게 가까운 직선을 자로 그으시오.</p>
+      <div class="rule lg"></div>
+      <p>⑵ 내가 그은 직선의 두 점을 읽어 기울기와 y절편을 구하시오.<br>
+        두 점 ( ______ , ______ ), ( ______ , ______ ) &nbsp;→&nbsp; a = ____________ , b = ____________<br>
+        내 추세선 : y = ____________ x + ____________</p>
+      <p>⑶ 내 추세선으로 2023년(x = 23) 주가를 예측하시오. &nbsp; f(23) = ____________ (천 원)</p>
+      <p>⑷ 실제 2023년 연말 종가는 78천 원이었다. 오차와 오차의 크기를 구하시오.<br>
+        오차 = 78 − ( ____________ ) = ____________ &nbsp;&nbsp; 오차의 크기 = ____________</p>
+
+      <h3>③ 활동 2 — 예측값과 오차 표 (씨마스 Ⅳ p.146 재구성)</h3>
+      <p class="note">추세선 f(x) = 1.2x 를 이용한다. (오차) = (실제 연봉) − (예측값)</p>
+      <table>
+        <tr><th>선수</th><th>승리 기여도 x</th><th>실제 연봉 y (억 원)</th><th>예측값 f(x)</th><th>오차 y − f(x)</th></tr>
+        <tr><td>A</td><td>1</td><td>1</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>B</td><td>2</td><td>3</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>C</td><td>3</td><td>3</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>D</td><td>4</td><td>5</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><th colspan="4">오차의 합</th><td class="blank"></td></tr>
+        <tr><th colspan="4">오차의 크기의 합</th><td class="blank"></td></tr>
+      </table>
+      <p>⑸ 오차의 합이 그런 값이 된 이유를 쓰시오.</p>
+      <div class="rule sm"></div>
+      <p>⑹ 선수 E의 승리 기여도가 3.5일 때 예측 연봉은 ____________ 억 원이다.</p>
+
+      <h3>④ 활동 3 — 내삽과 외삽</h3>
+      <p class="note">스마트폰 사용 시간 x분과 수면 시간 y분. 추세선 f(x) = −1.24x + 440 (동아출판 p.133 재구성)</p>
+      <table>
+        <tr><th>x (분)</th><th>구분(내삽/외삽)</th><th>예측값 f(x)</th><th>믿을 수 있는 정도와 그 이유</th></tr>
+        <tr><td>70</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>110</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>300</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+      <p>⑺ x = 300일 때 예측값이 이상해지는 까닭을 쓰시오.</p>
+      <div class="rule sm"></div>
+
+      <h3>⑤ 형성평가</h3>
+      <ol>
+        <li>추세선에 대한 설명으로 옳은 것은?<br>
+          ① 산점도의 모든 점을 동시에 지난다 &nbsp; ② 경향성을 잘 나타내는 직선 또는 곡선이다<br>
+          ③ 사건이 일어날 가능성을 수치화한 것이다 &nbsp; ④ 두 변량의 평균이다 &nbsp;&nbsp; 답: ______</li>
+        <li>f(x) = 1.2x일 때 승리 기여도 3.5인 선수의 예측 연봉은?<br>
+          ① 3.5억 &nbsp; ② 4.2억 &nbsp; ③ 4.7억 &nbsp; ④ 5.0억 &nbsp;&nbsp; 답: ______</li>
+        <li>실제 측정값이 3, 예측값이 3.6일 때 오차와 오차의 크기는?<br>
+          ① 0.6, 0.6 &nbsp; ② −0.6, 0.6 &nbsp; ③ −0.6, −0.6 &nbsp; ④ 3.6, 3.6 &nbsp;&nbsp; 답: ______</li>
+        <li>추세선 f(x) = 0.02x − 26.57로 예측한 2050년 서울 연평균 기온은?<br>
+          ① 13.43 ℃ &nbsp; ② 14.43 ℃ &nbsp; ③ 15.43 ℃ &nbsp; ④ 26.57 ℃ &nbsp;&nbsp; 답: ______</li>
+        <li>오차의 크기가 전체적으로 작다는 것은 무엇을 뜻하는가?<br>
+          ① 데이터가 많다 &nbsp; ② 추세선이 경향성을 잘 나타낸다 &nbsp; ③ 예측이 항상 정확하다 &nbsp; ④ 상관이 곧 인과다 &nbsp;&nbsp; 답: ______</li>
+      </ol>
+
+      <h3>⑥ 핵심 질문</h3>
+      <p><b>흩어진 점들 속에서 아직 오지 않은 ‘미래’를 어떻게 읽어낼 수 있는가?</b></p>
+      <div class="rule lg"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       23차시 · 어떤 추세선이 좋은가 — 곡선과 과적합
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tr-sec" id="tr23-root">
+
+    <!-- ═════ 표제부 ═════ -->
+    <div class="tr-hero">
+      <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 23차시 · [12인수04-02]</p>
+      <h2>어떤 추세선이 좋은가 — 너무 완벽해서 문제인 곡선</h2>
+      <p class="desc">
+        22차시에서는 직선 하나로 경향성을 읽었습니다. 그런데 <b>모든 점을 정확히 지나는 곡선</b>을 찾으면
+        더 좋은 예측 모델이 될까요? 오늘은 직선부터 9차 곡선까지 갈아 끼우며 그 답을 직접 만들어 봅니다.
+      </p>
+    </div>
+
+    <div class="info" data-no-toggle="1" style="margin-top:0;">
+      <strong>오늘의 학습 목표</strong>
+      <div style="margin-top:0.5rem;">
+        ① 여러 함수 모델의 추세선을 비교하여 <b>최적화된 추세선의 필요성</b>을 설명할 수 있습니다. <b>[12인수04-02]</b>
+      </div>
+      <div style="margin-top:0.35rem;">
+        ② 새로운 <b>검증 데이터</b>에 대한 오차를 비교하여 <b>과적합</b> 현상을 설명하고,
+        <b>상관관계가 인과관계를 뜻하지 않음</b>을 사례로 설명할 수 있습니다. <b>[12인수04-02]</b>
+      </div>
+      <div class="tr-goalmap">
+        <button type="button" onclick="tr23See(0,'tr23-act1')">├ 목표 ① → <b>활동 1</b> 모델 칩을 갈아 끼우며 곡선과 훈련 오차를 관찰하기 →</button>
+        <button type="button" onclick="tr23See(1,'tr23-act2')">├ 목표 ② → <b>활동 2</b> 검증 데이터를 공개해 과적합을 판정하기 →</button>
+        <button type="button" onclick="tr23See(2,'tr23-act3')">└ 목표 ② → <b>활동 3</b> 함께 변하는 것과 원인이 되는 것을 가르기 →</button>
+      </div>
+    </div>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+      <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+    <div class="chips tr23-keys" data-no-toggle="1">
+      <span class="chip">여러 함수 모델</span>
+      <span class="chip">훈련 데이터와 검증 데이터</span>
+      <span class="chip">과적합</span>
+      <span class="chip">일반화</span>
+      <span class="chip">상관관계와 인과관계</span>
+      <span class="chip">상관관계가 없는 데이터</span>
+    </div>
+
+    <div class="card tr-ask" data-no-toggle="1">
+      <h3>핵심 질문</h3>
+      <ul>
+        <li>훈련 데이터에 완벽히 들어맞는 곡선은 왜 좋은 예측 모델이 아닌가?</li>
+      </ul>
+      <p style="margin-top:0.7rem;">이 질문에는 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+    </div>
+
+    <!-- ═════ STEP 1 · 도입 ═════ -->
+    <div class="tr-step"><p class="mono">STEP 1 · 도입</p></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>추천 영상 — 과적합(오버피팅)이란 무엇인가</h3>
+      <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+        첫 영상은 3분 안에 과적합의 핵심을 짚고, 두 번째 영상은 해결 방향을 넓게 정리합니다.</p>
+      <div id="tr23-videos"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>마중 퀴즈 — 내 생각은?</h3>
+      <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+        답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+      <div id="tr23-warm"></div>
+      <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b></p>
+    </div>
+
+    <div class="card">
+      <h3>같은 점들, 두 개의 곡선 — 어느 쪽을 믿어야 하나</h3>
+      <div class="tr-two">
+        <figure>
+          <svg viewBox="0 0 320 200" role="img" aria-label="같은 점들을 지나는 직선 추세선과 지나치게 구불구불한 곡선 추세선을 함께 그리고, 자료 밖의 한 지점에서 두 예측값이 크게 벌어지는 것을 표시한 그림">
+            <rect width="320" height="200" fill="var(--bg)"/>
+            <path d="M42 20V166H306" stroke="var(--border)" stroke-width="1"/>
+            <path d="M52 140L266 62" stroke="var(--green)" stroke-width="3"/>
+            <path d="M62 132C78 96 84 148 100 122C116 96 122 138 140 110C158 82 164 128 182 100C200 72 208 116 226 88C240 66 250 96 264 66C272 48 278 128 290 158"
+                  fill="none" stroke="var(--red)" stroke-width="2.6" stroke-dasharray="5 3"/>
+            <g fill="var(--fg)">
+              <circle cx="62" cy="132" r="4.2"/><circle cx="100" cy="122" r="4.2"/><circle cx="140" cy="110" r="4.2"/>
+              <circle cx="182" cy="100" r="4.2"/><circle cx="226" cy="88" r="4.2"/><circle cx="264" cy="66" r="4.2"/>
+            </g>
+            <path d="M290 20V166" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
+            <circle cx="290" cy="53" r="5" fill="var(--green)"/>
+            <circle cx="290" cy="152" r="5" fill="var(--red)"/>
+            <text x="252" y="44" font-size="10" font-family="monospace" fill="var(--green)">f(t)</text>
+            <text x="272" y="172" font-size="10" font-family="monospace" fill="var(--red)">g(t)</text>
+            <text x="290" y="184" font-size="10" font-family="monospace" fill="var(--muted)" text-anchor="middle">x = t</text>
+            <text x="60" y="34" font-size="10.5" font-family="monospace" fill="var(--green)">f(x) : 직선 형태</text>
+            <text x="60" y="48" font-size="10.5" font-family="monospace" fill="var(--red)">g(x) : 과도하게 특화</text>
+          </svg>
+          <figcaption>곡선 g(x)는 여섯 점을 <b>모두 정확히</b> 지납니다. 그런데 자료 밖의 x = t에서
+            두 예측값 f(t)와 g(t)는 정반대 방향으로 벌어집니다.
+            <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.147 AI 스토리 「곡선 y = g(x)와 같이 추세선이 지나치게 복잡해지면 … 새로운 데이터 x = t에 대하여 오히려 합리적이지 못한 예측값 g(t)를 제시하는 문제가 발생할 수 있어요」 도해를 재구성</span></figcaption>
+        </figure>
+        <div>
+          <p>훈련 데이터만 보면 g(x)가 완벽합니다. <b>오차가 0</b>이니까요.</p>
+          <p>그런데 모델의 진짜 실력은 <b>처음 보는 데이터</b>를 만났을 때 드러납니다.
+            g(x)는 자료에 담긴 진짜 패턴이 아니라 <b>잡음까지 외워</b> 버렸습니다.</p>
+          <p>그래서 실제 인공지능 학습에는 f(x) = ax + b처럼 <b>더 단순한 모델</b>을 주로 씁니다.
+            모든 점을 지나지는 않지만 전체적인 경향을 붙잡기 때문입니다.</p>
+          <span class="tr-src">출처 — KERIS 연수교재 「예측과 최적화」 p.240~241 「라. 너무 완벽해서 문제? 과적합(Overfitting)」 서술을 재구성</span>
+        </div>
+      </div>
+      <div id="tr23-tb1"></div>
+    </div>
+
+    <div class="card">
+      <h3>실제 그림으로 — 9차 곡선이 하는 일</h3>
+      <div class="phz-row">
+        <figure class="phz">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Overfitted_Data.png/500px-Overfitted_Data.png"
+               alt="같은 점들에 대해 완만한 직선과 구불구불한 고차 다항식 곡선을 함께 그린 그래프"
+               loading="lazy" referrerpolicy="no-referrer"
+               onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+          <span class="fb" aria-hidden="true">📈</span>
+          <figcaption><b>같은 점들에 두 모델을 얹은 실제 그래프입니다. 구불구불한 곡선은 점을 정확히 지나지만,
+            점이 없는 곳에서는 위아래로 크게 튑니다.</b>
+            <span class="src">출처: Wikimedia Commons, Ghiles, “Overfitted Data”, CC BY-SA 4.0</span></figcaption>
+        </figure>
+        <figure class="phz">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Overfitting.svg/500px-Overfitting.svg.png"
+               alt="두 종류의 점을 나누는 경계선을 매끄러운 검은 선과 구불구불한 초록 선으로 함께 그린 그림"
+               loading="lazy" referrerpolicy="no-referrer"
+               onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+          <span class="fb" aria-hidden="true">🌀</span>
+          <figcaption><b>분류 문제에서도 같습니다. 초록 경계선은 훈련 자료를 하나도 틀리지 않지만,
+            새 자료에서는 매끄러운 검은 선이 더 잘 맞습니다.</b>
+            <span class="src">출처: Wikimedia Commons, Chabacano, “Overfitting”, CC BY-SA 4.0</span></figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>세상의 모든 경향이 직선은 아니다 — 곡선이 필요한 세 장면</h3>
+      <div class="tr-curves">
+        <div class="tr-curve">
+          <svg viewBox="0 0 160 100" role="img" aria-label="위로 볼록한 곡선">
+            <path d="M14 12V88H150" stroke="var(--border)" stroke-width="1" fill="none"/>
+            <path d="M20 80C50 20 100 18 144 74" fill="none" stroke="var(--fg)" stroke-width="2.6"/>
+          </svg>
+          <h4>이차함수 — 나이와 기초대사량</h4>
+          <p>청소년기에 급격히 오르다가 성인이 된 뒤 서서히 내려갑니다. 위로 볼록한 곡선입니다.</p>
+        </div>
+        <div class="tr-curve">
+          <svg viewBox="0 0 160 100" role="img" aria-label="빠르게 올랐다가 서서히 내려가는 한쪽으로 치우친 곡선">
+            <path d="M14 12V88H150" stroke="var(--border)" stroke-width="1" fill="none"/>
+            <path d="M20 84C30 24 44 20 60 34C82 54 108 74 144 82" fill="none" stroke="var(--fg)" stroke-width="2.6"/>
+          </svg>
+          <h4>지수함수 — 약물 투여 후 혈중 농도</h4>
+          <p>투여 직후 빠르게 최고점에 올랐다가 시간이 지나며 배출되어 줄어듭니다.</p>
+        </div>
+        <div class="tr-curve">
+          <svg viewBox="0 0 160 100" role="img" aria-label="에스자 모양 곡선">
+            <path d="M14 12V88H150" stroke="var(--border)" stroke-width="1" fill="none"/>
+            <path d="M20 82C56 82 66 80 80 50C94 20 106 18 144 18" fill="none" stroke="var(--fg)" stroke-width="2.6"/>
+            <path d="M14 18H150" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>
+          </svg>
+          <h4>로지스틱 — 체온과 진단 결과</h4>
+          <p>특정 체온을 기준으로 음성(0)에서 양성(1)로 급격히 바뀝니다. S자 곡선입니다.</p>
+        </div>
+      </div>
+      <p style="margin-top:0.8rem;">동아 교과서는 더 구체적인 사례를 듭니다.
+        평균 기온이 오르면 자전거 대여량도 늘지만 <b>28 ℃를 넘으면 오히려 줄어듭니다.</b>
+        이때 추세선을 직선으로 그으면 “기온이 오르면 대여량도 계속 증가한다”는 <b>잘못된 결론</b>을 내리게 됩니다.</p>
+      <span class="tr-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.147 「직선이 아닌 추세선의 예시」(나이·기초대사량, 약물 농도, 체온·진단 결과), 동아출판 「인공지능 수학」 p.134 「다양한 형태의 추세선」(평균 기온과 자전거 대여량) 서술을 재구성</span>
+      <div id="tr23-tb2"></div>
+    </div>
+
+    <!-- ═════ STEP 2 · 전개 ═════ -->
+    <div class="tr-step"><p class="mono">STEP 2 · 전개</p></div>
+
+    <div class="tabs">
+      <button class="tab on" type="button" onclick="trTab23(0,this)">① 모델 고르기</button>
+      <button class="tab" type="button" onclick="trTab23(1,this)">② 훈련 vs 검증</button>
+      <button class="tab" type="button" onclick="trTab23(2,this)">③ 상관과 인과</button>
+    </div>
+
+    <!-- ── TAB 0 : 모델 고르기 ─────────────────────────────────────────── -->
+    <div class="tpanel on" id="tr23p0">
+
+      <div class="card" id="tr23-act1" data-no-toggle="1">
+        <h3>활동 1 · 모델을 갈아 끼우기 전에 — 예상을 골라 보세요</h3>
+        <p>아래 조작판에서 같은 자료에 <b>직선 · 2차 · 3차 · 지수 · 로지스틱 · 9차</b> 여섯 모델을 차례로 얹어 봅니다.</p>
+        <p><b>훈련 데이터의 오차</b>는 모델을 복잡하게 만들수록 어떻게 될까요?</p>
+        <div class="chips" id="tr23-a1-guess">
+          <button class="chip" type="button" onclick="tr23Guess(0,this)">복잡할수록 커진다</button>
+          <button class="chip" type="button" onclick="tr23Guess(1,this)">복잡할수록 작아진다</button>
+          <button class="chip" type="button" onclick="tr23Guess(2,this)">복잡함과 상관없다</button>
+        </div>
+        <p class="status" id="tr23-a1-gmsg">예상을 고르기 전에는 아래 조작판이 잠겨 있습니다.</p>
+        <div class="tr-fb" id="tr23-a1-gfb"></div>
+      </div>
+
+      <div class="card tr-veil" id="tr23-a1-panel" data-no-toggle="1">
+        <h3>조작 — 자료를 고르고, 모델을 갈아 끼워 보세요</h3>
+        <p class="mat-label" style="text-align:left;">데이터 고르기</p>
+        <div class="chips" id="tr23-ds">
+          <button class="chip on" type="button" onclick="tr23Ds('stock',this)">S기업 주가 (10개)</button>
+          <button class="chip" type="button" onclick="tr23Ds('bike',this)">기온과 자전거 대여량 (11개)</button>
+          <button class="chip" type="button" onclick="tr23Ds('noise',this)">학생 번호와 스마트폰 사용 (12개)</button>
+        </div>
+        <p class="mat-label" style="text-align:left;margin-top:0.8rem;">모델 고르기</p>
+        <div class="chips" id="tr23-mdl">
+          <button class="chip on" type="button" onclick="tr23Mdl('lin',this)">직선 (1차)</button>
+          <button class="chip" type="button" onclick="tr23Mdl('quad',this)">2차</button>
+          <button class="chip" type="button" onclick="tr23Mdl('cubic',this)">3차</button>
+          <button class="chip" type="button" onclick="tr23Mdl('exp',this)">지수</button>
+          <button class="chip" type="button" onclick="tr23Mdl('logi',this)">로지스틱</button>
+          <button class="chip" type="button" onclick="tr23Mdl('poly9',this)">9차</button>
+        </div>
+
+        <div class="tr-warn" id="tr23-warn" role="status">
+          <span class="ic" aria-hidden="true">⚠️</span>
+          <span><b>이 자료에는 상관관계가 없습니다.</b>
+            점들이 특정한 방향으로 늘거나 줄지 않고 무작위로 흩어져 있습니다.
+            공학 도구는 어떤 자료에도 추세선을 계산해 주지만, 여기에 억지로 선을 그으면
+            <b>오해를 불러일으키는 거짓 이야기</b>를 만들어낼 뿐입니다.</span>
+        </div>
+
+        <div class="tr-cvbox">
+          <canvas class="tr-cv" id="tr23-cv" role="img"
+                  aria-label="훈련 데이터 점과 선택한 모델의 곡선을 함께 나타낸 좌표평면. 검증 데이터를 공개하면 새 점과 오차가 함께 표시됩니다."></canvas>
+          <div class="tr-lg">
+            <span><i class="dot" style="background:var(--fg);"></i>훈련 데이터</span>
+            <span><i style="background:var(--blue);"></i>선택한 모델</span>
+            <span><i class="dot" style="background:var(--red);"></i>검증 데이터</span>
+            <span><i style="background:var(--red);"></i>검증 오차</span>
+          </div>
+        </div>
+        <p class="status" id="tr23-cvst"></p>
+
+        <div class="tr-read" id="tr23-read"></div>
+
+        <div class="btn-row" style="margin-top:0.9rem;">
+          <button class="btn pri" type="button" onclick="tr23Valid()" id="tr23-vbtn">새 데이터 뽑기 (검증)</button>
+          <button class="btn" type="button" onclick="tr23Hide()">검증 데이터 감추기</button>
+        </div>
+        <span class="tr-src" id="tr23-dssrc"></span>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+        <p class="tr-lockmsg" id="tr23-a1-lock">※ [새 데이터 뽑기]를 한 번 누르면 아래 토글이 열립니다.</p>
+
+        <details class="tr-fold" id="tr23-a1-f1">
+          <summary>단계 1 관찰 — 9차 곡선에서 무엇을 보았나</summary>
+          <div class="bd">
+            <p>주가 자료에 9차 모델을 얹으면 곡선이 <b>열 개의 점을 하나도 빠짐없이</b> 지납니다.
+              훈련 오차는 정확히 <b>0</b>입니다.</p>
+            <p>그런데 [새 데이터 뽑기]로 2023~2025년 실제값을 공개하면 검증 오차가
+              <b>50억(5.0 × 10⁹)</b> 수준으로 뛰어오릅니다. 곡선이 화면 밖으로 튀어 나가 보이지도 않습니다.</p>
+            <p>같은 자료에서 <b>직선</b>의 검증 오차는 약 <b>647</b>입니다. 훈련 오차만 보면 9차가 압도적이었는데,
+              검증에서는 <b>770만 배</b> 이상 나빠집니다.</p>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr23-a1-f2">
+          <summary>단계 2 정리 — 그렇다면 곡선은 언제 필요한가</summary>
+          <div class="bd">
+            <p>「기온과 자전거 대여량」 자료에서는 사정이 다릅니다. 직선의 훈련 오차가 약 <b>14,476</b>인데
+              2차 곡선은 <b>1,516</b>으로 줄고, <b>검증 오차도 함께 줄어듭니다.</b></p>
+            <p>즉 <b>훈련 오차와 검증 오차가 같이 작아지면</b> 그 모델은 진짜 패턴을 배운 것입니다.
+              반대로 <b>훈련 오차만 줄고 검증 오차가 커지면</b> 그것이 과적합입니다.</p>
+            <p>그런데 같은 자료에서도 9차는 훈련 231 / 검증 1,134로, 3차(훈련 604 / 검증 711)보다 검증이 나쁩니다.
+              <b>복잡하면 복잡할수록 좋은 것은 결코 아닙니다.</b></p>
+            <p>「학생 번호와 스마트폰 사용 시간」처럼 <b>상관관계가 없는 자료</b>에서는 어떤 모델도 오차를 크게 줄이지 못합니다.
+              모델을 바꾸는 것으로 해결할 문제가 아니라, <b>추세선을 그으면 안 되는 자료</b>인 것입니다.</p>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr23-a1-f3">
+          <summary>단계 3 정의 확인 — 과적합이란 무엇인가</summary>
+          <div class="bd">
+            <p><b>과적합(過適合, overfitting)</b>은 모델이 <b>학습(훈련) 데이터에 너무 잘 맞추려 하여 복잡해진 나머지,
+              새로운 데이터에 대해서는 오히려 예측 성능이 떨어지는 현상</b>입니다.</p>
+            <p>원인 ① 변수가 많거나 모델이 복잡해 훈련 데이터의 지나치게 세부적인 패턴까지 학습<br>
+               원인 ② 훈련 데이터가 적어 일반적인 패턴을 배우지 못함<br>
+               원인 ③ 데이터가 특정 패턴에 치우쳐 있어 그 패턴을 과도하게 학습</p>
+            <p>반대로 모델이 너무 단순해 훈련 데이터로도 좋은 성능을 못 내는 것은
+              <b>과소적합(underfitting)</b>이라고 합니다.</p>
+            <p>예 ① 9차 다항식이 열 개 점을 모두 지나 훈련 오차 0 → 검증 오차 폭발 (과적합)<br>
+               예 ② 위로 볼록한 자료에 직선을 그어 훈련 오차도 큰 상태 (과소적합)</p>
+            <p><b>단순한 모델의 세 가지 장점</b> — ① 식의 구조가 간단해 <b>해석하기 쉽다</b>(a는 기울기, b는 y절편)
+              ② 처음 보는 데이터에도 안정적인 <b>일반화</b> 성능을 가진다 ③ 오차 계산이 쉬워 <b>학습이 빠르고 효율적</b>이다.</p>
+            <span class="tr-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅳ p.221 보충 자료 「과대적합(overfitting)」·「과소적합(underfitting)」, 씨마스 Ⅳ p.147 AI 스토리, KERIS 연수교재 「예측과 최적화」 p.241 「단순한 모델의 세 가지 장점」 서술을 재구성</span>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- ── TAB 1 : 훈련 vs 검증 ────────────────────────────────────────── -->
+    <div class="tpanel" id="tr23p1">
+
+      <div class="card" id="tr23-act2" data-no-toggle="1">
+        <h3>활동 2 · 여섯 모델을 한 표에 — 먼저 예상해 봅시다</h3>
+        <p>지금 고른 자료에 대해 여섯 모델의 <b>훈련 오차</b>와 <b>검증 오차</b>를 한 표로 봅니다.
+          표를 열기 전에 예상해 보세요.</p>
+        <p><b>검증 오차가 가장 작은 모델</b>은 어느 것일까요?</p>
+        <div class="chips" id="tr23-a2-guess">
+          <button class="chip" type="button" onclick="tr23A2Guess(0,this)">훈련 오차가 가장 작은 모델</button>
+          <button class="chip" type="button" onclick="tr23A2Guess(1,this)">가장 복잡한 9차 모델</button>
+          <button class="chip" type="button" onclick="tr23A2Guess(2,this)">자료에 따라 다르고, 9차는 아니다</button>
+        </div>
+        <p class="status" id="tr23-a2-gmsg">예상을 고르면 표가 열립니다.</p>
+        <div class="tr-fb" id="tr23-a2-gfb"></div>
+      </div>
+
+      <div class="card tr-veil" id="tr23-a2-panel" data-no-toggle="1">
+        <h3>모델 성적표 — 오차의 제곱의 평균(MSE)</h3>
+        <p class="mat-label" style="text-align:left;">데이터 고르기 (활동 1과 함께 바뀝니다)</p>
+        <div class="chips" id="tr23-ds2">
+          <button class="chip on" type="button" onclick="tr23Ds('stock',this)">S기업 주가</button>
+          <button class="chip" type="button" onclick="tr23Ds('bike',this)">기온과 자전거 대여량</button>
+          <button class="chip" type="button" onclick="tr23Ds('noise',this)">학생 번호와 스마트폰 사용</button>
+        </div>
+        <div class="tr-scroll" style="margin-top:0.8rem;">
+          <table class="tr-tbl" id="tr23-tbl"></table>
+        </div>
+        <p class="tr-hint" style="margin-top:0.5rem;">
+          막대는 각 행의 오차를 <b>그 열에서 가장 큰 값</b>에 대한 비로 그린 것입니다.
+          검증 오차가 지나치게 커서 막대가 꽉 찬 행이 곧 <b>과적합된 모델</b>입니다.</p>
+        <div id="tr23-verdict"></div>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+        <p class="tr-lockmsg" id="tr23-a2-lock">※ 예상을 고르면 아래 토글이 열립니다.</p>
+
+        <details class="tr-fold" id="tr23-a2-f1">
+          <summary>단계 1 관찰 — 두 열이 어긋나는 순간</summary>
+          <div class="bd">
+            <p>훈련 오차 열은 <b>위에서 아래로 계속 줄어듭니다.</b> 모델이 복잡해질수록 훈련 데이터에 더 잘 맞으니까요.</p>
+            <p>그런데 검증 오차 열은 어느 지점에서 <b>방향을 바꿔 커집니다.</b>
+              그 꺾이는 지점 바로 앞이 이 자료에 가장 알맞은 모델입니다.</p>
+            <p>이 “꺾임”이 과적합의 신호입니다. 훈련 오차만 보고 있었다면 절대 알 수 없었을 신호입니다.</p>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr23-a2-f2">
+          <summary>단계 2 정리 — 그래서 데이터를 나눈다</summary>
+          <div class="bd">
+            <p>인공지능을 만들 때는 가진 데이터를 <b>훈련용</b>과 <b>검증(테스트)용</b>으로 나눕니다.
+              훈련용으로 학습하고, <b>한 번도 보여 주지 않은</b> 검증용으로 성능을 잽니다.</p>
+            <p>13차시에서 다룬 MNIST도 그렇습니다. 얀 르쿤은 훈련용 6만 개와 테스트용 1만 개를 표준으로 정해,
+              전 세계 연구자가 <b>같은 기준선</b> 위에서 알고리즘을 검증할 수 있게 했습니다.</p>
+            <p>“훈련 정확도 99.9 %”라는 말만으로는 아무것도 알 수 없습니다.
+              반드시 <b>처음 보는 데이터에서의 성능</b>을 물어야 합니다.</p>
+            <p style="margin-top:0.4rem;">
+              <button class="btn" type="button" onclick="go('mnist')">돌아보기 · 12차시 MNIST 데이터셋</button>
+              <button class="btn" type="button" onclick="go('bias')">돌아보기 · 5차시 정확도 95 %의 함정</button>
+            </p>
+            <span class="tr-src">출처 — KERIS 연수교재 「더 알아보기 3-4. MNIST 데이터 세트」(훈련용 6만 개·테스트용 1만 개 표준화) 서술을 재구성</span>
+          </div>
+        </details>
+
+        <details class="tr-fold" id="tr23-a2-f3">
+          <summary>단계 3 정의 확인 — 훈련 데이터 · 검증 데이터 · 일반화</summary>
+          <div class="bd">
+            <p><b>훈련 데이터</b>는 모델이 추세선을 만들 때 실제로 사용한 데이터입니다.
+              <b>검증 데이터</b>는 학습에 쓰지 않고 남겨 두었다가 <b>성능을 재는 데만</b> 쓰는 데이터입니다.</p>
+            <p><b>일반화</b>는 처음 보는 데이터에도 안정적이고 합리적인 예측을 내놓는 능력입니다.
+              예측 모델을 간단하게 유지하면 과거 데이터의 세세한 부분에 얽매이지 않아 일반화 성능이 좋아집니다.</p>
+            <p>예 ① 주가 자료에서 직선의 검증 오차 647 &lt; 9차의 검증 오차 5,014,238,849 → 직선의 일반화가 훨씬 좋다<br>
+               예 ② 기온·대여량 자료에서 2차·3차의 검증 오차 &lt; 직선의 검증 오차 → 이 자료는 곡선이 맞다</p>
+            <p><b>뛰어난 인공지능은 과거의 모든 것을 기억하는 모델이 아닙니다.</b>
+              과거 데이터에 담긴 본질적인 패턴을 이해하고, 불확실한 미래를 슬기롭게 예측하는 모델입니다.</p>
+            <span class="tr-src">출처 — KERIS 연수교재 「예측과 최적화」 p.241 「② 새로운 데이터에 대한 일반화」·마무리 문단 서술을 재구성</span>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- ── TAB 2 : 상관과 인과 ─────────────────────────────────────────── -->
+    <div class="tpanel" id="tr23p2">
+
+      <div class="card" id="tr23-act3" data-no-toggle="1">
+        <h3>활동 3 · 아이스크림이 사고의 원인일까</h3>
+        <div class="phz-row">
+          <figure class="phz">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Ice_cream_cone.jpg/500px-Ice_cream_cone.jpg"
+                 alt="콘에 담긴 아이스크림을 손에 들고 있는 사진"
+                 loading="lazy" referrerpolicy="no-referrer"
+                 onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+            <span class="fb" aria-hidden="true">🍦</span>
+            <figcaption><b>아이스크림 판매량</b>
+              <span class="src">출처: Wikimedia Commons, D. Sharon Pruitt, “Ice cream cone”, CC BY 2.0</span></figcaption>
+          </figure>
+          <figure class="phz">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Haeundae_Beach.jpg/500px-Haeundae_Beach.jpg"
+                 alt="많은 사람이 모인 해운대 해수욕장 사진"
+                 loading="lazy" referrerpolicy="no-referrer"
+                 onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+            <span class="fb" aria-hidden="true">🏖️</span>
+            <figcaption><b>물놀이 인구와 사고 건수</b>
+              <span class="src">출처: Wikimedia Commons, SJ Yang, “Haeundae Beach”, CC BY-SA 2.0</span></figcaption>
+          </figure>
+        </div>
+        <p>아이스크림 판매량과 물놀이 사고 건수를 산점도로 그리면 <b>함께 증가하는 뚜렷한 경향</b>이 나타납니다.
+          추세선도 잘 그려지고 오차도 작습니다.</p>
+        <p>그렇다면 아이스크림 판매를 줄이면 사고가 줄어들까요?</p>
+        <div class="chips" id="tr23-a3-guess">
+          <button class="chip" type="button" onclick="tr23A3Guess(0,this)">줄어든다 — 원인이니까</button>
+          <button class="chip" type="button" onclick="tr23A3Guess(1,this)">줄지 않는다 — 숨은 변수가 있다</button>
+          <button class="chip" type="button" onclick="tr23A3Guess(2,this)">자료를 더 모아야 알 수 있다</button>
+        </div>
+        <div class="tr-fb" id="tr23-a3-gfb"></div>
+      </div>
+
+      <div class="card tr-veil" id="tr23-a3-panel" data-no-toggle="1">
+        <h3>판정 연습 — 상관만 있는가, 인과까지 있는가</h3>
+        <p>다음 다섯 상황을 읽고 판정해 보세요. 답을 고르면 바로 해설이 나타납니다.</p>
+        <div class="tr-cc" id="tr23-cc"></div>
+        <div class="tr-read" id="tr23-ccread"></div>
+      </div>
+
+      <div class="card">
+        <h3>세 가지 착시 — 숨은 변수 · 우연 · 공학 도구</h3>
+        <div class="tr-scroll">
+          <table class="tr-tbl">
+            <tr><th>착시</th><th class="lf">어떤 일이 벌어지는가</th><th class="lf">확인하는 질문</th></tr>
+            <tr><td class="hi">숨은 변수</td>
+                <td class="lf">두 변수가 <b>제3의 요인</b>에 함께 영향을 받아 같이 움직인다.
+                  아이스크림 판매량과 물놀이 사고는 모두 <b>기온 상승</b>의 결과다.</td>
+                <td class="lf">“둘 다에 영향을 주는 다른 무엇이 있지 않은가?”</td></tr>
+            <tr><td class="hi">우연</td>
+                <td class="lf">데이터의 개수가 적거나 <b>특정 구간만</b> 골라 보면, 의미 없는 두 변수에서도
+                  일시적인 경향이 나타난다. 추세선은 계산되지만 현상을 설명하지 못한다.</td>
+                <td class="lf">“자료를 더 늘리거나 구간을 바꿔도 같은 경향이 남는가?”</td></tr>
+            <tr><td class="hi">공학 도구</td>
+                <td class="lf">도구는 <b>어떤 자료에도</b> 추세선을 계산해 준다. 그러나 그 추세선이
+                  의미 있는 해석을 보장해 주지는 않는다.</td>
+                <td class="lf">“이 자료에 추세선을 그어도 되는 상황인가?”</td></tr>
+          </table>
+        </div>
+        <p style="margin-top:0.8rem;"><b>데이터 분석의 출발점은 추세선을 그리는 것이 아니라,
+          그 추세선이 의미를 가져도 되는 상황인지 판단하는 것입니다.</b></p>
+        <span class="tr-src">출처 — KERIS 연수교재 「예측과 최적화」 p.240 [참고자료] 「조심해야 할 착시: 상관관계와 인과관계」 서술을 재구성</span>
+      </div>
+
+      <div class="card" data-no-toggle="1">
+        <h3>일반화 — 내 문장으로</h3>
+        <p>“상관관계만 근거로 만든 예측 모델이 위험한 이유”를 한두 문장으로 적어 보세요.
+          STEP 3의 핵심 질문에 그대로 쓸 수 있습니다.</p>
+        <textarea class="tr-ta" id="tr23-a3-note" placeholder="예: 함께 변하는 것처럼 보여도 원인이 다른 곳에 있으면…"></textarea>
+        <div class="btn-row"><button class="btn" type="button" onclick="tr23NoteSave('tr23-a3-note','tr23-a3-nst')">저장</button></div>
+        <p class="status" id="tr23-a3-nst"></p>
+      </div>
+    </div>
+
+    <!-- ═════ STEP 3 · 정리 ═════ -->
+    <div class="tr-step"><p class="mono">STEP 3 · 정리</p></div>
+
+    <div class="card">
+      <h3>오늘의 핵심 3줄 — 외우지 말고 이해하라</h3>
+      <ol style="margin:0.7rem 0 0 1.2rem;">
+        <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+          모델을 복잡하게 만들면 <b>훈련 오차는 언제나 줄어듭니다.</b>
+          그러나 <b>검증 오차</b>는 어느 지점부터 다시 커집니다 — 이것이 <b>과적합</b>입니다.</li>
+        <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+          <b>곡선이 필요한 자료</b>도 분명히 있습니다(28 ℃ 이후 줄어드는 자전거 대여량).
+          기준은 “복잡한가”가 아니라 <b>“훈련과 검증이 함께 좋아지는가”</b>입니다.</li>
+        <li style="font-size:1.06rem;font-weight:600;">
+          <b>함께 변하는 것(상관관계)</b>과 <b>원인이 되는 것(인과관계)</b>은 다릅니다.
+          공학 도구는 어떤 자료에도 선을 그어 주므로, 선을 믿기 전에 <b>왜 그런가</b>를 물어야 합니다.</li>
+      </ol>
+      <p class="mat-label" style="text-align:left;margin-top:1.2rem;">과적합 · 과소적합 한눈에 비교</p>
+      <div class="tr-scroll">
+        <table class="tr-tbl">
+          <tr><th>비교할 점</th><th>과소적합</th><th>알맞은 적합</th><th>과적합</th></tr>
+          <tr><td>모델의 복잡도</td><td>너무 단순</td><td class="hi">적절</td><td>너무 복잡</td></tr>
+          <tr><td>훈련 오차</td><td>크다</td><td>작다</td><td class="hi">아주 작다(0까지)</td></tr>
+          <tr><td>검증 오차</td><td>크다</td><td class="hi">작다</td><td class="hi">아주 크다</td></tr>
+          <tr><td>주가 자료의 예</td><td class="lf">—</td><td class="lf">직선 (647)</td><td class="lf">9차 (50억)</td></tr>
+          <tr><td>기온·대여량의 예</td><td class="lf">직선 (10,899)</td><td class="lf">2·3차 (711~1,504)</td><td class="lf">9차 (1,134)</td></tr>
+          <tr><td>처방</td><td class="lf">더 복잡한 모델 / 더 학습</td><td class="lf">유지</td><td class="lf">더 단순한 모델 / 데이터 늘리기</td></tr>
+        </table>
+      </div>
+      <span class="tr-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅳ p.221 과대적합·과소적합 보충 자료 서술을 재구성(오차 수치는 이 화면의 자료로 최소제곱법을 적용해 직접 계산)</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>핵심 질문에 답하기</h3>
+      <p><b>훈련 데이터에 완벽히 들어맞는 곡선은 왜 좋은 예측 모델이 아닌가?</b></p>
+      <textarea class="tr-ta" id="tr23-ans" placeholder="내 문장으로 답해 보세요."></textarea>
+      <details class="tr-fold">
+        <summary>자세히 보기 — 예시 답안</summary>
+        <div class="bd">
+          <p>주어진 점을 모두 지나려면 곡선이 몹시 구불구불해져야 합니다. 그 과정에서 모델은 자료에 담긴
+            <b>진짜 패턴</b>이 아니라 우연히 섞인 <b>잡음까지 외워</b> 버립니다.</p>
+          <p>모델의 실력은 <b>처음 보는 데이터</b>에서 드러납니다. 주가 자료에서 9차 곡선은 훈련 오차가 0이었지만,
+            2023~2025년 실제값에 대한 검증 오차는 50억 수준으로 뛰었습니다. 직선은 647이었습니다.</p>
+          <p>그래서 좋은 예측 모델의 기준은 “훈련 데이터를 얼마나 잘 외웠는가”가 아니라
+            <b>“처음 보는 데이터에 얼마나 잘 통하는가(일반화)”</b>입니다.</p>
+        </div>
+      </details>
+      <div class="btn-row"><button class="btn" type="button" onclick="tr23AnsSave()">내 답 저장</button></div>
+      <p class="status" id="tr23-ans-st"></p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>형성평가 — 스스로 확인하기</h3>
+      <p style="margin-bottom:0.8rem;">22·23차시 내용을 함께 확인합니다. 답을 고르면 바로 정답과 해설이 나타나고,
+        마지막에 총점과 문항별 복기가 표시됩니다.</p>
+      <div id="tr23-quiz"></div>
+    </div>
+
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 24차시 · 손실함수 L(a)로 최적 추세선 찾기</strong><br>
+      오늘까지 우리는 “좋은 추세선”을 <b>눈</b>과 <b>표</b>로 판단했습니다. 다음 차시에는 이것을 <b>하나의 함수</b>로 만듭니다.
+      오차를 제곱해 평균한 값 <b>L(a)</b>는 기울기 a에 대한 <b>이차함수</b>가 되고,
+      그 포물선의 <b>최솟값</b>을 찾는 것이 곧 “가장 좋은 직선”을 찾는 일이 됩니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="trNext24(this)">24차시로 이동 →</button>
+        <button class="btn" type="button" onclick="trLesson(22)">돌아보기 · 22차시 예측값과 오차</button>
+      </span>
+    </div>
+
+    <!-- ═════ 프로젝트 과제 ═════ -->
+    <div class="pj" data-no-toggle="1">
+      <span class="lb">프로젝트 과제 · 생각 키우기</span>
+      <h3>「그럴듯하지만 인과는 아닌 사례」 수집·검증 보고서</h3>
+      <p class="sub">숫자는 거짓말을 하지 않지만, 숫자를 읽는 사람은 속을 수 있습니다.
+        내 주변에서 상관관계가 인과관계처럼 이야기되는 사례를 찾아 검증합니다.</p>
+      <dl>
+        <dt>수행 방법</dt>
+        <dd>① 뉴스·광고·SNS·유튜브에서 <b>“A가 늘면 B도 늘었다”</b>는 식으로 두 변수를 연결한 주장을
+          <b>2건</b> 찾아 원문 링크(또는 화면 캡처)를 확보합니다.<br>
+          ② 각 사례에 대해 표를 채웁니다 — 주장한 원인 A / 결과 B / <b>숨은 변수 후보</b> 1~2개 /
+          <b>우연일 가능성</b>(자료 개수·기간) / 내 판정(상관만 / 인과 가능).<br>
+          ③ 둘 중 하나를 골라 <b>실제 자료</b>를 찾아(KOSIS·기상자료개방포털 등) 산점도와 추세선을 그립니다.<br>
+          ④ 그 자료를 <b>앞 70 % 훈련 / 뒤 30 % 검증</b>으로 나누어 직선과 곡선(2차 이상) 두 모델의
+          <b>훈련 오차와 검증 오차</b>를 각각 계산해 표로 비교합니다.<br>
+          ⑤ “이 자료에 어떤 모델을 쓰는 것이 옳고, 그 결론을 <b>인과로 말해도 되는가</b>”를 판정합니다.</dd>
+        <dt>제출물</dt>
+        <dd>· 사례 2건 검증 표 (A4 1장, 링크 또는 캡처 포함)<br>
+          · 산점도 + 두 모델 그래프 화면 캡처 1장<br>
+          · 훈련 오차 / 검증 오차 비교 표<br>
+          · “우리는 이 자료에서 ___ 모델을 고른다. 다만 이 결과를 인과로 말할 수 <b>있다/없다</b>. 왜냐하면 ___” 결론 5문장 이내<br>
+          · (선택) 반 친구에게 낼 <b>착시 퀴즈</b> 1문항</dd>
+        <dt>평가 관점</dt>
+        <dd>· 여러 함수 모델을 비교해 <b>최적화된 추세선의 필요성</b>을 설명했는가 <b>[12인수04-02]</b><br>
+          · 검증 데이터의 오차를 근거로 <b>과적합</b>을 판정했는가 <b>[12인수04-02]</b><br>
+          · <b>숨은 변수</b>를 구체적으로 지목하며 상관과 인과를 갈랐는가 <b>[12인수04-02]</b><br>
+          · 출처를 정확히 밝히고, 특정 개인·집단을 단정하는 표현을 피했는가</dd>
+      </dl>
+    </div>
+
+    <!-- ═════ 참고 자료 ═════ -->
+    <div class="card" data-no-toggle="1">
+      <h3>참고 자료 — 과적합과 인과를 더 깊이</h3>
+      <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+      <div class="tr-refs">
+        <a class="tr-ref" href="https://ko.wikipedia.org/wiki/%EA%B3%BC%EC%A0%81%ED%95%A9" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">개념</span>📘</span>
+          <span class="bd"><span class="tt">과적합 (위키백과, 한국어)</span>
+            <span class="ds">과적합의 정의와 대표 그림, 그리고 막는 방법(데이터 늘리기·모델 단순화)이 한국어로 정리되어 있습니다.</span></span>
+        </a>
+        <a class="tr-ref" href="https://ko.wikipedia.org/wiki/%EC%83%81%EA%B4%80%EA%B4%80%EA%B3%84%EC%99%80_%EC%9D%B8%EA%B3%BC%EA%B4%80%EA%B3%84" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">개념</span>🔀</span>
+          <span class="bd"><span class="tt">상관관계와 인과관계 (위키백과, 한국어)</span>
+            <span class="ds">“상관은 인과를 함의하지 않는다”는 원칙과 여러 착시 사례가 정리되어 있습니다. 활동 3의 판정 근거로 읽어 보세요.</span></span>
+        </a>
+        <a class="tr-ref" href="https://www.tylervigen.com/spurious-correlations" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">웹 활동</span>🎲</span>
+          <span class="bd"><span class="tt">Spurious Correlations — 우연히 닮은 그래프 모음</span>
+            <span class="ds">전혀 관계없는 두 통계가 소름 돋게 겹쳐 보이는 사례를 모아 둔 사이트입니다. ‘우연에 의한 상관’을 눈으로 확인하기 좋습니다.</span></span>
+        </a>
+        <a class="tr-ref" href="https://www.geogebra.org/classic" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">공학 도구</span>📐</span>
+          <span class="bd"><span class="tt">지오지브라 클래식 — 다항 회귀 직접 해 보기</span>
+            <span class="ds">FitPoly(리스트, 차수) 명령으로 2차·3차·9차 곡선을 직접 만들어 보세요. 차수를 올릴 때 곡선이 어떻게 변하는지 보입니다.</span></span>
+        </a>
+        <a class="tr-ref" href="https://kosis.kr/" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">공공 데이터</span>🗂️</span>
+          <span class="bd"><span class="tt">KOSIS 국가통계포털</span>
+            <span class="ds">프로젝트 과제에서 “그럴듯한 상관”을 검증할 실제 자료를 찾는 곳입니다. 기간과 자료 개수를 꼭 함께 적으세요.</span></span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═════ 학습지 ═════ -->
+    <div class="ws" data-no-toggle="1">
+      <span class="lb">학습지</span>
+      <h3>23차시 학습지 — 오차 두 개를 손으로 비교하기</h3>
+      <p>웹에서는 모델 칩을 눌러 오차를 읽었지만, 지면에서는 <b>훈련 오차와 검증 오차를 직접 계산</b>합니다.
+        아래 인쇄용 지면은 오늘의 활동 1·2·3과 <b>1:1로 대응</b>합니다.</p>
+      <div class="ws-dl">
+        <button class="ws-btn" type="button" onclick="wsPrint('tr23-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      </div>
+      <p class="tr-hint" style="margin-top:0.6rem;">
+        4단원 배부용 활동지 실물 파일은 아직 없습니다. 교사가 자기 학습지(구글 드라이브 등)를 쓰려면 아래에 링크를 추가하세요.</p>
+      <div id="tr23-wslinks"></div>
+    </div>
+
+    <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+    <div class="ws-sheet" id="tr23-sheet" aria-hidden="true">
+      <div class="ws-h">
+        <h2>23차시 학습지 — 곡선과 과적합, 그리고 상관과 인과</h2>
+        <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+      </div>
+      <p class="note">학습 목표 ① 여러 함수 모델의 추세선을 비교하여 최적화된 추세선의 필요성을 설명할 수 있다. [12인수04-02]<br>
+        학습 목표 ② 검증 데이터의 오차를 비교하여 과적합을 설명하고, 상관관계가 인과관계를 뜻하지 않음을 사례로 설명할 수 있다. [12인수04-02]</p>
+
+      <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+      <table>
+        <tr><th style="width:54%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+        <tr><td>모든 점을 지나는 곡선은 좋은 예측 모델인가? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>아이스크림 판매가 물놀이 사고의 원인인가? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>상관관계가 없는 자료의 추세선을 믿어도 되는가? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+
+      <h3>② 활동 1 — 훈련 오차를 손으로 구하기</h3>
+      <p class="note">작은 자료 (1, 2), (2, 3), (3, 6), (4, 7) 에 두 모델을 얹는다.<br>
+        모델 P : f(x) = 1.8x &nbsp;&nbsp; 모델 Q : g(x) = 이 네 점을 모두 지나는 3차 곡선(오차 0으로 가정)</p>
+      <table>
+        <tr><th>x</th><th>실제 y</th><th>f(x) = 1.8x</th><th>오차 y − f(x)</th><th>오차의 제곱</th></tr>
+        <tr><td>1</td><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>2</td><td>3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>3</td><td>6</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>4</td><td>7</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><th colspan="4">오차의 제곱의 합</th><td class="blank"></td></tr>
+        <tr><th colspan="4">오차의 제곱의 평균 (÷ 4)</th><td class="blank"></td></tr>
+      </table>
+      <p>⑴ 모델 P의 훈련 오차(오차의 제곱의 평균) = ____________ , 모델 Q의 훈련 오차 = ____________</p>
+      <p>⑵ 훈련 오차만 보면 어느 모델이 더 좋아 보이는가? ____________</p>
+
+      <h3>③ 활동 2 — 검증 데이터로 다시 재기</h3>
+      <p class="note">검증 데이터 (5, 8), (6, 10) 이 새로 주어졌다.<br>
+        모델 P : f(x) = 1.8x &nbsp;&nbsp; 모델 Q : g(5) = 22, g(6) = −15 (9차 곡선이 화면 밖으로 튄 값)</p>
+      <table>
+        <tr><th>x</th><th>실제 y</th><th>P의 예측</th><th>P의 오차²</th><th>Q의 예측</th><th>Q의 오차²</th></tr>
+        <tr><td>5</td><td>8</td><td class="blank"></td><td class="blank"></td><td>22</td><td class="blank"></td></tr>
+        <tr><td>6</td><td>10</td><td class="blank"></td><td class="blank"></td><td>−15</td><td class="blank"></td></tr>
+        <tr><th colspan="3">검증 오차 (오차²의 평균)</th><td class="blank"></td><th>→</th><td class="blank"></td></tr>
+      </table>
+      <p>⑶ 훈련 오차가 더 작았던 모델은 ____________ 이고, 검증 오차가 더 작은 모델은 ____________ 이다.</p>
+      <p>⑷ 이 현상을 무엇이라고 하는가? ____________ (한글 3글자)</p>
+      <p>⑸ 과적합을 줄이는 방법 두 가지를 쓰시오.</p>
+      <div class="rule sm"></div>
+
+      <h3>④ 활동 3 — 상관과 인과 판정표</h3>
+      <table>
+        <tr><th style="width:44%;">상황</th><th>상관만</th><th>인과 가능</th><th>숨은 변수 후보</th></tr>
+        <tr><td>아이스크림 판매량이 늘면 물놀이 사고도 늘어난다</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>공부 시간이 늘면 시험 점수가 오른다</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>발이 큰 학생이 수학 점수가 높다(초1~고3 전체 조사)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>비료를 많이 준 밭의 수확량이 많다(같은 조건 실험)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        <tr><td>학생 번호가 클수록 스마트폰을 오래 쓴다</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      </table>
+      <p>⑹ 위 표에서 “상관관계가 없는 자료”에 해당하는 상황의 번호와 그 근거를 쓰시오.</p>
+      <div class="rule sm"></div>
+
+      <h3>⑤ 형성평가</h3>
+      <ol>
+        <li>과적합에 대한 설명으로 옳은 것은?<br>
+          ① 모델이 너무 단순해 훈련 데이터도 못 맞히는 현상<br>
+          ② 훈련 데이터에 지나치게 맞추어 새 데이터의 예측 성능이 떨어지는 현상<br>
+          ③ 데이터가 부족해 추세선을 못 그리는 현상 &nbsp; ④ 오차의 합이 0이 되는 현상 &nbsp;&nbsp; 답: ______</li>
+        <li>어떤 모델의 훈련 오차가 0인데 검증 오차가 매우 크다. 이 모델은?<br>
+          ① 최적이다 &nbsp; ② 과소적합이다 &nbsp; ③ 과적합이다 &nbsp; ④ 판단할 수 없다 &nbsp;&nbsp; 답: ______</li>
+        <li>인공지능 학습에서 직선 형태의 추세선을 주로 쓰는 이유가 <u>아닌</u> 것은?<br>
+          ① 식의 구조가 간단해 해석하기 쉽다 &nbsp; ② 새 데이터에 대한 일반화 성능이 좋다<br>
+          ③ 오차 계산이 쉬워 학습이 빠르다 &nbsp; ④ 모든 데이터 점을 정확히 지난다 &nbsp;&nbsp; 답: ______</li>
+        <li>평균 기온이 28 ℃를 넘으면 자전거 대여량이 줄어드는 자료에 직선 추세선을 그으면 생기는 문제는?<br>
+          ① 오차가 0이 된다 &nbsp; ② 기온이 오르면 대여량도 계속 증가한다는 잘못된 결론을 내린다<br>
+          ③ 추세선을 구할 수 없다 &nbsp; ④ 과적합이 발생한다 &nbsp;&nbsp; 답: ______</li>
+        <li>두 변수 사이에 상관관계가 있을 때 옳은 판단은?<br>
+          ① 반드시 인과관계가 있다 &nbsp; ② 인과관계가 있을 수도 있고 없을 수도 있다<br>
+          ③ 절대 인과관계가 없다 &nbsp; ④ 추세선을 그으면 인과가 증명된다 &nbsp;&nbsp; 답: ______</li>
+      </ol>
+
+      <h3>⑥ 핵심 질문</h3>
+      <p><b>훈련 데이터에 완벽히 들어맞는 곡선은 왜 좋은 예측 모델이 아닌가?</b></p>
+      <div class="rule lg"></div>
+    </div>
+  </div>
+</div>

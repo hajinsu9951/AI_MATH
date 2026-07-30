@@ -3,6 +3,8 @@
   <style>
   /* mlplay 뷰 전용 스타일 (#v-mlplay 스코프 한정 — 전역 누수 금지) */
   #v-mlplay .ml-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  /* 예상을 걸기 전에는 조작판을 흐리게 잠급니다(흥미·탐구 C-3). */
+  #v-mlplay .ml-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
   #v-mlplay .ml-step::after{content:'';flex:1;height:1px;background:var(--border);}
   #v-mlplay .ml-step .mono{font-size:0.8rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
   /* 표제부 — 핵심 개념 · 핵심 질문 */
@@ -177,6 +179,14 @@
     <div id="ml-videos"></div>
   </div>
 
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요. 답하면 다음 질문이 나타납니다.
+      <b>세 질문의 답은 오늘 STEP 2 활동 ①에서 여러분이 직접 만들어 냅니다.</b></p>
+    <div id="ml-warm"></div>
+  </div>
+
+
   <div class="card">
     <h3>문제 상황 — 김치찌개를 '토마토 수프'라고 답한 AI, 무엇이 문제였을까</h3>
     <p>음식 사진을 알려 주는 앱에 김치찌개 사진을 올렸더니 <b>'토마토 수프'</b>라는 답이 돌아왔습니다.
@@ -267,86 +277,6 @@
       씨마스 「인공지능 수학」 Ⅰ단원 13쪽의 프로그램·기계학습 문제 해결 비교 예시(입력 변수 2, 3, 5 → 출력 변수 규칙 찾기)를 재구성하였습니다.
     </p>
   </div>
-
-  <div class="card">
-    <h3>사례 ① 지도학습 — 스팸 필터·손글씨 인식·의료 영상 판독은 무엇을 보고 배웠나</h3>
-    <p><b>지도학습(Supervised Learning)</b>은 입력값과 출력값을 함께 주고 학습시키는 방법으로, 처음부터 <b>문제와 정답을 모두</b> 알려 줍니다.
-      학습에 쓰는 자료를 <b>훈련 데이터</b>라고 하고, 훈련 데이터에 정답을 달아 주는 일을 <b>레이블링(Labeling)</b>이라고 합니다.
-      레이블링한 훈련 데이터를 충분히 넣어 주면, 새로운 입력이 들어왔을 때 알맞은 답을 내놓는 모형이 됩니다.</p>
-    <ul style="margin:0.6rem 0 0 1.2rem;">
-      <li><b>스팸 메일 분류</b> — 메일 한 통마다 '스팸'·'정상'이라는 정답 이름표를 붙인 자료로 학습합니다. 새 메일이 오면 두 부류 중 하나로 분류합니다.</li>
-      <li><b>손글씨 숫자 인식</b> — 손으로 쓴 숫자 이미지마다 0~9의 정답을 달아 학습시킵니다. 12차시에서 우리가 직접 다룰 방식입니다.</li>
-      <li><b>의료 영상 판독</b> — 엑스선·CT 영상에 '질병 있음/없음' 판정을 달아 학습시키면, 새 영상에 대한 판단을 돕는 모형이 됩니다(교과서의 '질병 유무 판단').</li>
-    </ul>
-    <p style="margin-top:0.6rem;">이 밖에 사진 속 인물 구분, 내일 날씨 예측, 음악 일부를 듣고 제목과 가수를 식별하는 일도 모두 지도학습입니다.
-      공통점은 하나 — <b>사람이 붙여 준 정답 y가 데이터에 함께 있다</b>는 점입니다.
-      '무엇인가'를 맞히면 <b>분류</b>, '얼마인가'를 맞히면 <b>예측</b>이라 부르지만, 둘 다 정답이 있는 지도학습입니다.</p>
-    <div class="ml-thumbs">
-      <div class="ml-thumb"><span class="em">📧</span><span class="cp">스팸 필터</span></div>
-      <div class="ml-thumb"><span class="em">✍️</span><span class="cp">손글씨 인식</span></div>
-      <div class="ml-thumb"><span class="em">🏥</span><span class="cp">의료 영상 판독</span></div>
-    </div>
-    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
-      씨마스 「인공지능 수학」 Ⅰ단원 14쪽의 지도학습 정의·활용 사례 서술을 재구성하였습니다.
-    </p>
-  </div>
-
-  <div class="card">
-    <h3>사례 ② 비지도학습 — 고객 군집화와 뉴스 토픽 묶음은 정답 없이 무엇을 했나</h3>
-    <p><b>비지도학습(Unsupervised Learning)</b>은 기계가 <b>정답이 제공되지 않은 데이터</b>를 학습하여 스스로 새로운 정보를 찾아내는 방법입니다.
-      맞혀야 할 이름표가 아예 없으므로, 판단의 기준은 "정답과 같은가"가 아니라 <b>"서로 얼마나 가까운가"</b>가 됩니다.
-      그 '가깝다'를 재는 자가 바로 오늘 탭 ②에서 쓸 <b>두 점 사이의 거리</b>입니다.</p>
-    <ul style="margin:0.6rem 0 0 1.2rem;">
-      <li><b>고객 군집화</b> — 쇼핑몰이 구매 기록만 보고 소비 성향이 비슷한 회원끼리 묶어, 그룹별로 다른 상품을 추천하고 광고를 보냅니다.
-        대형 식료품점의 회원 그룹별 마케팅, 사회 관계망 서비스(SNS)의 회원 성향 분류도 같은 방식입니다.</li>
-      <li><b>뉴스 토픽 묶음</b> — 수천 건의 기사에 주제 이름표를 달아 주지 않아도, 쓰인 단어가 비슷한 기사끼리 모으면
-        '경제·스포츠·문화' 같은 묶음이 저절로 드러납니다. 6~8차시에서 배울 텍스트 표현이 그 준비 작업입니다.</li>
-    </ul>
-    <p style="margin-top:0.6rem;"><b>주의할 점</b> — 군집의 결과에는 정답이 없습니다. 그래서 사람마다 묶음이 달라질 수 있고,
-      "왜 그렇게 묶었는지 <b>기준을 설명할 수 있는가</b>"가 평가의 잣대가 됩니다. 군집화를 '정답 맞히기'로 오해하지 않도록 합시다.</p>
-    <div class="ml-thumbs">
-      <div class="ml-thumb"><span class="em">🛍️</span><span class="cp">고객 군집화</span></div>
-      <div class="ml-thumb"><span class="em">📰</span><span class="cp">뉴스 토픽 묶음</span></div>
-    </div>
-    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
-      씨마스 「인공지능 수학」 Ⅰ단원 15쪽의 비지도학습 정의·활용 사례 서술을 재구성하였습니다.
-    </p>
-  </div>
-
-  <div class="card">
-    <h3>사례 ③ 강화학습 — 알파고·로봇 보행·게임 AI는 무엇을 신호로 삼았나</h3>
-    <p><b>강화학습(Reinforcement Learning)</b>은 현재 상태에서 어떤 행동을 하는 것이 최적인지를 찾아내는 학습 방법입니다.
-      각 행동에 따라 주어지는 <b>보상</b>을 통해 최적 행동이 점점 강화되도록 학습이 진행됩니다.
-      정답을 매 순간 알려 주는 사람은 없고, 오직 결과로 돌아오는 상과 벌만이 신호입니다.</p>
-    <ul style="margin:0.6rem 0 0 1.2rem;">
-      <li><b>알파고</b> — 2016년 이세돌 9단과의 대국에서 4승 1패를 거둔 바둑 프로그램입니다. 매 수마다 "이 수가 정답"이라고 알려 준 사람은 없었고,
-        대국의 승패라는 보상만으로 스스로 강해졌습니다. 1차시 타임라인에서 만난 그 사건입니다.</li>
-      <li><b>로봇 보행</b> — 넘어지지 않고 앞으로 나아가면 상, 넘어지면 벌. 관절의 각도를 사람이 일일이 지정하지 않아도
-        보상만으로 걸음걸이를 다듬어 갑니다(교과서의 '동작 모방 로봇 제어').</li>
-      <li><b>게임 AI</b> — 게임은 현재 캐릭터의 상태와 장애물의 위치를 보여 줍니다. 점수가 높아지면 상, 낮아지면 벌로 인식하며
-        더 많은 상을 받는 행동을 찾아 갑니다. 자율 주행 자동차 시뮬레이션, 전략 게임 인공지능도 같은 원리입니다.</li>
-    </ul>
-    <p style="margin-top:0.6rem;">강화학습의 목표는 한 번의 정답이 아니라 <b>장기적으로 누적 보상을 크게 하는 전략</b>을 찾는 것입니다.
-      탭 ③의 밴딧 게임에서 그 전략을 직접 세워 보겠습니다.</p>
-    <div class="ml-thumbs">
-      <div class="ml-thumb"><span class="em">⚫</span><span class="cp">알파고</span></div>
-      <div class="ml-thumb"><span class="em">🤖</span><span class="cp">로봇 보행</span></div>
-      <div class="ml-thumb"><span class="em">🎮</span><span class="cp">게임 AI</span></div>
-    </div>
-    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
-      씨마스 「인공지능 수학」 Ⅰ단원 15쪽의 강화 학습 정의·게임 예시·활용 사례 서술을 재구성하였습니다.
-    </p>
-  </div>
-
-  <div class="card" data-no-toggle="1">
-    <h3>마중 퀴즈 — 내 생각은?</h3>
-    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요. 답하면 다음 질문이 나타납니다.</p>
-    <div id="ml-warm"></div>
-  </div>
-
-  <div class="math">지도학습   : 데이터 (x, y) — 정답 y가 있다 → y를 잘 맞히는 함수 f 찾기
-  비지도학습 : 데이터 (x) — 정답이 없다 → 거리와 평균으로 구조(군집) 찾기
-  강화학습   : 행동 → 보상 r — 정답 대신 보상 → 누적 보상을 크게 하는 전략 찾기</div>
 
   <div class="info"><strong>학습 목표는 어떤 활동으로 이어지나</strong> —
     목표 ①은 전개 탭 ①에서 — 사례 카드 6장을 세 바구니에 직접 분류하며 세 방식의 판단 기준을 잡습니다.
@@ -452,6 +382,82 @@
         씨마스 「인공지능 수학」 Ⅰ단원 14~15쪽의 지도·비지도·강화 학습 정의 및 15쪽 '확인하기 1' 문항을 재구성하였습니다.
       </p>
     </div>
+
+  <div class="math">지도학습   : 데이터 (x, y) — 정답 y가 있다 → y를 잘 맞히는 함수 f 찾기
+  비지도학습 : 데이터 (x) — 정답이 없다 → 거리와 평균으로 구조(군집) 찾기
+  강화학습   : 행동 → 보상 r — 정답 대신 보상 → 누적 보상을 크게 하는 전략 찾기</div>
+
+
+  <div class="card">
+    <h3>사례 ① 지도학습 — 스팸 필터·손글씨 인식·의료 영상 판독은 무엇을 보고 배웠나</h3>
+    <p><b>지도학습(Supervised Learning)</b>은 입력값과 출력값을 함께 주고 학습시키는 방법으로, 처음부터 <b>문제와 정답을 모두</b> 알려 줍니다.
+      학습에 쓰는 자료를 <b>훈련 데이터</b>라고 하고, 훈련 데이터에 정답을 달아 주는 일을 <b>레이블링(Labeling)</b>이라고 합니다.
+      레이블링한 훈련 데이터를 충분히 넣어 주면, 새로운 입력이 들어왔을 때 알맞은 답을 내놓는 모형이 됩니다.</p>
+    <ul style="margin:0.6rem 0 0 1.2rem;">
+      <li><b>스팸 메일 분류</b> — 메일 한 통마다 '스팸'·'정상'이라는 정답 이름표를 붙인 자료로 학습합니다. 새 메일이 오면 두 부류 중 하나로 분류합니다.</li>
+      <li><b>손글씨 숫자 인식</b> — 손으로 쓴 숫자 이미지마다 0~9의 정답을 달아 학습시킵니다. 12차시에서 우리가 직접 다룰 방식입니다.</li>
+      <li><b>의료 영상 판독</b> — 엑스선·CT 영상에 '질병 있음/없음' 판정을 달아 학습시키면, 새 영상에 대한 판단을 돕는 모형이 됩니다(교과서의 '질병 유무 판단').</li>
+    </ul>
+    <p style="margin-top:0.6rem;">이 밖에 사진 속 인물 구분, 내일 날씨 예측, 음악 일부를 듣고 제목과 가수를 식별하는 일도 모두 지도학습입니다.
+      공통점은 하나 — <b>사람이 붙여 준 정답 y가 데이터에 함께 있다</b>는 점입니다.
+      '무엇인가'를 맞히면 <b>분류</b>, '얼마인가'를 맞히면 <b>예측</b>이라 부르지만, 둘 다 정답이 있는 지도학습입니다.</p>
+    <div class="ml-thumbs">
+      <div class="ml-thumb"><span class="em">📧</span><span class="cp">스팸 필터</span></div>
+      <div class="ml-thumb"><span class="em">✍️</span><span class="cp">손글씨 인식</span></div>
+      <div class="ml-thumb"><span class="em">🏥</span><span class="cp">의료 영상 판독</span></div>
+    </div>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 14쪽의 지도학습 정의·활용 사례 서술을 재구성하였습니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>사례 ② 비지도학습 — 고객 군집화와 뉴스 토픽 묶음은 정답 없이 무엇을 했나</h3>
+    <p><b>비지도학습(Unsupervised Learning)</b>은 기계가 <b>정답이 제공되지 않은 데이터</b>를 학습하여 스스로 새로운 정보를 찾아내는 방법입니다.
+      맞혀야 할 이름표가 아예 없으므로, 판단의 기준은 "정답과 같은가"가 아니라 <b>"서로 얼마나 가까운가"</b>가 됩니다.
+      그 '가깝다'를 재는 자가 바로 오늘 탭 ②에서 쓸 <b>두 점 사이의 거리</b>입니다.</p>
+    <ul style="margin:0.6rem 0 0 1.2rem;">
+      <li><b>고객 군집화</b> — 쇼핑몰이 구매 기록만 보고 소비 성향이 비슷한 회원끼리 묶어, 그룹별로 다른 상품을 추천하고 광고를 보냅니다.
+        대형 식료품점의 회원 그룹별 마케팅, 사회 관계망 서비스(SNS)의 회원 성향 분류도 같은 방식입니다.</li>
+      <li><b>뉴스 토픽 묶음</b> — 수천 건의 기사에 주제 이름표를 달아 주지 않아도, 쓰인 단어가 비슷한 기사끼리 모으면
+        '경제·스포츠·문화' 같은 묶음이 저절로 드러납니다. 6~8차시에서 배울 텍스트 표현이 그 준비 작업입니다.</li>
+    </ul>
+    <p style="margin-top:0.6rem;"><b>주의할 점</b> — 군집의 결과에는 정답이 없습니다. 그래서 사람마다 묶음이 달라질 수 있고,
+      "왜 그렇게 묶었는지 <b>기준을 설명할 수 있는가</b>"가 평가의 잣대가 됩니다. 군집화를 '정답 맞히기'로 오해하지 않도록 합시다.</p>
+    <div class="ml-thumbs">
+      <div class="ml-thumb"><span class="em">🛍️</span><span class="cp">고객 군집화</span></div>
+      <div class="ml-thumb"><span class="em">📰</span><span class="cp">뉴스 토픽 묶음</span></div>
+    </div>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 15쪽의 비지도학습 정의·활용 사례 서술을 재구성하였습니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>사례 ③ 강화학습 — 알파고·로봇 보행·게임 AI는 무엇을 신호로 삼았나</h3>
+    <p><b>강화학습(Reinforcement Learning)</b>은 현재 상태에서 어떤 행동을 하는 것이 최적인지를 찾아내는 학습 방법입니다.
+      각 행동에 따라 주어지는 <b>보상</b>을 통해 최적 행동이 점점 강화되도록 학습이 진행됩니다.
+      정답을 매 순간 알려 주는 사람은 없고, 오직 결과로 돌아오는 상과 벌만이 신호입니다.</p>
+    <ul style="margin:0.6rem 0 0 1.2rem;">
+      <li><b>알파고</b> — 2016년 이세돌 9단과의 대국에서 4승 1패를 거둔 바둑 프로그램입니다. 매 수마다 "이 수가 정답"이라고 알려 준 사람은 없었고,
+        대국의 승패라는 보상만으로 스스로 강해졌습니다. 1차시 타임라인에서 만난 그 사건입니다.</li>
+      <li><b>로봇 보행</b> — 넘어지지 않고 앞으로 나아가면 상, 넘어지면 벌. 관절의 각도를 사람이 일일이 지정하지 않아도
+        보상만으로 걸음걸이를 다듬어 갑니다(교과서의 '동작 모방 로봇 제어').</li>
+      <li><b>게임 AI</b> — 게임은 현재 캐릭터의 상태와 장애물의 위치를 보여 줍니다. 점수가 높아지면 상, 낮아지면 벌로 인식하며
+        더 많은 상을 받는 행동을 찾아 갑니다. 자율 주행 자동차 시뮬레이션, 전략 게임 인공지능도 같은 원리입니다.</li>
+    </ul>
+    <p style="margin-top:0.6rem;">강화학습의 목표는 한 번의 정답이 아니라 <b>장기적으로 누적 보상을 크게 하는 전략</b>을 찾는 것입니다.
+      탭 ③의 밴딧 게임에서 그 전략을 직접 세워 보겠습니다.</p>
+    <div class="ml-thumbs">
+      <div class="ml-thumb"><span class="em">⚫</span><span class="cp">알파고</span></div>
+      <div class="ml-thumb"><span class="em">🤖</span><span class="cp">로봇 보행</span></div>
+      <div class="ml-thumb"><span class="em">🎮</span><span class="cp">게임 AI</span></div>
+    </div>
+    <p class="mono" style="text-transform:none;letter-spacing:0.04em;font-size:0.75rem;margin-top:0.8rem;">
+      씨마스 「인공지능 수학」 Ⅰ단원 15쪽의 강화 학습 정의·게임 예시·활용 사례 서술을 재구성하였습니다.
+    </p>
+  </div>
+
   </div>
 
   <!-- ── TAB 1 : 비지도학습 · k-means 스텝 시뮬레이터 ─────────────────────── -->
@@ -461,9 +467,22 @@
       진행 순서: <b>단계 1 관찰</b>(스텝 실행) → <b>단계 2 정리</b>(반복과 이상치) → <b>단계 3 정의 확인</b>(k-means). 아래 단계 카드를 순서대로 열어 보세요.
     </div>
 
-    <div class="card" data-no-toggle="1" id="ml-act-km">
+    <div class="card" data-no-toggle="1" id="ml-km-pre">
+      <h3>먼저 예상해 보세요 — 세 번 반복하면 중심(×)은?</h3>
+      <p>정답이 하나도 없는 점들 위에 중심 ×를 아무 데나 놓고, 「가장 가까운 점 모으기 → 평균으로 옮기기」를
+        <b>세 번</b> 되풀이하면 중심은 어떻게 될까요?</p>
+      <div class="chips" id="ml-km-guess">
+        <button class="chip" type="button" onclick="mlKmGuess(0,this)">계속 이리저리 움직인다</button>
+        <button class="chip" type="button" onclick="mlKmGuess(1,this)">한 곳에 멈춘다</button>
+        <button class="chip" type="button" onclick="mlKmGuess(2,this)">점점 바깥으로 밀려난다</button>
+      </div>
+      <p class="status" id="ml-km-gmsg">예상을 고르기 전에는 아래 조작판이 잠겨 있습니다.</p>
+    </div>
+
+    <div class="card ml-veil" data-no-toggle="1" id="ml-act-km">
       <h3>단계 1 · 관찰 — 중심(×)은 어떻게 움직이는가</h3>
-      <p>좌표평면을 <b>클릭</b>해 점을 찍거나 <b>[예시 데이터]</b>를 불러오세요.
+      <p>예시 데이터 9점이 이미 놓여 있습니다. 좌표평면을 <b>클릭</b>해 점을 더 찍거나,
+        <b>[모두 지우기]</b>로 백지에서 시작할 수도 있습니다.
         군집 수 k를 고르고 <b>[1 Step]</b>을 누를 때마다
         ① 각 점이 <b>가장 가까운 중심</b>의 색으로 물들고 ② 중심 ×가 <b>소속 점들의 평균</b> 위치로 이동합니다.</p>
 
@@ -483,7 +502,7 @@
         <button class="btn" onclick="mlKmRestart()">중심 다시 뽑기</button>
         <button class="btn" onclick="mlKmClear()">모두 지우기</button>
       </div>
-      <div class="status" id="ml-km-st">좌표평면을 클릭해 점을 찍거나 [예시 데이터]를 눌러 보세요.</div>
+      <div class="status" id="ml-km-st">예시 데이터 9개가 놓여 있습니다. k 를 고르고 [1 Step]을 눌러 보세요.</div>
 
       <div class="ml-km-phase" id="ml-km-phase">아직 시작하지 않았습니다</div>
       <div class="ml-km-ex" id="ml-km-ex"></div>
@@ -495,7 +514,7 @@
 
       <p class="mat-label" style="text-align:left;margin-top:1rem;">단계 로그 — [1 Step]을 누를 때마다 한 줄씩 기록이 쌓입니다</p>
       <div class="ml-logbox" id="ml-km-logbox"><table class="ml-tbl" id="ml-km-log"></table></div>
-      <p class="status" style="margin-top:0.3rem;">수렴 판정 — <b>중심이 더 이상 움직이지 않으면 종료</b>합니다. 정답 없이도 데이터 스스로 구조를 찾아냈다는 뜻에서, 이것이 '스스로 묶는 학습'입니다.</p>
+      <p class="status" style="margin-top:0.3rem;">수렴 판정 — <b>중심이 더 이상 움직이지 않으면 종료</b>합니다.</p>
     </div>
 
     <div class="math">두 점 사이의 거리 d = √((x₁−x₂)² + (y₁−y₂)²)
@@ -505,6 +524,9 @@
     <div class="card">
       <h3>단계 2 · 정리 — 반복하면 무엇이 일어나는가</h3>
       <p>여러 번 [1 Step]을 눌러 본 뒤 열어 보세요. 관찰해야 할 문장은 네 개입니다.</p>
+      <p><b>가장 중요한 한 줄</b> — 중심이 더 이상 움직이지 않으면 종료합니다.
+        <b>정답을 하나도 주지 않았는데도 데이터가 스스로 구조를 드러냈다</b>는 뜻이고,
+        이것이 ‘스스로 묶는 학습(비지도학습)’입니다.</p>
       <ul style="margin:0.5rem 0 0 1.2rem;">
         <li><b>한 번에 끝나지 않는다</b> — [1 Step]을 반복하면 점의 소속이 바뀌고 중심도 따라 이동합니다.
           몇 번을 지나면 더 이상 바뀌지 않는 상태에 이르는데, 이때 군집화가 완료된 것입니다.</li>

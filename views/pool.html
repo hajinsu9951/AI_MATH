@@ -1,76 +1,806 @@
-<!-- ═══════════ POOL + NORM ═══════════ -->
+<!-- ═══════════ POOL (17차시: 풀링과 정규화) ═══════════
+     · 파일 위치: views/pool.html  (기존 뷰 전면 개편 — 이 파일이 교체 전체본입니다)
+     · 전역 접두사 p(기존 유지) + px(신규) · 뷰 루트 id #v-pool
+     · 기존 위젯 보존: ptab / bldP / pRst / pStp / pAut / pI · #pi #po #pst · 정규화 슬라이더 #nsl #ni #nf #nsw
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-pool">
-  <p class="mono" style="margin-bottom:0.4rem;">데이터 처리</p>
-  <h2>풀링과 정규화</h2>
-  <p class="desc">
-    풀링은 이미지 크기를 줄이면서 핵심 정보를 보존하고,
-    정규화는 학습 효율을 높이기 위해 값의 범위를 조정합니다.
-  </p>
+  <style>
+  /* pool 뷰 전용 스타일 (#v-pool 스코프 한정 — 전역 누수 금지) */
+  #v-pool .px-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-pool .px-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-pool .px-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 */
+  #v-pool .px-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-pool .px-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;width:100%;}
+  #v-pool .px-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-pool .px-ask{border-left:4px solid var(--accent);}
+  #v-pool .px-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-pool .px-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;
+    color:var(--fg);font-size:1.03rem;line-height:1.7;}
+  #v-pool .px-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-pool .px-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-pool .px-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;
+    line-height:1.7;display:block;}
+  #v-pool .px-hint{font-size:0.88rem;color:var(--muted);line-height:1.7;}
+  #v-pool .px-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;}
+  #v-pool .px-scroll{overflow-x:auto;max-width:100%;}
+  #v-pool .px-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-pool .px-tbl th,#v-pool .px-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;
+    text-align:center;line-height:1.6;}
+  #v-pool .px-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-pool .px-tbl td.lf,#v-pool .px-tbl th.lf{text-align:left;}
+  #v-pool .px-tbl td.hi{background:var(--card-h);font-weight:700;color:var(--fg);}
+  #v-pool .px-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-pool .px-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-pool .px-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-pool .px-fb b{color:var(--fg);}
+  #v-pool .px-fb:empty{display:none;}
+  #v-pool .px-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-pool .px-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-pool .px-in.num{width:4.4rem;text-align:center;}
+  #v-pool textarea.px-ta{width:100%;min-height:4.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:1rem;line-height:1.75;
+    background:var(--card);color:var(--fg);resize:vertical;}
+
+  /* 조작 요소 확대 — 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-pool .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-pool .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-pool .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-pool .tabs{flex-wrap:wrap;}
+  #v-pool .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-pool .ws-btn{min-height:44px;}
+
+  /* 단계 토글(details) */
+  #v-pool .px-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-pool .px-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-pool .px-fold>summary::-webkit-details-marker{display:none;}
+  #v-pool .px-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-pool .px-fold[open]>summary::after{content:'▾';}
+  #v-pool .px-fold .bd{padding:0 0 0.9rem;}
+  #v-pool .px-fold .bd p,#v-pool .px-fold .bd li{font-size:1rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-pool .px-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 도해 2단 배치 — 좌(그림) / 우(짧은 설명) */
+  #v-pool .px-two{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:1.1rem;align-items:start;margin-top:0.6rem;}
+  #v-pool .px-two>figure{margin:0;min-width:0;}
+  #v-pool .px-two svg{display:block;width:100%;height:auto;border:1px solid var(--border);
+    border-radius:0.6rem;background:var(--bg);}
+  #v-pool .px-two figcaption{font-size:0.84rem;color:var(--muted);line-height:1.65;margin-top:0.35rem;}
+  #v-pool .px-two p{font-size:1rem;line-height:1.85;margin-bottom:0.5rem;}
+  @media(max-width:720px){#v-pool .px-two{grid-template-columns:1fr;}}
+
+  /* 예측 입력 그리드(2×2) */
+  #v-pool .px-guess{display:inline-grid;grid-template-columns:repeat(2,auto);gap:0.4rem;margin:0.6rem 0;}
+  #v-pool .px-guess input{width:3.4rem;height:3.4rem;text-align:center;font-family:var(--mono);
+    font-size:1.15rem;font-weight:700;border:1px solid var(--border);border-radius:0.4rem;
+    background:var(--card);color:var(--fg);}
+  #v-pool .px-guess input.ok{border-color:var(--green);box-shadow:inset 0 0 0 2px var(--green);}
+  #v-pool .px-guess input.no{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red);}
+
+  /* 이동 불변성 — 격자 */
+  #v-pool .px-shiftwrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));
+    gap:1rem;margin-top:0.8rem;}
+  #v-pool .px-panel{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.85rem;min-width:0;text-align:center;}
+  #v-pool .px-panel h4{font-size:1rem;margin:0 0 0.5rem;color:var(--fg);}
+  #v-pool .px-g{display:inline-grid;gap:2px;background:var(--border);border-radius:var(--radius);padding:2px;}
+  #v-pool .px-g .c{width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;
+    background:var(--card);font-family:var(--mono);font-size:0.95rem;color:var(--body);}
+  #v-pool .px-g .c.f{background:var(--accent);color:var(--fg);font-weight:700;}
+  #v-pool .px-g .c.chg{box-shadow:inset 0 0 0 3px var(--red);}
+  #v-pool .px-g .c.same{color:var(--muted);}
+  #v-pool .px-pad{display:inline-grid;grid-template-columns:repeat(3,3rem);gap:0.35rem;margin:0.7rem auto 0;}
+  #v-pool .px-pad button{min-height:44px;font-size:1.1rem;font-family:var(--mono);border:1px solid var(--border);
+    border-radius:0.4rem;background:var(--card);color:var(--fg);cursor:pointer;}
+  #v-pool .px-pad button:hover{background:var(--fg);color:var(--bg);}
+  #v-pool .px-pad .sp{visibility:hidden;}
+  #v-pool .px-tally{display:inline-block;font-family:var(--mono);font-size:0.95rem;font-weight:700;
+    background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.3rem 0.9rem;margin-top:0.7rem;}
+
+  /* 정규화 표 */
+  #v-pool .px-normgrid{display:inline-grid;grid-template-columns:repeat(3,auto);gap:0.35rem;margin:0.5rem 0;}
+  #v-pool .px-normgrid input{width:4.4rem;height:2.6rem;text-align:center;font-family:var(--mono);
+    font-size:0.95rem;border:1px solid var(--border);border-radius:0.35rem;background:var(--card);color:var(--fg);}
+  #v-pool .px-normgrid input.ok{border-color:var(--green);box-shadow:inset 0 0 0 2px var(--green);}
+  #v-pool .px-normgrid input.no{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red);}
+  #v-pool .px-swrow{display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;margin-top:0.6rem;}
+  #v-pool .px-swcell{width:2.6rem;height:2.6rem;border-radius:0.35rem;border:1px solid var(--border);}
+
+  /* 참고 자료 카드 */
+  #v-pool .px-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-pool .px-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;}
+  #v-pool .px-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-pool .px-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.3rem;}
+  #v-pool .px-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-pool .px-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-pool .px-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-pool .px-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-pool *{animation:none !important;transition:none !important;}
+  }
+  @media (max-width:640px){
+    #v-pool .px-fml{font-size:0.82rem;}
+    #v-pool .px-g .c{width:2.1rem;height:2.1rem;font-size:0.85rem;}
+    #v-pool .px-guess input{width:3rem;height:3rem;}
+    #v-pool .px-pad{grid-template-columns:repeat(3,2.7rem);}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="px-hero">
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅲ 단원 · 17차시 · [12인수03-02]</p>
+    <h2>풀링과 정규화 — 버려야 보이는 것</h2>
+    <p class="desc">
+      16차시에서 만든 특징 맵은 아직 너무 큽니다. 여기서 값을 <b>줄이고</b> 범위를 <b>맞추는</b>
+      두 번의 행렬 연산을 거치면, 계산은 가벼워지고 인식은 오히려 안정됩니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① <b>맥스 풀링</b>을 이용하여 특징 맵의 크기를 줄이는 변환을 할 수 있습니다. <b>[12인수03-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② <b>행렬의 실수배</b>(X/255)를 이용하여 픽셀 값을 정규화할 수 있습니다. <b>[12인수03-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 풀링이 <b>연산량 감소</b>와 <b>위치 변화에 강한 인식</b>에 기여하는 이유를 설명할 수 있습니다. <b>[12인수03-02]</b>
+    </div>
+    <div class="px-goalmap">
+      <button type="button" onclick="pxSee(0,'px-act1')">├ 목표 ① → <b>활동 1</b> 4×4를 2×2로 줄이기(예측 → 한 단계 실행) →</button>
+      <button type="button" onclick="pxSee(1,'px-act2')">├ 목표 ③ → <b>활동 2</b> 특징을 한 칸씩 옮겨도 결과가 그대로인가 →</button>
+      <button type="button" onclick="pxSee(2,'px-act3')">└ 목표 ② → <b>활동 3</b> 0~255를 0~1로: 행렬의 실수배 X/255 →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips px-keys" data-no-toggle="1">
+    <span class="chip">맥스 풀링 P(i, j)</span>
+    <span class="chip">특징 맵의 크기와 연산량</span>
+    <span class="chip">이동 불변성</span>
+    <span class="chip">행렬의 실수배 X/255</span>
+    <span class="chip">정규화</span>
+  </div>
+
+  <div class="card px-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>정보를 ‘버리는’ 것이 오히려 인식에 도움이 되는 이유는 무엇인가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">이 질문에는 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="px-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 합성곱 다음에 오는 층</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      두 영상 모두 CNN 강의 안에서 <b>풀링 구간</b>을 다룹니다. 풀링만 단독으로 설명하는 한국어 교육 영상은
+      아직 드물어, 강의 중 해당 구간을 짚어 보는 것을 권합니다.</p>
+    <div id="px-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="px-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b></p>
+  </div>
 
   <div class="card">
-    <h3>왜 데이터를 줄이고 변환해야 할까?</h3>
-    <p>스마트폰으로 찍은 사진 한 장은 보통 1,200만 개 이상의 픽셀로 이루어져 있습니다.
-      이 모든 픽셀을 그대로 처리하면 연산량이 폭발적으로 늘어납니다.
-      풀링은 이미지의 핵심 특징은 유지하면서 크기를 줄이는 기법으로, CNN의 각 합성곱층 뒤에 배치되어
-      연산 효율을 높이고, 작은 위치 변화에 흔들리지 않는 안정적인 인식을 가능하게 합니다.</p>
-    <p style="margin-top:0.5rem;">정규화는 서로 다른 범위의 데이터를 일정한 범위로 맞추는 과정입니다.
-      키(cm)와 몸무게(kg)처럼 단위가 다른 데이터를 함께 학습시키려면 같은 스케일로 변환해야
-      특정 값이 학습을 지배하는 것을 방지할 수 있습니다.</p>
-  </div>
-
-  <div class="tabs">
-    <button class="tab on" onclick="ptab(0,this)">맥스 풀링</button>
-    <button class="tab" onclick="ptab(1,this)">정규화</button>
-  </div>
-
-  <!-- TAB 0: pooling -->
-  <div class="tpanel on" id="pt0">
-    <div class="card">
-      <h3>맥스 풀링 (Max Pooling)</h3>
-      <p>4×4 입력에서 2×2씩 묶어 최대값만 선택하여 2×2로 압축합니다.
-        입력값을 직접 편집하여 다양한 경우를 실험해보세요.</p>
-    </div>
-
-    <div class="grid-wrap">
-      <div style="text-align:center;"><p class="mat-label">입력 (4×4) — 편집 가능</p><div class="eg" id="pi" style="grid-template-columns:repeat(4,1fr);"></div></div>
-      <div class="op">→</div>
-      <div style="text-align:center;"><p class="mat-label">출력 (2×2)</p><div class="mat" id="po" style="grid-template-columns:repeat(2,1fr);"></div></div>
-    </div>
-    <div class="btn-row" style="justify-content:center;">
-      <button class="btn" onclick="pRst()">리셋</button>
-      <button class="btn" onclick="pStp()">한 단계</button>
-      <button class="btn pri" onclick="pAut()">자동 실행</button>
-    </div>
-    <div id="pst" class="status" style="text-align:center;"></div>
-    <div class="info">
-      <strong>효과:</strong> 이미지 크기는 줄지만 주요 특징은 유지됩니다.
-      연산량을 줄이고, 물체 위치가 조금 바뀌어도 동일하게 인식하는 이동 불변성을 제공합니다.
-    </div>
-  </div>
-
-  <!-- TAB 1: normalization -->
-  <div class="tpanel" id="pt1">
-    <div class="card">
-      <h3>데이터 정규화 (Normalization)</h3>
-      <p>이미지 픽셀은 0(검은색)~255(흰색)의 정수값을 가집니다.
-        AI 모델 학습 시 0.0~1.0 사이의 실수로 변환합니다. 이는 행렬의 실수배 연산입니다.</p>
-    </div>
-    <div class="math" style="text-align:center;">X_normalized = X / 255</div>
-    <div style="text-align:center;margin:2rem 0;">
-      <p class="mono" style="margin-bottom:0.6rem;">슬라이더를 움직여 정규화를 체험하세요</p>
-      <input type="range" class="ns" id="nsl" min="0" max="255" value="128">
-      <div class="nout">
-        <div class="nb"><div class="v" id="ni">128</div><div class="l">Integer (0–255)</div></div>
-        <div class="nb"><div style="font-size:1.2rem;color:var(--muted);padding-top:0.3rem;">÷ 255 =</div></div>
-        <div class="nb"><div class="v" id="nf">0.502</div><div class="l">Float (0.0–1.0)</div></div>
-        <div class="nb"><div class="sw" id="nsw" style="background:rgb(128,128,128);"></div><div class="l">실제 색상</div></div>
+    <h3>왜 줄이고, 왜 범위를 맞추는가 — 오늘의 두 연산</h3>
+    <div class="px-two">
+      <figure>
+        <svg viewBox="0 0 300 180" role="img" aria-label="큰 특징 맵이 풀링으로 절반이 되고 다시 실수배로 0에서 1 사이 값이 되는 과정 그림">
+          <rect width="300" height="180" fill="var(--bg)"/>
+          <g stroke="var(--border)" stroke-width="1">
+            <rect x="14" y="34" width="88" height="88" fill="var(--card)"/>
+            <path d="M14 56H102M14 78H102M14 100H102M36 34V122M58 34V122M80 34V122"/>
+          </g>
+          <text x="58" y="140" font-size="11" fill="var(--muted)" font-family="monospace" text-anchor="middle">특징 맵 4×4</text>
+          <path d="M110 78H140" stroke="var(--fg)" stroke-width="2" marker-end="url(#pxar)"/>
+          <defs><marker id="pxar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0 0L8 4L0 8Z" fill="var(--fg)"/></marker></defs>
+          <text x="125" y="70" font-size="9" fill="var(--muted)" font-family="monospace" text-anchor="middle">풀링</text>
+          <g stroke="var(--border)" stroke-width="1">
+            <rect x="150" y="56" width="44" height="44" fill="var(--accent)"/>
+            <path d="M150 78H194M172 56V100"/>
+          </g>
+          <text x="172" y="118" font-size="11" fill="var(--muted)" font-family="monospace" text-anchor="middle">2×2</text>
+          <path d="M202 78H232" stroke="var(--fg)" stroke-width="2" marker-end="url(#pxar)"/>
+          <text x="217" y="70" font-size="9" fill="var(--muted)" font-family="monospace" text-anchor="middle">÷255</text>
+          <g stroke="var(--border)" stroke-width="1">
+            <rect x="242" y="56" width="44" height="44" fill="var(--card)"/>
+            <path d="M242 78H286M264 56V100"/>
+          </g>
+          <text x="264" y="118" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">0.0~1.0</text>
+          <text x="150" y="24" font-size="11" fill="var(--fg)" font-family="monospace">① 크기를 줄인다   ② 범위를 맞춘다</text>
+        </svg>
+        <figcaption>오늘 다루는 두 연산. 크기를 줄이는 <b>맥스 풀링</b>과 범위를 맞추는 <b>행렬의 실수배</b>입니다.</figcaption>
+      </figure>
+      <div>
+        <p>스마트폰 사진 한 장은 1,200만 개가 넘는 픽셀입니다. 합성곱을 거치면 그런 크기의 특징 맵이 여러 장 생깁니다.</p>
+        <p>그대로 다음 층에 넘기면 계산이 감당되지 않습니다. 그래서 <b>일부러 값을 버립니다</b>. 대신 각 구역에서 <b>가장 강한 값</b>만 남깁니다.</p>
+        <p>또 0~255의 정수는 학습에 그대로 쓰기에 값이 큽니다. 행렬 전체에 1/255를 곱해 0~1로 맞춥니다.</p>
+        <span class="px-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅰ단원 p.105 CNN 계층 설명(합성곱층·풀링 계층·완전 연결 계층), 천재교육 지도서 p.155 ⑷ 풀링 연산 서술을 재구성</span>
       </div>
     </div>
-    <div class="info">
-      <strong>왜 필요한가:</strong> 정규화를 하지 않으면, 큰 값을 가진 특성이 학습을 지배하여
-      모델이 편향되게 학습될 수 있습니다. 정규화는 경사 하강법의 수렴 속도를 높이고,
-      수치 오버플로우를 방지하며, 다양한 특성을 공평하게 반영할 수 있게 합니다.
-      이미지 외에도 음성, 센서 데이터 등 거의 모든 AI 입력 데이터에 정규화가 적용됩니다.
+
+    <figure class="phz" style="max-width:min(100%,26rem);margin-left:auto;margin-right:auto;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Effect_of_downsampling_in_photo_of_Gates-Hillman_Complex_at_Carnegie_Mellon_University_3.png/500px-Effect_of_downsampling_in_photo_of_Gates-Hillman_Complex_at_Carnegie_Mellon_University_3.png"
+           alt="같은 건물 사진을 여러 단계로 축소해 나란히 놓은 실제 사진" loading="eager" referrerpolicy="no-referrer"
+           onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+      <span class="fb" aria-hidden="true">🏢</span>
+      <figcaption><b>같은 건물 사진의 해상도를 단계적으로 낮춘 실제 사진입니다. 칸의 개수가 1/4씩 줄어드는 동안에도 건물의 큰 모양은 한참 동안 알아볼 수 있습니다 — 풀링이 하는 일이 바로 이것입니다.</b>
+        <span class="src">출처: Wikimedia Commons, Dllu, “Effect of downsampling in photo of Gates-Hillman Complex at Carnegie Mellon University”, CC BY-SA 4.0</span></figcaption>
+    </figure>
+    <div id="px-tb1"></div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="px-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="ptab(0,this)">① 맥스 풀링</button>
+    <button class="tab" type="button" onclick="ptab(1,this)">② 이동 불변성</button>
+    <button class="tab" type="button" onclick="ptab(2,this)">③ 정규화 X/255</button>
+  </div>
+
+  <!-- ── TAB 0 : 맥스 풀링 ─────────────────────────────────────────────── -->
+  <div class="tpanel on" id="pt0">
+
+    <div class="card" id="px-act1" data-no-toggle="1">
+      <h3>활동 1 · 「네 칸을 한 칸으로」 — 답을 먼저 예측해 봅시다</h3>
+      <p>아래 4×4 행렬을 <b>2×2씩 네 구역</b>으로 나눈 뒤, 각 구역에서 <b>가장 큰 수</b>만 남기면
+        2×2 행렬이 됩니다. 실행 버튼을 누르기 전에, <b>결과 네 칸을 먼저 적어</b> 보세요.</p>
+      <p class="px-hint">입력 행렬은 아래 조작 패널에서 직접 고칠 수 있습니다.
+        고친 뒤에 예측하면 그 값을 기준으로 채점됩니다.</p>
+      <div class="px-guess" id="px-a1-guess" aria-label="풀링 결과 예측 입력">
+        <input type="number" inputmode="numeric" aria-label="왼쪽 위 예측">
+        <input type="number" inputmode="numeric" aria-label="오른쪽 위 예측">
+        <input type="number" inputmode="numeric" aria-label="왼쪽 아래 예측">
+        <input type="number" inputmode="numeric" aria-label="오른쪽 아래 예측">
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="pxA1Check()">예측 제출</button>
+        <button class="btn" type="button" onclick="pxA1Clear()">지우기</button>
+      </div>
+      <div class="px-fb" id="px-a1-fb"></div>
     </div>
+
+    <div class="card px-veil" id="px-a1-panel" data-no-toggle="1">
+      <h3>조작 — 한 구역씩 최댓값을 골라 봅시다</h3>
+      <p>[한 단계]는 왼쪽 위 → 오른쪽 위 → 왼쪽 아래 → 오른쪽 아래 순으로 한 구역씩 처리합니다.
+        선택된 최댓값은 초록색으로 표시됩니다.</p>
+      <div class="grid-wrap">
+        <div style="text-align:center;">
+          <p class="mat-label">입력 (4×4) — 편집 가능</p>
+          <div class="eg" id="pi" style="grid-template-columns:repeat(4,1fr);"></div>
+        </div>
+        <div class="op">→</div>
+        <div style="text-align:center;">
+          <p class="mat-label">출력 (2×2)</p>
+          <div class="mat" id="po" style="grid-template-columns:repeat(2,1fr);"></div>
+        </div>
+      </div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn" type="button" onclick="pRst()">리셋</button>
+        <button class="btn" type="button" onclick="pStp()">한 단계</button>
+        <button class="btn pri" type="button" onclick="pAut()">자동 실행</button>
+      </div>
+      <div id="pst" class="status" style="text-align:center;"></div>
+      <div class="px-fml">P(i, j) = max { S(2i, 2j), S(2i, 2j+1), S(2i+1, 2j), S(2i+1, 2j+1) }</div>
+      <p class="px-hint">S는 풀링 전 특징 맵, P는 풀링된 결과입니다. 2×2 구역이 겹치지 않게 두 칸씩 건너뛰며 이동합니다.</p>
+      <span class="px-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅰ단원 p.105 최대 풀링(Max Pooling) 식 서술을 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="px-lockmsg" id="px-a1-lock">※ 예측을 제출하면 아래 토글이 열립니다.</p>
+
+      <details class="px-fold" id="px-a1-f1">
+        <summary>단계 1 관찰 — 무엇이 남고 무엇이 사라졌나</summary>
+        <div class="bd">
+          <p>4×4 = 16개의 수가 2×2 = 4개의 수로 줄었습니다. <b>12개의 수는 버려졌습니다.</b></p>
+          <p>버려진 수들은 각 구역에서 최댓값보다 작은 값들입니다. 즉 “그 자리에 특징이 <b>더 약하게</b> 있었다”는 정보입니다.</p>
+          <p>남은 수는 “이 구역 어딘가에 이만큼 강한 특징이 있었다”는 정보입니다. <b>위치는 흐려지고, 세기는 남습니다.</b></p>
+        </div>
+      </details>
+
+      <details class="px-fold" id="px-a1-f2">
+        <summary>단계 2 정리 — 크기는 어떻게 줄어드는가</summary>
+        <div class="bd">
+          <p>2×2 맥스 풀링은 가로도 세로도 절반으로 만듭니다. 즉 m×n 행렬은 <b>(m/2)×(n/2)</b> 행렬이 됩니다.</p>
+          <p>칸의 개수는 <b>1/4</b>이 됩니다. 4×4(16칸) → 2×2(4칸), 224×224(50,176칸) → 112×112(12,544칸).</p>
+          <div class="px-scroll">
+            <table class="px-tbl">
+              <tr><th>단계</th><th>크기</th><th>칸의 개수</th><th>처음 대비</th></tr>
+              <tr><td>합성곱 직후</td><td>224 × 224</td><td>50,176</td><td>1</td></tr>
+              <tr><td>풀링 1회</td><td>112 × 112</td><td>12,544</td><td class="hi">1/4</td></tr>
+              <tr><td>풀링 2회</td><td>56 × 56</td><td>3,136</td><td class="hi">1/16</td></tr>
+              <tr><td>풀링 3회</td><td>28 × 28</td><td>784</td><td class="hi">1/64</td></tr>
+            </table>
+          </div>
+          <p>풀링을 세 번만 거쳐도 처리할 수의 개수가 <b>64분의 1</b>이 됩니다. 이것이 “연산량이 줄어든다”의 실제 의미입니다.</p>
+          <p>맨 아래 28×28은 12차시에서 다룬 MNIST 손글씨 한 장의 크기와 같습니다.</p>
+        </div>
+      </details>
+
+      <details class="px-fold" id="px-a1-f3">
+        <summary>단계 3 정의 확인 — 맥스 풀링이란 무엇인가</summary>
+        <div class="bd">
+          <p><b>풀링(pooling)</b>은 특징 맵의 크기를 줄여 계산량을 낮추고, 중요한 특징만 남기는 연산입니다.
+            정보를 요약하고 불필요한 요소를 제거하는 역할을 합니다.</p>
+          <p><b>맥스 풀링(max pooling)</b>은 정해진 크기의 구역에서 <b>최댓값</b> 하나만 선택하는 방식입니다.
+            2×2 구역이라면 네 수 가운데 가장 큰 수를 남깁니다.</p>
+          <p>예 ① 구역이 {9, 8, 7, 9}이면 남는 값은 9입니다.<br>
+             예 ② 구역이 {2, 8, 6, 5}이면 남는 값은 8입니다.</p>
+          <span class="px-src">출처 — 천재교육 「인공지능 수학」 지도서 p.155 ⑷ 풀링 연산, 씨마스 지도서 Ⅰ단원 p.105 최대 풀링 서술을 재구성</span>
+        </div>
+      </details>
+      <div id="px-tb2"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 미니 확인 문제</h3>
+      <p>224×224 특징 맵에 2×2 맥스 풀링을 <b>두 번</b> 적용하면 칸의 개수는 처음의 몇 분의 1이 됩니까?</p>
+      <div class="chips" id="px-a1-mini">
+        <button class="chip" type="button" onclick="pxA1Mini(0,this)">1/2</button>
+        <button class="chip" type="button" onclick="pxA1Mini(1,this)">1/4</button>
+        <button class="chip" type="button" onclick="pxA1Mini(2,this)">1/8</button>
+        <button class="chip" type="button" onclick="pxA1Mini(3,this)">1/16</button>
+      </div>
+      <div class="px-fb" id="px-a1-minifb"></div>
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 이동 불변성 ───────────────────────────────────────────── -->
+  <div class="tpanel" id="pt1">
+
+    <div class="card" id="px-act2" data-no-toggle="1">
+      <h3>활동 2 · 「한 칸 옮겨도 같을까」 — 예상을 먼저 고르세요</h3>
+      <figure class="phz phz-r">
+        <img src="Mnist%202.png" alt="같은 숫자 0을 격자 위 서로 다른 자리와 모양으로 그린 여섯 장의 이진 이미지"
+             loading="eager" onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+        <span class="fb" aria-hidden="true">🔢</span>
+        <figcaption><b>모두 숫자 0입니다. 그런데 칸 위의 <i>자리</i>와 굵기가 조금씩 다릅니다. 13차시의 해밍 거리는 이 차이 때문에 흔들렸습니다.</b>
+          <span class="src">저장소 내 수업 자료 이미지(Mnist 2.png)</span></figcaption>
+      </figure>
+      <p>사진 속 물체가 <b>오른쪽으로 한 칸</b> 옮겨졌다고 합시다. 특징이 있던 자리도 한 칸 옮겨집니다.
+        이때 <b>풀링 결과</b>는 어떻게 될까요?</p>
+      <div class="chips" id="px-a2-guess">
+        <button class="chip" type="button" onclick="pxA2Guess(0,this)">언제나 그대로다</button>
+        <button class="chip" type="button" onclick="pxA2Guess(1,this)">언제나 달라진다</button>
+        <button class="chip" type="button" onclick="pxA2Guess(2,this)">같을 때도, 달라질 때도 있다</button>
+      </div>
+      <p class="status" id="px-a2-gmsg">예상을 고르기 전에는 아래 조작 패널이 잠겨 있습니다.</p>
+      <div class="px-fb" id="px-a2-gfb"></div>
+    </div>
+
+    <div class="card px-veil" id="px-a2-panel" data-no-toggle="1">
+      <h3>조작 — 특징을 한 칸씩 옮겨 보기</h3>
+      <p>주황색 칸이 <b>가장 강한 특징</b>(값 9)입니다. 화살표로 옮기면서 왼쪽 4×4와 오른쪽 2×2가
+        <b>기준 상태와 얼마나 달라지는지</b> 세어 보세요. 빨간 테두리는 기준과 달라진 칸입니다.</p>
+      <div class="px-shiftwrap">
+        <div class="px-panel">
+          <h4>입력 4×4 (풀링 전)</h4>
+          <div class="px-g" id="px-sg" style="grid-template-columns:repeat(4,auto);"></div>
+          <p class="px-hint" style="margin-top:0.5rem;">기준과 다른 칸 : <b id="px-sd-in">0</b>칸</p>
+        </div>
+        <div class="px-panel">
+          <h4>출력 2×2 (풀링 후)</h4>
+          <div class="px-g" id="px-pg" style="grid-template-columns:repeat(2,auto);"></div>
+          <p class="px-hint" style="margin-top:0.5rem;">기준과 다른 칸 : <b id="px-sd-out">0</b>칸</p>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div class="px-pad">
+          <button type="button" class="sp">·</button>
+          <button type="button" onclick="pxShift(0,-1)" aria-label="위로 한 칸">↑</button>
+          <button type="button" class="sp">·</button>
+          <button type="button" onclick="pxShift(-1,0)" aria-label="왼쪽으로 한 칸">←</button>
+          <button type="button" onclick="pxShiftReset()" aria-label="처음 자리로">⟲</button>
+          <button type="button" onclick="pxShift(1,0)" aria-label="오른쪽으로 한 칸">→</button>
+          <button type="button" class="sp">·</button>
+          <button type="button" onclick="pxShift(0,1)" aria-label="아래로 한 칸">↓</button>
+          <button type="button" class="sp">·</button>
+        </div>
+        <div><span class="px-tally" id="px-s-tally">이동 0회 · 풀링 결과가 기준(처음 자리)과 같았던 횟수 0회</span></div>
+        <p class="status" id="px-s-st">특징은 처음에 왼쪽 위 구역(1행 1열)에 있습니다.</p>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="px-lockmsg" id="px-a2-lock">※ 특징을 3회 이상 옮기면 아래 토글이 열립니다.</p>
+
+      <details class="px-fold" id="px-a2-f1">
+        <summary>단계 1 관찰 — 언제 같고, 언제 달라졌나</summary>
+        <div class="bd">
+          <p>입력 4×4는 한 칸만 옮겨도 <b>거의 언제나</b> 두 칸이 달라집니다(원래 자리는 배경으로, 새 자리는 특징으로).</p>
+          <p>그런데 출력 2×2는 <b>달라지지 않을 때가 있습니다</b>. 특징이 <b>같은 2×2 구역 안에서</b> 움직였을 때입니다.</p>
+          <p>구역의 경계를 넘어갔을 때만 출력이 바뀝니다. 즉 풀링은 <b>작은 위치 변화를 흡수</b>합니다.</p>
+        </div>
+      </details>
+
+      <details class="px-fold" id="px-a2-f2">
+        <summary>단계 2 정리 — 왜 위치를 흐리는 것이 도움이 되는가</summary>
+        <div class="bd">
+          <p>13차시에서 해밍 거리로 숫자를 분류했을 때, <b>살짝 비뚤어진 7</b> 하나에 거리가 크게 뛰어 분류가 무너졌습니다.
+            픽셀의 자리를 그대로 비교했기 때문입니다.</p>
+          <p>풀링은 “정확히 어디”를 “대략 이 근처”로 바꿉니다. 그래서 같은 물체가 조금 옮겨지거나
+            기울어져도 뒤쪽 층이 받는 값은 크게 변하지 않습니다.</p>
+          <p>이것을 <b>이동 불변성</b>이라고 부릅니다. 다만 ‘무한히’ 불변인 것은 아닙니다.
+            구역을 넘는 큰 이동은 결과를 바꿉니다.</p>
+          <p style="margin-top:0.4rem;">
+            <button class="btn" type="button" onclick="go('hamming')">돌아보기 · 13차시 해밍 거리의 한계</button>
+          </p>
+        </div>
+      </details>
+
+      <details class="px-fold" id="px-a2-f3">
+        <summary>단계 3 정의 확인 — 이동 불변성이란 무엇인가</summary>
+        <div class="bd">
+          <p><b>이동 불변성</b>은 입력이 조금 평행이동해도 출력이 크게 변하지 않는 성질입니다.
+            맥스 풀링은 구역 안의 최댓값만 남기므로, 구역 안에서의 이동은 결과에 영향을 주지 않습니다.</p>
+          <p>예 ① 특징이 1행 1열에서 1행 2열로 옮겨짐 → 같은 구역 → 출력 그대로.<br>
+             예 ② 특징이 1행 2열에서 1행 3열로 옮겨짐 → 구역을 넘음 → 출력 바뀜.</p>
+          <p>풀링 계층은 특징 맵의 크기를 줄이고, <b>과적합을 방지</b>하며, 연산량을 감소시키는 역할을 합니다.</p>
+          <span class="px-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅰ단원 p.105 풀링 계층의 역할, 천재교육 지도서 p.155 풀링 연산 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 내 문장으로</h3>
+      <p>“풀링이 위치를 흐리는 것이 인식에 도움이 되는 이유”를 한두 문장으로 적어 보세요.
+        STEP 3의 핵심 질문에 그대로 쓸 수 있습니다.</p>
+      <textarea class="px-ta" id="px-a2-note" placeholder="예: 같은 물체라도 사진마다 조금씩 자리가 다르기 때문에…"></textarea>
+      <div class="btn-row"><button class="btn" type="button" onclick="pxNoteSave('px-a2-note','px-a2-nst')">저장</button></div>
+      <p class="status" id="px-a2-nst"></p>
+    </div>
+  </div>
+
+  <!-- ── TAB 2 : 정규화 ───────────────────────────────────────────────── -->
+  <div class="tpanel" id="pt2">
+
+    <div class="card" id="px-act3" data-no-toggle="1">
+      <h3>활동 3 · 「0~255를 0~1로」 — 어떤 연산일까요?</h3>
+      <figure class="phz" style="max-width:min(100%,32rem);">
+        <img src="%EC%88%AB%EC%9E%90%EC%9D%B8%EC%8B%9D.png"
+             alt="손글씨 8이 28곱하기28 크기의 0에서 255 사이 정수 격자로 바뀌고, 그 값이 한 줄로 펴져 신경망에 들어가는 그림"
+             loading="eager" onerror="this.style.display='none';this.closest('.phz').classList.add('nofoto');">
+        <span class="fb" aria-hidden="true">🔢</span>
+        <figcaption><b>손글씨 ‘8’ 한 장이 28×28 = 784개의 <i>0~255 정수</i>가 되어 신경망으로 들어갑니다. 지금 우리가 다룰 수들이 바로 이 격자 안의 값입니다.</b>
+          <span class="src">저장소 내 수업 자료 이미지(숫자인식.png) · 12차시에서 쓴 그림</span></figcaption>
+      </figure>
+      <p>이미지 픽셀은 0(검은색)부터 255(흰색)까지의 정수입니다.
+        학습에 넣기 전에는 0.0~1.0 사이의 실수로 바꿉니다.
+        이때 행렬 전체에 무엇을 하는 것일까요?</p>
+      <div class="chips" id="px-a3-guess">
+        <button class="chip" type="button" onclick="pxA3Guess(0,this)">행렬의 덧셈</button>
+        <button class="chip" type="button" onclick="pxA3Guess(1,this)">행렬의 실수배</button>
+        <button class="chip" type="button" onclick="pxA3Guess(2,this)">행렬의 곱셈</button>
+        <button class="chip" type="button" onclick="pxA3Guess(3,this)">행렬의 합성곱</button>
+      </div>
+      <p class="status" id="px-a3-gmsg">예상을 고르기 전에는 아래 조작 패널이 잠겨 있습니다.</p>
+      <div class="px-fb" id="px-a3-gfb"></div>
+    </div>
+
+    <div class="card px-veil" id="px-a3-panel" data-no-toggle="1">
+      <h3>조작 ① — 한 픽셀로 감을 잡기</h3>
+      <div class="math" style="text-align:center;">X<sub>정규화</sub> = X / 255 = (1/255) X</div>
+      <div style="text-align:center;margin:1.4rem 0;">
+        <p class="mono" style="margin-bottom:0.6rem;">슬라이더를 움직여 정규화를 체험하세요</p>
+        <input type="range" class="ns" id="nsl" min="0" max="255" value="128" aria-label="픽셀 값 0에서 255">
+        <div class="nout">
+          <div class="nb"><div class="v" id="ni">128</div><div class="l">Integer (0–255)</div></div>
+          <div class="nb"><div style="font-size:1.2rem;color:var(--muted);padding-top:0.3rem;">÷ 255 =</div></div>
+          <div class="nb"><div class="v" id="nf">0.502</div><div class="l">Float (0.0–1.0)</div></div>
+          <div class="nb"><div class="sw" id="nsw" style="background:rgb(128,128,128);"></div><div class="l">실제 색상</div></div>
+        </div>
+      </div>
+      <p class="px-hint" style="text-align:center;">값이 아무리 커도 255를 넘지 않으므로, 나눈 결과는 언제나 0 이상 1 이하입니다.</p>
+    </div>
+
+    <div class="card px-veil" id="px-a3-panel2" data-no-toggle="1">
+      <h3>조작 ② — 행렬 전체를 한 번에 (손으로 채워 봅시다)</h3>
+      <p>아래 3×3 회색조 행렬 X의 각 성분을 255로 나눈 값을 <b>소수 둘째 자리까지</b> 적어 보세요.
+        (예: 128 → 0.50)</p>
+      <div class="px-scroll" style="text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center;">
+          <div>
+            <p class="mat-label">X (0~255)</p>
+            <div class="px-normgrid" id="px-nx" aria-hidden="true"></div>
+          </div>
+          <div class="op" style="font-size:1.3rem;">× (1/255) →</div>
+          <div>
+            <p class="mat-label">(1/255) X — 직접 입력</p>
+            <div class="px-normgrid" id="px-ny" aria-label="정규화 결과 입력"></div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn pri" type="button" onclick="pxNormCheck()">채점</button>
+        <button class="btn" type="button" onclick="pxNormNew()">다른 행렬로</button>
+        <button class="btn" type="button" onclick="pxNormFill()">정답 보기</button>
+      </div>
+      <div class="px-fb" id="px-norm-fb"></div>
+      <p class="mat-label" style="margin-top:1rem;">정규화한 값을 다시 색으로 되돌리면</p>
+      <div class="px-swrow" id="px-swrow"></div>
+      <p class="px-hint" style="text-align:center;margin-top:0.5rem;">
+        색은 그대로입니다. <b>정규화는 값의 범위만 바꿀 뿐 이미지의 모양을 바꾸지 않습니다.</b></p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="px-lockmsg" id="px-a3-lock">※ 채점을 한 번이라도 하면 아래 토글이 열립니다.</p>
+
+      <details class="px-fold" id="px-a3-f1">
+        <summary>단계 1 관찰 — 무엇이 바뀌고 무엇이 그대로인가</summary>
+        <div class="bd">
+          <p>모든 성분이 <b>같은 비율</b>로 작아졌습니다. 큰 값은 큰 값끼리, 작은 값은 작은 값끼리 순서가 그대로입니다.</p>
+          <p>0은 0으로, 255는 1로 갑니다. 결과는 언제나 <b>0 이상 1 이하</b>입니다.</p>
+          <p>색을 다시 그려 보면 원래 이미지와 구별할 수 없습니다. <b>모양은 그대로, 숫자의 크기만 달라졌습니다.</b></p>
+        </div>
+      </details>
+
+      <details class="px-fold" id="px-a3-f2">
+        <summary>단계 2 정리 — 왜 굳이 범위를 맞추는가</summary>
+        <div class="bd">
+          <p>단위가 다른 값이 섞이면 <b>큰 값이 학습을 지배</b>합니다.
+            키(cm)와 몸무게(kg)를 그대로 넣으면 숫자가 큰 쪽이 결과를 좌우하는 것과 같습니다.</p>
+          <p>범위를 0~1로 맞추면 모든 특성이 <b>공평하게</b> 반영되고, 26차시에서 배울 경사하강법의 수렴도 빨라집니다.</p>
+          <p>정규화는 이미지뿐 아니라 음성·센서 데이터 등 거의 모든 AI 입력에 적용됩니다.</p>
+          <p style="margin-top:0.4rem;">
+            <button class="btn" type="button" onclick="go('mnist')">돌아보기 · 12차시 0~255 픽셀 행렬</button>
+          </p>
+        </div>
+      </details>
+
+      <details class="px-fold" id="px-a3-f3">
+        <summary>단계 3 정의 확인 — 행렬의 실수배와 정규화</summary>
+        <div class="bd">
+          <p><b>행렬의 실수배</b>는 행렬의 <b>모든 성분에 같은 실수를 곱하는</b> 연산입니다.
+            행렬 A의 각 성분이 커지면 이미지는 밝아지고, 작아지면 어두워집니다.</p>
+          <p><b>정규화</b>는 값의 범위를 일정하게 맞추는 과정이며, 이미지에서는 (1/255)X 라는 <b>행렬의 실수배</b>로 이루어집니다.</p>
+          <p>예 ① X의 성분이 0, 128, 255이면 (1/255)X의 성분은 0, 0.50, 1입니다.<br>
+             예 ② 2A는 이미지를 밝게, (1/2)A는 어둡게 만듭니다(14차시 밝기 변환).</p>
+          <span class="px-src">출처 — 씨마스 「인공지능 수학」 Ⅲ p.90 「0(검은색)부터 255(흰색)까지 256단계의 명도를 성분으로 하는 행렬」과
+            p.94 「행렬의 덧셈·뺄셈·실수배를 이용한 이미지 데이터의 밝기 변환」 서술을 재구성</span>
+        </div>
+      </details>
+      <div id="px-tb3"></div>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="px-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card">
+    <h3>오늘의 핵심 3줄 — 줄이고, 흐리고, 맞춘다</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        <b>맥스 풀링</b>은 2×2 구역마다 최댓값 하나만 남겨 특징 맵을 절반 크기로 줄입니다 — 칸의 개수는 1/4이 됩니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        구역 <b>안에서의</b> 이동은 결과를 바꾸지 않습니다. 풀링은 위치를 흐려 <b>작은 위치 변화에 강한 인식</b>을 만듭니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        <b>정규화</b>는 (1/255)X, 곧 <b>행렬의 실수배</b>입니다. 모양은 그대로 두고 값의 범위만 0~1로 맞춥니다.</li>
+    </ol>
+    <p class="mat-label" style="text-align:left;margin-top:1.2rem;">두 연산 한눈에 비교</p>
+    <div class="px-scroll">
+      <table class="px-tbl">
+        <tr><th>비교할 점</th><th>맥스 풀링</th><th>정규화 (1/255)X</th></tr>
+        <tr><td>연산의 정체</td><td class="lf">구역별 <b>최댓값 고르기</b></td><td class="lf">행렬의 <b>실수배</b></td></tr>
+        <tr><td>크기(행·열)</td><td class="hi">절반 · 칸 수 1/4</td><td>그대로</td></tr>
+        <tr><td>값의 범위</td><td>그대로</td><td class="hi">0 이상 1 이하</td></tr>
+        <tr><td>정보의 손실</td><td class="hi">있음(세밀한 위치)</td><td class="lf">없음(순서 보존)</td></tr>
+        <tr><td>얻는 것</td><td class="lf">연산량 감소 · 이동 불변성</td><td class="lf">공평한 학습 · 빠른 수렴</td></tr>
+        <tr><td>오늘의 활동</td><td>활동 1 · 활동 2</td><td>활동 3</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>정보를 ‘버리는’ 것이 오히려 인식에 도움이 되는 이유는 무엇인가?</b></p>
+    <textarea class="px-ta" id="px-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="px-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>버려지는 것은 “정확히 몇 번째 칸에 있었는가”라는 <b>세밀한 위치 정보</b>입니다.
+          같은 물체라도 사진마다 자리가 조금씩 다르므로, 이 정보를 그대로 붙들면 오히려 분류가 흔들립니다.</p>
+        <p>대신 “이 구역에 이만큼 강한 특징이 있었다”는 <b>더 중요한 정보</b>는 최댓값으로 남습니다.
+          그 결과 계산은 1/4로 줄고, 작은 이동에는 흔들리지 않는 인식이 됩니다.</p>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="pxAnsSave()">내 답 저장</button></div>
+    <p class="status" id="px-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="px-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 18차시 · CNN 파이프라인 종합</strong><br>
+    15차시의 합성곱, 16차시의 커널, 17차시의 풀링과 정규화가 드디어 <b>한 줄로 이어집니다</b>.
+    여러분이 올린 사진 한 장이 입력 → 합성곱 → ReLU → 풀링 → 깊은 층 → 분류를 지나며
+    실제로 어떤 그림으로 변해 가는지 눈으로 확인하고, 마지막에 나오는 확률의 <b>합이 왜 1인지</b>를 따져 봅니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('pipeline')">18차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('filter')">돌아보기 · 16차시 커널 필터</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 반 사진 압축 실험」 — 얼마나 줄여도 알아볼 수 있을까</h3>
+    <p class="sub">풀링은 결국 “얼마나 버려도 되는가”라는 질문입니다.
+      직접 사진을 줄여 보며 그 한계를 찾아봅니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 학교·교실·사물이 담긴 사진 <b>1장</b>을 고릅니다(사람 얼굴이 크게 나온 사진은 피합니다).<br>
+        ② 그림판·사진 앱·스프레드시트 등으로 사진의 가로·세로를 <b>1/2 → 1/4 → 1/8 → 1/16</b>로 줄여 4장을 만듭니다.
+        (풀링을 4번 적용한 것과 같은 효과입니다.)<br>
+        ③ 각 단계의 <b>가로×세로</b>와 <b>픽셀 수</b>를 표로 적고, 처음 대비 몇 분의 1인지 계산합니다.<br>
+        ④ 모둠원에게 4장을 순서 없이 보여 주고, <b>무엇이 찍힌 사진인지 알아볼 수 있는 마지막 단계</b>를 찾습니다.<br>
+        ⑤ (심화) 스프레드시트에 회색조 값을 옮겨 적고 2×2 구역의 <b>MAX 함수</b>로 직접 맥스 풀링을 해 봅니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 단계별 크기·픽셀 수·처음 대비 비율 표 1장(A4)<br>
+        · 축소한 사진 4장(인쇄 또는 화면 캡처)<br>
+        · “우리 모둠은 ___단계까지 알아볼 수 있었고, 그 이유는 ___이다”를 포함한 <b>결론 3~5문장</b><br>
+        · (선택) 스프레드시트 MAX 함수 풀링 화면 캡처</dd>
+      <dt>평가 관점</dt>
+      <dd>· 맥스 풀링을 <b>특징 맵의 크기를 줄이는 변환</b>으로 정확히 수행·설명했는가 <b>[12인수03-02]</b><br>
+        · 크기 축소와 <b>칸의 개수의 비(1/4, 1/16 …)</b>를 수로 정확히 계산했는가<br>
+        · 정보를 버리는 것과 인식이 유지되는 것 사이의 <b>균형</b>을 근거를 들어 설명했는가<br>
+        · 초상권·개인정보를 고려해 자료를 선택했는가</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 풀링과 정규화를 더 깊이</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="px-refs">
+      <a class="px-ref" href="https://tjdgus1121.github.io/cnn_visualizer.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🔍</span>
+        <span class="bd"><span class="tt">CNN 시각화 도구 — 커널 스캔부터 풀링까지</span>
+          <span class="ds">15·16차시에서 쓰던 도구입니다. 합성곱 다음 단계로 넘어가며 특징 맵이 작아지는 과정을 다시 확인해 보세요.</span></span>
+      </a>
+      <a class="px-ref" href="https://ko.wikipedia.org/wiki/%ED%95%A9%EC%84%B1%EA%B3%B1_%EC%8B%A0%EA%B2%BD%EB%A7%9D" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>📐</span>
+        <span class="bd"><span class="tt">합성곱 신경망 (위키백과, 한국어)</span>
+          <span class="ds">합성곱층·풀링층·완전연결층의 구성과 각 층의 역할이 한국어로 정리되어 있습니다. 풀링 항목을 찾아 읽어 보세요.</span></span>
+      </a>
+      <a class="px-ref" href="https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layers" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>🧮</span>
+        <span class="bd"><span class="tt">Pooling layers (위키백과, 영문)</span>
+          <span class="ds">맥스 풀링·평균 풀링의 식과 그림이 함께 있습니다. 오늘 쓴 P(i, j) 식과 같은 형태인지 비교해 보세요.</span></span>
+      </a>
+      <a class="px-ref" href="https://wikidocs.net/64066" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">읽을거리</span>📘</span>
+        <span class="bd"><span class="tt">합성곱과 풀링 — 딥러닝 입문 문서</span>
+          <span class="ds">천재교육 지도서 p.155가 참고 문헌으로 든 문서입니다. 커널 이동과 풀링을 그림으로 차근히 설명합니다.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>17차시 학습지 — 손으로 계산하며 정리하기</h3>
+    <p>웹에서 조작한 내용을 손으로 다시 계산하면 기억이 오래갑니다.
+      아래 인쇄용 지면은 오늘의 활동 1·2·3과 <b>1:1로 대응</b>합니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('px-sheet')">🖨 학습지 인쇄 <span class="sz">A4 1~2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%998_%ED%95%A9%EC%84%B1%EA%B3%B1%EA%B3%BCCNN.pdf"
+         download="활동8_합성곱과CNN.pdf">📄 활동 8 — 합성곱과 CNN (PDF) <span class="sz">PDF · 약 386 KB</span></a>
+    </div>
+    <p class="px-hint" style="margin-top:0.6rem;">
+      <b>활동 8 — 합성곱과 CNN</b>은 16차시에서 배부한 활동지입니다.
+      오늘은 그 뒷면의 <b>CNN 구조(합성곱 → 풀링 → 분류)</b> 부분을 이어서 채웁니다.
+      아직 받지 않았다면 여기서 내려받으세요.</p>
+    <div id="px-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 1~2장) ═════ -->
+  <div class="ws-sheet" id="px-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>17차시 학습지 — 풀링과 정규화</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">학습 목표 ① 맥스 풀링을 이용하여 특징 맵의 크기를 줄이는 변환을 할 수 있다. [12인수03-02]<br>
+      학습 목표 ② 행렬의 실수배(X/255)를 이용하여 픽셀 값을 정규화할 수 있다. [12인수03-02]<br>
+      학습 목표 ③ 풀링이 연산량 감소와 위치 변화에 강한 인식에 기여하는 이유를 설명할 수 있다. [12인수03-02]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:54%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>정보를 버리면 인식이 나빠질까, 좋아질까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>4×4를 2×2로 줄이면 칸의 개수는 몇 분의 1인가?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0~255를 0~1로 바꾸면 이미지의 모양도 바뀔까? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — 맥스 풀링 직접 계산</h3>
+    <p class="note">S = [ 9 8 4 8 / 7 9 4 8 / 2 8 9 7 / 6 5 9 5 ] 에 2×2 맥스 풀링을 적용하시오.</p>
+    <table>
+      <tr><th>구역</th><th>네 수</th><th>최댓값 P</th></tr>
+      <tr><td>1행 1열 구역</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1행 2열 구역</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2행 1열 구역</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2행 2열 구역</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>P = [ ______ ______ / ______ ______ ]&nbsp;&nbsp; 버려진 수는 모두 ______개이다.</p>
+    <table>
+      <tr><th>단계</th><th>크기</th><th>칸의 개수</th><th>처음 대비 비</th></tr>
+      <tr><td>합성곱 직후</td><td>224 × 224</td><td class="blank"></td><td>1</td></tr>
+      <tr><td>풀링 1회</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>풀링 2회</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>풀링 3회</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>③ 활동 2 — 한 칸 옮기면</h3>
+    <p class="note">배경이 모두 1이고 값 9인 특징이 한 칸 있는 4×4 행렬을 생각하자. 2×2 맥스 풀링을 적용한다.</p>
+    <table>
+      <tr><th>특징의 자리</th><th>풀링 결과 (2×2)</th><th>기준과 다른 칸 수</th></tr>
+      <tr><td>1행 1열 (기준)</td><td class="blank"></td><td>0</td></tr>
+      <tr><td>1행 2열</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1행 3열</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2행 2열</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>결과가 바뀌지 않은 경우의 공통점은</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 활동 3 — 정규화 (1/255)X</h3>
+    <p class="note">X = [ 0 51 102 / 153 204 255 / 128 64 191 ] 일 때 (1/255)X 의 각 성분을 소수 둘째 자리까지 구하시오.</p>
+    <table>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>이 연산의 이름은 행렬의 ____________ 이고, 결과의 값의 범위는 ______ 이상 ______ 이하이다.</p>
+
+    <h3>⑤ 형성평가</h3>
+    <ol>
+      <li>4×4 행렬에 2×2 맥스 풀링을 적용한 결과의 크기는?<br>
+        ① 1×1 &nbsp; ② 2×2 &nbsp; ③ 3×3 &nbsp; ④ 4×4 &nbsp;&nbsp; 답: ______</li>
+      <li>구역 {3, 7, 5, 7}에 맥스 풀링을 적용한 값은?<br>
+        ① 3 &nbsp; ② 5 &nbsp; ③ 7 &nbsp; ④ 22 &nbsp;&nbsp; 답: ______</li>
+      <li>224×224 특징 맵에 2×2 풀링을 두 번 적용하면 칸의 개수는 처음의 몇 분의 1인가?<br>
+        ① 1/2 &nbsp; ② 1/4 &nbsp; ③ 1/8 &nbsp; ④ 1/16 &nbsp;&nbsp; 답: ______</li>
+      <li>X의 모든 성분이 0 이상 255 이하일 때 (1/255)X의 성분의 범위는?<br>
+        ① 0 이상 1 이하 &nbsp; ② 0 이상 255 이하 &nbsp; ③ −1 이상 1 이하 &nbsp; ④ 알 수 없다 &nbsp;&nbsp; 답: ______</li>
+      <li>맥스 풀링이 이동 불변성을 주는 이유로 가장 알맞은 것은?<br>
+        ① 값을 모두 더하기 때문 &nbsp; ② 구역 안의 최댓값만 남기기 때문 &nbsp; ③ 값을 255로 나누기 때문 &nbsp; ④ 커널을 곱하기 때문 &nbsp;&nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑥ 핵심 질문</h3>
+    <p><b>정보를 ‘버리는’ 것이 오히려 인식에 도움이 되는 이유는 무엇인가?</b></p>
+    <div class="rule lg"></div>
   </div>
 </div>

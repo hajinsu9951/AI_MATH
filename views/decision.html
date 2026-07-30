@@ -1,0 +1,899 @@
+<!-- ═══════════ DECISION (28차시: 합리적 의사 결정 사례 분석·탐구 설계) ═══════════
+     · 파일 위치: views/decision.html  (신규 · §4 V16)
+     · 전역 접두사 dc · 뷰 루트 id #v-decision · 모든 스타일 규칙은 #v-decision 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 의 PART A 참조
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-decision">
+  <style>
+  /* decision 뷰 전용 스타일 (#v-decision 스코프 한정 — 전역 누수 금지) */
+  #v-decision .dc-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-decision .dc-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-decision .dc-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-decision .dc-hero{position:relative;}
+  #v-decision .dc-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.1;pointer-events:none;}
+  #v-decision .dc-hero>*:not(.dc-wm){position:relative;}
+  #v-decision .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-decision .dc-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-decision .dc-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-decision .dc-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-decision .dc-ask{border-left:4px solid var(--accent);}
+  #v-decision .dc-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-decision .dc-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-decision .dc-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-decision .dc-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-decision .dc-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-decision .dc-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-decision .dc-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;}
+  #v-decision .dc-scroll{overflow-x:auto;max-width:100%;}
+  #v-decision .dc-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-decision .dc-tbl th,#v-decision .dc-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-decision .dc-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-decision .dc-tbl td.l{text-align:left;}
+  #v-decision .dc-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-decision .dc-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-decision .dc-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-decision .dc-fb b{color:var(--fg);}
+  #v-decision .dc-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:0.98rem;line-height:1.8;}
+  #v-decision .dc-fb:empty{display:none;}
+  #v-decision .dc-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-decision .dc-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-decision .dc-in.num{width:5rem;text-align:center;}
+  #v-decision .dc-ta{width:100%;min-height:3.6rem;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0.5rem 0.6rem;font-family:var(--sans);font-size:0.98rem;line-height:1.7;background:var(--bg);color:var(--fg);resize:vertical;}
+  /* 조작 요소 확대(§15) — 조작 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-decision .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-decision .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-decision .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-decision .tabs{flex-wrap:wrap;}
+  #v-decision .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-decision .ws-btn{min-height:44px;}
+
+  /* 단계 토글(details) — 조작 전에는 잠깁니다 */
+  #v-decision .dc-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-decision .dc-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-decision .dc-fold>summary::-webkit-details-marker{display:none;}
+  #v-decision .dc-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-decision .dc-fold[open]>summary::after{content:'▾';}
+  #v-decision .dc-fold .bd{padding:0 0 0.9rem;}
+  #v-decision .dc-fold .bd p,#v-decision .dc-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-decision .dc-fold .bd ul,#v-decision .dc-fold .bd ol{margin:0 0 0.4rem 1.2rem;}
+  #v-decision .dc-fold.dc-locked{opacity:0.62;}
+  #v-decision .dc-fold.dc-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-decision .dc-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 3단(4단) 슬롯 배치 위젯 */
+  #v-decision .dc-slots{display:grid;gap:0.7rem;margin:0.9rem 0 0.4rem;}
+  #v-decision .dc-slots.c3{grid-template-columns:repeat(3,1fr);}
+  #v-decision .dc-slots.c4{grid-template-columns:repeat(2,1fr);}
+  #v-decision .dc-slot{border:2px dashed var(--border);border-radius:var(--radius);background:var(--bg);
+    padding:0.6rem 0.65rem;min-height:8.5rem;transition:all 0.2s;cursor:pointer;}
+  #v-decision .dc-slot:hover{border-color:var(--fg);}
+  #v-decision .dc-slot.arm{border-color:var(--blue);background:var(--card-h);box-shadow:inset 0 0 0 1px var(--blue);}
+  #v-decision .dc-slot.full{border-style:solid;border-color:var(--green);cursor:default;}
+  #v-decision .dc-slot>.hd{display:block;font-family:var(--mono);font-size:0.76rem;font-weight:700;letter-spacing:0.06em;
+    color:var(--fg);background:var(--card-h);border-radius:9999px;padding:0.24rem 0.6rem;margin-bottom:0.45rem;text-align:center;}
+  #v-decision .dc-slot.full>.hd{background:var(--green);color:#fff;}
+  #v-decision .dc-slot>.bd{display:flex;flex-direction:column;gap:0.35rem;}
+  #v-decision .dc-piece{border:1px solid var(--border);border-radius:0.45rem;background:var(--card);
+    padding:0.5rem 0.6rem;font-size:0.94rem;line-height:1.6;color:var(--body);text-align:left;cursor:pointer;
+    font-family:var(--sans);transition:all 0.15s;width:100%;}
+  #v-decision .dc-piece:hover{border-color:var(--fg);}
+  #v-decision .dc-piece.sel{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-decision .dc-piece.done{background:var(--card-h);border-color:var(--green);cursor:default;color:var(--fg);}
+  #v-decision .dc-piece.bad{animation:dc-shake 0.4s;border-color:var(--red);}
+  @keyframes dc-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+  #v-decision .dc-pool{display:flex;flex-direction:column;gap:0.4rem;margin-top:0.8rem;}
+  #v-decision .dc-pool:empty::after{content:'조각을 모두 배치했습니다.';font-family:var(--mono);font-size:0.78rem;color:var(--green);}
+  #v-decision .dc-arrow{display:flex;align-items:center;justify-content:center;gap:0.5rem;
+    font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0;flex-wrap:wrap;}
+  #v-decision .dc-arrow b{color:var(--fg);}
+
+  /* 사례 카드 덱 */
+  #v-decision .dc-deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:0.6rem;margin:0.8rem 0;}
+  #v-decision .dc-case{border:1px solid var(--border);border-radius:0.6rem;background:var(--bg);padding:0.6rem 0.7rem;
+    text-align:left;cursor:pointer;font-family:var(--sans);transition:all 0.2s;min-height:5.4rem;}
+  #v-decision .dc-case:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-decision .dc-case.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-decision .dc-case .em{display:block;font-size:1.5rem;line-height:1.2;}
+  #v-decision .dc-case b{display:block;font-size:0.95rem;font-weight:600;line-height:1.4;margin-top:0.2rem;}
+  #v-decision .dc-case .st{display:block;font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.25rem;}
+  #v-decision .dc-case.on .st{color:var(--accent);}
+  #v-decision .dc-case.clear{border-color:var(--green);}
+  #v-decision .dc-case.bad2{border-left:4px solid var(--red);}
+
+  /* 사례 본문 2단(도해 좌 · 설명 우) */
+  #v-decision .dc-2col{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr);gap:1rem;align-items:start;}
+  @media(max-width:760px){#v-decision .dc-2col{grid-template-columns:1fr;}}
+  #v-decision .dc-2col p{font-size:1.0rem;line-height:1.85;}
+
+  /* 윤리 판정 슬라이더 · 분포 차트 */
+  #v-decision .dc-slider{width:100%;max-width:30rem;-webkit-appearance:none;height:8px;background:var(--border);
+    border-radius:9999px;outline:none;margin:0.6rem 0 0.2rem;}
+  #v-decision .dc-slider::-webkit-slider-thumb{-webkit-appearance:none;width:1.5rem;height:1.5rem;background:var(--fg);
+    border-radius:50%;cursor:pointer;}
+  #v-decision .dc-slider::-moz-range-thumb{width:1.4rem;height:1.4rem;background:var(--fg);border:none;border-radius:50%;cursor:pointer;}
+  #v-decision .dc-sval{font-family:var(--mono);font-size:1.15rem;font-weight:700;color:var(--fg);}
+  #v-decision .dc-sscale{display:flex;justify-content:space-between;max-width:30rem;font-family:var(--mono);
+    font-size:0.72rem;color:var(--muted);}
+  #v-decision canvas.dc-cv{display:block;width:100%;max-width:34rem;height:auto;background:var(--bg);
+    border:1px solid var(--border);border-radius:var(--radius);}
+  #v-decision .dc-leg{display:flex;flex-wrap:wrap;gap:0.9rem;font-size:0.86rem;color:var(--muted);margin-top:0.5rem;}
+  #v-decision .dc-leg i{display:inline-block;width:0.9rem;height:0.9rem;border-radius:0.2rem;margin-right:0.3rem;vertical-align:-1px;}
+  #v-decision .dc-json{width:100%;min-height:5.2rem;font-family:var(--mono);font-size:0.76rem;line-height:1.6;
+    border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);color:var(--body);padding:0.5rem 0.6rem;resize:vertical;}
+  #v-decision .dc-log{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.6rem;}
+  #v-decision .dc-logrow{display:flex;gap:0.6rem;align-items:baseline;font-size:0.92rem;border-bottom:1px solid var(--border);
+    padding-bottom:0.3rem;line-height:1.65;}
+  #v-decision .dc-logrow .n{font-family:var(--mono);font-weight:700;color:var(--fg);white-space:nowrap;}
+  #v-decision .dc-logrow .v{font-family:var(--mono);color:var(--blue);white-space:nowrap;}
+  #v-decision .dc-logrow .w{flex:1;min-width:0;color:var(--body);}
+
+  /* 활동 4 — 편향 계산기 */
+  #v-decision .dc-calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:0.8rem;margin:0.8rem 0;}
+  #v-decision .dc-cell{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0.7rem 0.8rem;}
+  #v-decision .dc-cell .lb{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.08em;color:var(--muted);display:block;}
+  #v-decision .dc-cell .vv{font-family:var(--mono);font-size:1.35rem;font-weight:700;color:var(--fg);}
+  #v-decision .dc-cell.warn{border-color:var(--red);}
+  #v-decision .dc-cell.warn .vv{color:var(--red);}
+  #v-decision .dc-cell.good{border-color:var(--green);}
+  #v-decision .dc-cell.good .vv{color:var(--green);}
+  #v-decision .dc-verdict{font-size:1.05rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);border-left:5px solid var(--border);margin:0.6rem 0 0;}
+  #v-decision .dc-verdict.no{border-left-color:var(--red);color:var(--red);}
+  #v-decision .dc-verdict.ok{border-left-color:var(--green);color:var(--green);}
+
+  /* 참고 자료 카드 */
+  #v-decision .dc-refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(12.5rem,1fr));gap:0.7rem;margin-top:0.8rem;}
+  #v-decision .dc-ref{display:block;text-decoration:none;color:inherit;background:var(--bg);border:1px solid var(--border);
+    border-radius:0.6rem;overflow:hidden;transition:all 0.2s;text-align:left;font-family:var(--sans);cursor:pointer;width:100%;}
+  #v-decision .dc-ref:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-decision .dc-ref .th{position:relative;aspect-ratio:16/9;background:var(--card);display:flex;align-items:center;
+    justify-content:center;font-size:2rem;}
+  #v-decision .dc-ref .bg{position:absolute;left:0.35rem;top:0.35rem;font-family:var(--mono);font-size:0.64rem;
+    letter-spacing:0.08em;background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.1rem 0.45rem;}
+  #v-decision .dc-ref .bd{display:block;padding:0.5rem 0.65rem 0.7rem;}
+  #v-decision .dc-ref .tt{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;}
+  #v-decision .dc-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+
+  /* 사진(§26) */
+  #v-decision .dc-foto{margin:0.8rem 0;max-width:100%;}
+  #v-decision .dc-foto img{display:block;width:100%;height:auto;border-radius:0.5rem;border:1px solid var(--border);}
+  #v-decision .dc-foto .fb{display:none;align-items:center;justify-content:center;width:100%;min-height:8rem;
+    font-size:2.6rem;background:var(--card-h);border:1px solid var(--border);border-radius:0.5rem;}
+  #v-decision .dc-foto.nofoto .fb{display:flex;}
+  #v-decision .dc-foto.nofoto img{display:none;}
+  #v-decision .dc-foto figcaption{font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.35rem;}
+  #v-decision .dc-foto figcaption b{color:var(--body);}
+  #v-decision .dc-foto figcaption .src{display:block;font-family:var(--mono);font-size:0.72rem;margin-top:0.15rem;}
+
+  /* 교과서 지면 캡처 로컬 슬롯(§26-2) — 파일이 없으면 figure 자체가 사라집니다 */
+  #v-decision .dc-tbrow{display:flex;flex-wrap:wrap;gap:0.7rem;margin-top:0.7rem;}
+  #v-decision .dc-tbrow figure{margin:0;flex:1 1 13rem;min-width:0;}
+  #v-decision .dc-tbrow img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;}
+  #v-decision .dc-tbrow figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.25rem;}
+
+  @media(max-width:640px){
+    #v-decision .dc-slots.c3{grid-template-columns:1fr;}
+    #v-decision .dc-slots.c4{grid-template-columns:1fr;}
+    #v-decision .dc-slot{min-height:auto;}
+    #v-decision .dc-fml{font-size:0.82rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="dc-hero">
+    <svg class="dc-wm" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
+      <rect x="10" y="30" width="58" height="34" rx="6" fill="var(--blue)" opacity="0.55"/>
+      <rect x="91" y="30" width="58" height="34" rx="6" fill="var(--accent)"/>
+      <rect x="172" y="30" width="58" height="34" rx="6" fill="var(--green)" opacity="0.55"/>
+      <path d="M70 47 H88 M151 47 H169" stroke="var(--fg)" stroke-width="3" marker-end="none"/>
+      <path d="M84 42 l6 5 l-6 5 z M165 42 l6 5 l-6 5 z" fill="var(--fg)"/>
+      <path d="M39 70 V96 M120 70 V96 M201 70 V96" stroke="var(--border)" stroke-width="2"/>
+      <circle cx="39" cy="106" r="9" fill="none" stroke="var(--fg)" stroke-width="2.4"/>
+      <circle cx="120" cy="106" r="9" fill="none" stroke="var(--fg)" stroke-width="2.4"/>
+      <circle cx="201" cy="106" r="9" fill="none" stroke="var(--red)" stroke-width="2.4"/>
+      <path d="M197 106 l3.4 3.6 l6-7" fill="none" stroke="var(--red)" stroke-width="2.2"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅴ 단원 · 28차시 · [12인수05-01] · [12인수05-02]</p>
+    <h2>합리적 의사 결정 사례 해부 — AI는 어떻게 ‘결정’하는가</h2>
+    <p class="desc">
+      인공지능이 내린 결정은 늘 세 칸을 거쳐 나옵니다 —
+      <b>데이터 학습 → 최적화 전략 → 합리적 의사 결정</b>.
+      다섯 가지 실제 사례를 이 세 칸으로 해부해 보면, 어디에서 결정이 <b>합리적</b>이 되고
+      어디에서 <b>위험</b>해지는지가 드러납니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 실생활 사례를 <b>데이터 학습 → 최적화 → 합리적 의사 결정</b>의 3단 구조로 분해하여
+      인공지능이 문제를 합리적으로 해결한 사례를 찾아 분석할 수 있습니다. <b>[12인수05-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② <b>비합리적·비윤리적 의사 결정 사례</b>를 판별하고 그 근거를 제시할 수 있습니다. <b>[12인수05-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 인공지능과 관련된 수학 탐구 주제를 선정하고 <b>변수(x, y)와 데이터 출처</b>를 포함한
+      탐구 계획서를 작성할 수 있습니다. <b>[12인수05-02]</b>
+    </div>
+    <div class="dc-goalmap">
+      <button type="button" onclick="dcSee(0,'dc-act2')">├ 목표 ① → <b>활동 1</b>(의사 결정의 네 요소)·<b>활동 2</b>(사례 5건 3단 해부) →</button>
+      <button type="button" onclick="dcSee(2,'dc-act3')">├ 목표 ② → <b>활동 3</b>(윤리 판정과 분포 비교)·<b>활동 4</b>(채용 편향을 수로 확인) →</button>
+      <button type="button" onclick="go('project')">└ 목표 ③ → <b>마무리 15분</b> · 30차시 뷰 「탐구 워크스페이스」의 주제 마법사 → 보고서 [A] →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips dc-keys" data-no-toggle="1">
+    <span class="chip">의사 결정의 네 요소</span>
+    <span class="chip">3단 구조(데이터 학습·최적화·의사 결정)</span>
+    <span class="chip">최적화 전략</span>
+    <span class="chip">데이터 편향과 의사 결정의 윤리성</span>
+    <span class="chip">SDGs와 탐구 주제</span>
+  </div>
+
+  <div class="card dc-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>AI의 결정은 언제 ‘합리적’이고 언제 위험해지는가?</li>
+      <li>비합리적이라는 판단의 <b>수학적 근거</b>는 어떻게 제시할 수 있는가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">두 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="dc-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 인공지능의 결정에는 왜 윤리가 필요할까</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      마지막 점선 칸은 <b>선생님이 영상을 1개 더 걸 수 있는 슬롯</b>입니다.</p>
+    <div id="dc-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>먼저 보기 — 오늘 해부할 다섯 개의 결정</h3>
+    <div class="dc-2col">
+      <figure class="dc-foto">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Driving_Cars_in_a_Traffic_Jam.jpg/960px-Driving_Cars_in_a_Traffic_Jam.jpg"
+             alt="꽉 막힌 도로에 차들이 줄지어 서 있는 사진" loading="lazy"
+             onerror="this.closest('.dc-foto').classList.add('nofoto');">
+        <span class="fb" aria-hidden="true">🚗</span>
+        <figcaption><b>정체가 시작되기 5분 전, 우리는 그것을 알 수 있을까?</b>
+          도로 상황 예측 시스템이 푸는 문제가 바로 이것입니다.
+          <span class="src">사진: Wikimedia Commons “Driving Cars in a Traffic Jam.jpg” · CC BY 2.0</span></figcaption>
+      </figure>
+      <div>
+        <p>오늘 다루는 다섯 사례는 모두 <b>사람이 하던 판단을 기계가 대신하는</b> 장면입니다.</p>
+        <p>세 사례(도로 예측·자율주행·생성 언어 모델)는 결정이 <b>합리적</b>으로 작동한 쪽,
+          두 사례(채용 심사·인공지능 판사)는 <b>합리성을 의심해야 하는</b> 쪽입니다.</p>
+        <p>다섯 사례를 같은 <b>세 칸</b>에 넣어 보면, 갈라지는 지점이 어디인지 눈에 보입니다.</p>
+        <div class="dc-arrow"><b>① 데이터 학습</b> → <b>② 최적화 전략</b> → <b>③ 합리적 의사 결정</b></div>
+        <span class="dc-src">출처 — 씨마스 「인공지능 수학」 Ⅴ. 인공지능과 수학 탐구 p.183~186 서술을 재구성</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="dc-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b>
+      이제 결정을 세 칸으로 갈라 보는 일부터 시작합시다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="dc-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="dcTab(0,this)">① 결정의 네 요소</button>
+    <button class="tab" type="button" onclick="dcTab(1,this)">② 사례 해부기</button>
+    <button class="tab" type="button" onclick="dcTab(2,this)">③ 윤리 판정</button>
+    <button class="tab" type="button" onclick="dcTab(3,this)">④ 편향을 수로</button>
+  </div>
+
+  <!-- ── 탭 ① 활동 1 : 의사 결정의 네 요소 ───────────────────────────── -->
+  <div class="tpanel on" id="dc0">
+    <div class="card" id="dc-act1" data-no-toggle="1">
+      <h3>활동 1 · 「수학여행 장소를 어떻게 고를까」 — 결정의 네 요소</h3>
+      <p>우리 반이 수학여행 장소를 정합니다. 아래 여덟 개의 문장은 모두
+        <b>합리적으로 결정하기 위해 실제로 한 일</b>입니다.</p>
+      <p>이 여덟 개를 <b>목표 · 정보 · 선택 · 평가</b> 네 칸에 나누어 담아 보세요.
+        조각을 먼저 누르고, 그다음 담을 칸을 누릅니다.</p>
+      <div class="dc-slots c4" id="dc-a1-slots">
+        <div class="dc-slot" data-k="0"><span class="hd">목표</span><div class="bd"></div></div>
+        <div class="dc-slot" data-k="1"><span class="hd">정보</span><div class="bd"></div></div>
+        <div class="dc-slot" data-k="2"><span class="hd">선택</span><div class="bd"></div></div>
+        <div class="dc-slot" data-k="3"><span class="hd">평가</span><div class="bd"></div></div>
+      </div>
+      <div class="dc-pool" id="dc-a1-pool"></div>
+      <p class="status" id="dc-a1-st">배치 0 / 8 · 조각을 누른 뒤 칸을 누르세요.</p>
+      <div class="dc-fb" id="dc-a1-fb"></div>
+      <div class="btn-row"><button class="btn" type="button" onclick="dcA1Reset()">처음부터 다시</button></div>
+      <span class="dc-src">출처 — 씨마스 「인공지능 수학」 Ⅴ p.181 「합리적 의사 결정에 고려해야 할 요소」 도해를 재구성</span>
+      <div class="dc-tbrow">
+        <figure>
+          <img src="assets/textbook-local/씨마스5_p181_의사결정4요소.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 Ⅴ p.181 (수업용)</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/textbook-local/동아5_p160_합리적의사결정.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>동아 Ⅴ p.160 (수업용)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <p class="dc-lockmsg" id="dc-a1-lock">↓ 여덟 조각을 모두 제자리에 담으면 아래 두 토글이 열립니다.</p>
+
+    <details class="dc-fold dc-locked" id="dc-f1a">
+      <summary>단계 정리 — 네 요소는 왜 순서가 있는가</summary>
+      <div class="bd">
+        <p><b>목표</b>가 없으면 어떤 정보가 필요한지 알 수 없고, <b>정보</b>가 없으면 대안을 만들 수 없습니다.
+          대안이 없으면 <b>선택</b>은 그저 찍기가 되고, <b>평가</b>가 없으면 다음 결정이 나아지지 않습니다.</p>
+        <p>인공지능도 정확히 같은 순서를 따릅니다. 목표는 <b>손실함수</b>로, 정보는 <b>데이터</b>로,
+          대안 탐색은 <b>최적화</b>로, 평가는 <b>오차 측정</b>으로 바뀝니다.</p>
+        <div class="dc-scroll">
+          <table class="dc-tbl">
+            <tr><th>사람의 결정</th><th>인공지능의 결정</th><th>이 교과서에서 배운 곳</th></tr>
+            <tr><td>목표</td><td class="l">손실함수 L(a) 정의</td><td class="l">24차시</td></tr>
+            <tr><td>정보</td><td class="l">데이터 수집·전처리</td><td class="l">12·22·29차시</td></tr>
+            <tr><td>선택</td><td class="l">경사하강법으로 최적값 탐색</td><td class="l">25·26차시</td></tr>
+            <tr><td>평가</td><td class="l">검증 데이터의 오차 비교(과적합 점검)</td><td class="l">23차시</td></tr>
+          </table>
+        </div>
+        <span class="dc-src">씨마스 Ⅴ p.181 네 요소 + 동아 「인공지능 수학」 5단원 p.160 「합리적 의사 결정」 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="dc-fold dc-locked" id="dc-f1b">
+      <summary>정의 확인 — 합리적 의사 결정이란 무엇인가</summary>
+      <div class="bd">
+        <p><b>합리적 의사 결정</b>이란 여러 가지 선택지 중 <b>최적의 선택</b>을 하는 것입니다.
+          쓸 수 있는 정보를 모아 각 선택의 장단점을 견주고, 가장 좋은 결과를 얻을 수 있는 결정을 내리는 과정입니다.</p>
+        <p>동아 교과서는 이를 “문제 해결을 위해 <b>최적의 대안</b>을 찾고 이를 실행하는 과정”이라고 정의하고,
+          ① 명확한 목표 설정 → ② 필요한 정보 수집 → ③ 기준에 맞는 모든 대안 탐색 →
+          ④ 최적 대안 선택 → ⑤ 결과 평가의 다섯 걸음으로 풀어 씁니다.</p>
+        <p><b>예시 1</b> 여행지를 정할 때 가격·편의 시설·음식을 함께 고려해 가장 적합한 곳을 고르는 일.<br>
+          <b>예시 2</b> 기업이 이익을 최대로 하려고 비용을 최소화하고 매출을 늘리는 전략을 찾는 일 — 이것이 <b>최적화</b>입니다.</p>
+        <div class="dc-fml">최적화 = 주어진 조건에서 손실함수의 값을 최소로 만드는 값을 찾는 기법</div>
+        <span class="dc-src">씨마스 Ⅴ p.181~182 · 동아 5단원 p.160~161 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── 탭 ② 활동 2 : 사례 해부기 ───────────────────────────────────── -->
+  <div class="tpanel" id="dc1">
+    <div class="card" id="dc-act2" data-no-toggle="1">
+      <h3>활동 2 · 사례 해부기 — 다섯 개의 결정을 세 칸에 담기</h3>
+      <p>사례를 하나 고르면 <b>여섯 개의 조각</b>이 아래에 흩어져 나옵니다.
+        각 조각이 <b>① 데이터 학습 · ② 최적화 전략 · ③ 합리적 의사 결정</b> 가운데 어디에 들어가는지 판단해 담아 보세요.</p>
+      <div class="dc-deck" id="dc-a2-deck"></div>
+      <div class="dc-2col" style="margin-top:0.6rem;">
+        <figure class="dc-foto" id="dc-a2-foto">
+          <img id="dc-a2-img" src="" alt="" loading="lazy"
+               onerror="this.closest('.dc-foto').classList.add('nofoto');">
+          <span class="fb" id="dc-a2-emo" aria-hidden="true">🗂️</span>
+          <figcaption id="dc-a2-cap"></figcaption>
+        </figure>
+        <div>
+          <p id="dc-a2-story">먼저 위에서 사례를 하나 고르세요.</p>
+          <span class="dc-src" id="dc-a2-src"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card dc-veil" id="dc-a2-panel" data-no-toggle="1">
+      <h3>조작 — 조각을 세 칸에 담기</h3>
+      <div class="dc-arrow"><b>① 데이터 학습</b> → <b>② 최적화 전략</b> → <b>③ 합리적 의사 결정</b></div>
+      <div class="dc-slots c3" id="dc-a2-slots">
+        <div class="dc-slot" data-k="0"><span class="hd">① 데이터 학습</span><div class="bd"></div></div>
+        <div class="dc-slot" data-k="1"><span class="hd">② 최적화 전략</span><div class="bd"></div></div>
+        <div class="dc-slot" data-k="2"><span class="hd">③ 합리적 의사 결정</span><div class="bd"></div></div>
+      </div>
+      <div class="dc-pool" id="dc-a2-pool"></div>
+      <p class="status" id="dc-a2-st">배치 0 / 6</p>
+      <div class="dc-fb" id="dc-a2-fb"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="dcA2Reset()">이 사례 다시 하기</button>
+        <button class="btn" type="button" onclick="dcSee(2,'dc-act3')">윤리 판정으로 →</button>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>해부 기록표 — 다섯 사례를 모두 열었나요?</h3>
+      <div class="dc-scroll"><div id="dc-a2-board"></div></div>
+      <p class="status" id="dc-a2-bst">사례를 완성할 때마다 이 표가 채워집니다.</p>
+    </div>
+
+    <p class="dc-lockmsg" id="dc-a2-lock">↓ 사례 <b>3건 이상</b>을 완성하면 아래 두 토글이 열립니다.</p>
+
+    <details class="dc-fold dc-locked" id="dc-f2a">
+      <summary>단계 정리 — 세 칸이 하는 일은 서로 다르다</summary>
+      <div class="bd">
+        <p><b>① 데이터 학습</b> 칸은 “<b>무엇을 모았는가</b>”를 답합니다. 이 칸이 치우치면 뒤의 두 칸이 아무리 정교해도 결정은 무너집니다.</p>
+        <p><b>② 최적화 전략</b> 칸은 “<b>무엇을 가장 크게(또는 작게) 만들려 했는가</b>”를 답합니다.
+          다섯 사례에 등장한 전략은 세 가지뿐입니다 — <b>확률을 비교</b>하기, <b>거리(유사도)를 최소화</b>하기, <b>손실함수를 최소화</b>하기.</p>
+        <p><b>③ 합리적 의사 결정</b> 칸은 “<b>그래서 무엇을 했는가</b>”를 답합니다.
+          이 칸에는 반드시 <b>행동</b>이 들어갑니다. 계산 결과만 있고 행동이 없으면 아직 의사 결정이 아닙니다.</p>
+        <div class="dc-scroll">
+          <table class="dc-tbl">
+            <tr><th>사례</th><th>최적화 전략의 정체</th><th>연결 차시</th></tr>
+            <tr><td class="l">도로 상황 예측</td><td class="l">상대도수로 정체 확률 계산·비교</td><td class="l">20·21차시</td></tr>
+            <tr><td class="l">자율주행</td><td class="l">경로 비용·안전 오차 최소화</td><td class="l">24·26차시</td></tr>
+            <tr><td class="l">생성 언어 모델</td><td class="l">다음 단어 확률 최대 + 손실 최소화</td><td class="l">7·21·26차시</td></tr>
+            <tr><td class="l">AI 채용 심사</td><td class="l">과거 합격자와의 유사도 최대화</td><td class="l">9·10차시</td></tr>
+            <tr><td class="l">인공지능 판사</td><td class="l">가까운 과거 사건 k개의 다수결(k-NN)</td><td class="l">9·13차시</td></tr>
+          </table>
+        </div>
+        <span class="dc-src">씨마스 Ⅴ p.183~186 사례 도해 + p.191 「더 알아보기 k-최근접 이웃」 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="dc-fold dc-locked" id="dc-f2b">
+      <summary>더 알아보기 — 교과서에 실린 다른 사례 둘</summary>
+      <div class="bd">
+        <p><b>인공지능 기반 배송 시스템</b> · 지역별 배송 유형·상품·적정 온도·인력·폐기율·품절률 데이터를 모아
+          수요 예측 모델과 최적화 알고리즘으로 <b>최적 배송 경로</b>를 구합니다.
+          결과로 폐기율이 줄고 품절이 예방되어 자원 낭비까지 줄어듭니다.</p>
+        <p><b>스마트 치안(Smart Policing)</b> · 범죄 유형·발생 장소·날짜·시간 같은 과거 기록을 분석해
+          범죄 발생 가능성이 높은 지역을 수학적으로 예측하고 순찰을 집중합니다.
+          미국 일부 지역에서 범죄율이 약 <b>20 %</b> 감소한 것으로 보고되었습니다.</p>
+        <p>두 사례도 세 칸으로 갈라 보세요. 어느 칸이 가장 위험해 보이나요?
+          <b>스마트 치안</b>은 “과거에 신고가 많았던 동네”를 학습하므로, ① 칸의 치우침이 곧 순찰 편중으로 이어질 수 있습니다.</p>
+        <span class="dc-src">동아 「인공지능 수학」 5단원 p.162~163 사례 1·2 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── 탭 ③ 활동 3 : 윤리 판정 ─────────────────────────────────────── -->
+  <div class="tpanel" id="dc2">
+    <div class="card" id="dc-act3" data-no-toggle="1">
+      <h3>활동 3 · 「이 결정은 합리적인가?」 — 내 판정과 예시 분포 겹쳐 보기</h3>
+      <p>같은 사례를 놓고도 사람마다 판정이 갈립니다. 먼저 <b>내 판정</b>을 0~100으로 정하고 근거를 한 문장 적으세요.
+        저장을 누르면 <b>교사 제시 예시 분포</b> 위에 내 값이 겹쳐 표시됩니다.</p>
+      <div class="chips" id="dc-a3-cases"></div>
+      <p class="status" id="dc-a3-pick">사례를 하나 고르세요.</p>
+      <div class="dc-2col">
+        <div>
+          <label class="mono" for="dc-a3-k" style="display:block;">이 결정은 얼마나 합리적입니까?</label>
+          <input class="dc-slider" id="dc-a3-k" type="range" min="0" max="100" step="1" value="50"
+                 oninput="dcA3Slide(this.value)" aria-label="합리성 판정 0에서 100">
+          <div class="dc-sscale"><span>0 · 전혀 아니다</span><span>100 · 매우 그렇다</span></div>
+          <p><span class="dc-sval" id="dc-a3-kv">50</span> <span class="dc-hint" id="dc-a3-kw">판단 보류</span></p>
+          <label class="mono" for="dc-a3-why" style="display:block;margin-top:0.6rem;">그렇게 판정한 근거 (한 문장 이상)</label>
+          <textarea class="dc-ta" id="dc-a3-why" placeholder="예) 데이터 학습 칸에 특정 집단이 지나치게 많이 들어가 있어서 …"></textarea>
+          <div class="btn-row">
+            <button class="btn pri" type="button" onclick="dcA3Save()">판정 저장</button>
+            <button class="btn" type="button" onclick="dcA3Clear()">기록 지우기</button>
+          </div>
+          <p class="status" id="dc-a3-st">기록 0건 — 3건 이상 저장하면 아래 토글이 열립니다.</p>
+        </div>
+        <div>
+          <canvas class="dc-cv" id="dc-a3-cv" width="560" height="300"
+                  aria-label="합리성 판정의 예시 분포와 내 판정을 겹쳐 보여 주는 막대 그래프" role="img"></canvas>
+          <div class="dc-leg">
+            <span><i style="background:var(--accent);"></i>교사 제시 예시 분포(30명 응답 예시)</span>
+            <span><i style="background:var(--red);"></i>나의 판정</span>
+            <span><i style="background:var(--blue);"></i>예시 분포의 평균</span>
+          </div>
+          <p class="dc-hint" style="margin-top:0.4rem;">이 분포는 <b>교사가 제시하는 예시</b>입니다 —
+            실제 우리 반 집계가 아닙니다. 학급 분포가 필요하면 아래 [JSON 내보내기]로 각자 파일을 만들어
+            선생님 기기에서 합칩니다.</p>
+        </div>
+      </div>
+      <span class="dc-src">출처 — 씨마스 Ⅴ p.182 「생각해 보기(인공지능 판사)」·p.184 「자율주행 로보택시의 책임」·p.185 「환각 현상」 발문을 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>내 판정 기록 · 교사 취합용 내보내기</h3>
+      <div class="dc-log" id="dc-a3-log"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="dcA3Json()">JSON 만들기</button>
+        <button class="btn" type="button" onclick="dcA3Copy()">복사</button>
+        <button class="btn" type="button" onclick="dcA3Down()">파일로 내려받기</button>
+      </div>
+      <textarea class="dc-json" id="dc-a3-json" readonly aria-label="내 판정 기록 JSON"></textarea>
+      <p class="dc-hint"><b>운영 절차</b> — 이 페이지는 기기 사이에 자료를 주고받는 통로가 없는
+        정적 웹앱입니다. 학급 분포를 만들려면 ① 학생 각자 [파일로 내려받기] →
+        ② 선생님 기기에서 파일을 열어 값을 옮겨 적거나 스프레드시트에 붙여 넣습니다.</p>
+    </div>
+
+    <p class="dc-lockmsg" id="dc-a3-lock">↓ 판정을 <b>3건 이상</b> 저장하면 아래 두 토글이 열립니다.</p>
+
+    <details class="dc-fold dc-locked" id="dc-f3a">
+      <summary>단계 정리 — 판정이 갈리는 곳에는 늘 같은 질문이 있다</summary>
+      <div class="bd">
+        <p>여러분의 판정이 예시 분포와 달랐다면, 그 차이는 대개 다음 네 질문 가운데 하나에서 옵니다.</p>
+        <ul>
+          <li><b>공정성</b> — 결과가 모든 사람에게 고르게 적용되는가?</li>
+          <li><b>책임</b> — 결정에 따른 결과를 누가 책임지는가?</li>
+          <li><b>근거</b> — 결정의 증거와 근거가 충분한가?</li>
+          <li><b>신뢰성</b> — 같은 상황에서 같은 결과가 나오는가?</li>
+        </ul>
+        <p>교과서는 “사용자는 인공지능의 의사 결정 결과가 모든 이에게 공정하게 적용되는지,
+          다양한 측면을 고려하고 균형 있게 적용되는지 파악해야 한다”고 못 박습니다.
+          판정은 취향이 아니라 <b>이 네 질문에 대한 답</b>이어야 합니다.</p>
+        <span class="dc-src">씨마스 Ⅴ p.186 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="dc-fold dc-locked" id="dc-f3b">
+      <summary>정의 확인 — 왜 인공지능은 비합리적 결정을 내리는가</summary>
+      <div class="bd">
+        <p>인공지능이 예상치 못한 결정을 내리는 까닭은 크게 둘입니다.
+          ① <b>잘못된 정보가 섞인 데이터</b>를 학습했거나, ② <b>특정 집단의 데이터가 지나치게 큰 비중</b>을 차지하는
+          데이터를 학습했기 때문입니다.</p>
+        <p>주목할 점은 두 원인이 모두 <b>①번 칸(데이터 학습)</b>에 있다는 사실입니다.
+          최적화 전략과 결정 절차는 아무 잘못이 없어도, 재료가 치우치면 결과가 치우칩니다.
+          그래서 다음 활동에서는 이 치우침을 <b>수</b>로 확인합니다.</p>
+        <p>또한 결정의 <b>기준을 알 수 없다</b>는 문제도 있습니다. 인공지능 면접관이 어떤 기준으로
+          합격과 불합격을 가르는지 알 수 없어 “눈을 가리고 귀를 막고 취업 준비를 한다”는 불만이 나오기도 했습니다.</p>
+        <span class="dc-src">씨마스 Ⅴ p.186 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── 탭 ④ 활동 4 : 편향을 수로 ───────────────────────────────────── -->
+  <div class="tpanel" id="dc3">
+    <div class="card" id="dc-act4" data-no-toggle="1">
+      <h3>활동 4 · 「남성이 더 많은 합격 제안을 받았다」 — 이 문장을 수로 옮기면</h3>
+      <p>교과서에 실린 비합리 사례는 한 문장입니다 — <b>“남성이 여성보다 더 많은 채용 제안을 받았다.”</b></p>
+      <p>이 문장만으로는 편향인지 알 수 없습니다. <b>지원자 수가 달랐을 수도</b> 있기 때문입니다.
+        먼저 예상해 보세요. 아래 표에서 편향이 있다고 말할 수 있을까요?</p>
+      <div class="chips" id="dc-a4-guess">
+        <button class="chip" type="button" onclick="dcA4Guess(0,this)">합격자 수가 많으니 편향이다</button>
+        <button class="chip" type="button" onclick="dcA4Guess(1,this)">합격률을 비교해야 알 수 있다</button>
+        <button class="chip" type="button" onclick="dcA4Guess(2,this)">지원자 수가 다르니 비교할 수 없다</button>
+      </div>
+      <p class="status" id="dc-a4-gst">예상을 고르기 전에는 계산 패널이 잠겨 있습니다.</p>
+      <span class="dc-src">출처 — 씨마스 Ⅴ p.186 「인공지능 윤리에 관한 수학적 탐색」의 사례 예시·문제 예시를 재구성</span>
+      <div class="dc-tbrow">
+        <figure>
+          <img src="assets/textbook-local/씨마스5_p186_윤리수학적탐색.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 Ⅴ p.186 (수업용)</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/textbook-local/동아5_p164_알고리즘불공정.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>동아 Ⅴ p.164 (수업용)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="card dc-veil" id="dc-a4-panel" data-no-toggle="1">
+      <h3>조작 — 합격자 수를 움직이며 합격률과 비율을 보기</h3>
+      <div class="dc-2col">
+        <div>
+          <div class="dc-scroll">
+            <table class="dc-tbl">
+              <tr><th></th><th>지원자</th><th>합격자</th><th>합격률</th></tr>
+              <tr><td>남성</td><td>800</td><td id="dc-a4-mn">120</td><td id="dc-a4-mr">15.0 %</td></tr>
+              <tr><td>여성</td><td>200</td><td id="dc-a4-fn">10</td><td id="dc-a4-fr">5.0 %</td></tr>
+            </table>
+          </div>
+          <label class="mono" for="dc-a4-m" style="display:block;margin-top:0.7rem;">남성 합격자 (0~800)</label>
+          <input class="dc-slider" id="dc-a4-m" type="range" min="0" max="800" step="4" value="120"
+                 oninput="dcA4Calc()" aria-label="남성 합격자 수">
+          <label class="mono" for="dc-a4-f" style="display:block;">여성 합격자 (0~200)</label>
+          <input class="dc-slider" id="dc-a4-f" type="range" min="0" max="200" step="1" value="10"
+                 oninput="dcA4Calc()" aria-label="여성 합격자 수">
+          <div class="dc-calc">
+            <div class="dc-cell" id="dc-a4-c1"><span class="lb">여성 합격률 ÷ 남성 합격률</span><span class="vv" id="dc-a4-ratio">0.33</span></div>
+            <div class="dc-cell" id="dc-a4-c2"><span class="lb">판정 기준</span><span class="vv">0.80</span></div>
+          </div>
+          <div class="dc-verdict" id="dc-a4-verdict"></div>
+        </div>
+        <div>
+          <canvas class="dc-cv" id="dc-a4-cv" width="520" height="300"
+                  aria-label="남성과 여성의 합격률을 비교하는 막대 그래프와 0.8 기준선" role="img"></canvas>
+          <div class="dc-leg">
+            <span><i style="background:var(--blue);"></i>남성 합격률</span>
+            <span><i style="background:var(--red);"></i>여성 합격률</span>
+            <span><i style="background:var(--green);"></i>기준(남성 합격률의 80 %)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card dc-veil" id="dc-a4-eq" data-no-toggle="1">
+      <h3>손으로 풀기 — 몇 명을 더 뽑아야 기준을 넘길까</h3>
+      <p>남성 합격률이 <b>15 %</b>일 때, 여성 합격률이 그 <b>80 %</b> 이상이 되어야 합니다.
+        여성 합격자를 지금(10명)보다 <b>x명</b> 더 뽑는다고 하고 부등식을 세워 보세요.</p>
+      <div class="dc-fml">(10 + x) / 200 ≥ 0.8 × 0.15</div>
+      <div class="btn-row" style="align-items:center;">
+        <label class="mono" for="dc-a4-x">x ≥ <input class="dc-in num" id="dc-a4-x" type="number" min="0" step="1" inputmode="numeric" aria-label="필요한 추가 합격자 수"></label>
+        <button class="btn pri" type="button" onclick="dcA4Check()">채점</button>
+      </div>
+      <div class="dc-fb" id="dc-a4-fb"></div>
+      <span class="dc-src">부등식 형태는 5차시 bias 뷰의 「공정성 확보에 필요한 추가 수집량」 활동과 같은 꼴입니다.</span>
+      <div class="btn-row"><button class="btn" type="button" onclick="go('bias')">돌아보기 · 5차시 데이터 편향</button></div>
+    </div>
+
+    <p class="dc-lockmsg" id="dc-a4-lock">↓ 부등식을 맞히면 아래 두 토글이 열립니다.</p>
+
+    <details class="dc-fold dc-locked" id="dc-f4a">
+      <summary>단계 정리 — 편향을 말할 때 반드시 붙여야 하는 두 수</summary>
+      <div class="bd">
+        <p>“남성이 더 많이 합격했다”는 <b>개수</b>의 말입니다. 개수는 지원자 수에 따라 얼마든지 달라집니다.
+          편향을 주장하려면 <b>비율</b>로 옮겨야 합니다.</p>
+        <p>① <b>집단별 합격률</b>(조건일 때의 상대도수) — 21차시에서 배운 “표의 어느 부분만 보는가”와 같은 계산입니다.<br>
+          ② <b>두 합격률의 비</b> — 이 값이 0.8보다 작으면 국제적으로 널리 쓰이는 관행에 따라
+          ‘한쪽에 불리한 영향이 있다’고 판단합니다.</p>
+        <div class="dc-fml">남성 합격률 = 120/800 = 0.15    여성 합격률 = 10/200 = 0.05
+비 = 0.05 / 0.15 = 1/3 ≒ 0.33 &lt; 0.8  →  여성에게 불리</div>
+        <p>이 두 수를 붙이는 순간, 윤리적 주장이 <b>수학적 근거를 가진 주장</b>으로 바뀝니다.
+          이것이 이번 차시 목표 ②의 핵심입니다.</p>
+        <span class="dc-src">계산 구조는 씨마스 Ⅴ p.186 「공정한 인공지능 채용 시스템을 구성할 때 이용할 수 있는 수학적 해결책은 무엇인가」 문제 예시에 대한 답으로 구성</span>
+      </div>
+    </details>
+
+    <details class="dc-fold dc-locked" id="dc-f4b">
+      <summary>더 알아보기 — 2020년 영국 대입 성적 알고리즘 논란</summary>
+      <div class="bd">
+        <p>2020년, 영국의 고교 졸업반 30여만 명은 감염병 유행으로 졸업 시험(A레벨)을 치르지 못했습니다.
+          정부 당국은 <b>알고리즘으로 성적을 산정</b>했습니다.</p>
+        <p>결과가 공개된 다음 날부터 학생들은 교육부 앞에서 항의했습니다.
+          잉글랜드 지역 학점의 <b>40 %</b>가 교사 예측보다 낮았고, 공립 학교 학생들이 특히 큰 불이익을 받았습니다.</p>
+        <p>원인은 이 알고리즘이 <b>학교의 과거 입시 성적</b>을 반영했다는 점입니다.
+          전국 단위로는 “작년과 비슷하니 공정하다”고 말할 수 있었지만, <b>개인별로는 공정하지 못한</b> 결과가 나왔습니다.</p>
+        <div class="dc-scroll">
+          <table class="dc-tbl">
+            <tr><th>윤리적 문제</th><th>발생 원인</th><th>보완 방안</th></tr>
+            <tr><td class="l">거주 지역·학교에 따른 차별로 교육 불평등 발생</td>
+                <td class="l">개인별로 공정하지 못한 정보 사용, 알고리즘 설계 시 잘못된 가중치 설정</td>
+                <td class="l">공정성을 높이는 정보 수집과 적절한 가중치 설정</td></tr>
+          </table>
+        </div>
+        <p><b>생각해 보기</b> — “전체로는 공정한데 개인에게는 불공정하다”는 말이 성립할 수 있을까요?
+          어떤 수를 보면 이 둘을 구별할 수 있을까요?</p>
+        <span class="dc-src">동아 「인공지능 수학」 5단원 p.164 「알고리즘의 불공정: 영국 대입 성적 산정 논란」 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="dc-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card">
+    <h3>핵심 정리 — 오늘 세 줄</h3>
+    <p>① 인공지능의 결정은 <b>데이터 학습 → 최적화 전략 → 합리적 의사 결정</b>의 세 칸으로 언제나 갈라 볼 수 있습니다.</p>
+    <p>② 최적화 전략의 정체는 대개 셋입니다 — <b>확률을 비교</b>하기, <b>거리를 최소화</b>하기, <b>손실함수를 최소화</b>하기.</p>
+    <p>③ 비합리·비윤리를 말할 때는 <b>개수 대신 비율</b>을 내놓아야 합니다. 집단별 상대도수와 그 비가 곧 근거입니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기 — 내 문장으로</h3>
+    <p><b>Q1.</b> AI의 결정은 언제 ‘합리적’이고 언제 위험해지는가?</p>
+    <textarea class="dc-ta" id="dc-ans1" placeholder="세 칸 가운데 어느 칸을 근거로 삼아 답해 보세요."></textarea>
+    <p style="margin-top:0.8rem;"><b>Q2.</b> 비합리적이라는 판단의 수학적 근거는 어떻게 제시할 수 있는가?</p>
+    <textarea class="dc-ta" id="dc-ans2" placeholder="활동 4에서 계산한 두 수를 넣어 답해 보세요."></textarea>
+    <div class="btn-row">
+      <button class="btn pri" type="button" onclick="dcAnsSave()">답 저장</button>
+      <button class="btn" type="button" onclick="dcAnsLoad()">저장한 답 불러오기</button>
+    </div>
+    <p class="status" id="dc-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 다섯 문항</h3>
+    <p style="margin-bottom:0.9rem;">한 문항씩 풀고, 마지막에 총점과 복기 목록을 확인합니다.</p>
+    <div id="dc-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 단계 — 마무리 15분 · 우리 팀의 탐구 주제 정하기</strong><br>
+    사례를 해부하는 눈이 생겼다면, 이제 <b>우리 팀의 사례</b>를 만들 차례입니다.
+    「탐구 워크스페이스」의 <b>탭 ① 주제 마법사</b>에서 SDGs 목표와 수학 도구를 교차해 주제를 고르고,
+    <b>x와 y가 무엇인지</b> 적어 보세요. 확정하면 그대로 보고서 <b>[A. 탐구 주제 선정 및 문제 정의]</b>로 전송됩니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('project')">탐구 워크스페이스 → 주제 마법사</button>
+      <button class="btn" type="button" onclick="go('datalab')">29차시 데이터 실험실로 →</button>
+      <button class="btn" type="button" onclick="go('bias')">돌아보기 · 5차시 데이터 편향</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 동네 AI 결정 해부 보고서」 — 사례 하나를 세 칸으로</h3>
+    <p class="sub">오늘 배운 해부틀을 <b>교과서에 없는 사례</b>에 직접 적용합니다.
+      사례를 많이 찾는 것보다 <b>세 칸을 정확히 채우고 비율로 근거를 대는 것</b>이 이 과제의 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 우리 동네·우리 학교·내가 쓰는 앱에서 <b>AI가 대신 결정하는 장면</b>을 1개 찾습니다
+        (예: 배달앱 배차, 학교 도서관 추천 도서, 유튜브 다음 영상, 아파트 주차 인식, 급식 잔반 예측).<br>
+        ② 그 사례를 <b>① 데이터 학습 · ② 최적화 전략 · ③ 합리적 의사 결정</b> 세 칸으로 나누어 적습니다.
+        각 칸은 <b>두 문장 이상</b>, ③ 칸에는 반드시 <b>행동</b>을 씁니다.<br>
+        ③ 이 결정이 <b>불리하게 작용할 수 있는 집단</b>을 하나 지목하고, 왜 그런지 씁니다.<br>
+        ④ ③에서 지목한 집단에 대해 <b>비율로 확인할 수 있는 수 두 개</b>를 설계합니다
+        (무엇을 세어 무엇으로 나눌 것인지). 실제 수를 구할 수 없다면 <b>가상의 수</b>로 계산 예를 만듭니다.<br>
+        ⑤ 오늘 저장한 [JSON 내보내기] 파일을 함께 제출합니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 사례 해부표 1장(A4, 세 칸 + 불리한 집단 + 비율 두 개)<br>
+        · 판정 문장: “이 결정은 ___ 점(100점 기준)으로 ___하다. 근거는 ___이다.”<br>
+        · 계산 예 1개(분수 → 소수 둘째 자리까지, 0.8 기준과 비교)<br>
+        · (선택) 관련 기사·화면 캡처 1장과 출처</dd>
+      <dt>평가 관점</dt>
+      <dd>· 사례를 3단 구조로 <b>정확히 분해</b>하고 각 칸의 역할을 구별했는가 <b>[12인수05-01]</b><br>
+        · 비합리·비윤리의 근거를 <b>개수가 아닌 비율</b>로 제시했는가 <b>[12인수05-01]</b><br>
+        · 지목한 집단과 계산 설계가 <b>논리적으로 연결</b>되는가<br>
+        · 결론을 단정하지 않고 <b>한계와 확인 방법</b>을 함께 적었는가</dd>
+    </dl>
+    <details class="dc-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>단순한 예측 성공 여부나 수치의 정확도보다, <b>문제 정의에서 결론 도출에 이르는 전 과정의
+          논리적 연계성</b>을 중점적으로 봅니다. 고난도의 증명 능력보다 상황에 적합한 수학적 개념을
+          선정하고 적용하는 <b>타당성</b>을 평가합니다.</p>
+        <p>사례가 교과서 사례와 겹쳐도 감점하지 않되, <b>세 칸의 서술이 교과서 문장을 그대로 옮긴 것</b>이면
+          되돌려 보냅니다. “우리 동네”라는 조건은 학생 자신의 관찰을 요구하기 위한 장치입니다.</p>
+        <span class="dc-src">연수교재 합본 p.307 「평가 유의 사항」 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 사례를 더 찾고, 데이터의 출처를 익히기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="dc-refs">
+      <a class="dc-ref" href="https://askmath.kosac.re.kr/board.do?menuPos=15&amp;act=detail&amp;idx=12510&amp;board_code=601LT980" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">활동 자료</span>🧮</span>
+        <span class="bd"><span class="tt">인공지능 속 수학 원리 탐구 활동 (AskMath)</span>
+          <span class="ds">한국과학창의재단 수학문화관이 올린 탐구 활동 자료입니다. 주제를 고를 때 “어떤 수학 원리를 쓸 수 있는가”의 목록으로 보기 좋습니다.</span></span>
+      </a>
+      <a class="dc-ref" href="https://gemini.google.com/share/5cc4e5c7faf0" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">아이디어</span>💡</span>
+        <span class="bd"><span class="tt">「기지개 팡팡」 — 탐구 아이디어 공유 문서</span>
+          <span class="ds">KERIS 연수에서 공유된 탐구 아이디어 모음입니다. 주제가 막힐 때 이런 규모의 문제부터 시작하면 됩니다.</span></span>
+      </a>
+      <a class="dc-ref" href="https://www.index.go.kr/unity/potal/sdg/SDGMain.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">지표</span>🌍</span>
+        <span class="bd"><span class="tt">지표누리 — 지속가능발전목표(SDGs) 지표</span>
+          <span class="ds">교과서 p.189에 실린 바로 그 사이트입니다. 17개 목표별로 우리나라의 실제 지표 값과 추이를 볼 수 있어 주제 선정에 그대로 쓰입니다.</span></span>
+      </a>
+      <a class="dc-ref" href="https://www.data.go.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>🗂️</span>
+        <span class="bd"><span class="tt">공공데이터포털 (data.go.kr)</span>
+          <span class="ds">생활 쓰레기 배출 정보, 교통 약자 현황 등 사회 문제 해결형 주제의 데이터 창구입니다. 활동 4처럼 집단별 비율을 계산할 원자료를 찾을 수 있습니다.</span></span>
+      </a>
+      <a class="dc-ref" href="https://www.moralmachine.net/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">체험</span>🚦</span>
+        <span class="bd"><span class="tt">Moral Machine — 자율주행의 선택 실험</span>
+          <span class="ds">MIT가 만든 자율주행 윤리 실험입니다. 활동 3의 판정을 하기 전에 한 번 겪어 보면 “판정에는 기준이 필요하다”는 말이 실감됩니다. 결과를 정답으로 받아들이지 않도록 주의합니다.</span></span>
+      </a>
+      <a class="dc-ref" href="https://www.unesco.org/en/artificial-intelligence/recommendation-ethics" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">문서</span>📜</span>
+        <span class="bd"><span class="tt">UNESCO 인공지능 윤리 권고 (영문)</span>
+          <span class="ds">국제 기구가 합의한 AI 윤리 원칙 문서입니다. 활동 3의 네 질문(공정성·책임·근거·신뢰성)이 어디에서 왔는지 확인할 수 있습니다.</span></span>
+      </a>
+      <a class="dc-ref" href="https://hajinsu9951.github.io/2026-AI-MATH-PROJECT/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">선배 사례</span>🏫</span>
+        <span class="bd"><span class="tt">우리 동네 데이터 분석 AI 모델 아카이브</span>
+          <span class="ds">앞선 학교의 학생 프로젝트 산출물 갤러리입니다. “이 정도 규모로 하면 되는구나”를 눈으로 확인하세요.</span></span>
+      </a>
+    </div>
+    <p class="status" id="dc-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>28차시 학습지 — 손으로 해부하고 판정하기</h3>
+    <p>웹에서 조각을 옮겨 담은 과정을 손으로 다시 정리하면 기억이 오래갑니다.
+      5단원은 실물 활동지 파일 대신 <b>웹 활동과 1:1로 대응하는 인쇄용 지면</b>을 제공합니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('dc-sheet')">🖨 28차시 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <button class="ws-btn sec" type="button" onclick="go('project')">📋 보고서 [A] 양식은 탐구 워크스페이스에 <span class="sz">인쇄 지면 4종</span></button>
+    </div>
+    <p class="dc-hint" style="margin-top:0.6rem;">
+      <b>인쇄 지면 구성</b> : ① 마중 퀴즈 기록 ② 활동 1 네 요소 분류표 ③ 활동 2 사례 해부표(2건)
+      ④ 활동 3 판정과 근거 ⑤ 활동 4 합격률·비율 계산과 부등식 ⑥ 형성평가 5문항 ⑦ 핵심 질문 서술란.<br>
+      <b>루브릭 카드</b>는 30차시 뷰의 학습지 칸에서 따로 인쇄해 <b>프로젝트 시작 전에 미리 배부</b>합니다.</p>
+    <div id="dc-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="dc-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>28차시 학습지 — 합리적 의사 결정 사례 해부</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">학습 목표 ① 실생활 사례를 데이터 학습→최적화→합리적 의사 결정의 3단 구조로 분해하여 분석할 수 있다. [12인수05-01]<br>
+      학습 목표 ② 비합리적·비윤리적 의사 결정 사례를 판별하고 그 근거를 제시할 수 있다. [12인수05-01]<br>
+      학습 목표 ③ 탐구 주제를 선정하고 변수(x, y)와 데이터 출처를 포함한 계획서를 작성할 수 있다. [12인수05-02]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:54%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>합리적 의사 결정에 꼭 필요하지 않은 것은?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>AI의 결정이 틀리는 가장 흔한 이유는?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>AI 판사가 사람 판사보다 확실히 나은 점은?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — 결정의 네 요소</h3>
+    <table>
+      <tr><th style="width:14%;">목표</th><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>정보</th><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>선택</th><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>평가</th><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">사람의 네 요소는 인공지능에서 각각 무엇으로 바뀌는가?</p>
+    <div class="rule"></div>
+
+    <h3>③ 활동 2 — 사례 해부표 (사례 2건을 골라 채우기)</h3>
+    <table>
+      <tr><th style="width:16%;">사례 이름</th><th>① 데이터 학습</th><th>② 최적화 전략</th><th>③ 합리적 의사 결정</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>두 사례의 <b>최적화 전략</b>은 무엇이 달랐는가? _______________________________________________</p>
+
+    <h3>④ 활동 3 — 판정과 근거</h3>
+    <table>
+      <tr><th style="width:24%;">사례</th><th style="width:16%;">내 판정(0~100)</th><th>근거 (네 질문 중 무엇에 해당하는가)</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">네 질문 — 공정성 / 책임 / 근거 / 신뢰성</p>
+
+    <h3>⑤ 활동 4 — 합격률과 비율로 편향 확인하기</h3>
+    <table>
+      <tr><th></th><th>지원자</th><th>합격자</th><th>합격률(분수)</th><th>합격률(백분율)</th></tr>
+      <tr><td>남성</td><td>800</td><td>120</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>여성</td><td>200</td><td>10</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>두 합격률의 비 = __________ , 0.8과 비교하면 __________ 이므로 판정은 __________ 이다.</p>
+    <p>여성 합격자를 x명 더 뽑는다고 할 때 부등식과 그 해:</p>
+    <div class="rule"></div>
+
+    <h3>⑥ 형성평가</h3>
+    <ol>
+      <li>다음 중 인공지능을 활용한 ‘합리적 의사 결정’에 대한 설명으로 <b>적절하지 않은</b> 것은?<br>
+        ① 최적의 대안을 찾고 실행하는 과정이다 &nbsp; ② 단순한 결정을 자동화해 인력·시간을 절약한다<br>
+        ③ 직관에만 의존할 때의 부정확함을 극복한다 &nbsp; ④ 수학적 알고리즘으로 신뢰성을 높인다<br>
+        ⑤ 결론은 항상 완벽하므로 인간의 검토 없이 그대로 수용해야 한다 &nbsp;&nbsp; 답: ______</li>
+      <li>“특정 도로에서 특정 시간대에 정체가 생길 확률을 과거 기록으로 계산했다”는 어느 칸인가?<br>
+        ① 데이터 학습 &nbsp; ② 최적화 전략 &nbsp; ③ 합리적 의사 결정 &nbsp; ④ 세 칸 모두 &nbsp;&nbsp; 답: ______</li>
+      <li>AI 채용 심사가 여성에게 낮은 점수를 준 <b>근본 원인</b>은?<br>
+        ① 계산 속도 부족 &nbsp; ② 학습 데이터가 특정 집단에 치우침 &nbsp; ③ 활성화함수 선택 &nbsp; ④ 지원자 수가 적음 &nbsp;&nbsp; 답: ______</li>
+      <li>남성 합격률 15 %, 여성 합격률 5 %일 때 두 합격률의 비와 판정은?<br>
+        ① 3, 편향 없음 &nbsp; ② 0.33, 여성에게 불리 &nbsp; ③ 0.10, 남성에게 불리 &nbsp; ④ 계산할 수 없다 &nbsp;&nbsp; 답: ______</li>
+      <li>SDGs와 연계한 탐구 활동으로 <b>적절하지 않은</b> 것은?<br>
+        ① 기후 변화 관련 뉴스 연관어 분석 &nbsp; ② 온실가스와 해수면 추세선 &nbsp; ③ 장애인 이동 편의 배차 개선<br>
+        ④ 노동 시장 동향 분석 &nbsp; ⑤ 번역기의 성차별 결과는 데이터 문제이므로 수학 탐구에서 제외 &nbsp;&nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑦ 핵심 질문 — 내 문장으로</h3>
+    <p class="note">AI의 결정은 언제 ‘합리적’이고 언제 위험해지는가?</p>
+    <div class="rule"></div>
+    <p class="note">비합리적이라는 판단의 수학적 근거는 어떻게 제시할 수 있는가?</p>
+    <div class="rule"></div>
+
+    <h3>⑧ 다음 시간 준비 — 우리 팀 탐구 주제 초안</h3>
+    <table>
+      <tr><th style="width:22%;">SDGs 목표</th><td class="blank"></td><th style="width:16%;">쓸 수학 도구</th><td class="blank"></td></tr>
+      <tr><th>탐구 주제</th><td class="blank" colspan="3"></td></tr>
+      <tr><th>x (입력)</th><td class="blank"></td><th>y (출력)</th><td class="blank"></td></tr>
+      <tr><th>데이터 출처</th><td class="blank" colspan="3"></td></tr>
+    </table>
+  </div>
+</div>

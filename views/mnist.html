@@ -1,108 +1,882 @@
+<!-- ═══════════ MNIST (12차시: 이미지는 행렬이다 — 숫자 인식과 MNIST) ═══════════
+     · 파일 위치: views/mnist.html  (기존 뷰 교체 전체본)
+     · 기존 전역 접두사 mn 은 그대로 보존(mnInit/mnAdd/mnClear/mnExport/mnReset/mnRemove/mnRefresh),
+       이번 개편에서 새로 만든 것은 모두 mnx 접두사입니다.
+     · 뷰 루트 id #v-mnist · 모든 스타일 규칙은 #v-mnist 하위로만 작성(전역 누수 금지)
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-mnist">
-  <p class="mono" style="margin-bottom:0.4rem;">숫자 인식과 MNIST</p>
-  <h2>AI는 어떻게 손글씨를 읽을까?</h2>
-  <p class="desc">
-    손글씨 숫자 인식은 AI 역사에서 가장 중요한 벤치마크 문제 중 하나입니다.
-    MNIST 데이터셋과 함께 AI의 이미지 인식 원리를 알아봅니다.
-  </p>
+  <style>
+  /* mnist 뷰 전용 스타일 (#v-mnist 스코프 한정) */
+  #v-mnist .mnx-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-mnist .mnx-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-mnist .mnx-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
 
-  <div class="card">
-    <h3>MNIST 데이터셋이란?</h3>
-    <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
-      <img
-        src="%EC%96%80%20%EB%A5%B4%EC%BF%A4.jpeg"
-        alt="얀 르쿤 (Yann LeCun)"
-        style="width:160px;max-width:42vw;border-radius:0.8rem;border:1px solid var(--border);background:#fff;display:block;"
-      >
-      <div style="flex:1;min-width:240px;">
-        <p>MNIST(Modified National Institute of Standards and Technology)는 손글씨 숫자 이미지 데이터셋입니다.
-          0부터 9까지의 숫자를 28×28 픽셀 흑백 이미지로 표현하며, 학습용 60,000장과 테스트용 10,000장, 총 70,000장으로 구성됩니다.</p>
-        <p style="margin-top:0.5rem;">MNIST는 "AI의 Hello World"라 불릴 만큼, 거의 모든 머신러닝 입문 교재에서 가장 먼저 다루는 데이터셋입니다.
-          단순한 문제처럼 보이지만, 이 데이터셋을 통해 이미지를 행렬로 표현하는 방법, 합성곱의 작동 원리, 분류 알고리즘의 평가 등
-          핵심 개념을 자연스럽게 학습할 수 있습니다.</p>
-      </div>
+  /* 표제부 · 워터마크 */
+  #v-mnist .mnx-hero{position:relative;}
+  #v-mnist .mnx-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.10;pointer-events:none;}
+  #v-mnist .mnx-hero>*:not(.mnx-wm){position:relative;}
+  #v-mnist .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-mnist .mnx-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-mnist .mnx-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-mnist .mnx-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-mnist .mnx-ask{border-left:4px solid var(--accent);}
+  #v-mnist .mnx-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-mnist .mnx-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-mnist .mnx-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-mnist .mnx-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-mnist .mnx-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-mnist .mnx-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-mnist .mnx-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;}
+  #v-mnist .mnx-scroll{overflow-x:auto;max-width:100%;}
+  #v-mnist .mnx-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-mnist .mnx-tbl th,#v-mnist .mnx-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-mnist .mnx-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-mnist .mnx-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-mnist .mnx-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-mnist .mnx-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-mnist .mnx-fb b{color:var(--fg);}
+  #v-mnist .mnx-fb:empty{display:none;}
+  #v-mnist .mnx-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-mnist .mnx-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-mnist .mnx-in.num{width:5.4rem;text-align:center;}
+  #v-mnist select.mnx-sel{height:2.4rem;border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);
+    color:var(--fg);font-family:var(--sans);font-size:0.95rem;padding:0 0.5rem;max-width:100%;}
+  #v-mnist textarea.mnx-ta{width:100%;min-height:4.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:1.0rem;line-height:1.75;background:var(--card);color:var(--fg);resize:vertical;}
+
+  /* 조작 요소 확대 — 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-mnist .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-mnist .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-mnist .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-mnist .tabs{flex-wrap:wrap;}
+  #v-mnist .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-mnist .ws-btn{min-height:44px;}
+  /* 기존 라벨 버튼의 --pri 미정의 폴백(뷰 안에서만 보정) */
+  #v-mnist .mn-labs button{min-width:2.6rem;min-height:2.6rem;font-size:0.95rem;}
+  #v-mnist .mn-labs button.on{background:var(--fg);border-color:var(--fg);color:var(--bg);}
+
+  /* 단계 토글(details) — 조작 전에는 잠깁니다 */
+  #v-mnist .mnx-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-mnist .mnx-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-mnist .mnx-fold>summary::-webkit-details-marker{display:none;}
+  #v-mnist .mnx-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-mnist .mnx-fold[open]>summary::after{content:'▾';}
+  #v-mnist .mnx-fold .bd{padding:0 0 0.9rem;}
+  #v-mnist .mnx-fold .bd p,#v-mnist .mnx-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-mnist .mnx-fold.mnx-locked{opacity:0.62;}
+  #v-mnist .mnx-fold.mnx-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-mnist .mnx-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 활동 1 — 이진행렬 격자 */
+  #v-mnist .mnx-gwrap{display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start;justify-content:center;margin:0.9rem 0;}
+  #v-mnist .mnx-gcol{text-align:center;min-width:0;}
+  #v-mnist .mnx-gcol .lb{display:block;font-family:var(--mono);font-size:0.8rem;font-weight:700;color:var(--muted);margin-bottom:0.35rem;}
+  #v-mnist .mnx-gcol .lb.hot{color:var(--red);}
+  #v-mnist .mnx-grid{display:grid;gap:2px;background:var(--border);padding:3px;border-radius:6px;width:max-content;margin:0 auto;max-width:100%;}
+  #v-mnist .mnx-cell{width:2.3rem;height:2.3rem;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:0.9rem;font-weight:700;border-radius:3px;user-select:none;}
+  #v-mnist .mnx-pic .mnx-cell{background:#111;color:transparent;}
+  #v-mnist .mnx-pic .mnx-cell.w{background:#fff;}
+  #v-mnist .mnx-ansg .mnx-cell{background:var(--bg);color:var(--fg);border:1px solid var(--border);cursor:pointer;
+    min-width:44px;min-height:44px;}
+  #v-mnist .mnx-ansg .mnx-cell:hover{background:var(--card-h);}
+  #v-mnist .mnx-ansg .mnx-cell.one{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-mnist .mnx-ansg .mnx-cell.ok{box-shadow:inset 0 0 0 3px var(--green);}
+  #v-mnist .mnx-ansg .mnx-cell.no{box-shadow:inset 0 0 0 3px var(--red);}
+  #v-mnist .mnx-arrow{align-self:center;font-family:var(--mono);font-size:1.4rem;color:var(--muted);}
+  #v-mnist .mnx-idx{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-top:0.7rem;font-family:var(--mono);font-size:0.92rem;}
+
+  /* 활동 2 — 회색조 · 해상도 */
+  #v-mnist .mnx-a2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(17rem,100%),1fr));gap:1rem;margin-top:0.8rem;}
+  #v-mnist .mnx-pane{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem;min-width:0;}
+  #v-mnist .mnx-pane>h4{font-size:1.0rem;margin:0 0 0.5rem;color:var(--fg);}
+  #v-mnist canvas.mnx-cv{display:block;width:100%;max-width:min(100%,20rem);height:auto;image-rendering:pixelated;
+    border:1px solid var(--border);border-radius:0.4rem;background:#fff;margin:0.4rem auto;cursor:crosshair;}
+  #v-mnist .mnx-ramp{display:flex;height:1.6rem;border:1px solid var(--border);border-radius:0.3rem;overflow:hidden;margin:0.5rem 0 0.2rem;}
+  #v-mnist .mnx-ramp i{flex:1;}
+  #v-mnist .mnx-ramplb{display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.75rem;color:var(--muted);}
+  #v-mnist .mnx-vt{border-collapse:collapse;font-family:var(--mono);font-size:0.82rem;margin:0.5rem auto 0;}
+  #v-mnist .mnx-vt td{border:1px solid var(--border);width:3.1rem;height:2.1rem;text-align:center;background:var(--card);}
+  #v-mnist .mnx-vt td.hot{outline:3px solid var(--red);outline-offset:-3px;font-weight:800;color:var(--red);}
+  #v-mnist .mnx-fillrow{display:flex;flex-wrap:wrap;gap:0.4rem 0.6rem;align-items:center;margin:0.45rem 0;font-size:1.0rem;line-height:1.9;}
+
+  /* 활동 3 — flatten */
+  #v-mnist .mnx-flat{display:flex;gap:0.18rem;flex-wrap:wrap;margin-top:0.6rem;}
+  #v-mnist .mnx-flat span{width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:0.7rem;border:1px solid var(--border);border-radius:2px;background:var(--card);}
+  #v-mnist .mnx-flat span.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-mnist .mnx-flat span.hot{outline:2px solid var(--red);}
+
+  /* 사진 · 교과서 캡처 슬롯 */
+  #v-mnist .mnx-photo{margin:0.9rem 0;max-width:min(100%,30rem);}
+  #v-mnist .mnx-photo img{display:block;width:100%;height:auto;border-radius:0.6rem;border:1px solid var(--border);background:#fff;}
+  #v-mnist .mnx-photo .fb{display:none;align-items:center;justify-content:center;width:100%;min-height:8rem;
+    font-size:3rem;background:var(--bg);border:1px solid var(--border);border-radius:0.6rem;}
+  #v-mnist .mnx-photo.nofoto img{display:none;}
+  #v-mnist .mnx-photo.nofoto .fb{display:flex;}
+  #v-mnist .mnx-photo figcaption{font-size:0.8rem;color:var(--muted);line-height:1.65;margin-top:0.35rem;}
+  #v-mnist .mnx-tbrow{display:flex;flex-wrap:wrap;gap:0.7rem;margin-top:0.7rem;}
+  #v-mnist .mnx-tbrow figure{margin:0;flex:1 1 13rem;min-width:0;}
+  #v-mnist .mnx-tbrow img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;background:#fff;}
+  #v-mnist .mnx-tbrow figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.25rem;line-height:1.6;}
+
+  /* 추천 영상 링크 카드(임베드 차단·검색·체험) — 공통 .cmn-vd-grid 를 그대로 씁니다 */
+  #v-mnist .mnx-vdlink{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    border:1px solid var(--border);border-radius:0.7rem;overflow:hidden;background:var(--card);transition:all 0.2s;
+    font-family:var(--sans);font-size:1rem;text-align:left;cursor:pointer;width:100%;}
+  #v-mnist .mnx-vdlink:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-mnist .mnx-vdlink .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.2rem;overflow:hidden;}
+  #v-mnist .mnx-vdlink .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-mnist .mnx-vdlink .lock{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.64rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;}
+  #v-mnist .mnx-vdlink .meta{padding:0.55rem 0.7rem 0.75rem;}
+  #v-mnist .mnx-vdlink .meta b{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;}
+  #v-mnist .mnx-vdlink .meta span{display:block;font-size:0.8rem;color:var(--muted);margin-top:0.2rem;line-height:1.55;}
+
+  /* 참고 자료 카드 */
+  #v-mnist .mnx-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-mnist .mnx-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;
+    font-family:var(--sans);font-size:1rem;cursor:pointer;}
+  #v-mnist .mnx-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-mnist .mnx-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;}
+  #v-mnist .mnx-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-mnist .mnx-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-mnist .mnx-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-mnist .mnx-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-mnist *{animation:none !important;transition:none !important;}
+  }
+  @media (max-width:640px){
+    #v-mnist .mnx-wm{display:none;}
+    #v-mnist .mnx-cell{width:2rem;height:2rem;font-size:0.8rem;}
+    #v-mnist .mnx-ansg .mnx-cell{min-width:2.5rem;min-height:2.5rem;}
+    #v-mnist .mnx-fml{font-size:0.82rem;}
+    #v-mnist .mnx-vt td{width:2.6rem;font-size:0.75rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="mnx-hero">
+    <svg class="mnx-wm" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
+      <g>
+        <rect x="8"  y="14" width="26" height="26" fill="#fff" stroke="var(--border)"/>
+        <rect x="36" y="14" width="26" height="26" fill="#d8d8d8" stroke="var(--border)"/>
+        <rect x="64" y="14" width="26" height="26" fill="#4a4a4a" stroke="var(--border)"/>
+        <rect x="8"  y="42" width="26" height="26" fill="#fff" stroke="var(--border)"/>
+        <rect x="36" y="42" width="26" height="26" fill="#2a2a2a" stroke="var(--border)"/>
+        <rect x="64" y="42" width="26" height="26" fill="#111" stroke="var(--border)"/>
+        <rect x="8"  y="70" width="26" height="26" fill="#fff" stroke="var(--border)"/>
+        <rect x="36" y="70" width="26" height="26" fill="#8a8a8a" stroke="var(--border)"/>
+        <rect x="64" y="70" width="26" height="26" fill="#111" stroke="var(--border)"/>
+      </g>
+      <g font-family="monospace" font-size="15" fill="var(--fg)">
+        <text x="112" y="34">255 200  60</text>
+        <text x="112" y="62">255  40   0</text>
+        <text x="112" y="90">255 140   0</text>
+      </g>
+      <text x="120" y="122" font-family="monospace" font-size="13" fill="var(--muted)" text-anchor="middle">이미지 = 밝기 값의 행렬</text>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅲ 단원 · 12차시 · [12인수03-01]</p>
+    <h2>이미지는 행렬이다 — 컴퓨터의 눈에 비친 손글씨</h2>
+    <p class="desc">
+      우리가 “7”이라고 한눈에 알아보는 그림을, 컴퓨터는 <b>수의 직사각형 배열</b>로만 봅니다.
+      오늘은 그림을 행렬로 바꾸어 적어 보고, 그 행렬로 <b>나만의 손글씨 데이터셋</b>을 직접 만들어 봅니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 이미지 데이터의 각 <b>픽셀 위치와 밝기·색상 정보를 행렬</b>을 이용하여 표현할 수 있습니다. <b>[12인수03-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 손글씨 이미지를 <b>28×28 행렬로 수집·라벨링</b>하며 데이터셋의 구성 요소를 설명할 수 있습니다. <b>[12인수03-01]</b>
+    </div>
+    <div class="mnx-goalmap">
+      <button type="button" onclick="mnxSee(0,'mnx-act1')">├ 목표 ① → <b>활동 1</b>(그림을 0과 1의 이진행렬로 옮겨 적기) · <b>활동 2</b>(회색조 0~255와 해상도) →</button>
+      <button type="button" onclick="mnxSee(2,'mnx-act3')">└ 목표 ② → <b>활동 3</b>(손글씨를 28×28로 수집·라벨링하고 784개 수로 펼치기) →</button>
     </div>
   </div>
 
-  <div class="card">
-    <h3>이미지를 숫자로 바꾸기</h3>
-    <p>컴퓨터에게 이미지는 픽셀 값의 행렬입니다. MNIST의 28×28 이미지는 784개의 숫자(0~255)로 이루어진 행렬이 됩니다.
-      0은 완전한 검정, 255는 완전한 흰색을 의미합니다.
-      AI는 이 숫자들의 패턴을 분석하여 어떤 숫자인지를 판단합니다.</p>
-    <div class="math" style="text-align:center;font-size:0.75rem;">이미지 (28×28 픽셀)  →  행렬 (28×28 = 784개의 숫자)  →  AI 모델  →  "이것은 숫자 3이다"</div>
-    <p style="margin-top:0.5rem;">이 과정을 개선하기 위해 해밍 거리(단순 비교), 합성곱(특징 추출), 퍼셉트론(분류) 등의 기법이 사용되며,
-      이 웹사이트의 각 섹션에서 이 기법들을 하나씩 체험할 수 있습니다.</p>
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips mnx-keys" data-no-toggle="1">
+    <span class="chip">픽셀과 해상도</span>
+    <span class="chip">이진행렬 (0과 1)</span>
+    <span class="chip">회색조 0~255</span>
+    <span class="chip">28×28 = 784</span>
+    <span class="chip">flatten과 데이터셋</span>
   </div>
 
-  <div class="card">
-    <h3>숫자 인식의 어려움</h3>
-    <p>같은 "7"이라도 사람마다 쓰는 방식이 다릅니다. 가로획을 긋는 사람, 기울여 쓰는 사람, 크게 쓰는 사람 등
-      무한한 변형이 존재합니다. AI는 이 모든 변형을 "7"로 인식해야 합니다.
-      단순히 픽셀을 하나하나 비교하는 방법(해밍 거리)은 위치가 조금만 달라져도 실패하기 때문에,
-      이미지의 부분적 특징(선의 방향, 모서리, 곡선 등)을 찾아내는 CNN이 훨씬 효과적입니다.</p>
+  <div class="card mnx-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>컴퓨터의 ‘눈’에 비친 사진은 어떤 모습인가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">이 질문은 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
   </div>
 
-  <div class="card">
-    <h3>실습: 나만의 손글씨 데이터셋 만들기</h3>
-    <p>손글씨를 직접 그리고, 28×28 픽셀(=784개 숫자)로 변환해 <b>작은 데이터셋</b>을 만들어봅시다.
-      아래 실습은 서버 없이 브라우저에서만 동작하며, 저장한 샘플은 내 컴퓨터(LocalStorage)에 남습니다.</p>
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="mnx-step"><p class="mono">STEP 1 · 도입</p></div>
 
-    <div class="mn-ds">
-      <div class="mn-left">
-        <div class="mn-cvbox">
-          <canvas id="mn-cv" width="280" height="280" aria-label="digit canvas"></canvas>
-          <div class="mn-tools">
-            <div class="mn-row">
-              <span class="mono" style="font-size:0.8rem;color:var(--muted);">라벨</span>
-              <div class="mn-labs" id="mn-labs"></div>
-            </div>
-            <div class="mn-row" style="gap:0.5rem;flex-wrap:wrap;">
-              <button class="btn" onclick="mnClear()">지우기</button>
-              <button class="btn pri" onclick="mnAdd()">샘플 추가</button>
-              <button class="btn" onclick="mnExport()">JSON 다운로드</button>
-              <button class="btn" onclick="mnReset()">전체 초기화</button>
-              <span class="status" id="mn-stat" style="margin-left:auto;">샘플 0개</span>
+  <div class="card" data-no-toggle="1">
+    <h3>도입 10분 — Quick, Draw! 로 문을 엽니다</h3>
+    <p>수업의 처음 10분은 구글 <b>Quick, Draw!</b> 체험으로 시작합니다.
+      20초 안에 주어진 낱말을 그리면 인공지능이 “고양이 82%”처럼 <b>확률로</b> 대답합니다.
+      그림을 그리는 동안 인공지능이 무엇을 보고 있는지 생각하며 <b>세 판</b>만 해 봅시다.</p>
+    <p style="margin-top:0.5rem;"><b>관찰 과제</b> — ① 인공지능이 맞힌 낱말과 틀린 낱말을 각각 하나씩 적어 둡니다.
+      ② 틀렸을 때 “내 그림의 무엇이 달랐는지”를 한 문장으로 적어 둡니다. 이 메모는 활동 3에서 다시 씁니다.</p>
+    <div class="btn-row">
+      <button class="btn pri" type="button" onclick="go('quickdraw')">Quick Draw 안내 화면으로 →</button>
+      <a class="btn" href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener"
+         style="text-decoration:none;display:inline-flex;align-items:center;">Quick, Draw! 바로 열기 ↗</a>
+    </div>
+    <span class="mnx-src">보조 뷰 안내 — 30차시 구성안 §2 “12차시 = mnist(주력) + quickdraw(도입 10분)” 배치를 따릅니다.</span>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 이미지 자료는 어떻게 표현될까</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      마지막 칸의 점선 카드는 <b>선생님이 영상을 하나 더 걸 수 있는 자리</b>입니다.</p>
+    <div id="mnx-videos"></div>
+    <div class="cmn-vd-grid" style="margin-top:0.8rem;">
+      <button class="mnx-vdlink" type="button" onclick="go('quickdraw')">
+        <span class="th"><span class="lock">체험 · 10분</span>✏️</span>
+        <span class="meta"><b>Quick, Draw! 체험 (12차시 도입 보조)</b>
+          <span>낙서 한 장이 확률로 바뀌는 장면을 먼저 겪어 봅니다. 오늘 배울 “그림 → 수” 의 첫 단추입니다.</span></span>
+      </button>
+      <a class="mnx-vdlink" href="https://www.youtube.com/results?search_query=%EC%9D%B4%EB%AF%B8%EC%A7%80+%ED%94%BD%EC%85%80+%ED%96%89%EB%A0%AC+%ED%91%9C%ED%98%84"
+         target="_blank" rel="noopener">
+        <span class="th">🔎</span>
+        <span class="meta"><b>“이미지 · 픽셀 · 행렬 표현” 영상 더 찾기</b>
+          <span>유튜브 검색 · 좋은 영상을 찾으면 위 [＋ 선생님 영상 추가] 칸에 등록해 두세요.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="mnx-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b>
+      이제 그림 한 장을 직접 수로 옮겨 적어 봅시다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="mnx-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="mnxTab(0,this)">① 이진행렬</button>
+    <button class="tab" type="button" onclick="mnxTab(1,this)">② 회색조와 해상도</button>
+    <button class="tab" type="button" onclick="mnxTab(2,this)">③ 나만의 데이터셋</button>
+  </div>
+
+  <!-- ── 탭 ① 활동 1 ─────────────────────────────────────────────── -->
+  <div class="tpanel on" id="mnx0">
+    <div class="card" id="mnx-act1" data-no-toggle="1">
+      <h3>활동 1 · 「모니터의 약속」 — 그림을 0과 1로 옮겨 적기</h3>
+      <p>모니터의 한 칸(픽셀)에 <b>전기 신호가 없으면 0(검은색)</b>, <b>있으면 1(흰색)</b> 이라고 약속합니다.
+        이 약속 하나로 모든 흑백 그림은 <b>0과 1만 적힌 직사각형 배열</b>이 됩니다.</p>
+      <p style="margin-top:0.5rem;"><b>문제</b> — 아래 왼쪽 그림을 보고, 오른쪽 빈 표의 칸을 눌러 <b>같은 자리에 같은 수</b>가 오도록 채워 보세요.
+        칸을 누를 때마다 0 ↔ 1 이 바뀝니다. 다 채운 뒤 [채점]을 누르면 <b>칸마다</b> 맞았는지 표시됩니다.</p>
+      <div class="chips" id="mnx-a1-pick">
+        <span class="chip on" onclick="mnxA1Pick(0)">그림 ①</span>
+        <span class="chip" onclick="mnxA1Pick(1)">그림 ② 체스판</span>
+        <span class="chip" onclick="mnxA1Pick(2)">그림 ③ 숫자 7</span>
+      </div>
+      <p class="status" id="mnx-a1-st">그림 ①을 옮겨 적어 봅시다. 0과 1의 약속을 먼저 확인하세요.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 왼쪽 그림을 오른쪽 표에 옮겨 적기</h3>
+      <div class="mnx-gwrap">
+        <div class="mnx-gcol">
+          <span class="lb">그림 (픽셀)</span>
+          <div class="mnx-grid mnx-pic" id="mnx-a1-pic"></div>
+        </div>
+        <span class="mnx-arrow" aria-hidden="true">➔</span>
+        <div class="mnx-gcol">
+          <span class="lb hot">내가 적은 행렬</span>
+          <div class="mnx-grid mnx-ansg" id="mnx-a1-ans"></div>
+        </div>
+      </div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn pri" type="button" onclick="mnxA1Check()">채점</button>
+        <button class="btn" type="button" onclick="mnxA1Clear()">모두 지우기</button>
+        <button class="btn" type="button" onclick="mnxA1Reveal()">정답 보기</button>
+      </div>
+      <div class="mnx-fb" id="mnx-a1-fb"></div>
+      <span class="mnx-src">씨마스 「인공지능 수학」 Ⅲ단원 p.88 “검은색 0, 흰색 1” 표기와 5×5·8×8 예시 서술을 재구성 ·
+        교사 제작 활동지 「활동 1,2(이진행렬과 행렬값)」 활동 1-1·1-3 문항을 웹으로 옮김</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="mnx-lockmsg" id="mnx-a1-lock">🔒 세 그림 중 <b>한 개 이상</b>을 모두 맞히면 아래 세 토글이 열립니다.</p>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a1-f1">
+        <summary>단계 1. 관찰 — 무엇이 자리를 결정했나</summary>
+        <div class="bd">
+          <p>같은 그림이라도 <b>몇 번째 줄, 몇 번째 칸</b>인지가 정해져야 수 하나를 쓸 수 있습니다.
+            즉 이미지 데이터를 수로 바꾸려면 <b>위치 정보</b>와 <b>색상(밝기) 정보</b>가 함께 필요합니다.</p>
+          <p>체스판 그림에서 0과 1이 번갈아 나오는 것처럼, 그림의 규칙은 <b>수의 규칙</b>으로 그대로 옮겨집니다.
+            거꾸로, 수의 배열만 보고도 원래 그림을 되살릴 수 있습니다(‘정답 보기’로 확인해 보세요).</p>
+          <span class="mnx-src">씨마스 Ⅲ단원 p.88 “각 픽셀의 위치 정보와 색상 정보를 수치화한 코드로 대응시켜야 한다” 서술을 재구성</span>
+        </div>
+      </details>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a1-f2">
+        <summary>단계 2. 정리 — 행, 열, 성분, 그리고 m×n 행렬</summary>
+        <div class="bd">
+          <p>수를 직사각형 모양으로 늘어놓고 괄호로 묶은 것을 <b>행렬</b>이라 하고,
+            그 안의 수 하나하나를 <b>성분</b>이라고 합니다. 가로줄이 <b>행</b>, 세로줄이 <b>열</b>이며,
+            행이 m개·열이 n개이면 <b>m×n 행렬</b>이라고 합니다.</p>
+          <p>제 i 행과 제 j 열이 만나는 자리의 성분은 <b>a<sub>ij</sub></b> 로 씁니다.
+            예를 들어 a<sub>12</sub> 는 제 1 행 제 2 열, a<sub>21</sub> 은 제 2 행 제 1 열의 성분입니다. 두 값은 서로 다를 수 있습니다.</p>
+          <div class="mnx-fml">해상도 n×m 인 흑백 이미지  →  m×n 행렬 A = (a<sub>ij</sub>),  a<sub>ij</sub> ∈ {0, 1}</div>
+          <span class="mnx-src">교사 제작 활동지 「활동 1,2(이진행렬과 행렬값)」 ‘개념’ 상자 · 공통수학1 행렬 정의 서술을 재구성</span>
+        </div>
+      </details>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a1-f3">
+        <summary>단계 3. 정의 확인 — 픽셀과 해상도란 무엇인가</summary>
+        <div class="bd">
+          <p><b>픽셀(pixel)</b> 은 이미지 데이터를 구성하는 가장 작은 단위로, ‘화소’라고도 합니다.
+            <b>해상도</b> 는 화면을 구성하는 픽셀의 수이며, 가로 a개·세로 b개이면 <b>a×b</b> 로 나타냅니다.</p>
+          <p>예를 들어 해상도가 8×8이면 픽셀이 64개이고, 체스판 그림은 8×8 행렬로 표현됩니다.
+            해상도가 2m×2n인 이미지의 픽셀 수는 해상도가 m×n인 이미지의 <b>4배</b>입니다.</p>
+          <div class="mnx-tbrow">
+            <figure>
+              <img src="assets/textbook-local/씨마스3_p88_이진행렬.jpg" alt="교과서 지면(수업용)" loading="eager"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 「인공지능 수학」 p.88 (수업용) — 공개 게시하지 않습니다.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/동아3_p86_회색조컬러.jpg" alt="교과서 지면(수업용)" loading="eager"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아출판 「인공지능 수학」 p.86 (수업용) — 공개 게시하지 않습니다.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/미래엔3_p88_해상도.jpg" alt="교과서 지면(수업용)" loading="eager"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>미래엔 「인공지능 수학」 p.88 (수업용) — 공개 게시하지 않습니다.</figcaption>
+            </figure>
+          </div>
+          <span class="mnx-src">씨마스 Ⅲ단원 p.88 ‘픽셀·해상도’ 정의 상자와 ‘생각해 보기’ 2번,
+            미래엔 「인공지능 수학」 p.86·p.88 픽셀·해상도 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 성분의 자리를 읽는 연습</h3>
+      <p>지금 화면에 있는 행렬(정답)에 대해 답해 봅시다. 자리를 바꾸어 여러 번 연습할 수 있습니다.</p>
+      <div class="mnx-idx" id="mnx-a1-q">
+        <span>제 <b id="mnx-a1-qi">2</b> 행 제 <b id="mnx-a1-qj">3</b> 열의 성분 a<sub id="mnx-a1-qs">23</sub> 은?</span>
+        <input class="mnx-in num" id="mnx-a1-qin" type="number" min="0" max="1" inputmode="numeric" aria-label="성분의 값">
+        <button class="btn pri" type="button" onclick="mnxA1Q()">확인</button>
+        <button class="btn" type="button" onclick="mnxA1NewQ()">다른 자리로</button>
+      </div>
+      <div class="mnx-fb" id="mnx-a1-qfb"></div>
+      <p class="mnx-hint" style="margin-top:0.6rem;">힌트 — 앞의 수가 <b>행(가로줄)</b>, 뒤의 수가 <b>열(세로줄)</b>입니다.
+        a<sub>12</sub> 와 a<sub>21</sub> 은 서로 다른 자리라는 점에 주의하세요.</p>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 활동 2 ─────────────────────────────────────────────── -->
+  <div class="tpanel" id="mnx1">
+    <div class="card" id="mnx-act2" data-no-toggle="1">
+      <h3>활동 2 · 「0과 1로는 부족하다」 — 회색조 0~255와 해상도</h3>
+      <p>0과 1만으로는 <b>형태</b>는 나타내도 <b>밝고 어두운 정도</b>를 나타낼 수 없습니다.
+        그래서 밝기를 <b>0(가장 어두운 검은색)부터 255(가장 밝은 흰색)까지</b> 의 정수로 적습니다. 이것이 <b>회색조 이미지</b>입니다.</p>
+      <p style="margin-top:0.5rem;"><b>문제</b> — 아래 같은 손글씨를 해상도만 바꾸어 봅니다.
+        해상도를 바꾸면 ① 그림이 어떻게 보이는지 ② 픽셀이 몇 개가 되는지 ③ 저장 용량이 어떻게 변하는지를 함께 관찰하세요.</p>
+      <p class="status" id="mnx-a2-st">칩을 눌러 해상도를 바꾸고, 격자를 누르면 그 칸의 밝기 값이 표에 표시됩니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 해상도를 바꾸고 밝기 값을 읽기</h3>
+      <div class="chips" id="mnx-a2-res">
+        <span class="chip" onclick="mnxA2Res(4)">4 × 4</span>
+        <span class="chip on" onclick="mnxA2Res(8)">8 × 8</span>
+        <span class="chip" onclick="mnxA2Res(14)">14 × 14</span>
+        <span class="chip" onclick="mnxA2Res(28)">28 × 28</span>
+      </div>
+      <div class="mnx-a2grid">
+        <div class="mnx-pane">
+          <h4>회색조 이미지</h4>
+          <canvas class="mnx-cv" id="mnx-a2-cv" width="280" height="280"
+                  aria-label="해상도를 바꿀 수 있는 회색조 손글씨 이미지" role="img"></canvas>
+          <div class="mnx-ramp" id="mnx-a2-ramp" aria-hidden="true"></div>
+          <div class="mnx-ramplb"><span>0 · 검은색</span><span>128</span><span>255 · 흰색</span></div>
+          <p class="mnx-hint" style="margin-top:0.4rem;">격자의 한 칸을 누르면 그 자리의 밝기 값과 위치(제 i 행 제 j 열)를 알려 줍니다.</p>
+        </div>
+        <div class="mnx-pane">
+          <h4>왼쪽 위 4×4 부분의 행렬</h4>
+          <div class="mnx-scroll"><table class="mnx-vt" id="mnx-a2-vt"></table></div>
+          <p class="status" id="mnx-a2-sel">아직 고른 칸이 없습니다.</p>
+          <div class="mnx-idx">
+            <span>붉게 표시된 칸의 밝기 값은?</span>
+            <input class="mnx-in num" id="mnx-a2-in" type="number" min="0" max="255" inputmode="numeric" aria-label="밝기 값">
+            <button class="btn pri" type="button" onclick="mnxA2Check()">확인</button>
+            <button class="btn" type="button" onclick="mnxA2NewQ()">다른 칸으로</button>
+          </div>
+          <div class="mnx-fb" id="mnx-a2-fb"></div>
+        </div>
+      </div>
+      <div class="mnx-scroll" style="margin-top:0.9rem;">
+        <table class="mnx-tbl" id="mnx-a2-info"></table>
+      </div>
+      <span class="mnx-src">동아출판 「인공지능 수학」 Ⅲ단원 p.86 “회색조 이미지는 8비트를 사용하는 경우 0부터 255까지의 정수로 명암을 나타낸다(256단계)” 서술과
+        미래엔 p.88 해상도 서술을 재구성 · 교사 제작 활동지 「활동 1,2」 활동 2-5 빈칸 문항을 웹으로 옮김</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="mnx-lockmsg" id="mnx-a2-lock">🔒 해상도를 <b>두 가지 이상</b> 바꾸어 보면 아래 세 토글이 열립니다.</p>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a2-f1">
+        <summary>단계 1. 관찰 — 해상도를 낮추면 무엇이 사라지나</summary>
+        <div class="bd">
+          <p>4×4로 낮추면 “7”이라고 알아보기 어려워집니다. 픽셀 한 칸이 넓은 영역의 <b>평균 밝기</b>를 대표하게 되어,
+            가는 획과 모서리 같은 <b>작은 특징</b>이 먼저 사라지기 때문입니다.</p>
+          <p>반대로 28×28로 올리면 획의 굵기와 기울기까지 수로 남습니다. 다만 픽셀 수가 <b>49배</b>(4×4 → 28×28)로 늘어
+            저장 용량과 계산량도 함께 늘어납니다. 이 맞바꿈(트레이드오프)이 곧 “적당한 해상도”를 고르는 이유입니다.</p>
+        </div>
+      </details>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a2-f2">
+        <summary>단계 2. 정리 — 픽셀 수와 정보량은 어떻게 이어지는가</summary>
+        <div class="bd">
+          <p>해상도가 n×n 이면 픽셀은 <b>n<sup>2</sup></b> 개입니다. 흑백(이진)이면 한 픽셀에 0 또는 1 하나만 있으면 되므로 <b>1비트</b>,
+            회색조이면 0~255의 256단계를 적어야 하므로 <b>8비트 = 1바이트</b>가 필요합니다.</p>
+          <div class="mnx-fml">1바이트 = 8비트 ·  2<sup>8</sup> = 256단계 ·  1KB = 1024바이트 ·  1MB = 1024KB</div>
+          <p>예를 들어 가로 200 × 세로 200 의 흑백(이진) 그림은 40 000 비트 = 5 000 바이트 ≒ <b>약 4.9 KB</b> 이고,
+            같은 크기의 회색조 그림은 40 000 바이트 ≒ <b>약 39.1 KB</b> 입니다. 8배 차이입니다.</p>
+          <span class="mnx-src">교사 제작 활동지 「활동 1,2」 ‘추가 개념(bit·byte·KB·MB)’ 상자와 심화 문항 서술을 재구성</span>
+        </div>
+      </details>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a2-f3">
+        <summary>단계 3. 정의 확인 — 흑백 · 회색조 · 컬러</summary>
+        <div class="bd">
+          <p><b>흑백 이미지</b>는 0과 1 두 수만으로 표현합니다. 형태는 나타낼 수 있지만 밝고 어두운 정도는 나타낼 수 없습니다.</p>
+          <p><b>회색조 이미지</b>는 색상 정보 없이 밝기 정보로만 이루어지며, 8비트를 쓰면 0~255의 <b>256단계</b>로 명암을 나타냅니다.</p>
+          <p><b>컬러 이미지</b>는 빛의 삼원색 빨강·초록·파랑의 명암을 나타내는 <b>세 행렬 R, G, B</b> 로 표현하고,
+            제 i 행 제 j 열 픽셀의 색상 정보를 x<sub>ij</sub> = (r<sub>ij</sub>, g<sub>ij</sub>, b<sub>ij</sub>) 로 씁니다.
+            컬러는 14차시에서 본격적으로 다룹니다.</p>
+          <div class="mnx-fillrow" id="mnx-a2-fill">
+            <span>ㄱ. 픽셀이 밝을수록 행렬 값은</span>
+            <select class="mnx-sel" data-k="0" aria-label="빈칸 ㄱ"><option value="">고르기</option><option value="up">커진다</option><option value="dn">작아진다</option></select>
+            <span>ㄴ. 흰색을 나타내는 값은</span>
+            <select class="mnx-sel" data-k="1" aria-label="빈칸 ㄴ"><option value="">고르기</option><option value="0">0</option><option value="128">128</option><option value="255">255</option></select>
+            <span>ㄷ. 검은색을 나타내는 값은</span>
+            <select class="mnx-sel" data-k="2" aria-label="빈칸 ㄷ"><option value="">고르기</option><option value="0">0</option><option value="128">128</option><option value="255">255</option></select>
+            <span>ㄹ. 픽셀 수가 많을수록</span>
+            <select class="mnx-sel" data-k="3" aria-label="빈칸 ㄹ"><option value="">고르기</option><option value="hi">고화질이다</option><option value="lo">저화질이다</option></select>
+            <button class="btn pri" type="button" onclick="mnxA2Fill()">빈칸 채점</button>
+          </div>
+          <div class="mnx-fb" id="mnx-a2-fillfb"></div>
+          <span class="mnx-src">동아출판 Ⅲ단원 p.86 흑백·회색조·컬러 정의와 씨마스 Ⅲ단원 p.91 R·G·B 표현 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 저장 용량 계산해 보기</h3>
+      <p>가로 <input class="mnx-in num" id="mnx-a2-w" type="number" min="1" max="4096" value="200" inputmode="numeric" aria-label="가로 픽셀 수">
+        × 세로 <input class="mnx-in num" id="mnx-a2-h" type="number" min="1" max="4096" value="200" inputmode="numeric" aria-label="세로 픽셀 수">
+        인 이미지를
+        <select class="mnx-sel" id="mnx-a2-mode" aria-label="이미지 종류">
+          <option value="1">흑백(1비트)</option>
+          <option value="8" selected>회색조(8비트)</option>
+          <option value="24">컬러 R·G·B(24비트)</option>
+        </select>
+        로 저장하면?
+        <button class="btn pri" type="button" onclick="mnxA2Bytes()">계산</button></p>
+      <div class="mnx-fb" id="mnx-a2-bfb"></div>
+      <p class="mnx-hint" style="margin-top:0.5rem;">손으로 먼저 어림해 본 뒤 확인하세요.
+        (픽셀 수) × (한 픽셀에 필요한 비트 수) ÷ 8 = 바이트 수 입니다.</p>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ 활동 3 (기존 위젯 보존) ────────────────────────────── -->
+  <div class="tpanel" id="mnx2">
+    <div class="card" id="mnx-act3" data-no-toggle="1">
+      <h3>활동 3 · 「나만의 손글씨 데이터셋」 — 28×28로 모으고 라벨 붙이기</h3>
+      <p>인공지능이 손글씨를 배우려면 <b>많은 예시</b>가 필요합니다.
+        예시 하나는 <b>그림(28×28 행렬)</b>과 <b>정답표(라벨 y)</b> 의 짝으로 이루어집니다.
+        이 짝을 모아 놓은 것이 <b>데이터셋</b>입니다.</p>
+      <p style="margin-top:0.5rem;"><b>문제</b> — 아래 캔버스에 숫자를 직접 쓰고, 라벨을 고른 뒤 [샘플 추가]를 눌러
+        우리 반의 작은 데이터셋을 만들어 봅시다. 목표는 <b>한 사람당 10개 이상</b>, 그리고 <b>같은 숫자를 서로 다르게</b> 써 보는 것입니다.</p>
+      <span class="mnx-src">교사 제작 활동지 「활동7(해밍거리와 합성곱)」 1~2번(손글씨 10회 그리기 · 28×28 행렬 변환) 문항을 12차시 수집 활동으로 앞당겨 배치</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 쓰고, 라벨 붙이고, 모으기</h3>
+      <p>이 실습은 서버 없이 브라우저에서만 동작하며, 저장한 샘플은 내 컴퓨터(LocalStorage)에만 남습니다.</p>
+
+      <div class="mn-ds">
+        <div class="mn-left">
+          <div class="mn-cvbox">
+            <canvas id="mn-cv" width="280" height="280" aria-label="숫자를 쓰는 캔버스"></canvas>
+            <div class="mn-tools">
+              <div class="mn-row">
+                <span class="mono" style="font-size:0.8rem;color:var(--muted);">라벨</span>
+                <div class="mn-labs" id="mn-labs"></div>
+              </div>
+              <div class="mn-row" style="gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;">
+                <button class="btn" type="button" onclick="mnClear()">지우기</button>
+                <button class="btn pri" type="button" onclick="mnAdd()">샘플 추가</button>
+                <button class="btn" type="button" onclick="mnExport()">JSON 다운로드</button>
+                <button class="btn" type="button" onclick="mnReset()">전체 초기화</button>
+                <span class="status" id="mn-stat" style="margin-left:auto;">샘플 0개</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="info" style="margin-top:0.9rem;">
-          <strong>변환 규칙:</strong> 캔버스(280×280)에서 <b>28×28</b>로 축소 후, 픽셀 밝기(0~255)를 추출합니다.
-          MNIST와 비슷하게 쓰기 위해 <b>배경은 0(검정), 글자는 255(흰색)</b>이 되도록 자동으로 반전합니다.
-        </div>
-      </div>
-
-      <div class="mn-right">
-        <div class="mn-prev">
-          <p class="mono" style="margin:0 0 0.4rem;">28×28 미리보기</p>
-          <canvas id="mn-prev" width="140" height="140"></canvas>
-          <p class="desc" style="margin:0.6rem 0 0;color:var(--muted);font-size:0.78rem;">
-            샘플 추가 시 자동 갱신됩니다.
-          </p>
+          <div class="info" data-no-toggle="1" style="margin-top:0.9rem;">
+            <strong>변환 규칙</strong>
+            캔버스(280×280)에서 <b>28×28</b> 로 줄인 뒤 각 픽셀의 밝기(0~255)를 뽑습니다.
+            MNIST와 같은 약속을 쓰기 위해 <b>배경은 0(검은색), 글자는 255(흰색)</b> 이 되도록 자동으로 뒤집습니다.
+            즉 28×28 = <b>784개의 수</b>가 손글씨 한 장을 대신합니다.
+          </div>
         </div>
 
-        <div class="mn-list card" style="margin-top:1rem;">
-          <h3 style="margin-top:0;">내 데이터셋</h3>
-          <div id="mn-list" class="mn-samples"></div>
+        <div class="mn-right">
+          <div class="mn-prev">
+            <p class="mono" style="margin:0 0 0.4rem;">28×28 미리보기</p>
+            <canvas id="mn-prev" width="140" height="140"></canvas>
+            <p class="desc" style="margin:0.6rem 0 0;color:var(--muted);font-size:0.78rem;">
+              획을 그을 때마다 자동으로 갱신됩니다.
+            </p>
+          </div>
+
+          <div class="mn-list card" data-no-toggle="1" style="margin-top:1rem;">
+            <h3 style="margin-top:0;">내 데이터셋</h3>
+            <div id="mn-list" class="mn-samples"></div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — flatten : 행렬을 한 줄로 펴기</h3>
+      <p>신경망의 입력층에는 수를 <b>한 줄로 세워서</b> 넣습니다. 행렬을 한 줄로 펴는 것을 <b>flatten</b> 이라고 합니다.
+        아래 작은 격자의 칸을 눌러, 그 칸이 <b>펼친 벡터의 몇 번째</b>가 되는지 확인해 보세요.</p>
+      <div class="mnx-gwrap">
+        <div class="mnx-gcol">
+          <span class="lb">4 × 4 행렬</span>
+          <div class="mnx-grid mnx-ansg" id="mnx-a3-grid"></div>
+        </div>
+        <span class="mnx-arrow" aria-hidden="true">➔</span>
+        <div class="mnx-gcol" style="flex:1 1 14rem;">
+          <span class="lb">펼친 벡터 (길이 16)</span>
+          <div class="mnx-flat" id="mnx-a3-flat"></div>
+        </div>
+      </div>
+      <p class="status" id="mnx-a3-sel">격자의 칸을 눌러 보세요.</p>
+      <div class="mnx-fml">n×n 행렬의 제 i 행 제 j 열  →  펼친 벡터의  k = n·(i − 1) + j  번째</div>
+      <div class="mnx-idx">
+        <span>28×28 손글씨에서 제 <b id="mnx-a3-qi">5</b> 행 제 <b id="mnx-a3-qj">12</b> 열은 펼친 벡터의 몇 번째?</span>
+        <input class="mnx-in num" id="mnx-a3-qin" type="number" min="1" max="784" inputmode="numeric" aria-label="펼친 벡터의 순서">
+        <button class="btn pri" type="button" onclick="mnxA3Q()">확인</button>
+        <button class="btn" type="button" onclick="mnxA3NewQ()">다른 자리로</button>
+      </div>
+      <div class="mnx-fb" id="mnx-a3-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="mnx-lockmsg" id="mnx-a3-lock">🔒 샘플을 <b>3개 이상</b> 모으면 아래 세 토글이 열립니다.</p>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a3-f1">
+        <summary>단계 1. 관찰 — 같은 숫자인데 왜 행렬이 다른가</summary>
+        <div class="bd">
+          <p>같은 “7”을 세 번 써도 28×28 행렬은 매번 다릅니다. 굵기·기울기·위치가 조금씩 다르기 때문입니다.
+            사람은 이 차이를 무시하고 같은 7로 보지만, 컴퓨터에게는 <b>784개의 수가 통째로 달라진 것</b>입니다.</p>
+          <p>그래서 예시가 많아야 합니다. 여러 사람이 쓴 여러 모양을 모아 두어야 “7이란 대체로 이런 수의 배열”이라는
+            공통점을 찾을 수 있습니다. 13차시에서는 이 차이를 <b>하나의 수</b>로 재는 방법을 배웁니다.</p>
+        </div>
+      </details>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a3-f2">
+        <summary>단계 2. 정리 — 데이터셋은 무엇으로 이루어지는가</summary>
+        <div class="bd">
+          <p>데이터셋의 한 줄은 <b>(입력 x, 정답 y)</b> 의 짝입니다. 여기서 x는 784개의 수(28×28을 편 것),
+            y는 0~9 중 하나인 <b>라벨</b>입니다. 라벨을 붙이는 일을 <b>라벨링</b> 이라고 합니다.</p>
+          <div class="mnx-fml">한 샘플  =  ( x ∈ {0,…,255}<sup>784</sup> ,  y ∈ {0,1,…,9} )</div>
+          <p>학습에 쓰는 묶음을 <b>학습용 데이터</b>, 성능을 재는 데 남겨 두는 묶음을 <b>평가용 데이터</b> 라고 합니다.
+            같은 데이터로 배우고 같은 데이터로 채점하면 실력을 잘못 재게 되기 때문입니다(23차시 과적합과 이어집니다).</p>
+        </div>
+      </details>
+
+      <details class="mnx-fold mnx-locked" id="mnx-a3-f3">
+        <summary>단계 3. 정의 확인 — MNIST란 무엇인가</summary>
+        <div class="bd">
+          <p><b>MNIST</b>(Modified National Institute of Standards and Technology)는 손글씨 숫자 이미지 데이터셋입니다.
+            0부터 9까지의 숫자를 <b>28×28 픽셀 회색조 이미지</b>로 담고 있으며,
+            학습용 60 000장과 평가용 10 000장, 모두 <b>70 000장</b>으로 이루어집니다.</p>
+          <p>“AI의 Hello World”라 불릴 만큼 거의 모든 입문 교재가 가장 먼저 다루는 자료입니다.
+            단순해 보이지만 이 한 데이터셋으로 <b>이미지의 행렬 표현(12차시) → 해밍 거리 분류(13차시) → 합성곱(15차시) → CNN(18차시)</b> 까지
+            이 단원의 전체 흐름을 이어서 다룰 수 있습니다.</p>
+          <figure class="mnx-photo" id="mnx-photo-lecun">
+            <img src="%EC%96%80%20%EB%A5%B4%EC%BF%A4.jpeg" alt="얀 르쿤(Yann LeCun)" loading="eager" style="max-width:12rem;"
+                 onerror="var f=this.closest('.mnx-photo');if(f)f.classList.add('nofoto');">
+            <span class="fb" aria-hidden="true">👨‍🏫</span>
+            <figcaption>얀 르쿤(Yann LeCun) — MNIST를 정리하고 손글씨 인식용 합성곱 신경망 LeNet을 만든 연구자입니다.
+              15·18차시의 합성곱·CNN에서 다시 만납니다. (저장소 내 이미지 <span class="mi">얀 르쿤.jpeg</span>)</figcaption>
+          </figure>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 우리 반 데이터셋 점검</h3>
+      <p>모은 샘플을 보고 스스로 점검해 봅시다. 답을 적으면 이 기기에 저장됩니다.</p>
+      <p style="margin-top:0.6rem;"><b>① 내 데이터셋에서 가장 적게 모인 숫자는 무엇이고, 몇 개인가요?</b></p>
+      <textarea class="mnx-ta" id="mnx-a3-n1" placeholder="예: 숫자 4가 1개로 가장 적습니다."></textarea>
+      <p style="margin-top:0.6rem;"><b>② 한 숫자만 많이 모으면 어떤 문제가 생길까요? (5차시 편향과 연결)</b></p>
+      <textarea class="mnx-ta" id="mnx-a3-n2" placeholder="내 문장으로 적어 보세요."></textarea>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="mnxNoteSave()">기록 저장</button>
+        <button class="btn" type="button" onclick="go('bias')">돌아보기 · 5차시 데이터 편향</button>
+      </div>
+      <p class="status" id="mnx-a3-nst"></p>
     </div>
   </div>
 
-  <div class="info" style="margin-top:1.5rem;">
-    <strong>참고 자료</strong>
-    <div style="margin-top:0.8rem; display:flex; flex-direction:column; gap:1.1rem;">
-      <div>
-        <img src="%EC%88%AB%EC%9E%90%EC%9D%B8%EC%8B%9D.png" alt="숫자 인식 참고 이미지" style="width:100%; max-width:980px; border-radius:0.6rem; border:1px solid var(--border); background:#fff; display:block;">
-        <p class="desc" style="margin:0.45rem 0 0;color:var(--muted);font-size:0.82rem;">
-          그림과 같이 MNIST에서 손글씨 숫자 '8'은 28×28 픽셀, 총 784개의 숫자(0~255)로 이루어진 행렬로 구성되어 집니다. 검은 픽셀은 0, 밝을수록 255에 가깝습니다. 이 행렬을 한 줄로 펼쳐지는 flatten 784차원 벡터로 변환 뒤 신경망의 입력층에 넣으면, 은닉층을 거쳐 '이것은 8이다'라는 결론을 출력층에서 도출할 수 있게 됩니다.
-        </p>
-      </div>
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="mnx-step"><p class="mono">STEP 3 · 정리</p></div>
 
-      <div>
-        <img src="Mnist%20참고%20사진1.png" alt="MNIST 데이터셋 예시" style="width:100%; max-width:980px; border-radius:0.6rem; border:1px solid var(--border); background:#fff; display:block;">
-        <p class="desc" style="margin:0.45rem 0 0;color:var(--muted);font-size:0.82rem;">Mnist 데이터셋 예시</p>
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        이미지는 <b>픽셀의 위치 정보와 밝기 정보</b>를 성분으로 갖는 <b>행렬</b>입니다. 흑백은 0과 1, 회색조는 0~255로 적습니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        해상도가 n×n 이면 픽셀은 <b>n<sup>2</sup></b> 개이고, 28×28 손글씨 한 장은 <b>784개의 수</b>가 됩니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        데이터셋의 한 줄은 <b>(입력 x, 라벨 y)</b> 의 짝이며, 이 짝을 많이 모으는 일이 인공지능 학습의 출발점입니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문. 컴퓨터의 ‘눈’에 비친 사진은 어떤 모습인가?</b></p>
+    <textarea class="mnx-ta" id="mnx-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="mnx-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>컴퓨터에게 사진은 <b>수의 직사각형 배열</b>입니다. 각 픽셀의 자리(제 i 행 제 j 열)가 행렬의 성분 자리가 되고,
+          그 자리의 밝기가 0~255의 수로 적힙니다. 28×28 손글씨 한 장은 784개의 수로 이루어진 행렬이며,
+          이것을 한 줄로 펴면 784개의 성분을 가진 벡터가 됩니다.
+          즉 “보는 일”이 “<b>수를 읽는 일</b>”로 바뀌는 것이 이미지 인식의 첫 단계입니다.</p>
       </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="mnxAnsSave()">내 답 저장</button></div>
+    <p class="status" id="mnx-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="mnx-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 13차시 · 이진화·XOR·해밍 거리 분류</strong><br>
+    오늘 만든 28×28 행렬을 0과 1로 단순화하면, 두 그림의 <b>다른 자리 개수</b>를 세는 것만으로 “얼마나 다른가”를
+    <b>하나의 수</b>로 말할 수 있습니다. 그 수가 <b>해밍 거리</b>입니다.
+    다음 시간에는 여러분이 그린 숫자와 참조 숫자 0~9 사이의 거리를 직접 계산해서
+    인공지능처럼 <b>가장 가까운 숫자로 분류</b>해 보고, 이 방법이 언제 실패하는지도 확인합니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('hamming')">13차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('quickdraw')">도입 활동 · Quick Draw</button>
+      <button class="btn" type="button" onclick="go('bias')">돌아보기 · 5차시 데이터 편향</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 반 손글씨 데이터셋」 — 60장을 모아 규칙을 찾기</h3>
+    <p class="sub">오늘 만든 수집 도구를 그대로 써서, 우리 반의 작은 MNIST를 만듭니다.
+      장수를 채우는 것보다 <b>모은 자료를 행렬의 언어로 설명할 수 있는가</b>가 이 과제의 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 모둠원 3~4명이 각자 <b>숫자 0~9를 한 번씩, 두 바퀴</b> 씁니다(1인 20장, 모둠 60장 이상).
+        같은 숫자를 <b>일부러 다르게</b>(크게·작게·기울여서) 써서 다양성을 만듭니다.<br>
+        ② [JSON 다운로드]로 각자의 데이터셋을 내려받아 모둠 파일 하나로 합칩니다.<br>
+        ③ 숫자별 장수를 표로 정리하고, <b>가장 많은 숫자와 가장 적은 숫자의 장수 비</b>를 구합니다.<br>
+        ④ 모둠원 한 사람의 “7” 한 장을 골라, 28×28 행렬의 <b>왼쪽 위 5×5 부분</b>을 손으로 옮겨 적습니다.
+        그 안에서 a<sub>33</sub> 의 값과, 그 픽셀이 펼친 벡터에서 몇 번째인지를 함께 적습니다.<br>
+        ⑤ 해상도를 14×14로 낮추면 어떤 숫자가 가장 먼저 알아보기 어려워지는지 모둠에서 예상하고, 활동 2의 도구로 확인합니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 숫자별 장수 표 1장(A4)과 가장 많은 숫자·가장 적은 숫자의 비<br>
+        · 손으로 옮겨 적은 5×5 부분 행렬과 a<sub>33</sub>, 펼친 벡터에서의 순서 k<br>
+        · “우리 모둠 데이터셋의 약점은 ___이고, 그것이 학습에 미칠 영향은 ___이다” 를 포함한 <b>결론 3~5문장</b><br>
+        · (선택) 합친 JSON 파일</dd>
+      <dt>평가 관점</dt>
+      <dd>· 픽셀의 위치와 밝기를 <b>행렬의 성분으로 정확히</b> 대응시켰는가 <b>[12인수03-01]</b><br>
+        · 28×28 수집·라벨링 과정을 데이터셋의 구성 요소(입력 x·라벨 y)로 <b>설명</b>했는가 <b>[12인수03-01]</b><br>
+        · 해상도와 픽셀 수·정보량의 관계를 수치로 설명했는가<br>
+        · 자료의 치우침(특정 숫자만 많음)을 발견하고 그 영향을 5차시 편향 개념과 연결해 서술했는가</dd>
+    </dl>
+    <details class="mnx-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>수집 장수 자체를 점수화하지 않습니다. 같은 숫자를 여러 모양으로 쓴 <b>다양성</b>과,
+          행렬 성분의 자리(행·열)를 정확히 읽고 설명하는지를 중심으로 봅니다.
+          JSON 파일은 개인정보가 담기지 않으므로 모둠 간 교환이 가능합니다.</p>
+        <p>[JSON 다운로드]가 막힌 환경에서는 화면 캡처와 손으로 옮겨 적은 5×5 부분 행렬만으로도 제출 요건을 충족한 것으로 봅니다.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 픽셀과 행렬을 더 깊이</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="mnx-refs">
+      <a class="mnx-ref" href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>✏️</span>
+        <span class="bd"><span class="tt">Quick, Draw! (Google)</span>
+          <span class="ds">20초 안에 그린 낙서를 인공지능이 알아맞히는 체험입니다. 도입 10분 활동에 그대로 씁니다.</span></span>
+      </a>
+      <a class="mnx-ref" href="https://tjdgus1121.github.io/binary_game.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🔢</span>
+        <span class="bd"><span class="tt">이진수 게임 (인공지능수학 이미지탐구)</span>
+          <span class="ds">0과 1의 약속에 익숙해지는 짧은 게임입니다. 활동 1을 시작하기 전 3분 워밍업으로 좋습니다.</span></span>
+      </a>
+      <a class="mnx-ref" href="https://tjdgus1121.github.io/activity2_matrix_extract.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🖼️</span>
+        <span class="bd"><span class="tt">이미지 → 행렬 변환기 (활동 2)</span>
+          <span class="ds">내 사진을 올려 실제 픽셀 값 행렬로 바꾸어 봅니다. 활동지 「활동 1,2」 활동 2와 1:1로 대응합니다.</span></span>
+      </a>
+      <a class="mnx-ref" href="https://tjdgus1121.github.io/activity3_rgb_explore.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🎨</span>
+        <span class="bd"><span class="tt">RGB 탐구 (활동 3)</span>
+          <span class="ds">컬러 이미지가 세 행렬 R·G·B로 나뉘는 장면을 봅니다. 14차시로 이어지는 예고편입니다.</span></span>
+      </a>
+      <a class="mnx-ref" href="https://www.tensorflow.org/datasets/catalog/mnist" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>📦</span>
+        <span class="bd"><span class="tt">MNIST 데이터셋 소개 (TensorFlow Datasets)</span>
+          <span class="ds">70 000장의 구성과 28×28 규격을 공식 문서로 확인합니다. 우리 데이터셋과 규모를 견주어 보세요.</span></span>
+      </a>
+      <a class="mnx-ref" href="https://ko.wikipedia.org/wiki/%ED%99%94%EC%86%8C" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>📐</span>
+        <span class="bd"><span class="tt">화소(픽셀) — 위키백과</span>
+          <span class="ds">픽셀·해상도·비트 깊이의 정의와 단위 관계를 한국어로 정리한 문서입니다.</span></span>
+      </a>
     </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>12차시 학습지 — 손으로 옮겨 적으며 정리하기</h3>
+    <p>웹에서 눌러 본 것을 손으로 다시 적으면 자리(행·열)의 감각이 몸에 남습니다.
+      실물 활동지를 내려받거나, 웹 활동과 1:1로 대응하는 인쇄용 지면을 뽑아 채워 보세요.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('mnx-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%991-2_%EC%9D%B4%EC%A7%84%ED%96%89%EB%A0%AC%EA%B3%BC%ED%96%89%EB%A0%AC%EA%B0%92.hwpx"
+         download="활동1,2(이진행렬과 행렬값).hwpx">📄 활동 1,2 — 이진행렬과 행렬값 (HWPX) <span class="sz">HWPX · 약 339 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%991-2_%EC%9D%B4%EC%A7%84%ED%96%89%EB%A0%AC%EA%B3%BC%ED%96%89%EB%A0%AC%EA%B0%92.pdf"
+         download="활동1,2(이진행렬과 행렬값).pdf">📄 활동 1,2 — 이진행렬과 행렬값 (PDF) <span class="sz">PDF · 약 193 KB</span></a>
+    </div>
+    <p class="mnx-hint" style="margin-top:0.6rem;">
+      <b>활동 1,2 — 이진행렬과 행렬값</b> : 오늘 STEP 2 활동 1·2와 <b>1:1 대응</b>하는 손계산 활동지입니다.
+      1쪽은 모니터 켜짐·꺼짐 약속과 이진행렬 채우기·행렬의 성분(a<sub>12</sub>, a<sub>21</sub>) 읽기,
+      2쪽은 회색조 값·해상도·비트와 바이트 환산(BMP와 JPG 비교 포함),
+      3쪽은 형성평가 4문항(몇×몇 행렬 · 이진행렬과 회색조행렬 · 보기 판단 · 행렬과 그림 짝짓기)입니다.<br>
+      2단원 형성평가처럼 <b>이미지 단원 전체 형성평가지</b>는 13차시 학습지 카드에 한 곳으로 모아 두었습니다.</p>
+    <div id="mnx-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="mnx-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>12차시 학습지 — 이미지는 행렬이다 : 픽셀·이진행렬·회색조·데이터셋</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">학습 목표 ① 이미지 데이터의 각 픽셀 위치와 밝기·색상 정보를 행렬을 이용하여 표현할 수 있다. [12인수03-01]<br>
+      학습 목표 ② 손글씨 이미지를 28×28 행렬로 수집·라벨링하며 데이터셋의 구성 요소를 설명할 수 있다. [12인수03-01]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:56%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>컴퓨터는 사진을 무엇으로 저장할까? (그림 그대로 / 수의 배열)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>흑백 이미지의 한 픽셀에는 몇 가지 값이 올 수 있을까? (2가지 / 256가지)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>해상도를 두 배로 하면 픽셀 수는 몇 배가 될까? (2배 / 4배)</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — 그림을 0과 1의 이진행렬로</h3>
+    <p class="note">약속 : 전기 신호가 없으면 0(검은색), 있으면 1(흰색). 아래 5×5 그림을 보고 행렬을 채우시오.</p>
+    <table>
+      <tr><th style="width:12%;"></th><th>제1열</th><th>제2열</th><th>제3열</th><th>제4열</th><th>제5열</th></tr>
+      <tr><th>제1행</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>제2행</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>제3행</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>제4행</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>제5행</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>· 이 행렬은 ( ___ ) × ( ___ ) 행렬이다.  · a<sub>23</sub> = ( ___ ),  a<sub>32</sub> = ( ___ )</p>
+    <p>· a<sub>23</sub> 과 a<sub>32</sub> 가 같을 수도 있고 다를 수도 있는 이유를 한 문장으로 쓰시오.</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 활동 2 — 회색조와 해상도</h3>
+    <table>
+      <tr><th style="width:34%;">해상도</th><th>픽셀 수</th><th>회색조 저장 용량(바이트)</th><th>흑백 저장 용량(바이트)</th></tr>
+      <tr><td>4 × 4</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>8 × 8</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>28 × 28</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>200 × 200</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">1바이트 = 8비트, 1KB = 1024바이트. 회색조는 한 픽셀에 1바이트, 흑백(이진)은 한 픽셀에 1비트.</p>
+    <p>· 빈칸을 채우시오. ㄱ. 픽셀이 밝을수록 행렬 값은 ( ___ ). ㄴ. 흰색 ( ___ ), 검은색 ( ___ ).
+      ㄷ. 픽셀 수가 많을수록 ( ___ )이다.</p>
+
+    <h3>④ 활동 3 — 나만의 데이터셋과 flatten</h3>
+    <table>
+      <tr><th style="width:22%;">항목</th><th>기록</th></tr>
+      <tr><td>모은 샘플 수</td><td class="blank"></td></tr>
+      <tr><td>가장 많이 모은 숫자 / 개수</td><td class="blank"></td></tr>
+      <tr><td>가장 적게 모은 숫자 / 개수</td><td class="blank"></td></tr>
+      <tr><td>내 “7” 한 장의 왼쪽 위 a<sub>11</sub>, a<sub>12</sub>, a<sub>21</sub>, a<sub>22</sub></td><td class="blank"></td></tr>
+    </table>
+    <p>· 28×28 행렬의 제 5 행 제 12 열은 펼친 벡터의 몇 번째인가?  k = 28 × ( ___ ) + ( ___ ) = ( ___ )</p>
+    <p>· 데이터셋의 한 줄은 무엇과 무엇의 짝인가? ( ___________ , ___________ )</p>
+
+    <h3>⑤ 형성평가</h3>
+    <p>1. 해상도가 6×4인 흑백 이미지는 몇 × 몇 행렬로 나타내는가?</p>
+    <div class="rule sm"></div>
+    <p>2. 어떤 회색조 이미지의 한 픽셀 값이 0이었다. 이 픽셀은 어떤 색인가? 그리고 그 이유를 쓰시오.</p>
+    <div class="rule sm"></div>
+    <p>3. 28×28 회색조 이미지 1장을 저장하는 데 필요한 바이트 수를 구하시오.</p>
+    <div class="rule sm"></div>
+    <p>4. 해상도를 8×8에서 16×16으로 올리면 픽셀 수와 저장 용량은 각각 몇 배가 되는가?</p>
+    <div class="rule sm"></div>
+
+    <h3>⑥ 핵심 질문에 답하기</h3>
+    <p>컴퓨터의 ‘눈’에 비친 사진은 어떤 모습인가?</p>
+    <div class="rule lg"></div>
   </div>
 
 </div>

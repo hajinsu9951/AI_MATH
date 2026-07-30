@@ -1,0 +1,1318 @@
+<!-- ═══════════ DATALAB (29차시: 탐구 수행 — 데이터·모델링·시각화) ═══════════
+     · 파일 위치: views/datalab.html  (신규)
+     · 전역 접두사 dl · 뷰 루트 id #v-datalab · 모든 스타일 규칙은 #v-datalab 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     · 재사용 규약: 손실·경사하강 계산은 24~26차시 optim 뷰의 op* 공용 함수를 우선 호출하고,
+       아직 붙지 않았을 때만 동일한 식의 dl 내부 구현으로 대체합니다(INTEGRATION.md §3 참조).
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-datalab">
+  <style>
+  /* datalab 뷰 전용 스타일 (#v-datalab 스코프 한정 — 전역 누수 금지) */
+  #v-datalab .dl-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-datalab .dl-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-datalab .dl-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-datalab .dl-hero{position:relative;}
+  #v-datalab .dl-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-datalab .dl-hero>*:not(.dl-wm){position:relative;}
+  #v-datalab .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-datalab .dl-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-datalab .dl-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;width:100%;}
+  #v-datalab .dl-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-datalab .dl-ask{border-left:4px solid var(--accent);}
+  #v-datalab .dl-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-datalab .dl-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-datalab .dl-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-datalab .dl-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-datalab .dl-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-datalab .dl-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-datalab .dl-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;max-width:100%;}
+  #v-datalab .dl-fml b{color:var(--fg);}
+  #v-datalab .dl-scroll{overflow-x:auto;max-width:100%;}
+  #v-datalab .dl-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-datalab .dl-tbl th,#v-datalab .dl-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-datalab .dl-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-datalab .dl-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-datalab .dl-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-datalab .dl-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-datalab .dl-fb b{color:var(--fg);}
+  #v-datalab .dl-fb:empty{display:none;}
+  #v-datalab .dl-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-datalab .dl-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-datalab .dl-in.num{width:5.2rem;text-align:center;}
+  /* 조작 요소 확대(§15) — 조작 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px. 뷰 안에서만 키웁니다. */
+  #v-datalab .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-datalab .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-datalab .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-datalab .tabs{flex-wrap:wrap;}
+  #v-datalab .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-datalab .ws-btn{min-height:44px;}
+
+  /* 단계 토글(details) — 조작 전에는 잠깁니다 */
+  #v-datalab .dl-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-datalab .dl-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-datalab .dl-fold>summary::-webkit-details-marker{display:none;}
+  #v-datalab .dl-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-datalab .dl-fold[open]>summary::after{content:'▾';}
+  #v-datalab .dl-fold .bd{padding:0 0 0.9rem;}
+  #v-datalab .dl-fold .bd p,#v-datalab .dl-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-datalab .dl-fold.dl-locked{opacity:0.62;}
+  #v-datalab .dl-fold.dl-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-datalab .dl-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* ── 데이터 유형 배너(상단 고정 안내) ── */
+  #v-datalab .dl-typebar{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.85rem 0.95rem;margin:1rem 0 0.9rem;}
+  #v-datalab .dl-typebar>.lb{display:block;font-family:var(--mono);font-size:0.74rem;letter-spacing:0.12em;
+    color:var(--muted);margin-bottom:0.5rem;}
+  #v-datalab .dl-banner{display:none;margin-top:0.75rem;border-left:4px solid var(--accent);background:var(--bg);
+    border-radius:0 0.45rem 0.45rem 0;padding:0.7rem 0.9rem;}
+  #v-datalab .dl-banner.on{display:block;}
+  #v-datalab .dl-banner b.hd{display:block;font-size:1.02rem;color:var(--fg);margin-bottom:0.3rem;}
+  #v-datalab .dl-banner p{font-size:0.95rem;line-height:1.8;color:var(--body);margin:0 0 0.55rem;}
+  #v-datalab .dl-banner .btn-row{margin:0;}
+
+  /* ── 표 편집기 ── */
+  #v-datalab .dl-edit{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,26rem);}
+  #v-datalab .dl-edit th,#v-datalab .dl-edit td{border:1px solid var(--border);padding:0.24rem 0.3rem;text-align:center;}
+  #v-datalab .dl-edit th{background:var(--card-h);font-weight:600;white-space:nowrap;font-size:0.86rem;padding:0.4rem 0.5rem;}
+  #v-datalab .dl-edit td.no{font-family:var(--mono);font-size:0.8rem;color:var(--muted);background:var(--card-h);white-space:nowrap;}
+  #v-datalab .dl-edit input{width:5.4rem;min-width:4rem;height:2.2rem;border:1px solid transparent;border-radius:0.3rem;
+    background:transparent;color:var(--fg);font-family:var(--mono);font-size:0.92rem;text-align:center;}
+  #v-datalab .dl-edit input:focus{outline:2px solid var(--fg);outline-offset:0;background:var(--card-h);}
+  #v-datalab .dl-edit input.lbl{width:6.2rem;font-family:var(--sans);}
+  #v-datalab .dl-edit tr.miss{background:#fdf3d8;}
+  #v-datalab .dl-edit tr.out{background:#f7e2de;}
+  #v-datalab .dl-edit tr.miss input,#v-datalab .dl-edit tr.out input{color:#5c3a12;}
+  #v-datalab .dl-edit td.flg{white-space:nowrap;font-size:0.8rem;font-family:var(--mono);}
+  #v-datalab .dl-edit button{border:1px solid var(--border);background:var(--bg);color:var(--muted);
+    border-radius:0.3rem;cursor:pointer;min-width:2.2rem;min-height:2.2rem;font-size:0.85rem;}
+  #v-datalab .dl-edit button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-datalab .dl-edit button.on{background:var(--red);border-color:var(--red);color:#fff;}
+  #v-datalab textarea.dl-ta{width:100%;min-height:6.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--mono);font-size:0.9rem;line-height:1.7;background:var(--card);
+    color:var(--fg);resize:vertical;}
+  #v-datalab textarea.dl-note{font-family:var(--sans);font-size:1.0rem;line-height:1.75;min-height:4.6rem;}
+  #v-datalab .dl-axis{display:flex;flex-wrap:wrap;gap:0.5rem 0.8rem;align-items:center;margin:0.7rem 0;}
+  #v-datalab .dl-axis label{font-family:var(--mono);font-size:0.86rem;color:var(--fg);display:inline-flex;
+    align-items:center;gap:0.35rem;}
+  #v-datalab .dl-axis .dl-in{flex:0 1 11rem;font-family:var(--sans);}
+  #v-datalab .dl-diag{display:flex;flex-wrap:wrap;gap:0.6rem 1.1rem;font-family:var(--mono);font-size:0.86rem;
+    font-weight:700;background:var(--bg);border:1px solid var(--border);border-radius:0.45rem;
+    padding:0.55rem 0.8rem;margin:0.7rem 0;}
+  #v-datalab .dl-diag .n{color:var(--fg);}
+  #v-datalab .dl-diag .m{color:#8a6d1f;}
+  #v-datalab .dl-diag .o{color:var(--red);}
+
+  /* ── 캔버스 ── */
+  #v-datalab canvas.dl-cv{display:block;width:100%;max-width:100%;height:auto;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);margin:0.6rem 0 0.3rem;}
+  #v-datalab .dl-2up{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(19rem,100%),1fr));gap:1rem;}
+  #v-datalab .dl-2up>div{min-width:0;}
+  #v-datalab .dl-cvcap{font-family:var(--mono);font-size:0.74rem;color:var(--muted);line-height:1.65;margin:0.15rem 0 0;}
+
+  /* ── 슬라이더 · 수치 표시 ── */
+  #v-datalab .dl-srow{display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;margin:0.7rem 0;}
+  #v-datalab input[type=range].dl-rg{flex:1 1 14rem;min-width:0;height:44px;accent-color:var(--fg);
+    cursor:pointer;background:transparent;}
+  #v-datalab .dl-sval{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--fg);white-space:nowrap;}
+  #v-datalab .dl-kpi{display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.8rem 0 0.2rem;}
+  #v-datalab .dl-kpi>span{flex:1 1 8.5rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:0.45rem;padding:0.5rem 0.7rem;font-family:var(--mono);font-size:0.8rem;color:var(--muted);
+    line-height:1.6;min-width:0;}
+  #v-datalab .dl-kpi>span b{display:block;font-size:1.1rem;color:var(--fg);margin-top:0.15rem;word-break:break-all;}
+  #v-datalab .dl-kpi>span.hi b{color:var(--green);}
+  #v-datalab .dl-chk{display:flex;flex-wrap:wrap;gap:0.5rem 1.1rem;margin:0.6rem 0;}
+  #v-datalab .dl-chk label{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.95rem;color:var(--fg);
+    min-height:44px;cursor:pointer;}
+  #v-datalab .dl-chk input{width:1.15rem;height:1.15rem;accent-color:var(--fg);}
+
+  /* ── 경사하강 반복표 · 경고 ── */
+  #v-datalab .dl-gdtbl td.a{font-weight:700;color:var(--fg);}
+  #v-datalab .dl-gdtbl tr.last{background:var(--card-h);}
+  #v-datalab .dl-warn{display:none;font-size:0.95rem;font-weight:700;line-height:1.8;background:#f7e2de;
+    border:1px solid #d8a79c;border-radius:0.45rem;padding:0.6rem 0.85rem;margin-top:0.7rem;color:#8c3325;}
+  #v-datalab .dl-warn.on{display:block;}
+  #v-datalab .dl-good{display:none;font-size:0.95rem;font-weight:700;line-height:1.8;background:#e4ece4;
+    border:1px solid #a9c1a9;border-radius:0.45rem;padding:0.6rem 0.85rem;margin-top:0.7rem;color:#3d5c3d;}
+  #v-datalab .dl-good.on{display:block;}
+
+  /* ── 결과 옮기기(보고서 [D]) ── */
+  #v-datalab .dl-dbox{background:var(--bg);border:1px dashed var(--border);border-radius:0.5rem;padding:0.7rem 0.85rem;}
+  #v-datalab .dl-dbox pre{font-family:var(--mono);font-size:0.84rem;line-height:1.85;white-space:pre-wrap;
+    word-break:break-word;margin:0;color:var(--body);}
+  #v-datalab .dl-toolmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));gap:0.8rem;margin-top:0.8rem;}
+  #v-datalab .dl-tool{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem;min-width:0;}
+  #v-datalab .dl-tool h4{font-size:1.0rem;margin:0 0 0.4rem;color:var(--fg);}
+  #v-datalab .dl-tool p{font-size:0.93rem;line-height:1.75;color:var(--body);margin:0 0 0.5rem;}
+  #v-datalab .dl-tool .btn-row{margin:0;}
+
+  /* 사진 · 교과서 캡처 슬롯 */
+  #v-datalab .dl-photo{margin:0.9rem 0;max-width:16rem;}
+  #v-datalab .dl-photo img{display:block;width:100%;height:auto;border-radius:0.6rem;border:1px solid var(--border);}
+  #v-datalab .dl-photo .fb{display:none;align-items:center;justify-content:center;width:100%;min-height:8rem;
+    font-size:3rem;background:var(--bg);border:1px solid var(--border);border-radius:0.6rem;}
+  #v-datalab .dl-photo.nofoto img{display:none;}
+  #v-datalab .dl-photo.nofoto .fb{display:flex;}
+  #v-datalab .dl-photo figcaption{font-size:0.8rem;color:var(--muted);line-height:1.65;margin-top:0.35rem;}
+  #v-datalab .dl-tbrow{display:flex;flex-wrap:wrap;gap:0.7rem;margin-top:0.7rem;}
+  #v-datalab .dl-tbrow figure{margin:0;flex:1 1 13rem;min-width:0;}
+  #v-datalab .dl-tbrow img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;}
+  #v-datalab .dl-tbrow figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.25rem;}
+
+  /* 참고 자료 카드 */
+  #v-datalab .dl-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-datalab .dl-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;
+    font-family:var(--sans);font-size:1rem;cursor:pointer;}
+  #v-datalab .dl-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-datalab .dl-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;}
+  #v-datalab .dl-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-datalab .dl-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-datalab .dl-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-datalab .dl-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+  #v-datalab .dl-refadd{border-style:dashed;background:transparent;}
+  #v-datalab .dl-roomwrap{display:flex;flex-direction:column;gap:0.5rem;min-width:0;}
+  #v-datalab .dl-roomwrap .btn{align-self:flex-start;}
+  #v-datalab .dl-roomform{display:none;gap:0.4rem;flex-wrap:wrap;align-items:center;margin-top:0.6rem;}
+  #v-datalab .dl-roomform.on{display:flex;}
+  #v-datalab .dl-roomform .dl-in{flex:1 1 14rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-datalab *{animation:none !important;transition:none !important;}
+  }
+  @media (max-width:640px){
+    #v-datalab .dl-wm{display:none;}
+    #v-datalab .dl-fml{font-size:0.82rem;}
+    #v-datalab .dl-edit input{width:4.4rem;min-width:3.4rem;}
+    #v-datalab .dl-edit input.lbl{width:5rem;}
+    #v-datalab .dl-kpi>span{flex:1 1 100%;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="dl-hero">
+    <svg class="dl-wm" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
+      <path d="M24 128 H222" stroke="var(--fg)" stroke-width="2"/>
+      <path d="M24 128 V16" stroke="var(--fg)" stroke-width="2"/>
+      <path d="M24 128 L206 30" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+      <g stroke="var(--red)" stroke-width="2.4">
+        <path d="M66 105 V95"/><path d="M104 74 V88"/><path d="M142 58 V44"/><path d="M180 44 V56"/>
+      </g>
+      <g fill="var(--blue)">
+        <circle cx="66" cy="95" r="5"/><circle cx="104" cy="88" r="5"/>
+        <circle cx="142" cy="44" r="5"/><circle cx="180" cy="56" r="5"/>
+      </g>
+      <rect x="142" y="44" width="14" height="14" fill="none" stroke="var(--red)" stroke-width="1.6"/>
+      <rect x="180" y="44" width="12" height="12" fill="none" stroke="var(--red)" stroke-width="1.6"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅴ 단원 · 29차시 · [12인수05-02]</p>
+    <h2>탐구 수행 — 내 데이터로 예측 모형 만들기</h2>
+    <p class="desc">
+      28차시에 세운 계획서의 <b>x와 y</b>가 이제 실제 수가 되어 돌아옵니다.
+      비어 있는 칸과 튀는 값을 먼저 정리하고, 산점도 → 추세선 → 손실함수 → 경사하강을
+      <b>한 화면에서 이어서</b> 실행해 보고서 [D]란에 옮겨 담습니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 수집한 데이터의 <b>결측값·이상치를 처리</b>하여 탐구 목적에 맞게 표현할 수 있습니다. <b>[12인수05-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 추세선·손실함수·경사하강법·유사도 등 배운 수학적 방법 중 <b>탐구 주제에 적합한 도구를 선택·적용</b>하여
+      결과를 산출하고 시각화할 수 있습니다. <b>[12인수05-02]</b>
+    </div>
+    <div class="dl-goalmap">
+      <button type="button" onclick="dlSee(0,'dl-act1')">├ 목표 ① → <b>활동 1</b>(원자료를 표로 옮기고 결측값·이상치 정리하기) →</button>
+      <button type="button" onclick="dlSee(1,'dl-act2')">├ 목표 ② → <b>활동 2</b>(y=ax 추세선과 MSE)·<b>활동 3</b>(경사하강법 실행) →</button>
+      <button type="button" onclick="dlSee(3,'dl-act4')">└ 목표 ② → <b>활동 4</b>(데이터 유형에 맞는 도구 고르기·결과를 [D]란에 옮기기) →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips dl-keys" data-no-toggle="1">
+    <span class="chip">결측값과 이상치</span>
+    <span class="chip">산점도와 추세선 y = ax</span>
+    <span class="chip">잔차와 손실함수 MSE</span>
+    <span class="chip">경사하강법 aₙ₊₁ = aₙ − k·L′(aₙ)</span>
+    <span class="chip">데이터 유형과 도구 선택</span>
+    <span class="chip">시각화</span>
+  </div>
+
+  <div class="card dl-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>내 질문에 답하려면 어떤 수학 도구를 골라 어떻게 연결해야 하는가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">STEP 3에서 이 질문에 여러분의 문장으로 답을 완성하고, 그 답을 보고서 [D]란에 그대로 옮깁니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="dl-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 탐구는 데이터에서 시작합니다</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      마지막 칸은 <b>선생님이 영상을 추가하는 자리</b>입니다.</p>
+    <div id="dl-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="dl-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b>
+      이제 여러분이 모은 자료를 표로 옮기는 일부터 시작합니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>안내 — 오늘 우리가 걷는 다섯 걸음</h3>
+    <div class="dl-2up" style="align-items:start;">
+      <div>
+        <svg viewBox="0 0 320 200" role="img" style="width:100%;height:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);"
+             aria-label="탐구 주제 선정 → 데이터 수집 → 데이터 정리 → 데이터 분석 및 탐구 수행 → 탐구 결과 정리 및 평가 다섯 단계 흐름도">
+          <rect width="320" height="200" fill="var(--bg)"/>
+          <g font-family="monospace" font-size="10.5" text-anchor="middle">
+            <rect x="14" y="16" width="86" height="34" rx="7" fill="var(--card)" stroke="var(--border)"/>
+            <text x="57" y="30" fill="var(--muted)">1단계</text><text x="57" y="43" fill="var(--fg)">탐구 주제 선정</text>
+            <rect x="118" y="16" width="86" height="34" rx="7" fill="var(--card)" stroke="var(--border)"/>
+            <text x="161" y="30" fill="var(--muted)">2단계</text><text x="161" y="43" fill="var(--fg)">데이터 수집</text>
+            <rect x="222" y="16" width="84" height="34" rx="7" fill="var(--fg)"/>
+            <text x="264" y="30" fill="var(--bg)">3단계</text><text x="264" y="43" fill="var(--bg)">데이터 정리</text>
+            <rect x="118" y="96" width="188" height="34" rx="7" fill="var(--fg)"/>
+            <text x="212" y="110" fill="var(--bg)">4단계</text><text x="212" y="123" fill="var(--bg)">데이터 분석 및 탐구 수행</text>
+            <rect x="14" y="152" width="188" height="34" rx="7" fill="var(--card)" stroke="var(--border)"/>
+            <text x="108" y="166" fill="var(--muted)">5단계</text><text x="108" y="179" fill="var(--fg)">탐구 결과 정리 및 평가</text>
+          </g>
+          <g stroke="var(--muted)" stroke-width="1.8" fill="none">
+            <path d="M100 33 H114"/><path d="M204 33 H218"/>
+            <path d="M264 50 V78 H212 V92"/>
+            <path d="M118 113 H108 V148"/>
+          </g>
+          <g fill="var(--muted)">
+            <path d="M116 33 l-6 -3.5 v7 z"/><path d="M220 33 l-6 -3.5 v7 z"/>
+            <path d="M212 94 l-3.5 -6 h7 z"/><path d="M108 150 l-3.5 -6 h7 z"/>
+          </g>
+          <text x="264" y="66" font-family="monospace" font-size="9.5" fill="var(--red)" text-anchor="middle">오늘</text>
+          <text x="212" y="142" font-family="monospace" font-size="9.5" fill="var(--muted)" text-anchor="middle">30차시</text>
+        </svg>
+        <p class="dl-cvcap">28차시에 1·2단계를 마쳤습니다. 오늘은 <b>3·4단계</b>, 다음 시간에는 5단계입니다.</p>
+      </div>
+      <div>
+        <p>오늘 여러분이 하는 일은 딱 두 가지입니다.</p>
+        <p><b>먼저 자료를 믿을 수 있게 만들고</b>(3단계 — 활동 1),
+          <b>그다음 배운 수학으로 답을 뽑아냅니다</b>(4단계 — 활동 2·3·4).</p>
+        <p>탐구 도중 자료가 부족하거나 도구가 맞지 않으면 <b>언제든 2~4단계로 돌아가</b> 다시 시작해도 됩니다.
+          되돌아가는 것은 실패가 아니라 탐구의 정상적인 과정입니다.</p>
+        <span class="dl-src">동아출판 「인공지능 수학」 Ⅴ p.165 ‘인공지능 수학 탐구 5단계’ 도해와 되돌아가기 서술을 재구성 /
+          씨마스 「인공지능 수학」 Ⅴ p.188 ‘인공지능 수학 탐구 과정 5단계’ 서술을 재구성</span>
+      </div>
+    </div>
+    <div class="dl-tbrow">
+      <figure>
+        <img src="assets/textbook-local/동아5_p165_탐구5단계.jpg" alt="교과서 지면(수업용)" loading="lazy"
+             onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+        <figcaption>동아 Ⅴ p.165 (수업용)</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/textbook-local/씨마스5_p188_탐구5단계.jpg" alt="교과서 지면(수업용)" loading="lazy"
+             onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+        <figcaption>씨마스 Ⅴ p.188 (수업용)</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="dl-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <!-- 데이터 유형 배너 (상단 고정 — 어느 탭에서도 보입니다) -->
+  <div class="dl-typebar" data-no-toggle="1">
+    <span class="lb">내 탐구의 데이터 유형은?  —  고르면 그 유형에 맞는 뷰로 가는 길이 열립니다</span>
+    <div class="chips" id="dl-type">
+      <button class="chip" type="button" onclick="dlType('num',this)">수치·표 자료</button>
+      <button class="chip" type="button" onclick="dlType('img',this)">이미지 자료</button>
+      <button class="chip" type="button" onclick="dlType('txt',this)">텍스트 자료</button>
+      <button class="chip" type="button" onclick="dlType('mix',this)">두 가지 이상 섞임</button>
+    </div>
+    <div class="dl-banner" id="dl-banner"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="dlTab(0,this)">① 자료 정리</button>
+    <button class="tab" type="button" onclick="dlTab(1,this)">② 추세선과 MSE</button>
+    <button class="tab" type="button" onclick="dlTab(2,this)">③ 경사하강 실행</button>
+    <button class="tab" type="button" onclick="dlTab(3,this)">④ 도구 고르기 · [D]란</button>
+  </div>
+
+  <!-- ── 탭 ① 활동 1 : 표 편집 · 결측값 · 이상치 · 산점도 ───────────────── -->
+  <div class="tpanel on" id="dl0">
+    <div class="card" id="dl-act1" data-no-toggle="1">
+      <h3>활동 1 · 「비어 있는 칸과 튀는 값」 — 원자료를 믿을 수 있게 만들기</h3>
+      <p>어느 학교 급식실에서 <b>남은 음식(잔반) 무게</b>를 일주일 동안 기록했습니다.</p>
+      <div class="math">9.14  29kg    9.15  26kg    9.16  40kg    9.17  (기록 없음)
+9.18  32kg    9.21  131kg   9.22  32kg</div>
+      <p>이 일곱 개의 수를 그대로 평균 내면 어떻게 될까요? 계산해 보기 전에 <b>먼저 예상</b>해 보세요.</p>
+      <div class="chips" id="dl-a1-eye">
+        <button class="chip" type="button" onclick="dlA1Guess('low',this)">평소보다 작게 나온다</button>
+        <button class="chip" type="button" onclick="dlA1Guess('same',this)">평소와 비슷하다</button>
+        <button class="chip" type="button" onclick="dlA1Guess('high',this)">평소보다 크게 나온다</button>
+      </div>
+      <p class="status" id="dl-a1-eyemsg">예상을 고르면 아래 표 편집기가 열립니다.</p>
+      <span class="dl-src">천재교육 「인공지능 수학」 지도서 ‘단원의 이론적 배경’ p.89 [표 1] 급식 잔반량 자료를 그대로 사용
+        (교과서 47쪽 연계) / 동아출판 「인공지능 수학」 Ⅴ p.168 ‘데이터 정리’ 서술을 재구성</span>
+    </div>
+
+    <div class="card dl-veil" id="dl-a1-panel" data-no-toggle="1">
+      <h3>조작 — 붙여넣고, 고치고, 그려 보기</h3>
+
+      <p class="mat-label" style="text-align:left;">1) 자료 불러오기 — 프리셋을 고르거나 직접 붙여넣기</p>
+      <div class="chips" id="dl-preset">
+        <button class="chip on" type="button" onclick="dlPreset('lunch',this)">급식 잔반량(원자료)</button>
+        <button class="chip" type="button" onclick="dlPreset('cross',this)">교차로 통과 시간</button>
+        <button class="chip" type="button" onclick="dlPreset('ghg',this)">온실가스와 해수면</button>
+        <button class="chip" type="button" onclick="dlPreset('blank',this)">내 자료 직접 넣기</button>
+      </div>
+      <textarea class="dl-ta" id="dl-csv" aria-label="CSV 붙여넣기 칸"
+        placeholder="엑셀·구글시트에서 두 열(x, y) 또는 세 열(이름, x, y)을 복사해 그대로 붙여넣으세요.
+쉼표·탭·공백 어느 것으로 나뉘어 있어도 됩니다. 첫 줄이 제목이면 자동으로 알아봅니다.
+값이 비어 있는 칸은 그대로 비워 두면 결측값으로 표시됩니다.
+
+보기)
+날짜, 급식일 순서, 잔반량(kg)
+9.14, 1, 29
+9.15, 2, 26
+9.17, 4,"></textarea>
+      <div class="btn-row" style="margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="dlParse()">표로 바꾸기</button>
+        <button class="btn" type="button" onclick="dlToCsv()">지금 표를 CSV로 내보내기</button>
+        <button class="btn" type="button" onclick="dlReset()">원자료로 되돌리기</button>
+      </div>
+      <p class="status" id="dl-parse-st">붙여넣은 뒤 [표로 바꾸기]를 누르세요. 숫자로 읽히지 않는 칸은 <b>결측값</b>으로 표시됩니다.</p>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.1rem;">2) 표 고치기 — 칸을 눌러 값을 바꾸고, 행을 더하거나 지울 수 있습니다</p>
+      <div class="dl-axis">
+        <label>x 이름 <input class="dl-in" id="dl-xl" type="text" oninput="dlAxis()" aria-label="x축 이름"></label>
+        <label>y 이름 <input class="dl-in" id="dl-yl" type="text" oninput="dlAxis()" aria-label="y축 이름"></label>
+        <button class="btn" type="button" onclick="dlAddRow()">＋ 행 추가</button>
+      </div>
+      <div class="dl-scroll"><table class="dl-edit" id="dl-tbl"><tbody></tbody></table></div>
+      <div class="dl-diag" id="dl-diag"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.1rem;">3) 정리하기 — 어떻게 처리할지는 <b>여러분이</b> 고릅니다</p>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="dlFillMissing('med')">결측값 ← 중앙값</button>
+        <button class="btn" type="button" onclick="dlFillMissing('avg')">결측값 ← 평균값</button>
+        <button class="btn" type="button" onclick="dlDropMissing()">결측값 행 삭제</button>
+        <button class="btn pri" type="button" onclick="dlFixOutlier()">이상치 ← 나머지 평균</button>
+        <button class="btn" type="button" onclick="dlDropOutlier()">이상치 행 삭제</button>
+      </div>
+      <p class="dl-hint" style="margin-top:0.5rem;">이상치를 찾는 기준은 여러 가지입니다. 여기서는
+        ① y의 <b>중앙값</b>을 구하고 ② 각 값이 중앙값에서 얼마나 떨어졌는지 재어 그 <b>떨어진 거리의 중앙값</b>을 구한 다음
+        ③ <b>그 거리의 4배</b>와 <b>중앙값의 40%</b> 중 더 큰 값보다 멀리 떨어진 값을 후보로 표시합니다.
+        평균이 아니라 중앙값을 쓰는 까닭은 튀는 값 자신이 기준을 흔들지 않게 하려는 것이고,
+        40%라는 하한을 둔 까닭은 값들이 거의 같은 자료에서 기준이 지나치게 좁아지지 않게 하려는 것입니다.
+        표의 <b>⚠</b> 단추를 눌러 직접 켜고 끌 수도 있습니다 — <b>무엇을 이상치로 볼지 정하는 것은 사람의 판단</b>입니다.</p>
+      <div class="dl-fb" id="dl-a1-fb"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.2rem;">4) 시각화 — 표를 그림으로</p>
+      <canvas class="dl-cv" id="dl-sc1" aria-label="정리한 자료의 산점도" role="img"></canvas>
+      <p class="dl-cvcap" id="dl-sc1-cap">표를 만들면 산점도가 그려집니다.
+        빈 원은 결측값(그리지 않음), 빨간 테두리 원은 이상치 후보입니다.</p>
+      <div class="dl-kpi" id="dl-a1-kpi"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="dl-fold" data-lock="a1-obs" data-lockmsg="결측값과 이상치를 한 번이라도 처리하면 열립니다.">
+        <summary>단계 1 · 관찰 — 값 하나가 평균을 얼마나 흔들었나요?</summary>
+        <div class="bd">
+          <p>비어 있는 9월 17일을 빼고 남은 여섯 개의 평균은 <b>48.3kg</b>입니다.
+            그런데 131kg 하나를 빼고 다시 구하면 <b>31.8kg</b>이 됩니다.
+            <b>일곱 개 중 한 개</b> 때문에 평균이 16.5kg이나 부풀었던 것입니다.</p>
+          <p>산점도에서도 같은 일이 눈에 보입니다. 131kg 점 하나가 세로축의 눈금을 네 배로 늘려 놓아서,
+            <b>나머지 여섯 점이 바닥에 눌려 붙어</b> 경향을 읽을 수 없게 됩니다.
+            이상치를 처리하고 나면 세로축이 다시 촘촘해지며 점들의 흐름이 보입니다.</p>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a1-sum" data-lockmsg="결측값과 이상치를 한 번이라도 처리하면 열립니다.">
+        <summary>단계 2 · 정리 — 처리 전과 처리 후를 나란히</summary>
+        <div class="bd">
+          <div class="dl-scroll">
+            <table class="dl-tbl">
+              <tr><th>날짜</th><th>9.14</th><th>9.15</th><th>9.16</th><th>9.17</th><th>9.18</th><th>9.21</th><th>9.22</th><th>평균</th></tr>
+              <tr><th>처리 전</th><td>29</td><td>26</td><td>40</td><td style="background:#fdf3d8;">(없음)</td><td>32</td>
+                <td style="background:#f7e2de;">131</td><td>32</td><td>48.3</td></tr>
+              <tr><th>처리 후</th><td>29</td><td>26</td><td>40</td><td style="background:#e4ece4;">32</td><td>32</td>
+                <td style="background:#e4ece4;">31.8</td><td>32</td><td>31.8</td></tr>
+            </table>
+          </div>
+          <p style="margin-top:0.7rem;">비어 있던 9월 17일은 나머지 여섯 값의 <b>중앙값 32</b>로 채웠습니다
+            (26, 29, 32, 32, 40, 131을 크기순으로 놓았을 때 가운데 두 값의 평균).
+            131kg은 <b>그 값을 뺀 나머지의 평균 31.8</b>로 바꾸었습니다.</p>
+          <p>처리 방법은 하나가 아닙니다. 결측값은 평균·중앙값·최빈값으로 <b>대체</b>하거나 그 행을 <b>삭제</b>할 수 있고,
+            이상치는 <b>조정</b>하거나 <b>제거</b>할 수 있습니다. 어느 쪽을 골랐는지, 왜 그렇게 골랐는지를
+            <b>보고서에 반드시 적어야</b> 합니다. 같은 자료에서 서로 다른 결론이 나오는 첫 번째 이유가 바로 이 선택입니다.</p>
+          <span class="dl-src">천재교육 「인공지능 수학」 지도서 p.89 [표 1]·[표 2]와 데이터 정제 서술을 재구성</span>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a1-def" data-lockmsg="결측값과 이상치를 한 번이라도 처리하면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 결측값·이상치와 데이터 전처리란 무엇인가</summary>
+        <div class="bd">
+          <p><b>결측값</b>은 값이 저장되어 있지 않아 비어 있는 칸을 말하고,
+            <b>이상치(이상값)</b>는 다른 값들과 크게 동떨어져 의심스러운 값을 말합니다.
+            이 두 가지를 찾아 고치거나 지워서 자료를 분석하기 좋은 모양으로 바꾸는 일을
+            <b>데이터 전처리</b>라고 합니다.</p>
+          <p class="dl-fml">데이터 전처리 = <b>① 수집·확인</b>(결측값·이상치·중복 찾기) → <b>② 정제</b>(대체·조정·삭제)
+→ <b>③ 변환</b>(정규화 등) → <b>④ 특성 선택</b></p>
+          <p>17차시에서 픽셀값에 <b>1/255를 곱해</b> 0~1로 맞춘 것이 ③ 변환(정규화)이고,
+            6차시에서 <b>불용어를 걸러</b> 단어집합을 만든 것이 ② 정제였습니다.
+            전처리는 오늘 처음 배우는 것이 아니라, 1단원부터 계속 해 온 일에 이름을 붙인 것입니다.</p>
+          <ul>
+            <li>결측값이나 이상치가 있으면 <b>데이터의 경향성을 파악하는 데 도움이 되지 않습니다.</b></li>
+            <li>이상치를 무조건 지우면 안 됩니다. 131kg이 <b>실제로 일어난 사건</b>(행사·급식 변경)이라면
+              그것이야말로 가장 중요한 자료일 수 있습니다. 지우기 전에 <b>왜 그런 값이 나왔는지</b> 먼저 확인합니다.</li>
+          </ul>
+          <div class="dl-tbrow">
+            <figure>
+              <img src="assets/textbook-local/천재_p47_전처리.jpg" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>천재 p.47 (수업용)</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/동아5_p168_데이터정리.jpg" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아 Ⅴ p.168 (수업용)</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/동아1_p32_데이터정제.jpg" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아 Ⅰ p.32 (수업용)</figcaption>
+            </figure>
+          </div>
+          <span class="dl-src">천재교육 「인공지능 수학」 지도서 p.89 ‘데이터 전처리’ 4단계 서술을 재구성 /
+            동아출판 「인공지능 수학」 Ⅰ p.32 ‘데이터 수집 및 정제’ 및 Ⅴ p.168 ‘데이터 정리’ 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 내 자료로 해 보기</h3>
+      <p>28차시 계획서에 적은 데이터 출처에서 자료를 <b>10행 이상</b> 가져와 위 칸에 붙여넣고,
+        결측값·이상치를 처리해 보세요. 그리고 아래에 <b>처리 기록</b>을 남깁니다.
+        이 기록은 그대로 보고서 [C]란(데이터 정리)의 근거가 됩니다.</p>
+      <textarea class="dl-ta dl-note" id="dl-a1-note"
+        placeholder="① 결측값은 몇 칸이었고, 어떻게 처리했는가(대체/삭제)와 그 이유 —&#10;② 이상치로 본 값과 그렇게 판단한 근거 —&#10;③ 처리 전후로 평균·산점도가 어떻게 달라졌는가 —"></textarea>
+      <div class="btn-row"><button class="btn" type="button" onclick="dlNoteSave()">기록 저장</button></div>
+      <p class="status" id="dl-note-st"></p>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 활동 2 : y=ax 추세선 · 잔차 · MSE ────────────────────────── -->
+  <div class="tpanel" id="dl1">
+    <div class="card" id="dl-act2" data-no-toggle="1">
+      <h3>활동 2 · 「가장 좋은 기울기 찾기」 — y = ax 와 손실함수 L(a)</h3>
+      <p>정리한 자료에 <b>원점을 지나는 직선 y = ax</b> 하나를 얹어 예측해 봅니다.
+        24차시에서 배운 그대로, 기울기 a를 바꾸면 <b>잔차(오차)</b>가 달라지고
+        <b>손실함수 L(a)</b>의 값이 함께 움직입니다.</p>
+      <p class="dl-fml">L(a) = { (y₁ − ax₁)² + (y₂ − ax₂)² + ⋯ + (yₙ − axₙ)² } ÷ n   ← 오차의 제곱의 평균(MSE)</p>
+      <p>슬라이더를 움직여 <b>손실함수의 값이 가장 작아지는 a</b>를 눈으로 먼저 찾아보세요.
+        찾았다고 생각하면 그 값을 적고 [확인]을 누릅니다. <b>[최적 a 보기]는 그다음에</b> 누릅니다.</p>
+      <div class="chips" id="dl-a2-ds">
+        <button class="chip on" type="button" onclick="dlUse('cross',this)">교차로 통과 시간(권장)</button>
+        <button class="chip" type="button" onclick="dlUse('cur',this)">활동 1에서 정리한 자료</button>
+      </div>
+      <p class="status" id="dl-a2-dsmsg"></p>
+      <span class="dl-src">씨마스 「인공지능 수학」 Ⅳ p.154~156의 교차로 통과 시간 자료(x = 대기 차량 수, y = 통과 시간)와
+        손실함수 정의를 그대로 사용</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — a를 움직이면 무엇이 함께 움직이나</h3>
+      <div class="dl-srow">
+        <label class="dl-sval" for="dl-a">기울기 a</label>
+        <input class="dl-rg" id="dl-a" type="range" min="0" max="4" step="0.005" value="1"
+               oninput="dlASet(this.value)" aria-label="추세선의 기울기 a">
+        <span class="dl-sval" id="dl-a-val">a = 1.000</span>
+      </div>
+      <div class="dl-chk">
+        <label><input type="checkbox" id="dl-ck-res" checked onchange="dlDraw2()"> 잔차 수직선 보기</label>
+        <label><input type="checkbox" id="dl-ck-sq" onchange="dlDraw2()"> 잔차 제곱 정사각형 보기</label>
+        <label><input type="checkbox" id="dl-ck-best" onchange="dlDraw2()"> 최적선 겹쳐 보기</label>
+      </div>
+
+      <div class="dl-2up">
+        <div>
+          <canvas class="dl-cv" id="dl-sc2" aria-label="자료의 산점도와 추세선 y=ax, 잔차" role="img"></canvas>
+          <p class="dl-cvcap">왼쪽 — 산점도와 추세선. 파란 선분은 실제값이 예측보다 <b>큰</b> 잔차,
+            빨간 선분은 <b>작은</b> 잔차입니다. 정사각형의 넓이 합이 곧 오차의 제곱의 합입니다.</p>
+        </div>
+        <div>
+          <canvas class="dl-cv" id="dl-lc" aria-label="손실함수 L(a)의 그래프와 현재 위치" role="img"></canvas>
+          <p class="dl-cvcap">오른쪽 — 손실함수 L(a)의 그래프(이차함수). 지금 a가 포물선 위 어디에 있는지 보여 줍니다.
+            접선의 기울기가 L′(a)입니다.</p>
+        </div>
+      </div>
+
+      <div class="dl-kpi" id="dl-a2-kpi"></div>
+      <p class="dl-fml" id="dl-a2-fml"></p>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.1rem;">손으로 확인하기</p>
+      <div class="dl-axis">
+        <label>내가 찾은 최적 a = <input class="dl-in num" id="dl-hand-a" type="number" step="0.001" inputmode="decimal" aria-label="내가 찾은 최적의 a"></label>
+        <button class="btn pri" type="button" onclick="dlHandCheck()">확인</button>
+        <button class="btn" type="button" onclick="dlBestA()">최적 a 보기</button>
+      </div>
+      <div class="dl-fb" id="dl-a2-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="dl-fold" data-lock="a2-obs" data-lockmsg="a 슬라이더를 움직이고 [확인]을 한 번 누르면 열립니다.">
+        <summary>단계 1 · 관찰 — 잔차가 한쪽으로 쏠릴 때</summary>
+        <div class="bd">
+          <p>a를 작게 하면 대부분의 점이 직선 <b>위</b>에 남아 파란 선분만 길어지고,
+            a를 크게 하면 점들이 직선 <b>아래</b>로 내려가 빨간 선분만 길어집니다.
+            <b>최적인 a에서는 파랑과 빨강이 섞여 있고, 정사각형 넓이의 합이 가장 작습니다.</b></p>
+          <p>여기서 중요한 것은 <b>“잔차의 합이 0”이 최적의 기준이 아니라는 점</b>입니다.
+            부호가 반대인 잔차는 더할 때 서로 상쇄되기 때문에, 아주 나쁜 직선에서도 잔차의 합이 0이 될 수 있습니다.
+            그래서 <b>제곱해서 더한 뒤 평균</b>을 냅니다(24차시).</p>
+          <p>온실가스–해수면 자료를 골랐다면 다른 것이 보입니다. 최적의 a(≒ 1.834)로 맞추어도
+            <b>x가 작은 왼쪽 점들은 거의 모두 직선 위에 남습니다</b>(잔차가 +2 ~ +5cm).
+            y = ax 는 반드시 <b>원점을 지나야</b> 하는데 이 자료는 x = 0 에서 y가 0이 아니기 때문입니다.
+            교과서가 제시한 추세선은 <b>y = 1.08x + 9</b> 이고, 이 <b>+9</b> 가 바로 y = ax 로는 담을 수 없는 부분입니다.
+            이럴 때는 <b>y = ax + b</b> 가 필요합니다(22·23차시).</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="aimGoLesson('trend','22차시')">22·23차시 · 추세선 y = ax + b 보기</button></div>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a2-sum" data-lockmsg="a 슬라이더를 움직이고 [확인]을 한 번 누르면 열립니다.">
+        <summary>단계 2 · 정리 — 교차로 자료의 L(a) 계산</summary>
+        <div class="bd">
+          <div class="dl-scroll">
+            <table class="dl-tbl">
+              <tr><th>차량 수 x</th><th>통과 시간 y</th><th>예측값 ax</th><th>잔차 y − ax</th></tr>
+              <tr><td>2</td><td>3</td><td>2a</td><td>3 − 2a</td></tr>
+              <tr><td>3</td><td>4</td><td>3a</td><td>4 − 3a</td></tr>
+              <tr><td>3</td><td>8</td><td>3a</td><td>8 − 3a</td></tr>
+              <tr><td>4</td><td>7</td><td>4a</td><td>7 − 4a</td></tr>
+              <tr><td>5</td><td>9</td><td>5a</td><td>9 − 5a</td></tr>
+              <tr><td>5</td><td>10</td><td>5a</td><td>10 − 5a</td></tr>
+            </table>
+          </div>
+          <p class="dl-fml">L(a) = { (3−2a)² + (4−3a)² + (8−3a)² + (7−4a)² + (9−5a)² + (10−5a)² } ÷ 6
+     = (<b>88</b>a² − <b>330</b>a + <b>319</b>) ÷ 6</p>
+          <p>이 식은 a에 대한 <b>이차함수</b>이고 a²의 계수 88이 양수이므로 아래로 볼록합니다.
+            따라서 꼭짓점에서 최솟값을 가집니다.</p>
+          <p class="dl-fml">a = 330 ÷ (2 × 88) = 330 ÷ 176 = <b>1.875</b>,   L(1.875) = 9.625 ÷ 6 ≒ <b>1.60</b></p>
+          <p>세 계수 88, 330, 319는 각각 <b>Σx² = 88</b>, <b>2Σxy = 330</b>, <b>Σy² = 319</b>입니다.
+            그러므로 어떤 자료에서도 최적의 a는 <b>Σxy ÷ Σx²</b> 로 한 번에 구할 수 있습니다.
+            여러분이 슬라이더로 찾은 값과 비교해 보세요.</p>
+          <span class="dl-src">씨마스 「인공지능 수학」 Ⅳ p.154~156 손실함수 계산 과정을 재구성</span>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a2-def" data-lockmsg="a 슬라이더를 움직이고 [확인]을 한 번 누르면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 오차와 손실함수</summary>
+        <div class="bd">
+          <p>실제 측정값 yᵢ (i = 1, 2, …, n)와 추세선 f(x) = ax (a는 상수)를 이용하여 구한 예측값 axᵢ 에 대하여</p>
+          <ul>
+            <li><b>오차(잔차)</b> : y₁ − ax₁, y₂ − ax₂, …, yₙ − axₙ</li>
+            <li><b>손실함수</b> : L(a) = { (y₁ − ax₁)² + (y₂ − ax₂)² + ⋯ + (yₙ − axₙ)² } ÷ n</li>
+          </ul>
+          <p>손실함수는 <b>오차의 제곱의 평균</b>이므로 그 값이 작을수록 예측값과 실제 측정값의 차이가 전체적으로 작습니다.
+            인공지능은 이 값을 <b>지표</b>로 삼아 최적인 추세선을 찾습니다.
+            평균제곱오차(MSE, Mean Squared Error)라고도 부릅니다.</p>
+          <p>고등학교 교육과정에서는 추세선의 관계식이 <b>f(x) = ax</b> 인 손실함수만 다룹니다.</p>
+          <details class="dl-fold">
+            <summary>교과서에 따라 다른 점 — n으로 나누는가</summary>
+            <div class="bd">
+              <p>씨마스 교과서는 손실함수를 <b>오차의 제곱의 평균</b>(÷ n)으로 정의하고, 동아 교과서는
+                <b>오차의 제곱의 합</b>(나누지 않음)으로 정의합니다. 최솟값을 주는 a는 <b>두 정의에서 같습니다</b>
+                (a = Σxy ÷ Σx²). 다만 L(a)의 값과 L′(a)의 값이 n배 차이 나므로,
+                <b>경사하강법의 학습률도 n배 차이</b>가 납니다.</p>
+              <p>이 웹 도구는 <b>÷ n (평균제곱오차, MSE)</b> 규약을 씁니다. 동아 교과서로 손계산한 값과 비교할 때는
+                화면의 L(a)에 n을 곱해 보세요.</p>
+              <span class="dl-src">씨마스 「인공지능 수학」 Ⅳ p.155 / 동아출판 「인공지능 수학」 Ⅳ p.137 두 정의 상자를 대조</span>
+            </div>
+          </details>
+          <div class="dl-tbrow">
+            <figure>
+              <img src="assets/textbook-local/씨마스4_p155_손실함수.jpg" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 Ⅳ p.155 (수업용)</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/동아4_p137_손실함수.jpg" alt="교과서 지면(수업용)" loading="lazy"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아 Ⅳ (수업용)</figcaption>
+            </figure>
+          </div>
+          <span class="dl-src">씨마스 「인공지능 수학」 Ⅳ p.155 ‘오차와 손실함수’ 정의 상자를 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 내 자료의 L(a)</h3>
+      <p>[활동 1에서 정리한 자료]로 바꾼 뒤, 아래 세 수를 표에서 직접 세어 적고
+        최적의 a를 <b>손으로</b> 구해 보세요. 화면의 값과 같은지 확인합니다.</p>
+      <div class="dl-axis">
+        <label>Σx² = <input class="dl-in num" id="dl-sxx" type="number" step="any" inputmode="decimal" aria-label="x제곱의 합"></label>
+        <label>Σxy = <input class="dl-in num" id="dl-sxy" type="number" step="any" inputmode="decimal" aria-label="xy의 합"></label>
+        <button class="btn pri" type="button" onclick="dlSumCheck()">확인</button>
+      </div>
+      <div class="dl-fb" id="dl-a2-sumfb"></div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ 활동 3 : 경사하강법 실행 ─────────────────────────────────── -->
+  <div class="tpanel" id="dl2">
+    <div class="card" id="dl-act3" data-no-toggle="1">
+      <h3>활동 3 · 「기계에게 시켜 보기」 — 경사하강법 실행</h3>
+      <p>활동 2에서는 <b>사람이</b> 슬라이더를 움직여 최적의 a를 찾았습니다.
+        인공지능은 이 일을 <b>스스로</b> 합니다. 방법은 26차시에서 배운 그대로입니다.</p>
+      <p class="dl-fml">aₙ₊₁ = aₙ − k · L′(aₙ)      (k는 학습률, L′(a)는 손실함수의 미분계수)</p>
+      <p>지금 자리의 <b>접선의 기울기 L′(a)</b>를 보고, 기울기가 양수면 왼쪽으로, 음수면 오른쪽으로
+        <b>k만큼의 비율로</b> 한 걸음 옮기는 것을 반복합니다.</p>
+      <p>먼저 예상해 보세요. 학습률 k를 아주 크게(예: 0.1) 주면 어떤 일이 일어날까요?</p>
+      <div class="chips" id="dl-a3-guess">
+        <button class="chip" type="button" onclick="dlA3Guess('fast',this)">더 빨리 최솟값에 도착한다</button>
+        <button class="chip" type="button" onclick="dlA3Guess('zig',this)">좌우로 튀며 왔다 갔다 한다</button>
+        <button class="chip" type="button" onclick="dlA3Guess('div',this)">점점 멀어져 발산한다</button>
+      </div>
+      <p class="status" id="dl-a3-gmsg">예상을 고르기 전에는 실행 패널이 잠겨 있습니다.</p>
+    </div>
+
+    <div class="card dl-veil" id="dl-a3-panel" data-no-toggle="1">
+      <h3>조작 — 초깃값과 학습률을 정하고 굴려 보기</h3>
+      <div class="dl-axis">
+        <label>초깃값 a₀ = <input class="dl-in num" id="dl-a0" type="number" step="any" value="0" inputmode="decimal" aria-label="초깃값 a0"></label>
+        <label>학습률 k = <input class="dl-in num" id="dl-k" type="number" step="any" value="0.01" inputmode="decimal" aria-label="학습률 k"></label>
+        <label>반복 횟수 = <input class="dl-in num" id="dl-iter" type="number" min="1" max="60" step="1" value="20" inputmode="numeric" aria-label="반복 횟수"></label>
+      </div>
+      <p class="mat-label" style="text-align:left;">학습률 프리셋 — 네 가지 결말을 모두 겪어 보세요
+        <span style="text-transform:none;letter-spacing:0;">(자료에 맞는 안전 상한의 몇 배인지로 정합니다)</span></p>
+      <div class="chips" id="dl-kpre">
+        <button class="chip" type="button" onclick="dlKPre(0.05,this)">상한의 0.05배 — 너무 느림</button>
+        <button class="chip on" type="button" onclick="dlKPre(0.5,this)">상한의 0.5배 — 가장 빠름</button>
+        <button class="chip" type="button" onclick="dlKPre(0.95,this)">상한의 0.95배 — 진동</button>
+        <button class="chip" type="button" onclick="dlKPre(1.4,this)">상한의 1.4배 — 발산</button>
+      </div>
+      <p class="dl-hint" id="dl-kpre-msg">교차로 자료에서 안전 상한은 n ÷ Σx² = 6 ÷ 88 ≒ <b>0.068</b> 입니다.
+        직접 값을 써 넣어도 됩니다.</p>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="dlGdStep()">한 스텝 →</button>
+        <button class="btn pri" type="button" onclick="dlGdRun()">자동 실행 ▶</button>
+        <button class="btn" type="button" onclick="dlGdReset()">초기화</button>
+      </div>
+      <p class="status" id="dl-gd-st">[한 스텝]을 누르면 ① 접선 기울기 계산 → ② 부호 판정 → ③ 이동의 세 단계가 순서대로 표시됩니다.</p>
+      <p class="dl-fml" id="dl-gd-fml">aₙ₊₁ = aₙ − k · L′(aₙ)</p>
+
+      <div class="dl-2up">
+        <div>
+          <canvas class="dl-cv" id="dl-gd-lc" aria-label="손실함수 곡선 위에서 a가 이동하는 자취" role="img"></canvas>
+          <p class="dl-cvcap">손실함수 곡선 위의 공이 최솟값을 향해 굴러 내려갑니다. 점선은 지금 자리의 접선입니다.</p>
+        </div>
+        <div>
+          <canvas class="dl-cv" id="dl-gd-ch" aria-label="반복 횟수에 따른 손실함수 값의 변화" role="img"></canvas>
+          <p class="dl-cvcap">반복 횟수(epoch)에 따른 L(a)의 변화입니다. 잘 학습되면 오른쪽으로 갈수록 낮아집니다.</p>
+        </div>
+      </div>
+      <canvas class="dl-cv" id="dl-gd-nl" aria-label="수직선 위에 찍힌 a0, a1, a2 자취" role="img"></canvas>
+      <p class="dl-cvcap">수직선 위 자취 — a₀, a₁, a₂, … 가 최적값(초록 눈금)에 다가가는지, 넘나드는지, 멀어지는지 보세요.</p>
+
+      <div class="dl-kpi" id="dl-gd-kpi"></div>
+      <div class="dl-warn" id="dl-gd-warn"></div>
+      <div class="dl-good" id="dl-gd-good"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.1rem;">반복표</p>
+      <div class="dl-scroll"><table class="dl-tbl dl-gdtbl" id="dl-gd-tbl"><tbody></tbody></table></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="dl-fold" data-lock="a3-obs" data-lockmsg="서로 다른 학습률로 2번 이상 자동 실행하면 열립니다.">
+        <summary>단계 1 · 관찰 — 한 걸음의 크기가 만든 세 가지 결말</summary>
+        <div class="bd">
+          <p>교차로 자료에서 L(a) = (88a² − 330a + 319) ÷ 6 이므로
+            L′(a) = (176a − 330) ÷ 6 이고, a₀ = 0에서 첫 기울기는 <b>L′(0) = −55</b> 입니다.
+            기울기가 음수이므로 a는 <b>오른쪽</b>(커지는 쪽)으로 움직입니다.
+            k = 0.01이면 첫 걸음은 0.55, 그래서 a₁ = 0.55 입니다.</p>
+          <ul>
+            <li><b>상한의 0.05배</b> (k ≒ 0.0034) — 첫 걸음이 0.19뿐이라 20번을 굴려도 a ≒ 1.65.
+              방향은 옳지만 <b>너무 느립니다</b>(남은 거리에 매번 0.9가 곱해집니다).</li>
+            <li><b>상한의 0.5배</b> (k ≒ 0.034) — 놀랍게도 <b>단 한 걸음</b>에 1.875에 정확히 도착합니다.</li>
+            <li><b>상한의 0.95배</b> (k ≒ 0.065) — 최솟값을 지나쳤다 되돌아오며 <b>좌우로 흔들리다</b> 천천히 수렴합니다.</li>
+            <li><b>상한의 1.4배</b> (k ≒ 0.095) — 걸음마다 더 크게 튀어 나가 손실이 폭발합니다. <b>발산</b>.</li>
+          </ul>
+          <p>왜 이런 차이가 날까요? 갱신식을 최적값 a*를 기준으로 정리하면</p>
+          <p class="dl-fml">aₙ₊₁ − a* = ( 1 − k · <b>2Σx² ÷ n</b> ) ( aₙ − a* )</p>
+          <p>즉 최적값까지의 거리에 매번 같은 수가 곱해집니다.
+            이 수의 절댓값이 1보다 작아야 가까워지고, 1보다 크면 멀어집니다.
+            0이면 한 걸음에 도착하고, −1에 가까우면 부호가 바뀌며 오래 흔들립니다.
+            <b>학습률의 안전한 상한은 자료의 크기(Σx²)에 따라 달라집니다.</b></p>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a3-sum" data-lockmsg="서로 다른 학습률로 2번 이상 자동 실행하면 열립니다.">
+        <summary>단계 2 · 정리 — 내 자료에 알맞은 학습률 찾는 법</summary>
+        <div class="bd">
+          <p>자료의 x값이 크면(예: 연도 2020, 인구 50만) Σx²이 아주 커져서
+            <b>알맞은 k가 아주 작아집니다.</b> 그래서 실제 탐구에서는 학습률을 정하기 전에
+            x를 100으로 나누거나 (x − x̄)로 옮기는 <b>변환</b>을 먼저 합니다(활동 1의 전처리 ③단계).</p>
+          <p>화면 위쪽 <b>[안전한 k의 최대]</b> 칸에 지금 자료에 대한 상한 n/Σx² 를 계산해 두었습니다.
+            그 값보다 작게 잡으면 수렴하고, 그 값의 절반쯤이 대체로 가장 빠릅니다.
+            직접 확인해 보세요.</p>
+          <p>이것이 <b>하이퍼파라미터</b>입니다. 데이터로 학습되는 값(a)과 달리
+            <b>사람이 미리 정해 주어야 하는 값</b>(k, 반복 횟수, 초깃값)이며,
+            정하는 근거를 보고서에 적어야 합니다.</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="aimGoLesson('optim','24차시')">24~26차시 · 손실함수와 경사하강 다시 보기</button>
+            <button class="btn" type="button" onclick="go('gdsheet')">27차시 · 시트로 학습 루프 만들기</button></div>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a3-def" data-lockmsg="서로 다른 학습률로 2번 이상 자동 실행하면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 경사하강법과 최적화</summary>
+        <div class="bd">
+          <p><b>최적화</b>는 주어진 조건과 상황에서 <b>손실함수의 값을 최소화하는 값을 찾는 기법</b>입니다.
+            그중 <b>경사하강법</b>은 지금 위치에서 손실함수의 미분계수(접선의 기울기)를 구하여
+            그 <b>반대 방향</b>으로 조금씩 이동하며 최솟값을 찾아가는 방법입니다.</p>
+          <p class="dl-fml">aₙ₊₁ = aₙ − k · L′(aₙ),   L′(a) = { 2Σx²·a − 2Σxy } ÷ n</p>
+          <ul>
+            <li>L′(aₙ) &gt; 0 이면 a는 <b>작아지는</b> 쪽(왼쪽)으로 이동합니다.</li>
+            <li>L′(aₙ) &lt; 0 이면 a는 <b>커지는</b> 쪽(오른쪽)으로 이동합니다.</li>
+            <li>L′(aₙ) = 0 이면 더 이상 움직이지 않습니다 — 이때의 a가 최적값입니다.</li>
+          </ul>
+          <p>인공지능이 “학습했다”는 말은, 이 갱신을 수없이 반복해
+            <b>가중치(여기서는 a)의 값이 바뀌었다</b>는 뜻입니다.</p>
+          <span class="dl-src">씨마스 「인공지능 수학」 Ⅴ p.182 ‘최적화’ 정의 및 Ⅳ 경사하강법 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 실행 기록 남기기</h3>
+      <p>내 자료로 <b>세 가지 학습률</b>을 실행해 보고, 아래 표에 결과를 적으세요.
+        표의 내용은 [D]란 요약에 함께 담깁니다.</p>
+      <div class="dl-scroll">
+        <table class="dl-tbl">
+          <tr><th>학습률 k</th><th>반복 횟수</th><th>마지막 a</th><th>마지막 L(a)</th><th>결말(수렴 / 진동 / 발산)</th></tr>
+          <tr><td class="no">1</td><td colspan="4" style="text-align:left;padding:0;">
+            <input class="dl-in" id="dl-log1" type="text" style="width:100%;border-radius:0;border-color:transparent;font-family:var(--sans);" placeholder="예) k=0.0034(상한의 0.05배), 20회, a=1.65, L=1.72 — 아직 수렴 못 함"></td></tr>
+          <tr><td class="no">2</td><td colspan="4" style="text-align:left;padding:0;">
+            <input class="dl-in" id="dl-log2" type="text" style="width:100%;border-radius:0;border-color:transparent;font-family:var(--sans);" placeholder="예) k=0.034(상한의 0.5배), 1회, a=1.875, L=1.60 — 한 걸음에 수렴"></td></tr>
+          <tr><td class="no">3</td><td colspan="4" style="text-align:left;padding:0;">
+            <input class="dl-in" id="dl-log3" type="text" style="width:100%;border-radius:0;border-color:transparent;font-family:var(--sans);" placeholder="예) k=0.095(상한의 1.4배), 8회, a가 화면 밖 — 발산"></td></tr>
+        </table>
+      </div>
+      <div class="btn-row"><button class="btn" type="button" onclick="dlNoteSave()">기록 저장</button></div>
+      <p class="status" id="dl-log-st"></p>
+    </div>
+  </div>
+
+  <!-- ── 탭 ④ 활동 4 : 데이터 유형별 도구 지도 · 보고서 [D]란 ──────────── -->
+  <div class="tpanel" id="dl3">
+    <div class="card" id="dl-act4" data-no-toggle="1">
+      <h3>활동 4 · 「도구 상자를 열다」 — 내 자료에 맞는 수학 도구 고르기</h3>
+      <p>1~4단원에서 배운 도구는 모두 <b>“무엇을 재는가”</b>가 다릅니다.
+        수치 자료에는 추세선과 손실함수, 이미지에는 행렬과 해밍 거리·합성곱,
+        텍스트에는 집합과 유사도 — 자료의 <b>유형</b>이 도구를 먼저 정합니다.</p>
+      <p>내 자료는 어떤 유형인가요? 화면 위쪽 <b>[내 탐구의 데이터 유형은?]</b> 에서 골라 보세요.
+        고르면 그 유형에 맞는 뷰로 가는 안내가 열립니다.</p>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="dlSee(3,'dl-type')">↑ 유형 고르기로 이동</button>
+      </div>
+      <span class="dl-src">씨마스 「인공지능 수학」 Ⅴ p.192 ‘탐구 수행’ 및 p.194~197 프로젝트 활동 예시 1·2의
+        ‘주제 → 수학 탐구 주제’ 짝짓기 방식을 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>도구 지도 — 유형별로 어느 차시가 답을 갖고 있나</h3>
+      <div class="dl-toolmap">
+        <div class="dl-tool">
+          <h4>수치·표 자료</h4>
+          <p>기온과 판매량, 배출량과 해수면, 공부 시간과 점수처럼 <b>두 수 사이의 관계</b>를 묻는 탐구.</p>
+          <p><b>도구</b> — 산점도·추세선(22차시) → 과적합 점검(23차시) → 손실함수 L(a)(24차시) →
+            경사하강법(25·26차시) → 학습 루프(27차시). 확률로 예측한다면 20·21차시.</p>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="aimGoLesson('trend','22차시')">22·23차시 trend</button>
+            <button class="btn" type="button" onclick="aimGoLesson('optim','24차시')">24~26차시 optim</button>
+            <button class="btn" type="button" onclick="go('gdsheet')">27차시 gdsheet</button>
+            <button class="btn" type="button" onclick="aimGoLesson('prob','20차시')">20·21차시 prob</button>
+          </div>
+        </div>
+        <div class="dl-tool">
+          <h4>이미지 자료</h4>
+          <p>사진으로 분류하거나 세는 탐구(분리수거, 병해충 잎, 표지판, 잔반 사진 등).</p>
+          <p><b>도구</b> — 픽셀 행렬로 표현(12차시) → 이진화·해밍 거리로 분류(13차시) →
+            행렬 연산으로 변형(14차시) → 합성곱·커널(15·16차시) → 풀링(17차시) →
+            CNN 파이프라인(18차시) → 객체 탐지(19차시).</p>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="go('mnist')">12차시 mnist</button>
+            <button class="btn" type="button" onclick="go('hamming')">13차시 hamming</button>
+            <button class="btn" type="button" onclick="go('pipeline')">18차시 pipeline</button>
+            <button class="btn" type="button" onclick="go('detect')">19차시 detect</button>
+          </div>
+        </div>
+        <div class="dl-tool">
+          <h4>텍스트 자료</h4>
+          <p>후기·설문 서술·기사·댓글처럼 <b>글</b>을 모아 무엇이 중요한지, 얼마나 비슷한지 묻는 탐구.</p>
+          <p><b>도구</b> — 전처리와 단어집합(6차시) → 벡터로 표현(7차시) → TF-IDF로 핵심어 뽑기(8차시) →
+            유클리드·코사인 유사도(9차시) → 자카드와 감성 분석(10차시) → 대시보드·추천(11차시).</p>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="aimGoLesson('text','6차시')">6·7차시 text</button>
+            <button class="btn" type="button" onclick="go('tfidf')">8차시 tfidf</button>
+            <button class="btn" type="button" onclick="go('sim')">9차시 sim</button>
+            <button class="btn" type="button" onclick="go('senti')">10차시 senti</button>
+          </div>
+        </div>
+        <div class="dl-tool">
+          <h4>두 가지 이상 섞였을 때</h4>
+          <p>사진과 설문을 함께 모았다면 <b>둘로 나누어</b> 각각 도구를 붙이고, 마지막에 결론에서 합칩니다.</p>
+          <p>예) 급식 잔반 탐구 — <b>사진</b>은 13차시 해밍 거리로 잔반 유형을 분류하고,
+            <b>무게 표</b>는 22·24차시로 요일별 추세를 예측한 다음, 두 결과를 한 문단으로 잇습니다.</p>
+          <p>도구를 <b>많이</b> 쓰는 것이 좋은 탐구가 아닙니다. <b>질문에 답하는 데 꼭 필요한 도구</b>만 고르세요.</p>
+        </div>
+      </div>
+      <div class="dl-tbrow">
+        <figure>
+          <img src="assets/textbook-local/씨마스5_p194_페트병해밍.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 Ⅴ p.194 (수업용)</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/textbook-local/씨마스5_p196_임베딩.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 Ⅴ p.196 (수업용)</figcaption>
+        </figure>
+      </div>
+      <span class="dl-src">씨마스 「인공지능 수학」 Ⅴ p.194~195(페트병 분리수거 — 이미지의 표현과 해밍 거리) 및
+        p.196~197(ChatGPT 원리 — 단어 임베딩 벡터 연산) 프로젝트 예시를 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>교과서 예시 두 개 — 이렇게 짝지었습니다</h3>
+      <details class="dl-fold">
+        <summary>예시 1 · 「인공지능을 이용한 페트병 분리수거」 — 이미지 자료</summary>
+        <div class="bd">
+          <p><b>탐구 주제</b> 인공지능을 이용한 페트병 분리수거 /
+            <b>수학 탐구 주제</b> 이미지의 표현과 해밍 거리를 이용한 분류 방법</p>
+          <p><b>수행</b> 페트병과 캔의 이미지를 9×9 이진행렬로 옮겨 적고, 기준 페트병과의 해밍 거리를 계산해
+            <b>0에 가까운 것</b>을 페트병으로 분류했습니다.</p>
+          <p><b>한계</b> 크기가 다르거나 형태가 왜곡된 이미지는 정확히 분류하지 못했습니다.
+            해밍 거리는 <b>자리별 차이만</b> 보므로 전체적인 모양의 차이를 재기 어렵습니다
+            — 13차시 마지막에 직접 확인한 그 한계입니다.</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="go('hamming')">13차시로 확인하기</button></div>
+          <span class="dl-src">씨마스 「인공지능 수학」 Ⅴ p.194~195 프로젝트 활동 예시 1을 요약·재구성</span>
+        </div>
+      </details>
+      <details class="dl-fold">
+        <summary>예시 2 · 「n-gram으로 분리수거 챗봇 이해하기」 — 텍스트 자료</summary>
+        <div class="bd">
+          <p><b>탐구 주제</b> n-gram 모델을 활용하여 분리수거 챗봇 이해하기</p>
+          <p><b>데이터 정리</b> 자주 나타나는 두 단어 조합(2-gram)의 빈도를 표로 정리했습니다 —
+            ‘음식물 쓰레기’ 80회, ‘플라스틱 병’ 75회, ‘종이컵 재활용’ 65회 …
+            빈도가 높다는 것은 사용자가 그 품목의 분리 방법을 자주 <b>헷갈린다</b>는 뜻입니다.</p>
+          <p><b>수행</b> ‘코팅된 종이컵’이 1000번, 그 뒤에 ‘종이류’가 500번 나왔다면
+            다음 단어가 ‘종이류’일 확률은 500/1000 = 1/2 입니다. 챗봇은 이 <b>상대도수</b>로 다음 단어를 예측합니다
+            — 20·21차시에서 배운 그 상대도수입니다.</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="go('tfidf')">8차시 빈도 분석으로</button></div>
+          <span class="dl-src">동아출판 「인공지능 수학」 Ⅴ p.166~169 인공지능 수학 탐구 예시를 요약·재구성</span>
+        </div>
+      </details>
+      <details class="dl-fold">
+        <summary>예시 3 · 「온실가스 배출량과 해수면 높이」 — 수치 자료(오늘 프리셋)</summary>
+        <div class="bd">
+          <p>1991~2021년 우리나라 온실가스 총배출량 x(억 톤 CO₂eq)와 해수면 높이 y(cm)를
+            31행 표로 모아 산점도로 그렸습니다. 교과서가 제시한 추세선은 <b>y = 1.08x + 9</b> 입니다.</p>
+          <p>오늘 우리 도구는 y = ax 뿐이므로 이 자료를 넣으면 <b>b = 9만큼의 쏠림</b>이 잔차에 그대로 남습니다.
+            활동 2에서 [온실가스와 해수면] 프리셋을 골라 그 쏠림을 눈으로 확인해 보세요.
+            <b>“도구가 자료에 맞지 않는다”는 것을 발견하는 것도 탐구의 결과</b>입니다.</p>
+          <div class="btn-row"><button class="btn pri" type="button" onclick="dlPresetGo('ghg')">이 자료를 표에 넣고 활동 2로</button></div>
+          <span class="dl-src">동아출판 「인공지능 수학」 Ⅴ p.171 온실가스 배출량·해수면 높이 자료(1991~2021)와
+            추세선 y = 1.08x + 9 를 그대로 사용</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>결과 옮기기 — 보고서 [D]란(탐구 수행·결과)</h3>
+      <p>지금까지의 조작 결과가 아래 요약으로 정리되어 있습니다.
+        <b>[[D]란에 붙여넣기]</b>를 누르면 이 내용이 프로젝트 보고서의 [D]란에 저장되어
+        30차시 <b>project</b> 뷰에서 그대로 이어서 작성할 수 있습니다.</p>
+      <div class="dl-dbox"><pre id="dl-dsum">활동 1~3을 진행하면 여기에 요약이 나타납니다.</pre></div>
+      <div class="btn-row" style="margin-top:0.8rem;">
+        <button class="btn pri" type="button" onclick="dlToD()">[D]란에 붙여넣기</button>
+        <button class="btn" type="button" onclick="dlCopy()">클립보드로 복사</button>
+        <button class="btn" type="button" onclick="dlSumRefresh()">요약 다시 만들기</button>
+        <button class="btn" type="button" onclick="go('project')">30차시 project 뷰로</button>
+      </div>
+      <p class="status" id="dl-d-st"></p>
+      <p class="dl-hint">저장 위치는 이 기기의 <b>localStorage['aimath.project']</b> 안 <b>D</b> 항목입니다.
+        [A]·[B]·[C]·[E]·[F]란의 내용은 건드리지 않고 <b>[D]란만</b> 덮어씁니다.
+        기기 사이 자동 공유는 되지 않으므로, 모둠에서 합칠 때는 [클립보드로 복사] 후
+        한 사람의 기기에 붙여 넣거나 학급 공유 자료함을 이용하세요.</p>
+      <div class="dl-fb" id="dl-d-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="dl-fold" data-lock="a4-obs" data-lockmsg="데이터 유형을 한 번 고르면 열립니다.">
+        <summary>단계 1 · 관찰 — 같은 주제, 다른 도구</summary>
+        <div class="bd">
+          <p>‘급식 잔반 줄이기’라는 <b>하나의 주제</b>도 무엇을 모으느냐에 따라 도구가 완전히 달라집니다.</p>
+          <div class="dl-scroll">
+            <table class="dl-tbl">
+              <tr><th>모은 자료</th><th>물음</th><th>도구</th><th>차시</th></tr>
+              <tr><td>날짜별 잔반 무게 표</td><td>다음 주 잔반량은?</td><td>추세선·손실함수·경사하강</td><td>22·24·26</td></tr>
+              <tr><td>잔반 사진</td><td>어떤 반찬이 남았나?</td><td>이진행렬·해밍 거리</td><td>12·13</td></tr>
+              <tr><td>급식 만족도 서술 설문</td><td>학생들이 무엇을 싫어하나?</td><td>TF-IDF·감성 분석</td><td>8·10</td></tr>
+              <tr><td>요일·메뉴별 잔반 여부</td><td>어떤 요일에 많이 남나?</td><td>조건일 때의 상대도수</td><td>21</td></tr>
+            </table>
+          </div>
+          <p>같은 주제에서 <b>물음이 도구를 정하고, 도구가 모아야 할 자료를 정합니다.</b>
+            그래서 28차시에 계획서를 먼저 쓴 것입니다.</p>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a4-sum" data-lockmsg="데이터 유형을 한 번 고르면 열립니다.">
+        <summary>단계 2 · 정리 — 결과를 ‘시각화’한다는 것</summary>
+        <div class="bd">
+          <p>표를 그림으로 바꾸면 <b>경향과 패턴을 한눈에</b> 볼 수 있습니다.
+            오늘 우리가 만든 시각화는 네 가지였습니다.</p>
+          <ul>
+            <li><b>산점도</b> — 두 변량의 관계와 이상치의 위치</li>
+            <li><b>잔차 선분·정사각형</b> — 오차가 어디서 얼마나 나는지</li>
+            <li><b>손실함수 곡선</b> — 기울기 a를 바꿀 때 손실이 어떻게 변하는지</li>
+            <li><b>epoch–손실 꺾은선과 수직선 자취</b> — 학습이 잘되고 있는지</li>
+          </ul>
+          <p>보고서에는 <b>그림 한 장 + 그 그림에서 읽은 사실 한 문장</b>을 짝지어 넣으세요.
+            그림만 붙이고 설명이 없으면 근거가 되지 못합니다.</p>
+          <span class="dl-src">동아출판 「인공지능 수학」 Ⅴ p.168 ‘데이터를 시각화하여 표현하면 경향이나 패턴을 한눈에
+            파악할 수 있다’ 서술을 재구성</span>
+        </div>
+      </details>
+
+      <details class="dl-fold" data-lock="a4-def" data-lockmsg="데이터 유형을 한 번 고르면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 탐구 수행 단계에서 해야 할 일</summary>
+        <div class="bd">
+          <p>수학적 아이디어를 이용하여 탐구 주제를 수행하고 해결합니다.
+            인공지능을 적용하는 알고리즘을 세워 보고, 공개된 인공지능 모델을 문제 해결이나 예측에 활용하거나,
+            <b>공학 도구</b>를 이용하여 인공지능 학습 모델을 만듭니다.</p>
+          <p>이때 인공지능이 데이터를 분석하고 예측하는 과정을 살펴보며,
+            <b>선택한 기술이 탐구 주제에 적합한지</b> 반드시 검토합니다.
+            적합하지 않다면 도구를 바꾸거나 자료를 더 모으러 <b>이전 단계로 돌아갑니다.</b></p>
+          <span class="dl-src">씨마스 「인공지능 수학」 Ⅴ p.192 ‘3 탐구 수행’ 및 동아출판 Ⅴ p.168 ‘4 데이터 분석 및 탐구 수행’
+            서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="dl-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        분석 전에 <b>결측값과 이상치</b>를 처리해야 합니다. 어떻게 처리했는지와 <b>그 이유</b>까지
+        적어야 결과를 믿을 수 있습니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        정리한 자료는 <b>산점도 → 추세선 y = ax → 손실함수 L(a) → 경사하강법</b>의 순서로 이어져,
+        기계가 스스로 최적의 a를 찾는 과정까지 재현할 수 있습니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        도구는 <b>자료의 유형과 물음</b>이 정합니다. 수치는 추세선·손실함수, 이미지는 행렬·해밍 거리·합성곱,
+        텍스트는 집합·유사도 — <b>꼭 필요한 도구만</b> 고릅니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문. 내 질문에 답하려면 어떤 수학 도구를 골라 어떻게 연결해야 하는가?</b></p>
+    <textarea class="dl-ta dl-note" id="dl-ans1" style="min-height:5rem;"
+      placeholder="① 내 탐구의 물음 —&#10;② 자료의 유형과 그래서 고른 도구 —&#10;③ 도구를 어떤 순서로 이었는가 —"></textarea>
+    <details class="dl-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>먼저 물음이 “예측인가, 분류인가, 비슷함 재기인가”를 정합니다.
+          예측이면 두 수를 짝지어 산점도로 그려 추세선을 세우고, 손실함수로 ‘가장 좋은 선’을 정의한 뒤
+          경사하강법으로 그 선을 찾습니다. 분류라면 자료를 행렬이나 집합으로 바꾸어 거리·유사도를 재고
+          기준값을 정해 판정합니다.</p>
+        <p>어떤 길을 가더라도 공통된 첫 걸음은 <b>자료를 믿을 수 있게 정리하는 일</b>이고,
+          공통된 마지막 걸음은 <b>결과가 물음에 정말 답하는지 되짚는 일</b>입니다.
+          도구가 자료에 맞지 않았다면 그 사실을 밝히는 것도 정당한 탐구 결과입니다.</p>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="dlAnsSave()">내 답 저장</button></div>
+    <p class="status" id="dl-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="dl-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 30차시 · 100초 발표·동료평가·성찰</strong><br>
+    오늘 [D]란에 담은 수와 그림이 다음 시간 <b>100초 발표</b>의 근거가 됩니다.
+    타이머가 100초를 세는 동안 “무엇을 물었고, 어떤 자료를 어떻게 정리했고, 어떤 수학으로 답했고,
+    그 답을 얼마나 믿을 수 있는지”를 말해야 합니다.
+    청중은 루브릭 A~E로 채점하고, 팀×영역 히트맵으로 우리 반 전체의 강점과 약점이 한눈에 드러납니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('project')">30차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('decision')">돌아보기 · 28차시 탐구 계획</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 학교 데이터 한 장」 — 원자료에서 결론까지</h3>
+    <p class="sub">오늘 만든 도구를 우리 학교 이야기에 그대로 얹어 봅니다.
+      계산의 정확성보다 <b>자료를 정리한 근거와 도구 선택의 타당성</b>이 이 과제의 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 28차시 계획서의 x·y에 해당하는 자료를 <b>15행 이상</b> 모읍니다. 학교에서 구할 수 있는 것
+        (급식 잔반, 도서 대출, 매점 판매, 등교 시각과 지각, 학급 온습도, 학교 앞 통행량 등)이나
+        공공데이터포털·국가통계포털·기상자료개방포털에서 내려받은 자료 모두 좋습니다.
+        출처(기관·자료명·받은 날짜)를 반드시 적습니다.<br>
+        ② 원자료를 <b>손대지 않은 상태로 한 번 캡처</b>해 둡니다. 그다음 결측값·이상치를 처리하고
+        <b>무엇을 어떻게 왜</b> 처리했는지 표로 정리합니다(처리 전 평균 / 처리 후 평균 포함).<br>
+        ③ 29차시 웹 도구(<b>datalab</b>)에 붙여 넣어 산점도를 그리고, y = ax 로
+        <b>손으로 구한 최적 a</b>(= Σxy ÷ Σx²)와 화면의 값을 비교합니다.<br>
+        ④ 경사하강법을 <b>서로 다른 학습률 3개</b>로 실행하여 수렴·진동·발산을 각각 만들어 보고,
+        내 자료에 알맞은 학습률과 그 근거를 씁니다.<br>
+        ⑤ 예측이 <b>실제와 얼마나 맞았는지</b> 확인합니다. 자료 중 2~3행을 미리 빼 두었다가
+        추세선으로 예측한 값과 견주어 오차를 계산합니다(23차시 검증 데이터의 방식).</dd>
+      <dt>제출물</dt>
+      <dd>· 원자료 표와 정리 후 표(A4 1장) + <b>처리 기록 표</b>(처리 대상 / 방법 / 이유)<br>
+        · 산점도·추세선 그림 1장과 손실함수 곡선 그림 1장, 각 그림 아래에 <b>읽은 사실 한 문장</b><br>
+        · 손계산 과정(Σx², Σxy, 최적 a, L(최적 a))과 화면 값의 비교<br>
+        · 학습률 3종 실행 기록표와 “내 자료에 알맞은 k는 ___이고 근거는 ___”<br>
+        · 빼 둔 자료로 검증한 예측 오차와 <b>결론 3~5문장</b>(도구가 맞지 않았다면 그 사실과 이유)<br>
+        · 웹 도구의 [D]란 요약(붙여넣기 또는 캡처)</dd>
+      <dt>평가 관점</dt>
+      <dd>· 결측값·이상치를 <b>탐구 목적에 맞게</b> 처리하고 그 근거를 밝혔는가 <b>[12인수05-02]</b><br>
+        · 배운 수학적 방법 중 <b>주제에 적합한 도구를 선택</b>하고 결과를 산출·시각화했는가 <b>[12인수05-02]</b><br>
+        · 손계산과 도구의 결과를 <b>대조</b>하여 값의 타당성을 확인했는가<br>
+        · 학습률·처리 방법 등 <b>사람이 정한 값</b>의 근거를 제시했는가<br>
+        · 결과의 <b>한계</b>(자료의 양, 도구의 가정, 상관과 인과의 구분)를 스스로 밝혔는가</dd>
+    </dl>
+    <details class="dl-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>탐구 주제 선정이 적합하고 해결하려는 목표가 분명한지, 자료 수집 내용과 탐구 방법이
+          학습에 도움이 되었는지, 결과와 수학적 해결 방안을 설명할 수 있는지를 중심으로 봅니다.
+          이상치를 ‘지웠는가’보다 <b>지울지 남길지 판단한 근거</b>를 평가합니다.</p>
+        <p>x값이 큰 자료(연도·인구 등)를 가져온 학생은 학습률이 커서 곧바로 발산합니다.
+          이때 “x를 100으로 나누어 보자”고 안내하면 전처리 ③단계(변환)의 필요를 스스로 발견합니다.</p>
+        <span class="dl-src">씨마스 「인공지능 수학」 Ⅴ p.187 ‘평가하기’ 평가 항목과 지도서 Ⅴ 평가 유의점 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 자료를 구하고, 그림으로 만들고</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="dl-refs">
+      <a class="dl-ref" href="https://www.data.go.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>🗂️</span>
+        <span class="bd"><span class="tt">공공데이터포털 (data.go.kr)</span>
+          <span class="ds">정부·지자체·공공기관이 개방한 자료를 CSV·엑셀로 내려받을 수 있습니다.
+            내려받아 두 열만 골라 오늘의 붙여넣기 칸에 그대로 넣어 보세요.</span></span>
+      </a>
+      <a class="dl-ref" href="https://kosis.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>📊</span>
+        <span class="bd"><span class="tt">국가통계포털 KOSIS</span>
+          <span class="ds">인구·물가·환경 등 국가 통계를 연도별 표로 제공합니다.
+            연도(x)와 값(y)의 두 열을 뽑기 쉬워 추세선 탐구에 알맞습니다.</span></span>
+      </a>
+      <a class="dl-ref" href="https://aihub.or.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>🤖</span>
+        <span class="bd"><span class="tt">AI 허브 (aihub.or.kr)</span>
+          <span class="ds">인공지능 학습용 데이터를 모아 둔 국내 플랫폼입니다.
+            이미지·텍스트 자료로 탐구할 팀이 먼저 찾아볼 곳입니다.</span></span>
+      </a>
+      <a class="dl-ref" href="https://www.kaggle.com" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>🌐</span>
+        <span class="bd"><span class="tt">Kaggle (캐글)</span>
+          <span class="ds">전 세계에서 공유되는 데이터셋과 분석 사례가 모인 곳입니다.
+            교과서가 소개한 자료 출처 중 하나이며, 영어 자료 읽기 연습도 겸할 수 있습니다.</span></span>
+      </a>
+      <a class="dl-ref" href="https://ncsd.go.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">주제</span>🌱</span>
+        <span class="bd"><span class="tt">지속가능발전포털 (ncsd.go.kr)</span>
+          <span class="ds">SDGs 관련 국내 지표와 자료를 볼 수 있습니다.
+            탐구 주제가 막혔을 때 자료를 먼저 보고 주제를 정하는 방법을 써 보세요.</span></span>
+      </a>
+      <a class="dl-ref" href="https://www.index.go.kr/unity/potal/sdg/SDGMain.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">주제</span>🎯</span>
+        <span class="bd"><span class="tt">지속가능발전목표(SDGs) 지표 — e-나라지표</span>
+          <span class="ds">교과서가 링크로 안내한 SDGs 17개 목표별 지표 페이지입니다.
+            목표를 고르고 그 안의 지표 표를 그대로 자료로 쓸 수 있습니다.</span></span>
+      </a>
+      <a class="dl-ref" href="https://www.geogebra.org/classic" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">공학 도구</span>📐</span>
+        <span class="bd"><span class="tt">지오지브라 클래식 — 표계산기와 추세선</span>
+          <span class="ds">표에 자료를 넣고 [두 변수 회귀 분석]으로 산점도·추세선을 바로 그릴 수 있습니다.
+            도입 영상 ②(허블–르메트르 법칙 분석)에서 쓴 그 도구입니다.</span></span>
+      </a>
+      <a class="dl-ref" href="https://teachablemachine.withgoogle.com" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">공학 도구</span>🧪</span>
+        <span class="bd"><span class="tt">티처블 머신 — 이미지 자료로 탐구할 팀</span>
+          <span class="ds">사진을 클래스별로 올려 분류 모델을 만들고 정확도를 확인할 수 있습니다.
+            교과서 Ⅴ p.195가 페트병 탐구에서 안내한 도구입니다.</span></span>
+      </a>
+      <div class="dl-roomwrap" id="dl-room"></div>
+      <button class="dl-ref dl-refadd" type="button" onclick="dlRefAdd()">
+        <span class="th">➕</span>
+        <span class="bd"><span class="tt">＋ 자료 추가</span>
+          <span class="ds">선생님이 URL과 제목을 입력해 자료를 1개 더 걸 수 있습니다. 이 기기에만 저장됩니다.</span></span>
+      </button>
+    </div>
+    <div class="dl-roomform" id="dl-room-form">
+      <input class="dl-in" id="dl-room-u" type="url" placeholder="https://padlet.com/… 또는 https://drive.google.com/…" aria-label="학급 공유 자료함 주소">
+      <button class="btn pri" type="button" onclick="dlRoomSave()">저장</button>
+      <button class="btn" type="button" onclick="document.getElementById('dl-room-form').classList.remove('on')">취소</button>
+    </div>
+    <p class="status" id="dl-room-st"></p>
+    <p class="status" id="dl-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>29차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>오늘 웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.
+      아래 인쇄용 지면은 웹 활동과 <b>1:1로 대응</b>하며, 그대로 채우면 보고서 [C]·[D]란의 초안이 됩니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('dl-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <button class="ws-btn sec" type="button" onclick="dlToCsv()">📄 지금 표를 CSV로 내보내기 <span class="sz">붙여넣기용 텍스트</span></button>
+    </div>
+    <p class="dl-hint" style="margin-top:0.6rem;">
+      학습지는 ① 원자료 옮겨 적기와 결측값·이상치 표시 ② 처리 기록(방법·이유) ③ 산점도 직접 그리기
+      ④ Σx²·Σxy·최적 a 손계산 ⑤ 경사하강 반복표 손계산 3행 ⑥ 학습률 3종 결말 기록
+      ⑦ 도구 선택 근거와 핵심 질문 서술란으로 구성됩니다.<br>
+      <b>5단원은 프로젝트 차시</b>이므로 별도의 실물 활동지 대신 <b>보고서 양식 A~F</b>(30차시 project 뷰의 [인쇄하기])를
+      함께 배부하세요. 오늘 채운 [D]란이 그 양식의 네 번째 칸입니다.</p>
+    <div id="dl-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="dl-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>29차시 학습지 — 탐구 수행: 데이터·모델링·시각화</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________ / 모둠 ______</span>
+    </div>
+    <p class="note">학습 목표 ① 수집한 데이터의 결측값·이상치를 처리하여 탐구 목적에 맞게 표현할 수 있다. [12인수05-02]<br>
+      학습 목표 ② 추세선·손실함수·경사하강법·유사도 등 배운 수학적 방법 중 탐구 주제에 적합한 도구를 선택·적용하여
+      결과를 산출하고 시각화할 수 있다. [12인수05-02]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:52%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>표에 빈칸이 하나 있으면 어떻게 하는 것이 가장 좋을까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>다른 값과 크게 다른 값(예: 131kg)은 무조건 지워야 할까? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>학습률 k를 크게 하면 항상 더 빨리 학습될까? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — 원자료 옮겨 적고 정리하기</h3>
+    <p class="note">내 탐구의 자료를 옮겨 적으세요. 비어 있는 칸에는 ✕, 이상치로 의심되는 값에는 △ 표시를 합니다.</p>
+    <table>
+      <tr><th style="width:16%;">이름·날짜</th><th style="width:20%;">x = ________</th><th style="width:20%;">y = ________</th><th>표시(✕ / △)</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <table>
+      <tr><th style="width:26%;">처리 대상</th><th style="width:26%;">처리 방법</th><th>그렇게 정한 이유</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>처리 전 y의 평균 = __________ → 처리 후 y의 평균 = __________ (차이 = __________)</p>
+
+    <h3>③ 활동 1 — 산점도 직접 그리기</h3>
+    <p class="note">▼ 가로축에 x, 세로축에 y의 이름과 눈금을 쓰고 점을 찍은 뒤, 눈으로 본 추세선을 그려 보세요.</p>
+    <div class="rule lg"></div>
+
+    <h3>④ 활동 2 — 최적의 a 손으로 구하기</h3>
+    <table>
+      <tr><th>x</th><th>y</th><th>x²</th><th>xy</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>합</th><th></th><th>Σx² =</th><th>Σxy =</th></tr>
+    </table>
+    <p>최적의 a = Σxy ÷ Σx² = __________ ÷ __________ = __________</p>
+    <p>그때의 손실 L(a) = __________ &nbsp;&nbsp; 화면의 값 = __________ &nbsp;&nbsp; 같은가? (O / X) ______</p>
+
+    <h3>⑤ 활동 3 — 경사하강법 3걸음 손계산</h3>
+    <p class="note">L′(a) = (2Σx²·a − 2Σxy) ÷ n 을 이용합니다. a₀ = ______, k = ______</p>
+    <table>
+      <tr><th style="width:10%;">n</th><th>aₙ</th><th>L′(aₙ)</th><th>−k·L′(aₙ)</th><th>aₙ₊₁</th></tr>
+      <tr><td>0</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑥ 활동 3 — 학습률 3종의 결말</h3>
+    <table>
+      <tr><th>학습률 k</th><th>반복</th><th>마지막 a</th><th>마지막 L(a)</th><th>결말(수렴 / 진동 / 발산)</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>내 자료에 알맞은 k는 __________ 이고, 그 근거는</p>
+    <div class="rule sm"></div>
+
+    <h3>⑦ 활동 4 — 도구 선택과 형성평가</h3>
+    <p>내 자료의 유형: (수치·표 / 이미지 / 텍스트 / 섞임) &nbsp;&nbsp; 고른 도구와 차시: __________________</p>
+    <p>그 도구를 고른 이유:</p>
+    <div class="rule sm"></div>
+    <ol>
+      <li>표에서 값이 저장되어 있지 않아 비어 있는 칸을 무엇이라 하는가?<br>
+        ① 이상치 &nbsp; ② 결측값 &nbsp; ③ 잔차 &nbsp; ④ 불용어 &nbsp;&nbsp; 답: ______</li>
+      <li>x = 1, 2, 2 이고 y = 2, 5, 3 일 때 y = ax 의 최적인 a는? (a = Σxy ÷ Σx²)<br>
+        ① 1.5 &nbsp; ② 2 &nbsp; ③ 2.5 &nbsp; ④ 3 &nbsp;&nbsp; 답: ______</li>
+      <li>경사하강법에서 L′(aₙ) &lt; 0 일 때 aₙ₊₁ 은?<br>
+        ① aₙ 보다 작아진다 &nbsp; ② aₙ 보다 커진다 &nbsp; ③ 변하지 않는다 &nbsp; ④ 알 수 없다 &nbsp;&nbsp; 답: ______</li>
+      <li>학습률 k를 지나치게 크게 잡았을 때 나타나는 현상은?<br>
+        ① 더 빨리 수렴한다 &nbsp; ② 손실이 커지며 발산한다 &nbsp; ③ 항상 그대로다 &nbsp; ④ 결측값이 생긴다 &nbsp;&nbsp; 답: ______</li>
+      <li>후기 200건에서 학생들이 자주 쓴 핵심 단어를 뽑으려면 어느 도구가 알맞은가?<br>
+        ① 해밍 거리 &nbsp; ② TF-IDF &nbsp; ③ 맥스 풀링 &nbsp; ④ 경사하강법 &nbsp;&nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑧ 핵심 질문</h3>
+    <p><b>내 질문에 답하려면 어떤 수학 도구를 골라 어떻게 연결해야 하는가?</b></p>
+    <div class="rule lg"></div>
+  </div>
+</div>

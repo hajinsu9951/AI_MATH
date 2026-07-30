@@ -373,11 +373,25 @@ nav{position:relative;}
 
 /* ═══════ 뷰 표제부 워터마크 (홈 카드 SVG 재사용) ═══════ */
 .vw-wrap{position:relative;}
-.vw-mark{position:absolute;top:-1.4rem;right:-0.6rem;width:min(19rem,42%);opacity:0.1;
+/* right 를 음수로 두면 장식 SVG 가 표제부 밖으로 0.6rem(≈12px) 삐져나가
+   scrollWidth 를 넓힙니다(구동 QA D8 — 3차시 .lg-hd 는 overflow:hidden 이라 그만큼 잘렸습니다).
+   워터마크는 안쪽 오른쪽 끝에 맞춥니다. */
+.vw-mark{position:absolute;top:-1.4rem;right:0;width:min(19rem,42%);opacity:0.1;
   pointer-events:none;z-index:0;}
 .vw-mark svg{display:block;width:100%;height:auto;}
 .vw-wrap>*:not(.vw-mark){position:relative;z-index:1;}
 @media(max-width:760px){.vw-mark{display:none;}}
+
+/* 「일반화 · 내 문장으로」 산출 칸 (흥미·탐구 C-5) */
+.aim-rf .aim-rf-ta{width:100%;min-height:5rem;resize:vertical;border:1px solid var(--border);
+  border-radius:var(--radius);background:var(--bg);color:var(--fg);padding:0.6rem 0.7rem;
+  font-family:inherit;font-size:0.98rem;line-height:1.8;margin-top:0.6rem;}
+
+/* 교과서 지면 캡처가 로컬에 없을 때 남기는 안내(§20 · 구동 QA D6).
+   이미지 자체는 여전히 배포하지 않으며, 펼쳐 볼 지면만 글로 알려 줍니다. */
+.tb-missing{font-family:var(--mono);font-size:0.76rem;line-height:1.85;color:var(--muted);
+  border:1px dashed var(--border);border-radius:var(--radius);padding:0.6rem 0.8rem;margin:0.5rem 0 0;}
+.tb-missing b{color:var(--body);font-weight:600;}
 
 /* ═══════ 사진 자료 공통 (§26 — 커먼스 검증 사진 + 캡션 + 폴백) ═══════ */
 .phz{margin:1.1rem 0;max-width:100%;}

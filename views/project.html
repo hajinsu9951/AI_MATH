@@ -1,0 +1,1140 @@
+<!-- ═══════════ PROJECT (28~30차시: 탐구 프로젝트 워크스페이스 / 30차시 주력) ═══════════
+     · 파일 위치: views/project.html  (신규 · §4 V17)
+     · 전역 접두사 pj · 뷰 루트 id #v-project · 모든 스타일 규칙은 #v-project 하위로만 작성
+     · 전역 CSS 의 `.pj`(프로젝트 과제 카드)와 구분되도록 뷰 전용 클래스는 모두 `pj-` 로 시작합니다.
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 의 PART B 참조
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-project">
+  <style>
+  /* project 뷰 전용 스타일 (#v-project 스코프 한정 — 전역 누수 금지) */
+  #v-project .pj-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-project .pj-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-project .pj-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-project .pj-hero{position:relative;}
+  #v-project .pj-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.1;pointer-events:none;}
+  #v-project .pj-hero>*:not(.pj-wm){position:relative;}
+  #v-project .vw-mark{display:none;}
+  #v-project .pj-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-project .pj-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-project .pj-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-project .pj-ask{border-left:4px solid var(--accent);}
+  #v-project .pj-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-project .pj-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-project .pj-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-project .pj-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-project .pj-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-project .pj-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-project .pj-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;}
+  #v-project .pj-scroll{overflow-x:auto;max-width:100%;}
+  #v-project .pj-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-project .pj-tbl th,#v-project .pj-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-project .pj-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-project .pj-tbl td.l,#v-project .pj-tbl th.l{text-align:left;}
+  #v-project .pj-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-project .pj-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-project .pj-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-project .pj-fb b{color:var(--fg);}
+  #v-project .pj-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:0.98rem;line-height:1.8;}
+  #v-project .pj-fb:empty{display:none;}
+  #v-project .pj-in{height:2.4rem;min-width:0;max-width:100%;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--sans);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-project .pj-in.num{width:5rem;text-align:center;font-family:var(--mono);}
+  #v-project .pj-ta{width:100%;min-height:4.2rem;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0.5rem 0.6rem;font-family:var(--sans);font-size:0.98rem;line-height:1.7;background:var(--bg);color:var(--fg);resize:vertical;}
+  #v-project .pj-sel{height:2.4rem;border:1px solid var(--border);border-radius:0.4rem;padding:0 0.5rem;
+    font-family:var(--sans);font-size:0.95rem;background:var(--bg);color:var(--fg);max-width:100%;}
+  #v-project .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-project .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-project .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-project .tabs{flex-wrap:wrap;}
+  #v-project .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-project .ws-btn{min-height:44px;}
+
+  /* 단계 토글 */
+  #v-project .pj-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-project .pj-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-project .pj-fold>summary::-webkit-details-marker{display:none;}
+  #v-project .pj-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-project .pj-fold[open]>summary::after{content:'▾';}
+  #v-project .pj-fold .bd{padding:0 0 0.9rem;}
+  #v-project .pj-fold .bd p,#v-project .pj-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-project .pj-fold .bd ul,#v-project .pj-fold .bd ol{margin:0 0 0.4rem 1.2rem;}
+  #v-project .pj-fold.pj-locked{opacity:0.62;}
+  #v-project .pj-fold.pj-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-project .pj-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 차시-탭 매핑 */
+  #v-project .pj-map3{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:0.6rem;margin-top:0.7rem;}
+  #v-project .pj-m3{border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius);
+    background:var(--bg);padding:0.6rem 0.7rem;}
+  #v-project .pj-m3 .n{font-family:var(--mono);font-size:0.74rem;letter-spacing:0.1em;color:var(--muted);display:block;}
+  #v-project .pj-m3 b{display:block;font-size:1.0rem;margin:0.15rem 0 0.2rem;}
+  #v-project .pj-m3 span.d{font-size:0.9rem;color:var(--body);line-height:1.65;}
+
+  /* 팀 설정 */
+  #v-project .pj-team{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:0.6rem;margin:0.8rem 0;}
+  #v-project .pj-team label{display:block;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.07em;color:var(--muted);margin-bottom:0.2rem;}
+  #v-project .pj-team input{width:100%;}
+  #v-project .pj-mems{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:0.6rem;margin:0.6rem 0;}
+  #v-project .pj-mem{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0.6rem 0.7rem;}
+  #v-project .pj-mem .rl{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.08em;color:var(--fg);
+    background:var(--card-h);border-radius:9999px;padding:0.16rem 0.55rem;display:inline-block;margin-bottom:0.35rem;}
+  #v-project .pj-mem .row{display:flex;gap:0.4rem;flex-wrap:wrap;}
+  #v-project .pj-mem .row input{flex:1 1 5.5rem;min-width:0;}
+
+  /* 주제 마법사 */
+  #v-project .pj-sdg{display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:0.4rem;margin:0.7rem 0;}
+  #v-project .pj-g{border:1px solid var(--border);border-radius:0.5rem;background:var(--bg);padding:0.45rem 0.6rem;
+    text-align:left;font-family:var(--sans);font-size:0.92rem;line-height:1.5;cursor:pointer;transition:all 0.15s;
+    min-height:44px;display:flex;align-items:center;gap:0.45rem;color:var(--body);}
+  #v-project .pj-g:hover{border-color:var(--fg);}
+  #v-project .pj-g .no{font-family:var(--mono);font-weight:700;font-size:0.8rem;width:1.5rem;flex:0 0 auto;text-align:center;
+    border-radius:0.3rem;padding:0.05rem 0;color:#fff;}
+  #v-project .pj-g.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-project .pj-gh{display:flex;align-items:baseline;gap:0.5rem;margin:0.9rem 0 0.1rem;font-family:var(--mono);
+    font-size:0.74rem;letter-spacing:0.12em;color:var(--muted);}
+  #v-project .pj-gh i{display:inline-block;width:0.8rem;height:0.8rem;border-radius:0.2rem;}
+  #v-project .pj-wout{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:0.7rem;margin:0.9rem 0;}
+  #v-project .pj-wcard{border:1px solid var(--border);border-left:4px solid var(--green);border-radius:var(--radius);
+    background:var(--bg);padding:0.75rem 0.85rem;}
+  #v-project .pj-wcard h4{font-size:1.02rem;margin-bottom:0.3rem;line-height:1.5;}
+  #v-project .pj-wcard p{font-size:0.94rem;color:var(--body);line-height:1.7;margin-bottom:0.35rem;}
+  #v-project .pj-wcard .xy{font-family:var(--mono);font-size:0.86rem;color:var(--fg);background:var(--card-h);
+    border-radius:0.35rem;padding:0.3rem 0.5rem;display:block;margin:0.35rem 0;line-height:1.7;word-break:break-all;}
+  #v-project .pj-wcard .btn-row{margin:0.5rem 0 0;}
+
+  /* 보고서 A~F */
+  #v-project .pj-ringwrap{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+  #v-project canvas.pj-cv{display:block;max-width:100%;height:auto;background:var(--bg);
+    border:1px solid var(--border);border-radius:var(--radius);}
+  #v-project canvas.pj-ring{border:none;background:transparent;width:7rem;}
+  #v-project .pj-sec{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);
+    padding:0.85rem 0.95rem;margin-bottom:0.8rem;}
+  #v-project .pj-sec>.hd{display:flex;align-items:baseline;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;}
+  #v-project .pj-sec>.hd .tg{font-family:var(--mono);font-size:0.9rem;font-weight:700;background:var(--fg);color:var(--bg);
+    border-radius:0.35rem;padding:0.12rem 0.5rem;}
+  #v-project .pj-sec>.hd b{font-size:1.05rem;}
+  #v-project .pj-sec>.hd .ct{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-left:auto;}
+  #v-project .pj-sec.done{border-color:var(--green);}
+  #v-project .pj-sec.done>.hd .tg{background:var(--green);}
+  #v-project .pj-fld{margin-bottom:0.7rem;}
+  #v-project .pj-fld label{display:block;font-size:0.95rem;font-weight:600;color:var(--fg);margin-bottom:0.25rem;line-height:1.6;}
+  #v-project .pj-fld .gd{display:block;font-size:0.86rem;color:var(--muted);line-height:1.6;margin-bottom:0.3rem;}
+  #v-project .pj-frow{display:grid;grid-template-columns:5.5rem 1fr 5rem;gap:0.4rem;margin-bottom:0.45rem;align-items:start;}
+  @media(max-width:640px){#v-project .pj-frow{grid-template-columns:1fr;}}
+  #v-project .pj-fsum{font-family:var(--mono);font-size:1.05rem;font-weight:700;padding:0.5rem 0.7rem;border-radius:0.4rem;
+    background:var(--bg);border-left:5px solid var(--border);}
+  #v-project .pj-fsum.ok{border-left-color:var(--green);color:var(--green);}
+  #v-project .pj-fsum.no{border-left-color:var(--red);color:var(--red);}
+
+  /* 예시 오버레이 */
+  #v-project .pj-eg{display:none;position:fixed;inset:0;z-index:9998;background:rgba(26,23,20,0.72);
+    padding:1.2rem;overflow:auto;}
+  #v-project .pj-eg.on{display:block;}
+  #v-project .pj-egbox{max-width:44rem;margin:0 auto;background:var(--bg);border:1px solid var(--border);
+    border-radius:var(--radius);padding:1.3rem 1.4rem;}
+  #v-project .pj-egbox h3{font-size:1.15rem;margin-bottom:0.5rem;}
+  #v-project .pj-egbox .pj-tbl{width:100%;}
+  #v-project .pj-egx{position:sticky;top:0;float:right;width:2.6rem;height:2.6rem;border-radius:50%;border:none;
+    background:var(--fg);color:var(--bg);font-size:1rem;cursor:pointer;}
+
+  /* 100초 타이머 */
+  #v-project .pj-tmwrap{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:1.1rem;align-items:center;}
+  @media(max-width:640px){#v-project .pj-tmwrap{grid-template-columns:1fr;}}
+  #v-project canvas.pj-tm{width:13rem;max-width:100%;background:transparent;border:none;}
+  #v-project .pj-tmtxt{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--fg);}
+  #v-project .pj-chk{display:flex;flex-direction:column;gap:0.4rem;margin:0.6rem 0;}
+  #v-project .pj-chk label{display:flex;gap:0.5rem;align-items:flex-start;font-size:0.98rem;line-height:1.7;
+    color:var(--body);cursor:pointer;min-height:44px;}
+  #v-project .pj-chk input{margin-top:0.45rem;width:1.15rem;height:1.15rem;flex:0 0 auto;}
+  #v-project .pj-chk b{color:var(--fg);}
+
+  /* 루브릭 채점 */
+  #v-project .pj-rb{display:flex;flex-direction:column;gap:0.5rem;margin:0.8rem 0;}
+  #v-project .pj-rbrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0.6rem;align-items:center;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);padding:0.55rem 0.7rem;}
+  @media(max-width:640px){#v-project .pj-rbrow{grid-template-columns:1fr;}}
+  #v-project .pj-rbrow .lb{font-size:0.96rem;line-height:1.6;}
+  #v-project .pj-rbrow .lb b{display:block;color:var(--fg);}
+  #v-project .pj-rbrow .lb .ds{font-size:0.85rem;color:var(--muted);line-height:1.6;}
+  #v-project .pj-rbbtns{display:flex;gap:0.3rem;flex-wrap:wrap;}
+  #v-project .pj-rbb{font-family:var(--mono);font-size:0.92rem;font-weight:700;min-width:3.6rem;min-height:44px;
+    border:1px solid var(--border);border-radius:0.4rem;background:var(--card);color:var(--fg);cursor:pointer;transition:all 0.15s;}
+  #v-project .pj-rbb:hover{border-color:var(--fg);}
+  #v-project .pj-rbb.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-project .pj-rbb.on.s4{background:var(--green);border-color:var(--green);color:#fff;}
+  #v-project .pj-rbb.on.s2{background:var(--red);border-color:var(--red);color:#fff;}
+  #v-project .pj-rblist{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.6rem;}
+  #v-project .pj-rbit{display:flex;gap:0.6rem;align-items:baseline;font-size:0.92rem;border-bottom:1px solid var(--border);
+    padding-bottom:0.3rem;line-height:1.6;}
+  #v-project .pj-rbit .n{font-family:var(--mono);font-weight:700;color:var(--fg);}
+  #v-project .pj-rbit .v{font-family:var(--mono);color:var(--blue);}
+  #v-project .pj-rbit button{margin-left:auto;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.9rem;}
+
+  /* 회고 뷰 지도 */
+  #v-project .pj-vmap{position:relative;}
+  #v-project .pj-vmap canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  #v-project .pj-vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));gap:0.45rem;position:relative;z-index:1;}
+  #v-project .pj-vg{border:1px solid var(--border);border-radius:0.5rem;background:var(--bg);padding:0.45rem 0.5rem;
+    font-family:var(--sans);font-size:0.88rem;line-height:1.45;text-align:left;cursor:pointer;min-height:44px;
+    transition:all 0.15s;color:var(--body);}
+  #v-project .pj-vg:hover{border-color:var(--fg);}
+  #v-project .pj-vg.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-project .pj-vg .n{display:block;font-family:var(--mono);font-size:0.7rem;color:var(--muted);}
+  #v-project .pj-vg.on .n{color:var(--accent);}
+  #v-project .pj-vg.soon{opacity:0.55;}
+  #v-project .pj-vgo{display:block;margin-top:0.15rem;font-family:var(--mono);font-size:0.68rem;color:var(--blue);}
+
+  /* 참고 자료 카드 · 사진(§26) */
+  #v-project .pj-refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(12.5rem,1fr));gap:0.7rem;margin-top:0.8rem;}
+  #v-project .pj-ref{display:block;text-decoration:none;color:inherit;background:var(--bg);border:1px solid var(--border);
+    border-radius:0.6rem;overflow:hidden;transition:all 0.2s;text-align:left;font-family:var(--sans);}
+  #v-project .pj-ref:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-project .pj-ref .th{position:relative;aspect-ratio:16/9;background:var(--card);display:flex;align-items:center;
+    justify-content:center;font-size:2rem;}
+  #v-project .pj-ref .bg{position:absolute;left:0.35rem;top:0.35rem;font-family:var(--mono);font-size:0.64rem;
+    letter-spacing:0.08em;background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.1rem 0.45rem;}
+  #v-project .pj-ref .bd{display:block;padding:0.5rem 0.65rem 0.7rem;}
+  #v-project .pj-ref .tt{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;}
+  #v-project .pj-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+  #v-project .pj-foto{margin:0 0 0.8rem;max-width:100%;}
+  #v-project .pj-foto img{max-width:100%;height:auto;}
+
+  /* 교과서 지면 캡처 로컬 슬롯(§26-2) — 파일이 없으면 figure 자체가 사라집니다 */
+  #v-project .pj-tbrow{display:flex;flex-wrap:wrap;gap:0.7rem;margin-top:0.7rem;}
+  #v-project .pj-tbrow figure{margin:0;flex:1 1 13rem;min-width:0;}
+  #v-project .pj-tbrow img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;}
+  #v-project .pj-tbrow figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.25rem;}
+
+  @media(max-width:640px){
+    #v-project .pj-fml{font-size:0.82rem;}
+    #v-project .pj-sdg{grid-template-columns:1fr;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="pj-hero">
+    <svg class="pj-wm" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
+      <rect x="18" y="16" width="112" height="120" rx="8" fill="var(--card-h)" stroke="var(--border)" stroke-width="2"/>
+      <rect x="56" y="10" width="36" height="12" rx="6" fill="var(--accent)"/>
+      <path d="M32 44 H116 M32 60 H116 M32 76 H96 M32 92 H108 M32 108 H84" stroke="var(--border)" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="184" cy="76" r="42" fill="none" stroke="var(--border)" stroke-width="8"/>
+      <path d="M184 34 A42 42 0 0 1 220 97" fill="none" stroke="var(--green)" stroke-width="8" stroke-linecap="round"/>
+      <text x="184" y="84" font-size="26" font-family="monospace" fill="var(--fg)" text-anchor="middle">100</text>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅴ 단원 · 28~30차시 (30차시 주력) · [12인수05-01] · [12인수05-02]</p>
+    <h2>탐구 워크스페이스 — 주제부터 100초 발표까지</h2>
+    <p class="desc">
+      세 차시를 하나로 묶는 작업대입니다. <b>주제를 고르고 → 보고서 A~F를 채우고 →
+      100초로 발표하고 → 루브릭으로 서로를 평가하고 → 근거(Fact)로 자신을 돌아봅니다.</b>
+      입력한 내용은 이 기기에 자동 저장되며, 인쇄와 JSON 내보내기로 팀 사이를 옮길 수 있습니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표 (30차시)</strong>
+    <div style="margin-top:0.5rem;">
+      ① 탐구 결과를 <b>100초 발표</b>로 구성하여 수학적 근거를 들어 결론의 타당성을 설명할 수 있습니다. <b>[12인수05-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② <b>루브릭</b>에 따라 동료의 탐구를 평가하고 편향·윤리의 관점에서 의사 결정의 합리성을 검토할 수 있습니다. <b>[12인수05-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 탐구 과정에서 사용한 수학적 원리를 <b>근거(Fact) 중심</b>으로 성찰하여 자기 평가를 작성할 수 있습니다. <b>[12인수05-02]</b>
+    </div>
+    <div class="pj-goalmap">
+      <button type="button" onclick="pjSee(2,'pj-act3')">├ 목표 ① → <b>탭 ③</b> 100초 타이머와 발표 체크리스트 →</button>
+      <button type="button" onclick="pjSee(2,'pj-act3b')">├ 목표 ② → <b>탭 ③</b> 청중 루브릭 A~E 채점·히트맵·레이더 →</button>
+      <button type="button" onclick="pjSee(3,'pj-act4')">└ 목표 ③ → <b>탭 ④</b> 뷰 지도 되짚기 + Fact 자기평가 → 보고서 [F] 병합 →</button>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>세 차시가 이 한 화면을 나누어 씁니다</h3>
+    <div class="pj-map3">
+      <div class="pj-m3"><span class="n">28차시 · 마무리 15분</span><b>탭 ① 주제 마법사 → [A]</b>
+        <span class="d">오리엔테이션·기획 회의. 팀을 정하고 SDGs와 수학 도구를 교차해 주제를 확정합니다.</span></div>
+      <div class="pj-m3"><span class="n">29차시 · 수행</span><b>탭 ② 보고서 [B][C][D]</b>
+        <span class="d">데이터 수집·전처리, 모델 설계, 공학 도구로 결과 도출. 계산은 <b>29차시 데이터 랩</b>에서 하고 기록은 여기에 남깁니다.</span></div>
+      <div class="pj-m3"><span class="n">30차시 · 완성·발표</span><b>탭 ③④ → [E][F]</b>
+        <span class="d">결과 해석과 성찰, 100초 발표, 동료 평가와 자기 평가로 마무리합니다.</span></div>
+    </div>
+    <span class="pj-src">출처 — 연수교재 합본 p.308 「수업 설계안(1~3차시)」 서술을 재구성</span>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips pj-keys" data-no-toggle="1">
+    <span class="chip">탐구 과정 5단계</span>
+    <span class="chip">변수 x와 y의 정의</span>
+    <span class="chip">SDGs 17목표</span>
+    <span class="chip">루브릭 A~E (4/3/2점)</span>
+    <span class="chip">기여도 합 100과 Fact 자기평가</span>
+  </div>
+
+  <div class="card pj-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>우리의 결론은 데이터와 수학으로 얼마나 정당화되는가?</li>
+      <li>100초 안에 남겨야 하는 <b>세 가지</b>는 무엇인가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">두 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="pj-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 짧게, 그러나 근거 있게 발표하는 법</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      마지막 점선 칸은 <b>선생님이 영상을 1개 더 걸 수 있는 슬롯</b>입니다.</p>
+    <div id="pj-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>우리 팀 — 조 이름과 역할 정하기</h3>
+    <p><b>4인 1조</b>로 역할을 나눕니다. 맡은 일을 끝냈더라도 팀을 위해 할 수 있는 일을 찾아 함께 진행합니다.
+      팀 코드를 다르게 입력하면 <b>여러 팀의 보고서를 같은 기기에서</b> 따로 보관할 수 있습니다.</p>
+    <div class="pj-team">
+      <div><label for="pj-team-code">팀 코드 (예: A조, 3-2-1조)</label><input class="pj-in" id="pj-team-code" type="text" placeholder="A조"></div>
+      <div><label for="pj-team-name">조 이름</label><input class="pj-in" id="pj-team-name" type="text" placeholder="데이터 탐험대"></div>
+      <div><label for="pj-team-date">날짜</label><input class="pj-in" id="pj-team-date" type="text" placeholder="2026-09-01"></div>
+    </div>
+    <div class="pj-mems" id="pj-mems"></div>
+    <div class="btn-row">
+      <button class="btn pri" type="button" onclick="pjTeamSave()">팀 정보 저장</button>
+      <button class="btn" type="button" onclick="pjTeamList()">저장된 팀 목록</button>
+    </div>
+    <p class="status" id="pj-team-st"></p>
+    <span class="pj-src">출처 — 연수교재 합본 p.309 「교수 학습 자료」의 조 이름·역할 4칸(데이터 수집가·수학 모델러·기술 구현자·비평 및 분석가)과 p.317 「보고서 가이드(교사용)」 역할 설명을 그대로 사용</span>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 좋은 탐구는 무엇이 다를까</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.</p>
+    <div id="pj-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 프로젝트를 마칠 때 완성됩니다.</b></p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="pj-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="pjTab(0,this)">① 주제 마법사</button>
+    <button class="tab" type="button" onclick="pjTab(1,this)">② 보고서 A~F</button>
+    <button class="tab" type="button" onclick="pjTab(2,this)">③ 발표·평가</button>
+    <button class="tab" type="button" onclick="pjTab(3,this)">④ 회고</button>
+  </div>
+
+  <!-- ── 탭 ① 주제 마법사 ─────────────────────────────────────────────── -->
+  <div class="tpanel on" id="pjt0">
+    <div class="card" id="pj-act1" data-no-toggle="1">
+      <h3>활동 1 · 주제 마법사 — SDGs × 수학 도구</h3>
+      <p>주제가 막히는 까닭은 대개 <b>범위가 너무 넓기 때문</b>입니다.
+        지속가능발전목표 하나와 <b>우리가 배운 수학 도구 하나</b>를 골라 교차시키면 주제가 저절로 좁혀집니다.</p>
+      <div>
+        <figure class="pj-foto">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/F_SDG_poster_UN_emblem_PRINT.jpg/960px-F_SDG_poster_UN_emblem_PRINT.jpg"
+               alt="유엔 지속가능발전목표 17개를 색깔 타일로 나타낸 포스터" loading="lazy"
+               style="display:block;width:100%;max-width:26rem;height:auto;border:1px solid var(--border);border-radius:0.5rem;"
+               onerror="this.style.display='none';">
+          <figcaption class="pj-hint" style="margin-top:0.35rem;"><b>지속가능발전목표(SDGs) 17개</b> —
+            2015년 제70차 UN 총회에서 2030년까지 달성하기로 결의한 인류 공동의 목표입니다.
+            <span style="display:block;font-family:var(--mono);font-size:0.72rem;">이미지: Wikimedia Commons “F SDG poster UN emblem PRINT.jpg” · 퍼블릭 도메인</span></figcaption>
+        </figure>
+      </div>
+      <div class="pj-gh"><i style="background:var(--red);"></i>인간 (1~5)</div>
+      <div class="pj-gh"><i style="background:var(--blue);"></i>번영 (7~11)</div>
+      <div class="pj-gh"><i style="background:var(--green);"></i>환경 (6·12~15)</div>
+      <div class="pj-gh"><i style="background:var(--accent);"></i>평화·파트너십 (16·17)</div>
+      <div class="pj-sdg" id="pj-sdg"></div>
+      <p class="status" id="pj-sdg-st">목표를 하나 고르세요.</p>
+      <p style="margin-top:0.6rem;"><b>그리고 쓸 수학 도구를 하나 고릅니다.</b>
+        1~4단원에서 직접 조작해 본 것 가운데서 고르면 근거를 대기 쉽습니다.</p>
+      <div class="chips" id="pj-tool"></div>
+      <p class="status" id="pj-tool-st">도구를 하나 고르세요.</p>
+      <span class="pj-src">출처 — 씨마스 「인공지능 수학」 Ⅴ p.189 SDGs 17목표와 「인간·번영·환경·평화」 4영역 구분, 연수교재 합본 p.313~314 「5종 교과서 주요 탐구 주제 예시」를 재구성</span>
+      <div class="pj-tbrow">
+        <figure>
+          <img src="assets/textbook-local/씨마스5_p189_SDGs17.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 Ⅴ p.189 (수업용)</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/textbook-local/씨마스5_p190_탐구주제선정.jpg" alt="교과서 지면(수업용)" loading="lazy"
+               onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+          <figcaption>씨마스 Ⅴ p.190 (수업용)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>교차 결과 — 이런 주제가 됩니다</h3>
+      <div class="pj-wout" id="pj-wiz-out"></div>
+      <p class="status" id="pj-wiz-st">목표와 도구를 모두 고르면 예시 주제가 나타납니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>주제 확정 — x와 y를 적지 않으면 통과되지 않습니다</h3>
+      <p>탐구는 <b>“x를 넣으면 y가 나온다”</b>는 문장으로 정리되어야 합니다.
+        x와 y가 비어 있거나, 검색으로 답이 끝나는 주제는 아래 점검에서 되돌려집니다.</p>
+      <div class="pj-fld">
+        <label for="pj-wiz-topic">탐구 주제 (한 문장)</label>
+        <span class="gd">예) 기온 데이터를 활용한 교내 매점 음료 수요 예측</span>
+        <input class="pj-in" id="pj-wiz-topic" type="text" style="width:100%;" placeholder="○○ 데이터를 활용한 △△ 예측/분류">
+      </div>
+      <div class="pj-team">
+        <div><label for="pj-wiz-x">x (입력 변수)</label><input class="pj-in" id="pj-wiz-x" type="text" placeholder="그날의 최고 기온(℃)"></div>
+        <div><label for="pj-wiz-y">y (출력 변수)</label><input class="pj-in" id="pj-wiz-y" type="text" placeholder="음료 판매량(개)"></div>
+        <div><label for="pj-wiz-src">데이터 출처</label><input class="pj-in" id="pj-wiz-src" type="text" placeholder="기상자료개방포털 + 매점 판매 기록"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="pjWizCheck()">주제 점검</button>
+        <button class="btn" type="button" onclick="pjWizSend()">[A]로 전송</button>
+      </div>
+      <div class="pj-fb" id="pj-wiz-fb"></div>
+      <span class="pj-src">점검 기준 — 씨마스 Ⅴ p.190 「탐구 주제 선정」(시간·난이도·도달 가능성)과 연수교재 합본 p.308 「단순 검색 주제는 반려」 지도 지침</span>
+    </div>
+
+    <p class="pj-lockmsg" id="pj-w-lock">↓ 주제 점검을 통과하면 아래 두 토글이 열립니다.</p>
+
+    <details class="pj-fold pj-locked" id="pj-fw1">
+      <summary>단계 정리 — 탐구 과정 5단계</summary>
+      <div class="bd">
+        <ol>
+          <li><b>탐구 주제 선정</b> — Ⅰ~Ⅳ단원 내용을 활용해 주제를 정합니다. 최근 관심사나 실생활 문제에서 새 아이디어를 끌어냅니다.</li>
+          <li><b>자료 수집 및 분석</b> — 인터넷·문헌·언어 모델 등으로 최신 자료를 폭넓게 모아 분석합니다.</li>
+          <li><b>탐구 수행</b> — 수학적 방법으로 탐구를 진행합니다. 계산·실험·공학 도구를 씁니다.</li>
+          <li><b>탐구 결과 정리</b> — 결과와 아이디어를 명확히 기술하고 인공지능에서 수학의 연관성을 분석합니다.</li>
+          <li><b>평가 및 고찰</b> — 과정과 결과를 공유·평가하고, 배운 점과 개선할 부분을 고찰합니다.</li>
+        </ol>
+        <p>이 다섯 걸음이 보고서 A~F와 정확히 대응합니다 — <b>①=A, ②=B, ③=C·D, ④=E, ⑤=F</b>.</p>
+        <span class="pj-src">씨마스 Ⅴ p.188 「인공지능 수학 탐구 과정 5단계」 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="pj-fold pj-locked" id="pj-fw2">
+      <summary>정의 확인 — 좋은 주제의 조건 네 가지</summary>
+      <div class="bd">
+        <ul>
+          <li>주어진 시간 안에 해결 가능한 <b>난이도</b>인가?</li>
+          <li>이 교과서에서 배운 <b>수학적 개념과 원리</b>를 활용할 수 있는가?</li>
+          <li>문제 해결에 필요한 데이터를 충분히 모아 <b>수치화</b>할 수 있는가?</li>
+          <li>인공지능 기술 속에서 <b>수학적 원리를 탐구</b>하는 것이 목표에 포함되는가?</li>
+        </ul>
+        <p>주제 선정이 어렵다면 순서를 뒤집어도 좋습니다. <b>SDGs에서 영역을 정한 뒤 데이터를 먼저 찾고,
+          그 데이터를 중심으로 주제를 정하는</b> 방법이 교과서가 권하는 우회로입니다.</p>
+        <span class="pj-src">연수교재 합본 p.320 「교사용 지도학습 안내서」 문항03 &lt;보기&gt; ㄱ~ㄹ, 씨마스 Ⅴ p.190 Tip 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── 탭 ② 보고서 A~F ─────────────────────────────────────────────── -->
+  <div class="tpanel" id="pjt1">
+    <div class="card" id="pj-act2" data-no-toggle="1">
+      <h3>활동 2 · 탐구 보고서 A~F — 합본 양식 그대로</h3>
+      <div class="pj-ringwrap">
+        <canvas class="pj-cv pj-ring" id="pj-ring" width="240" height="240"
+                aria-label="보고서 A부터 F까지의 작성 진행률 원형 그래프" role="img"></canvas>
+        <div>
+          <p id="pj-prog-txt" style="font-size:1.05rem;font-weight:700;color:var(--fg);">작성 0 / 19칸 · A~F 중 완료 0개</p>
+          <p class="pj-hint">칸을 채우면 <b>자동 저장</b>됩니다(이 기기, 팀 코드별). 다른 기기로 옮길 때는
+            [JSON 내보내기]로 파일을 만들어 옮기고 [불러오기]로 되살립니다.</p>
+          <div class="btn-row">
+            <button class="btn pri" type="button" onclick="wsPrint('pj-sheet-report')">🖨 보고서 인쇄</button>
+            <button class="btn" type="button" onclick="pjJsonOut()">JSON 내보내기</button>
+            <button class="btn" type="button" onclick="pjJsonPick()">불러오기</button>
+            <button class="btn" type="button" onclick="pjEgOpen(0)">예시 보기 ①</button>
+            <button class="btn" type="button" onclick="pjEgOpen(1)">예시 보기 ②</button>
+          </div>
+          <input id="pj-json-file" type="file" accept="application/json,.json" hidden>
+          <p class="status" id="pj-rep-st"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pj-sec" id="pj-secA">
+      <div class="hd"><span class="tg">A</span><b>탐구 주제 선정 및 문제 정의</b><span class="ct" id="pj-ctA">0/3</span></div>
+      <div class="pj-fld"><label for="pj-A1">1-1. 탐구주제</label>
+        <span class="gd">예) 기온 데이터를 활용한 교내 매점 음료 수요 예측</span>
+        <textarea class="pj-ta" id="pj-A1" placeholder="예) 기온 데이터를 활용한 교내 매점 음료 수요 예측"></textarea></div>
+      <div class="pj-fld"><label for="pj-A2">1-2. 주제선정 이유 및 필요성</label>
+        <span class="gd">해결하고 싶은 실생활 문제와 이 문제가 왜 중요한지 기술(지속 가능 발전 목표와 연계 권장)</span>
+        <textarea class="pj-ta" id="pj-A2" placeholder="해결하고 싶은 실생활 문제와 이 문제가 왜 중요한지 기술(지속 가능 발전 목표와 연계 권장)"></textarea></div>
+      <div class="pj-fld"><label for="pj-A3">1-3. 탐구 목표</label>
+        <span class="gd">인공지능과 수학을 통해 도출하고자 하는 최종 결론.</span>
+        <textarea class="pj-ta" id="pj-A3" placeholder="인공지능과 수학을 통해 도출하고자 하는 최종 결론."></textarea></div>
+    </div>
+
+    <div class="pj-sec" id="pj-secB">
+      <div class="hd"><span class="tg">B</span><b>데이터 수집 및 전처리</b><span class="ct" id="pj-ctB">0/3</span></div>
+      <div class="pj-fld"><label for="pj-B1">2-1. 데이터 출처 및 수집 방법</label>
+        <span class="gd">기상청 자료, 공공데이터포털 등 신뢰할 수 있는 출처 명시</span>
+        <textarea class="pj-ta" id="pj-B1" placeholder="기상청 자료, 공공데이터포털 등 신뢰할 수 있는 출처 명시"></textarea></div>
+      <div class="pj-fld"><label for="pj-B2">2-2. 데이터의 특성</label>
+        <span class="gd">수집한 데이터가 정형/비정형인지, 어떤 속성(필드)을 포함하는지 기술</span>
+        <textarea class="pj-ta" id="pj-B2" placeholder="수집한 데이터가 정형/비정형인지, 어떤 속성(필드)을 포함하는지 기술"></textarea></div>
+      <div class="pj-fld"><label for="pj-B3">2-3. 데이터 정제(전처리)</label>
+        <span class="gd">결측값 처리, 이상치 제거, 데이터 형식 통일 과정 기록</span>
+        <textarea class="pj-ta" id="pj-B3" placeholder="결측값 처리, 이상치 제거, 데이터 형식 통일 과정 기록"></textarea></div>
+      <p class="pj-hint">전처리 계산은 <b>29차시 데이터 랩</b>에서 하고, 여기에는 <b>무엇을 어떻게 했는지</b>만 기록합니다.</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="pjGo('datalab')">29차시 데이터 랩 열기</button></div>
+    </div>
+
+    <div class="pj-sec" id="pj-secC">
+      <div class="hd"><span class="tg">C</span><b>수학적 원리 및 인공지능 모델 설계</b><span class="ct" id="pj-ctC">0/3</span></div>
+      <div class="pj-fld"><label for="pj-C1">3-1. 활용된 수학적 개념</label>
+        <span class="gd">집합, 벡터, 행렬, 확률, 추세선, 미분 중 선택 및 이유 기술</span>
+        <textarea class="pj-ta" id="pj-C1" placeholder="집합, 벡터, 행렬, 확률, 추세선, 미분 중 선택 및 이유 기술"></textarea></div>
+      <div class="pj-fld"><label for="pj-C2">3-2. 선정한 방식</label>
+        <span class="gd">n-gram, k-NN, 경사하강법, 감성 분석 등 탐구에 적합한 방식 선정.</span>
+        <textarea class="pj-ta" id="pj-C2" placeholder="n-gram, k-NN, 경사하강법, 감성 분석 등 탐구에 적합한 방식 선정."></textarea></div>
+      <div class="pj-fld"><label for="pj-C3">3-3. 모델 설계 수식</label>
+        <span class="gd">f(x)=ax+b 또는 손실함수 L(a) 정의 등 구체적 수식 포함</span>
+        <textarea class="pj-ta" id="pj-C3" placeholder="f(x)=ax+b 또는 손실함수 L(a) 정의 등 구체적 수식 포함"></textarea></div>
+    </div>
+
+    <div class="pj-sec" id="pj-secD">
+      <div class="hd"><span class="tg">D</span><b>탐구 수행 및 결과 도출(공학 도구 활용)</b><span class="ct" id="pj-ctD">0/3</span></div>
+      <div class="pj-fld"><label for="pj-D1">4-1. 활용 도구</label>
+        <span class="gd">스프레드시트, 티처블 머신, 알지오매스, 지오지브라 등</span>
+        <textarea class="pj-ta" id="pj-D1" placeholder="스프레드시트, 티처블 머신, 알지오매스, 지오지브라 등"></textarea></div>
+      <div class="pj-fld"><label for="pj-D2">4-2. 수행 과정 시각화</label>
+        <span class="gd">산점도, 추세선 그래프, 워드 클라우드 등 결과 캡처 및 설명</span>
+        <textarea class="pj-ta" id="pj-D2" placeholder="산점도, 추세선 그래프, 워드 클라우드 등 결과 캡처 및 설명"></textarea></div>
+      <div class="pj-fld"><label for="pj-D3">4-3. 예측/최적화 결과</label>
+        <span class="gd">모델을 통해 도출된 최종 예측값이나 최적의 매개변수 기술</span>
+        <textarea class="pj-ta" id="pj-D3" placeholder="모델을 통해 도출된 최종 예측값이나 최적의 매개변수 기술"></textarea></div>
+    </div>
+
+    <div class="pj-sec" id="pj-secE">
+      <div class="hd"><span class="tg">E</span><b>결과 해석 및 성찰</b><span class="ct" id="pj-ctE">0/3</span></div>
+      <div class="pj-fld"><label for="pj-E1">5-1. 결과의 타당성 검토</label>
+        <span class="gd">도출된 결과가 실제 문제 해결에 얼마나 효과적인가?</span>
+        <textarea class="pj-ta" id="pj-E1" placeholder="도출된 결과가 실제 문제 해결에 얼마나 효과적인가?"></textarea></div>
+      <div class="pj-fld"><label for="pj-E2">5-2. 인공지능 윤리 및 한계</label>
+        <span class="gd">사용된 데이터에 편향성은 없었는지, 결과의 신뢰도는 어떠한지 기술</span>
+        <textarea class="pj-ta" id="pj-E2" placeholder="사용된 데이터에 편향성은 없었는지, 결과의 신뢰도는 어떠한지 기술"></textarea></div>
+      <div class="pj-fld"><label for="pj-E3">5-3. 후속 계획</label>
+        <span class="gd">탐구 과정에서 배운 점과 보완하여 더 연구하고 싶은 내용</span>
+        <textarea class="pj-ta" id="pj-E3" placeholder="탐구 과정에서 배운 점과 보완하여 더 연구하고 싶은 내용"></textarea></div>
+      <p class="pj-hint">5-2는 <b>28차시 활동 3·4</b>에서 만든 판정과 비율 계산을 그대로 옮겨 쓰면 됩니다.</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="go('decision')">28차시 사례 해부기 열기</button></div>
+    </div>
+
+    <div class="pj-sec" id="pj-secF">
+      <div class="hd"><span class="tg">F</span><b>동료 평가 / 자기평가</b><span class="ct" id="pj-ctF">0/4</span></div>
+      <p class="pj-hint" style="margin-bottom:0.5rem;">* 기여도: 팀원 전체의 합이 <b>100</b>이 되도록 팀원들이 함께 협의하여 결정합니다.
+        (예: 25, 25, 25, 25 또는 20, 20, 30, 30 등) 단, 실제 활동 내역을 바탕으로 객관적이고 공정하게 배분하세요.</p>
+      <div id="pj-frows"></div>
+      <div class="pj-fsum" id="pj-fsum">기여도 합계 0 / 100</div>
+      <p class="pj-hint" style="margin-top:0.5rem;">“열심히 했다”, “재미있었다”는 추상적인 말은 NO!
+        나의 활동 과정과 성장이 잘 드러날 수 있도록, <b>‘내가 실제로 한 행동(Fact)’</b> 위주로 구체적이고 솔직하게 적어 주세요.</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="pjSee(3,'pj-act4')">탭 ④ Fact 자기평가로 →</button></div>
+    </div>
+
+    <span class="pj-src">양식 원문 출처 — 연수교재 합본 p.309·310·311·312 「교수 학습 자료」 A~F 및 p.316 기여도 안내문·자기평가 안내문을 <b>원문 그대로</b> 사용(placeholder 포함)</span>
+    <div class="pj-tbrow">
+      <figure>
+        <img src="assets/textbook-local/씨마스5_p194_프로젝트견본.jpg" alt="교과서 지면(수업용)" loading="lazy"
+             onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+        <figcaption>씨마스 Ⅴ p.194 (수업용)</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/textbook-local/씨마스5_p196_임베딩견본.jpg" alt="교과서 지면(수업용)" loading="lazy"
+             onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+        <figcaption>씨마스 Ⅴ p.196 (수업용)</figcaption>
+      </figure>
+    </div>
+
+    <div class="pj-eg" id="pj-eg" role="dialog" aria-modal="true" aria-label="보고서 작성 예시">
+      <div class="pj-egbox">
+        <button class="pj-egx" type="button" onclick="pjEgClose()" aria-label="닫기">✕</button>
+        <div id="pj-eg-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ 발표·평가 ──────────────────────────────────────────────── -->
+  <div class="tpanel" id="pjt2">
+    <div class="card" id="pj-act3" data-no-toggle="1">
+      <h3>활동 3 · 100초 발표 — 자리에 앉은 채로, 핵심만</h3>
+      <p>형식은 <b>자리에 앉은 채로 100초</b>입니다. 담을 내용은 셋뿐입니다 —
+        <b>우리의 문제 → 사용한 데이터/모델 → 결론</b>.</p>
+      <div class="pj-tmwrap">
+        <canvas class="pj-cv pj-tm" id="pj-tm-cv" width="300" height="300"
+                aria-label="100초 남은 시간을 나타내는 원형 카운트다운" role="img"></canvas>
+        <div>
+          <p class="pj-tmtxt" id="pj-tm-txt">100초 · 준비</p>
+          <div class="btn-row">
+            <button class="btn pri" type="button" id="pj-tm-go" onclick="pjTmToggle()">시작</button>
+            <button class="btn" type="button" onclick="pjTmReset()">되돌리기</button>
+            <button class="btn" type="button" onclick="pjTmSet(60)">60초 연습</button>
+            <button class="btn" type="button" onclick="pjTmSet(100)">100초</button>
+          </div>
+          <p class="pj-hint">남은 시간이 <b>30초</b>가 되면 고리가 노란빛(강조색)으로, <b>10초</b>가 되면 붉은색으로 바뀌고
+            마지막 3초는 굵게 깜박입니다. 화면을 보지 않아도 색만으로 알 수 있습니다.</p>
+          <div class="pj-chk">
+            <label><input type="checkbox" id="pj-chk0" onchange="pjChkSave()">
+              <span><b>① 우리의 문제</b> — 무엇을 왜 알고 싶었는지 <b>한 문장</b>으로 말했다. (x와 y가 들어갔는가?)</span></label>
+            <label><input type="checkbox" id="pj-chk1" onchange="pjChkSave()">
+              <span><b>② 사용한 데이터/모델</b> — 출처·개수와 쓴 수학(추세선·유사도·경사하강법 등)을 말했다.</span></label>
+            <label><input type="checkbox" id="pj-chk2" onchange="pjChkSave()">
+              <span><b>③ 결론</b> — 수 하나를 근거로 결론을 말하고, <b>한계</b>도 한 문장 붙였다.</span></label>
+          </div>
+          <p class="status" id="pj-chk-st"></p>
+        </div>
+      </div>
+      <span class="pj-src">출처 — 연수교재 합본 p.308 「100초발표」 형식·내용·교사 피드백 지침을 재구성</span>
+    </div>
+
+    <div class="card" id="pj-act3b" data-no-toggle="1">
+      <h3>청중 루브릭 — A~E 다섯 영역, 4·3·2점</h3>
+      <div class="info" data-no-toggle="1" style="margin:0 0 0.8rem;">
+        <strong>운영 모형 — 루브릭 집계는 교사 단말 1대에서 순차 입력합니다</strong><br>
+        이 페이지는 기기 사이에 자료를 주고받는 통로가 없는 정적 웹앱이라
+        <b>여러 학생의 채점을 실시간으로 합치는 일은 구조상 불가능</b>합니다. 두 가지 방식 중 하나로 운영하세요.<br>
+        ① <b>교사 단말 순차 입력</b>(권장) — 발표가 끝날 때마다 선생님 기기에서 팀을 골라 A~E를 눌러 저장합니다.<br>
+        ② <b>학생 각자 채점 후 취합</b> — 학생이 각자 채점하고 [CSV 내보내기]로 파일을 만든 뒤,
+        선생님 기기의 스프레드시트에 붙여 넣어 평균을 냅니다.
+      </div>
+      <div class="btn-row" style="align-items:center;">
+        <label class="mono" for="pj-rb-team">채점할 팀</label>
+        <select class="pj-sel" id="pj-rb-team" aria-label="채점할 팀 고르기"></select>
+        <input class="pj-in" id="pj-rb-new" type="text" placeholder="팀 이름 추가" style="flex:0 1 9rem;">
+        <button class="btn" type="button" onclick="pjRbAddTeam()">팀 추가</button>
+      </div>
+      <div class="pj-rb" id="pj-rb-grid"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="pjRbSave()">이 팀 점수 저장</button>
+        <button class="btn" type="button" onclick="pjRbNext()">저장하고 다음 팀 →</button>
+        <button class="btn" type="button" onclick="pjRbCsv()">CSV 내보내기</button>
+        <button class="btn" type="button" onclick="pjRbClear()">전체 지우기</button>
+      </div>
+      <p class="status" id="pj-rb-st">팀을 고르고 A~E 다섯 영역을 각각 눌러 주세요.</p>
+      <div class="pj-fb" id="pj-rb-fb"></div>
+      <span class="pj-src">루브릭 원문 출처 — 연수교재 합본 p.323 「3. 평가루브릭(예시)」의 영역별 4점·3점·2점 서술을 그대로 사용</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>집계 — 팀 × 영역 히트맵과 레이더</h3>
+      <div class="pj-2col" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1rem;">
+        <div>
+          <canvas class="pj-cv" id="pj-heat" width="560" height="320"
+                  aria-label="팀과 평가 영역별 점수를 색으로 나타낸 히트맵" role="img"></canvas>
+          <p class="pj-hint">칸이 진할수록 높은 점수입니다. 세로로 읽으면 <b>학급 전체가 약한 영역</b>이 보입니다.</p>
+        </div>
+        <div>
+          <canvas class="pj-cv" id="pj-radar" width="480" height="400"
+                  aria-label="선택한 팀의 다섯 영역 점수를 오각형으로 나타낸 레이더 차트" role="img"></canvas>
+          <p class="pj-hint">굵은 선은 <b>선택한 팀</b>, 옅은 선은 <b>학급 평균</b>입니다.</p>
+        </div>
+      </div>
+      <div class="pj-rblist" id="pj-rb-list"></div>
+    </div>
+
+    <p class="pj-lockmsg" id="pj-r-lock">↓ 팀 <b>2팀 이상</b>을 채점하면 아래 두 토글이 열립니다.</p>
+
+    <details class="pj-fold pj-locked" id="pj-fr1">
+      <summary>단계 정리 — 히트맵의 세로줄이 알려 주는 것</summary>
+      <div class="bd">
+        <p>가로로 읽으면 <b>한 팀의 강점과 약점</b>이 보이고, 세로로 읽으면 <b>학급 전체가 약한 영역</b>이 보입니다.</p>
+        <p>많은 학급에서 가장 낮게 나오는 칸은 <b>C(수학적 원리 및 모델 설계)</b>와 <b>E(결과 해석 및 성찰)</b>입니다.
+          앞은 “수식을 쓰지 않고 말로만 설명”했을 때, 뒤는 “잘 됐다”로 끝냈을 때 낮아집니다.</p>
+        <p>루브릭은 점수를 매기는 도구가 아니라 <b>무엇을 해야 좋은 결과인지 미리 알려 주는 지도</b>입니다.
+          그래서 교과서 지도안도 “루브릭을 <b>미리 배부</b>하고 무엇을 해야 좋은 점수를 받는지 명확히 설명”하라고 씁니다.</p>
+        <span class="pj-src">연수교재 합본 p.308 「평가기준 안내」·p.323 루브릭 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="pj-fold pj-locked" id="pj-fr2">
+      <summary>정의 확인 — 실패한 탐구는 왜 낮은 점수가 아닌가</summary>
+      <div class="bd">
+        <p>교과서 지도안은 분명히 적습니다 — “<b>실패하더라도 원인을 논리적으로 분석했다면 과정 점수를 높게 부여</b>하여
+          도전을 장려합니다.”</p>
+        <p>평가의 중심은 <b>예측의 성공 여부나 수치의 정확도가 아니라</b>,
+          문제 정의에서 결론 도출에 이르는 전 과정(데이터 수집–전처리–모델링–해석)의 <b>논리적 연계성</b>입니다.</p>
+        <p>또한 고난도의 수학적 증명 능력보다, 문제 상황에 적합한 수학적 개념(벡터·행렬·거리·통계 등)을
+          <b>선정하고 모델링에 적용하는 타당성</b>을 평가합니다.</p>
+        <p>그래서 E영역 4점의 조건에는 “데이터 편향성 및 <b>윤리적 한계에 대한 깊이 있는 성찰</b>과 후속 계획”이
+          들어 있습니다. 잘 안 된 이유를 정확히 아는 팀이 가장 높은 점수를 받습니다.</p>
+        <span class="pj-src">연수교재 합본 p.307 「평가 유의 사항」·p.308 교사 피드백·p.323 루브릭 E영역 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── 탭 ④ 회고 ───────────────────────────────────────────────────── -->
+  <div class="tpanel" id="pjt3">
+    <div class="card" id="pj-act4" data-no-toggle="1">
+      <h3>활동 4 · 「우리 팀이 쓴 수학」 — 30차시를 되짚는 지도</h3>
+      <p>1~4단원에서 배운 것 가운데 <b>우리 팀이 실제로 사용한 것</b>만 눌러 표시하세요.
+        고른 순서대로 선이 이어지며, 그 선이 곧 우리 탐구의 <b>수학 경로</b>입니다.</p>
+      <div class="pj-vmap">
+        <canvas id="pj-map-cv" width="900" height="600" aria-hidden="true"></canvas>
+        <div class="pj-vgrid" id="pj-vgrid"></div>
+      </div>
+      <p class="status" id="pj-map-st">아직 고른 것이 없습니다.</p>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="pjMapClear()">경로 지우기</button>
+        <button class="btn" type="button" onclick="pjMapToC()">[C. 활용된 수학적 개념]에 붙여 넣기</button>
+      </div>
+      <div class="pj-fb" id="pj-map-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>Fact 자기평가 다섯 문항 — 행동으로 쓰기</h3>
+      <p><b>“열심히 했다”, “재미있었다”는 추상적인 말은 NO!</b>
+        나의 활동 과정과 성장이 잘 드러날 수 있도록, <b>‘내가 실제로 한 행동(Fact)’</b> 위주로
+        구체적이고 솔직하게 적어 주세요.</p>
+      <div class="pj-fld"><label for="pj-rf0">1. 내가 한 일 (가장 중요!)</label>
+        <span class="gd">맡은 역할은? “이건 내가 다 했다!”라고 말할 수 있는 작업은? —
+          나쁜 예: 자료 조사 함 / 좋은 예: 기상청 사이트에서 10일 치 기온 데이터를 직접 찾고 엑셀에 입력함</span>
+        <textarea class="pj-ta" id="pj-rf0" placeholder="맡은 역할과 핵심 기여를 '한 행동'으로"></textarea></div>
+      <div class="pj-fld"><label for="pj-rf1">2. 새로 배운 지식 &amp; 기술</label>
+        <span class="gd">수업에서 배운 용어(경사하강법, 손실함수, 오차 등)를 사용해 배운 점을 적어 보세요.
+          스프레드시트에서 새로 알게 된 기능이나 수식은?</span>
+        <textarea class="pj-ta" id="pj-rf1" placeholder="배운 용어를 실제로 써 가며"></textarea></div>
+      <div class="pj-fld"><label for="pj-rf2">3. 위기 탈출 (문제 해결)</label>
+        <span class="gd">가장 막막했던 순간이나 오류가 났던 상황은? 그걸 해결하려고 구체적으로 어떤 노력(검색·질문·토론)을 했나요?</span>
+        <textarea class="pj-ta" id="pj-rf2" placeholder="막혔던 지점과 해결 과정"></textarea></div>
+      <div class="pj-fld"><label for="pj-rf3">4. 팀워크 &amp; 소통</label>
+        <span class="gd">친구와 의견이 안 맞았을 때 어떻게 해결했나요? 팀을 위해 내가 조금 더 고생하거나 친구를 도와준 적이 있나요?</span>
+        <textarea class="pj-ta" id="pj-rf3" placeholder="의견 조정과 협력의 구체적 장면"></textarea></div>
+      <div class="pj-fld"><label for="pj-rf4">5. 나의 변화 (느낀 점)</label>
+        <span class="gd">프로젝트 하기 전과 후, 데이터나 인공지능을 보는 눈이 어떻게 달라졌나요?
+          아쉬웠던 점이나, 다음에 더 공부해 보고 싶은 내용은?</span>
+        <textarea class="pj-ta" id="pj-rf4" placeholder="달라진 관점과 다음 목표"></textarea></div>
+      <div class="btn-row" style="align-items:center;">
+        <label class="mono" for="pj-rf-who">이 자기평가를 넣을 팀원</label>
+        <select class="pj-sel" id="pj-rf-who" aria-label="자기평가를 넣을 팀원 고르기"></select>
+        <button class="btn pri" type="button" onclick="pjRfMerge()">[F] 자기평가 칸에 병합</button>
+        <button class="btn" type="button" onclick="wsPrint('pj-sheet-fact')">🖨 Fact 가이드 인쇄</button>
+      </div>
+      <div class="pj-fb" id="pj-rf-fb"></div>
+      <span class="pj-src">문항 원문 출처 — 연수교재 합본 p.318·319 「자기평가 작성 가이드」 1~5항을 그대로 사용</span>
+    </div>
+
+    <p class="pj-lockmsg" id="pj-f-lock">↓ 뷰 <b>3개 이상</b>을 고르고 Fact 문항 <b>3개 이상</b>을 채우면 아래 토글이 열립니다.</p>
+
+    <details class="pj-fold pj-locked" id="pj-ff1">
+      <summary>단계 정리 — 우리 경로를 교과서 5단계에 겹쳐 보기</summary>
+      <div class="bd">
+        <p>고른 뷰들을 순서대로 늘어놓으면 대개 이런 모양이 됩니다.</p>
+        <div class="pj-fml">데이터 만들기(12·22) → 표현 바꾸기(6·7·9·14) → 재기(10·13) → 모델(22·24) → 최적화(25·26) → 판정(5·28)</div>
+        <p>이 흐름이 <b>탐구 과정 5단계</b>와 어긋나지 않는지 확인하세요.
+          자료 수집(②) 없이 모델(③)로 건너뛴 경로, 평가·고찰(⑤)이 비어 있는 경로가 가장 흔한 구멍입니다.</p>
+        <p>비어 있는 칸이 보이면 그것이 곧 <b>[E. 5-3 후속 계획]</b>에 쓸 내용입니다.</p>
+        <span class="pj-src">씨마스 Ⅴ p.188 탐구 과정 5단계와 대조</span>
+      </div>
+    </details>
+
+    <details class="pj-fold pj-locked" id="pj-ff2">
+      <summary>정의 확인 — 왜 ‘행동’으로 써야 하는가</summary>
+      <div class="bd">
+        <p>“열심히 했다”는 문장은 <b>검증할 수 없습니다</b>. 반면 “기상청 사이트에서 10일 치 기온 데이터를 직접 찾고
+          엑셀에 입력함”은 누구나 확인할 수 있습니다.</p>
+        <p>모둠 활동에서는 특정 학생에게 과제가 편중되기 쉽습니다. 그래서 교사는 <b>역할별 기여도</b>
+          (데이터 수집가·수학 모델러 등)를 세심하게 관찰하고, 인공지능 윤리를 고려하는 태도를 기르도록 지도합니다.</p>
+        <p>Fact로 쓴 자기평가는 그 관찰을 <b>학생 스스로 증명</b>하는 자료가 됩니다.
+          기여도 숫자(합 100)와 이 다섯 문항은 짝을 이룹니다 — 숫자만 있고 행동이 없으면 근거가 없는 셈입니다.</p>
+        <span class="pj-src">연수교재 합본 p.307 「평가 유의 사항」·p.316 기여도 안내문·p.318 자기평가 가이드 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="pj-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card">
+    <h3>핵심 정리 — 오늘 세 줄</h3>
+    <p>① 탐구는 <b>주제 선정 → 자료 수집·분석 → 탐구 수행 → 결과 정리 → 평가·고찰</b>의 다섯 걸음이고,
+      보고서 A~F가 그 다섯 걸음의 기록장입니다.</p>
+    <p>② 100초에 담을 것은 <b>문제 · 데이터/모델 · 결론</b> 셋뿐이며, 결론에는 반드시 <b>수 하나</b>와 <b>한계 한 문장</b>이 붙습니다.</p>
+    <p>③ 평가의 중심은 정확도가 아니라 <b>과정의 논리적 연계성</b>입니다.
+      실패했더라도 원인을 논리적으로 분석했다면 그것이 높은 점수입니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기 — 내 문장으로</h3>
+    <p><b>Q1.</b> 우리의 결론은 데이터와 수학으로 얼마나 정당화되는가?</p>
+    <textarea class="pj-ta" id="pj-ans1" placeholder="[D]의 결과 수치와 [E]의 한계를 함께 넣어 답해 보세요."></textarea>
+    <p style="margin-top:0.8rem;"><b>Q2.</b> 100초 안에 남겨야 하는 세 가지는 무엇인가?</p>
+    <textarea class="pj-ta" id="pj-ans2" placeholder="우리 팀 발표문의 첫 문장·둘째 문장·마지막 문장을 적어 보세요."></textarea>
+    <div class="btn-row">
+      <button class="btn pri" type="button" onclick="pjAnsSave()">답 저장</button>
+      <button class="btn" type="button" onclick="pjAnsLoad()">저장한 답 불러오기</button>
+    </div>
+    <p class="status" id="pj-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 다섯 문항</h3>
+    <p style="margin-bottom:0.9rem;">한 문항씩 풀고, 마지막에 총점과 복기 목록을 확인합니다.</p>
+    <div id="pj-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>30차시를 마치며 — 그리고 다시 처음으로</strong><br>
+    30차시 동안 여러분은 <b>이미지·텍스트·수치</b>를 모두 수로 바꾸어 보았고,
+    그 수 위에서 <b>거리·확률·손실·기울기</b>를 계산해 결정을 만들었습니다.
+    이제 1차시의 질문으로 돌아가 보세요 — <b>“인공지능은 입력과 출력을 잇는 함수 f를 찾는 기계”</b>라는 문장이
+    지금은 어떻게 읽히나요?
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('intro')">1차시로 돌아가기 → 처음의 질문 다시 읽기</button>
+      <button class="btn" type="button" onclick="go('decision')">28차시 사례 해부기</button>
+      <button class="btn" type="button" onclick="go('home')">전체 차시 목록</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「100초 발표문 한 장」 — 우리 팀의 결론을 세 문장으로</h3>
+    <p class="sub">보고서는 길게, 발표는 짧게. 같은 탐구를 <b>세 문장으로 압축</b>하는 것이 이 과제입니다.
+      압축이 되지 않는다면 아직 결론이 정해지지 않은 것입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 우리 탐구를 <b>정확히 세 문장</b>으로 적습니다 — (문제) (데이터/모델) (결론+한계).
+        각 문장은 <b>40자 이내</b>로 제한합니다.<br>
+        ② 결론 문장에는 <b>수 하나</b>를 반드시 넣습니다(예: 오차 3.2개, 정확도 0.86, 기울기 a = 1.7).<br>
+        ③ 세 문장을 소리 내어 읽고 시간을 재어, <b>합쳐서 40초 이내</b>가 되게 다듬습니다
+        (남은 60초는 질문과 화면 설명용으로 남겨 둡니다).<br>
+        ④ 위 <b>100초 타이머</b>로 세 번 연습하고, 매번 걸린 시간을 기록합니다.<br>
+        ⑤ 다른 팀 발표 하나를 골라 <b>루브릭 A~E로 채점</b>하고, 4점을 준 영역과 2점을 준 영역의 이유를 각각 한 문장 적습니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 발표문 한 장(세 문장 + 각 문장 글자 수 표기)<br>
+        · 연습 기록 3회(걸린 시간, 빠뜨린 항목)<br>
+        · 다른 팀 루브릭 채점표 1장과 4점·2점의 이유<br>
+        · (선택) 보고서 [JSON 내보내기] 파일</dd>
+      <dt>평가 관점</dt>
+      <dd>· 결론을 <b>수학적 근거</b>(구체적인 수)와 함께 진술했는가 <b>[12인수05-02]</b><br>
+        · 루브릭에 따라 동료의 탐구를 평가하고 <b>편향·윤리 관점의 검토</b>를 포함했는가 <b>[12인수05-01]</b><br>
+        · 한계를 회피하지 않고 <b>구체적으로</b> 적었는가<br>
+        · 자기평가가 추상어 대신 <b>행동(Fact)</b>으로 기술되었는가 <b>[12인수05-02]</b></dd>
+    </dl>
+    <details class="pj-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>발표 직후 팀별로 <b>칭찬과 핵심 코멘트를 짧게</b> 줍니다.
+          실패하더라도 원인을 논리적으로 분석했다면 과정 점수를 높게 부여하여 도전을 장려합니다.</p>
+        <p>모둠 활동 시 특정 학생에게 과제가 편중되지 않도록 <b>역할별 기여도</b>(데이터 수집가, 수학 모델러 등)를
+          세심하게 관찰하고, 인공지능 윤리를 고려하는 태도를 기르도록 합니다.</p>
+        <span class="pj-src">연수교재 합본 p.307~308 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 데이터 출처와 공학 도구</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. 아래 출처 목록은 <b>합본 p.315·316에 실린 것</b>을 그대로 옮긴 것입니다.</p>
+    <div class="pj-refs">
+      <a class="pj-ref" href="https://www.data.go.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>🗂️</span>
+        <span class="bd"><span class="tt">공공데이터포털</span>
+          <span class="ds">전국 생활 쓰레기 배출 정보, 교통 약자 현황 등 사회적 가치 창출형 주제의 핵심 창구입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://kosis.kr/index/index.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">통계</span>📊</span>
+        <span class="bd"><span class="tt">국가통계포털 KOSIS</span>
+          <span class="ds">연도별 자동차 등록 대수, 1인당 온실가스 배출량 등 국가 승인 통계 — 추세선 분석에 바로 쓰입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://data.kma.go.kr/cmmn/main.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">기상</span>🌦️</span>
+        <span class="bd"><span class="tt">기상자료개방포털</span>
+          <span class="ds">연도별 평균 기온, 서울의 여름 일수 등. “기온 → 판매량” 같은 x·y 짝을 만들기 가장 쉬운 곳입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://www.index.go.kr/unity/potal/sdg/SDGMain.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">지표</span>🌍</span>
+        <span class="bd"><span class="tt">지표누리 SDGs 지표</span>
+          <span class="ds">17개 목표별 우리나라 지표 값과 추이. 탭 ① 마법사에서 고른 목표의 실제 데이터를 여기서 찾습니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://www.bigkinds.or.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">뉴스</span>📰</span>
+        <span class="bd"><span class="tt">빅카인즈 뉴스 빅데이터</span>
+          <span class="ds">기사 텍스트에서 키워드·연관도를 뽑습니다. 6~11차시 텍스트 도구를 쓰는 팀의 원자료 창구입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://teachablemachine.withgoogle.com/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">도구</span>🤖</span>
+        <span class="bd"><span class="tt">Teachable Machine</span>
+          <span class="ds">코딩 없이 이미지·소리·동작을 학습시킵니다. 이미지 분류형 주제(페트병·재활용 등)에 가장 빠른 길입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://www.geogebra.org/classic" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">도구</span>📐</span>
+        <span class="bd"><span class="tt">GeoGebra Classic</span>
+          <span class="ds">추세선·접선·손실함수 그래프를 그려 [D. 수행 과정 시각화]에 캡처로 붙일 수 있습니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://algeomath.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">도구</span>🧩</span>
+        <span class="bd"><span class="tt">알지오매스</span>
+          <span class="ds">블록 코딩으로 경사하강법의 작동을 시뮬레이션할 수 있는 한국형 수학 도구입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://wordcloud.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">도구</span>☁️</span>
+        <span class="bd"><span class="tt">워드클라우드 생성기</span>
+          <span class="ds">텍스트에서 빈도 높은 단어를 시각화합니다. 8차시 TF-IDF와 비교하면 차이가 잘 보입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://www.narastat.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">대회</span>🏆</span>
+        <span class="bd"><span class="tt">전국학생통계활용대회</span>
+          <span class="ds">통계 포스터로 탐구를 발표하는 대회입니다. 우수 작품이 곧 “좋은 보고서”의 견본입니다.</span></span>
+      </a>
+      <a class="pj-ref" href="https://hajinsu9951.github.io/2026-AI-MATH-PROJECT/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">선배 사례</span>🏫</span>
+        <span class="bd"><span class="tt">우리 동네 데이터 분석 AI 모델 아카이브</span>
+          <span class="ds">앞선 학교 학생들의 프로젝트 산출물 갤러리입니다. 규모와 완성도를 눈으로 가늠하세요.</span></span>
+      </a>
+      <a class="pj-ref" href="https://docs.google.com/document/d/1Nsb2AfLPpJam8Rg2R9UmhR24ZXkvajfxO_0hJdfTyMI/copy" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">양식</span>📄</span>
+        <span class="bd"><span class="tt">보고서 A~F 구글 문서 (사본 만들기)</span>
+          <span class="ds">합본에 실린 원본 양식입니다. 팀이 함께 편집하려면 이 사본을 씁니다. 구글 로그인이 필요합니다.</span></span>
+      </a>
+    </div>
+    <p class="status" id="pj-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>5단원 인쇄 자료 4종 — 보고서·루브릭·자기평가·데이터 출처</h3>
+    <p>프로젝트는 <b>지면과 화면을 함께</b> 씁니다. 루브릭 카드는 <b>프로젝트를 시작하기 전에 미리 배부</b>하고,
+      보고서는 팀별로 1부씩 인쇄해 회의용으로 씁니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('pj-sheet-report')">🖨 보고서 A~F 양식 <span class="sz">A4 3장 · 입력값 포함</span></button>
+      <button class="ws-btn sec" type="button" onclick="wsPrint('pj-sheet-rubric')">🖨 루브릭 카드 (사전 배부) <span class="sz">A4 1장</span></button>
+      <button class="ws-btn sec" type="button" onclick="wsPrint('pj-sheet-fact')">🖨 자기평가 Fact 가이드 <span class="sz">A4 1장</span></button>
+      <button class="ws-btn sec" type="button" onclick="wsPrint('pj-sheet-data')">🖨 데이터 출처 리플릿 + SDGs 한눈표 <span class="sz">A4 2장</span></button>
+    </div>
+    <p class="pj-hint" style="margin-top:0.6rem;">
+      보고서 인쇄 지면에는 <b>화면에 입력한 내용이 그대로 실립니다</b>(빈 칸은 밑줄로 나옵니다).
+      회의 전에 인쇄하면 손으로 이어 쓸 수 있는 백지 양식이 됩니다.</p>
+    <div id="pj-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 ① 보고서 A~F ═════ -->
+  <div class="ws-sheet" id="pj-sheet-report" aria-hidden="true">
+    <div class="ws-h">
+      <h2>인공지능 수학 탐구 보고서 — 실생활 자료를 활용한 예측 및 최적화</h2>
+      <span class="ws-id" id="pj-p-head">조 이름 __________ 날짜 __________</span>
+    </div>
+    <table>
+      <tr><th style="width:16%;">학번</th><td class="blank" id="pj-p-m0s"></td><th style="width:16%;">이름</th><td class="blank" id="pj-p-m0n"></td><th style="width:18%;">역할</th><td>데이터 수집가</td></tr>
+      <tr><th>학번</th><td class="blank" id="pj-p-m1s"></td><th>이름</th><td class="blank" id="pj-p-m1n"></td><th>역할</th><td>수학 모델러</td></tr>
+      <tr><th>학번</th><td class="blank" id="pj-p-m2s"></td><th>이름</th><td class="blank" id="pj-p-m2n"></td><th>역할</th><td>기술 구현자</td></tr>
+      <tr><th>학번</th><td class="blank" id="pj-p-m3s"></td><th>이름</th><td class="blank" id="pj-p-m3n"></td><th>역할</th><td>비평 및 분석가</td></tr>
+    </table>
+
+    <h3>A. 탐구 주제 선정 및 문제 정의</h3>
+    <table>
+      <tr><th style="width:24%;">1-1. 탐구주제</th><td class="blank" id="pj-p-A1"></td></tr>
+      <tr><th>1-2. 주제선정 이유 및 필요성</th><td class="blank" id="pj-p-A2"></td></tr>
+      <tr><th>1-3. 탐구 목표</th><td class="blank" id="pj-p-A3"></td></tr>
+    </table>
+
+    <h3>B. 데이터 수집 및 전처리</h3>
+    <table>
+      <tr><th style="width:24%;">2-1. 데이터 출처 및 수집 방법</th><td class="blank" id="pj-p-B1"></td></tr>
+      <tr><th>2-2. 데이터의 특성</th><td class="blank" id="pj-p-B2"></td></tr>
+      <tr><th>2-3. 데이터 정제(전처리)</th><td class="blank" id="pj-p-B3"></td></tr>
+    </table>
+
+    <h3>C. 수학적 원리 및 인공지능 모델 설계</h3>
+    <table>
+      <tr><th style="width:24%;">3-1. 활용된 수학적 개념</th><td class="blank" id="pj-p-C1"></td></tr>
+      <tr><th>3-2. 선정한 방식</th><td class="blank" id="pj-p-C2"></td></tr>
+      <tr><th>3-3. 모델 설계 수식</th><td class="blank" id="pj-p-C3"></td></tr>
+    </table>
+
+    <h3>D. 탐구 수행 및 결과 도출(공학 도구 활용)</h3>
+    <table>
+      <tr><th style="width:24%;">4-1. 활용도구</th><td class="blank" id="pj-p-D1"></td></tr>
+      <tr><th>4-2. 수행 과정 시각화</th><td class="blank" id="pj-p-D2"></td></tr>
+      <tr><th>4-3. 예측/최적화 결과</th><td class="blank" id="pj-p-D3"></td></tr>
+    </table>
+    <p class="note">▼ 산점도·추세선 그래프·워드 클라우드 등 결과를 붙이거나 그려 넣는 칸</p>
+    <div class="rule lg"></div>
+
+    <h3>E. 결과 해석 및 성찰</h3>
+    <table>
+      <tr><th style="width:24%;">5-1. 결과의 타당성 검토</th><td class="blank" id="pj-p-E1"></td></tr>
+      <tr><th>5-2. 인공지능 윤리 및 한계</th><td class="blank" id="pj-p-E2"></td></tr>
+      <tr><th>5-3. 후속 계획</th><td class="blank" id="pj-p-E3"></td></tr>
+    </table>
+
+    <h3>F. 동료 평가 / 자기평가</h3>
+    <p class="note">* 기여도: 팀원 전체의 합이 100이 되도록 팀원들이 함께 협의하여 결정합니다.
+      (예: 25, 25, 25, 25 또는 20, 20, 30, 30 등) 단, 실제 활동 내역을 바탕으로 객관적이고 공정하게 배분하세요.</p>
+    <table>
+      <tr><th style="width:12%;">학번</th><th style="width:14%;">이름</th><th style="width:10%;">기여도</th><th>자기평가</th></tr>
+      <tr><td class="blank" id="pj-p-f0s"></td><td class="blank" id="pj-p-f0n"></td><td class="blank" id="pj-p-f0c"></td><td class="blank" id="pj-p-f0e"></td></tr>
+      <tr><td class="blank" id="pj-p-f1s"></td><td class="blank" id="pj-p-f1n"></td><td class="blank" id="pj-p-f1c"></td><td class="blank" id="pj-p-f1e"></td></tr>
+      <tr><td class="blank" id="pj-p-f2s"></td><td class="blank" id="pj-p-f2n"></td><td class="blank" id="pj-p-f2c"></td><td class="blank" id="pj-p-f2e"></td></tr>
+      <tr><td class="blank" id="pj-p-f3s"></td><td class="blank" id="pj-p-f3n"></td><td class="blank" id="pj-p-f3c"></td><td class="blank" id="pj-p-f3e"></td></tr>
+    </table>
+    <p class="note">“열심히 했다”, “재미있었다”는 추상적인 말은 NO! 나의 활동 과정과 성장이 잘 드러날 수 있도록,
+      ‘내가 실제로 한 행동(Fact)’ 위주로 구체적이고 솔직하게 적어주세요.</p>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 ② 루브릭 카드 ═════ -->
+  <div class="ws-sheet" id="pj-sheet-rubric" aria-hidden="true">
+    <div class="ws-h">
+      <h2>탐구 프로젝트 평가 루브릭 (사전 배부용)</h2>
+      <span class="ws-id">___학년 ___반 &nbsp; 평가자 __________</span>
+    </div>
+    <p class="note">루브릭은 <b>미리</b> 받아 보는 지도입니다. 무엇을 해야 좋은 점수를 받는지 먼저 읽고 시작하세요.
+      특히 <b>수학적 원리</b>가 드러나야 한다는 점이 가장 중요합니다.</p>
+    <table>
+      <tr><th style="width:16%;">평가 영역</th><th>성취수준: 우수 (4점)</th><th>성취수준: 보통 (3점)</th><th>성취수준: 미흡 (2점)</th></tr>
+      <tr><th>A. 주제 선정 및 문제 정의</th>
+        <td>실생활 문제와 지속 가능 발전 목표(SDGs)가 긴밀하게 연계되었으며, 탐구 목표가 구체적이고 명확함.</td>
+        <td>실생활 문제 해결을 위한 주제를 선정했으나, 필요성이나 탐구 목표가 다소 일반적임.</td>
+        <td>탐구 주제가 모호하거나 인공지능과 수학을 통해 해결하기에 적절하지 않음.</td></tr>
+      <tr><th>B. 데이터 수집 및 전처리</th>
+        <td>신뢰할 수 있는 출처에서 데이터를 수집하고, 결측값 처리 및 이상치 제거 등 전처리 과정을 상세히 기록함.</td>
+        <td>신뢰할 수 있는 출처를 활용했으나, 데이터의 특성 기술이나 전처리 과정 설명이 일부 누락됨.</td>
+        <td>데이터 출처가 불분명하거나 전처리 과정 없이 원시 데이터를 그대로 사용함.</td></tr>
+      <tr><th>C. 수학적 원리 및 모델 설계</th>
+        <td>활용된 수학적 개념(벡터, 행렬, 미분 등)을 정확히 기술하고, 손실함수나 모델 수식을 구체적이고 올바르게 설계함.</td>
+        <td>수학적 개념을 제시했으나, 인공지능 모델(k-NN, 경사하강법 등)과의 논리적 연결이나 수식 표현이 다소 부족함.</td>
+        <td>수학적 원리에 대한 설명이 없거나, 설계된 모델의 수식이 탐구 목적과 일치하지 않음.</td></tr>
+      <tr><th>D. 탐구 수행 및 결과 도출</th>
+        <td>적절한 공학 도구를 활용하여 탐구를 수행하고, 산점도, 추세선, 워드 클라우드 등으로 시각화하여 최적의 결과를 도출함.</td>
+        <td>공학 도구를 활용했으나, 수행 과정의 시각화가 미흡하거나 예측/최적화 결과 기술이 명확하지 않음.</td>
+        <td>공학 도구 활용이 형식적이거나 탐구 수행을 통한 결과 도출 과정이 논리적이지 않음.</td></tr>
+      <tr><th>E. 결과 해석 및 성찰</th>
+        <td>결과의 타당성을 객관적으로 검토하고, 데이터 편향성 및 윤리적 한계에 대한 깊이 있는 성찰과 후속 계획을 제시함.</td>
+        <td>도출된 결과를 실제 문제와 연결하여 해석했으나, 인공지능 윤리나 한계점에 대한 분석이 평이함.</td>
+        <td>결과 해석이 단순 나열에 그치거나, 탐구 과정에 대한 성찰 및 향후 계획이 제시되지 않음.</td></tr>
+    </table>
+    <h3>청중 채점표 — 발표를 들으며 표시하세요</h3>
+    <table>
+      <tr><th style="width:22%;">팀 이름</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th style="width:24%;">한 줄 코멘트</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">평가 유의 — 단순한 예측 성공 여부나 결과의 수치적 정확도보다, 문제 정의에서 결론 도출에 이르는
+      전 과정(데이터 수집–전처리–모델링–해석)의 논리적 연계성을 중점적으로 평가합니다.
+      실패하더라도 원인을 논리적으로 분석했다면 과정 점수를 높게 부여합니다.</p>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 ③ 자기평가 Fact 가이드 ═════ -->
+  <div class="ws-sheet" id="pj-sheet-fact" aria-hidden="true">
+    <div class="ws-h">
+      <h2>자기평가 작성 가이드 — ‘내가 한 행동(Fact)’으로 쓰기</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">“열심히 했다”, “재미있었다”는 추상적인 말은 NO! 나의 활동 과정과 성장이 잘 드러날 수 있도록,
+      ‘내가 실제로 한 행동(Fact)’ 위주로 구체적이고 솔직하게 적어주세요.</p>
+
+    <h3>1. 내가 한 일 (가장 중요!)</h3>
+    <p class="note">맡은 역할: 팀에서 정확히 어떤 부분을 담당했나요? / 핵심 기여: “이건 내가 다 했다!”라고 말할 수 있는 작업은?<br>
+      나쁜 예: 자료 조사 함 &nbsp;|&nbsp; 좋은 예: 기상청 사이트에서 10일 치 기온 데이터를 직접 찾고 엑셀에 입력함</p>
+    <div class="rule lg"></div>
+
+    <h3>2. 새로 배운 지식 &amp; 기술</h3>
+    <p class="note">수업 시간에 배운 용어(예: 경사하강법, 손실함수, 오차)를 사용해서 배운 점을 적어 보세요.
+      엑셀(스프레드시트)에서 새로 알게 된 기능이나 수식은 무엇인가요?</p>
+    <div class="rule lg"></div>
+
+    <h3>3. 위기 탈출 (문제 해결)</h3>
+    <p class="note">가장 막막했던 순간이나 오류가 났던 상황은 언제였나요?
+      그걸 해결하기 위해 구체적으로 어떤 노력(검색, 질문, 토론)을 했나요?</p>
+    <div class="rule lg"></div>
+
+    <h3>4. 팀워크 &amp; 소통</h3>
+    <p class="note">친구와 의견이 안 맞았을 때 어떻게 해결했나요?
+      팀을 위해 내가 조금 더 고생하거나 친구를 도와준 적이 있나요?</p>
+    <div class="rule lg"></div>
+
+    <h3>5. 나의 변화 (느낀 점)</h3>
+    <p class="note">프로젝트 하기 전과 후, 데이터나 인공지능을 보는 눈이 어떻게 달라졌나요?
+      아쉬웠던 점이나, 다음에 더 공부해보고 싶은 내용은?</p>
+    <div class="rule lg"></div>
+
+    <h3>기여도 협의 기록</h3>
+    <table>
+      <tr><th style="width:14%;">이름</th><th style="width:12%;">기여도</th><th>협의에서 근거로 든 행동(Fact)</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>합계</th><td class="blank"></td><td class="note">합이 100이 되어야 합니다.</td></tr>
+    </table>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 ④ 데이터 출처 리플릿 + SDGs 한눈표 ═════ -->
+  <div class="ws-sheet" id="pj-sheet-data" aria-hidden="true">
+    <div class="ws-h">
+      <h2>데이터 출처 리플릿 — 어디서 찾을까</h2>
+      <span class="ws-id">탐구 주제: ______________________</span>
+    </div>
+    <h3>1. 범용 공공데이터 및 통계 포털</h3>
+    <table>
+      <tr><th style="width:26%;">출처</th><th style="width:34%;">여기서 얻을 수 있는 것</th><th>주소</th></tr>
+      <tr><td>공공데이터포털</td><td>생활 쓰레기 배출 정보, 교통 약자 현황 등</td><td>data.go.kr</td></tr>
+      <tr><td>국가통계포털 KOSIS</td><td>자동차 등록 대수, 1인당 온실가스 배출량</td><td>kosis.kr</td></tr>
+      <tr><td>지표누리(e-나라지표)</td><td>비만율, 국가 핵심 지표, SDGs 지표</td><td>index.go.kr</td></tr>
+      <tr><td>AI 허브</td><td>인공지능 학습용 데이터</td><td>aihub.or.kr</td></tr>
+    </table>
+    <h3>2. 기후·환경·에너지</h3>
+    <table>
+      <tr><th style="width:26%;">출처</th><th style="width:34%;">여기서 얻을 수 있는 것</th><th>주소</th></tr>
+      <tr><td>기상자료개방포털</td><td>연도별 평균 기온, 여름 일수</td><td>data.kma.go.kr</td></tr>
+      <tr><td>기후정보포털</td><td>이산화 탄소 연평균 농도</td><td>climate.go.kr</td></tr>
+      <tr><td>해양수산부 바다누리</td><td>연간 해수면 높이 변화</td><td>khoa.go.kr</td></tr>
+      <tr><td>환경부</td><td>가정 쓰레기 발생량·처리 비용</td><td>mcee.go.kr</td></tr>
+    </table>
+    <h3>3. 사회·교육·관광 / 뉴스·특수 데이터셋</h3>
+    <table>
+      <tr><th style="width:26%;">출처</th><th style="width:34%;">여기서 얻을 수 있는 것</th><th>주소</th></tr>
+      <tr><td>국토교통부</td><td>교통 약자 현황, 자동차 등록 현황</td><td>data.molit.go.kr</td></tr>
+      <tr><td>한국교육개발원</td><td>연도별 학생 수 변화</td><td>kedi.re.kr</td></tr>
+      <tr><td>한국관광데이터랩</td><td>SNS 언급량과 관광지 방문자 수</td><td>datalab.visitkorea.or.kr</td></tr>
+      <tr><td>빅카인즈</td><td>뉴스 텍스트 마이닝·키워드 연관도</td><td>bigkinds.or.kr</td></tr>
+      <tr><td>MNIST / 캐글</td><td>손글씨 숫자 / 실무 데이터셋</td><td>kaggle.com</td></tr>
+    </table>
+    <p class="note">출처 목록은 연수교재 합본 p.315·316 「5종 교과서에 제시된 데이터 출처 및 내용」을 그대로 옮긴 것입니다.
+      자료 수집 시 인터넷 자료를 무분별하게 가져오면 안 됩니다. 참고 문헌 작성 요령을 지켜 발췌하면 글의 공신력이 높아집니다.</p>
+
+    <div class="ws-h" style="margin-top:8mm;">
+      <h2>지속가능발전목표(SDGs) 17 한눈표</h2>
+      <span class="ws-id">우리 팀이 고른 목표: ______</span>
+    </div>
+    <table>
+      <tr><th style="width:6%;">번호</th><th style="width:26%;">목표</th><th>수학으로 접근할 수 있는 예</th></tr>
+      <tr><td>1</td><td>빈곤 퇴치</td><td>지역별 소득·지원 현황 비교(비율·상대도수)</td></tr>
+      <tr><td>2</td><td>기아 종식</td><td>급식 잔반량 예측으로 식자재 낭비 줄이기(추세선·경사하강법)</td></tr>
+      <tr><td>3</td><td>건강과 웰빙 증진</td><td>질병 확산 예측, 감염률·전파 경로 파악(확률)</td></tr>
+      <tr><td>4</td><td>양질의 교육 보장</td><td>학급 진로 관심사 벡터화 후 유사도 군집(코사인·자카드)</td></tr>
+      <tr><td>5</td><td>성평등 달성</td><td>집단별 합격률과 그 비로 편향 확인(조건일 때의 상대도수)</td></tr>
+      <tr><td>6</td><td>깨끗한 물과 위생</td><td>수돗물 사용량과 기온의 상관 분석(산점도·추세선)</td></tr>
+      <tr><td>7</td><td>모두를 위한 에너지</td><td>학교 전력 사용량 예측(추세선·손실함수)</td></tr>
+      <tr><td>8</td><td>경제 성장과 일자리</td><td>노동 시장 동향 분석과 경제 성장 예측</td></tr>
+      <tr><td>9</td><td>사회기반시설·혁신</td><td>도로 정체 확률 예측(상대도수·조건일 때의 상대도수 비교)</td></tr>
+      <tr><td>10</td><td>불평등 감소</td><td>지역별 지표 격차를 비율로 계산해 비교</td></tr>
+      <tr><td>11</td><td>지속가능한 도시</td><td>장애인 콜택시 대기 시간 감소를 위한 배차 개선</td></tr>
+      <tr><td>12</td><td>지속가능한 소비·생산</td><td>재활용 쓰레기 사진 분류(행렬·합성곱·해밍 거리)</td></tr>
+      <tr><td>13</td><td>기후 변화 대응</td><td>온실가스 배출량과 해수면 높이의 추세선 분석</td></tr>
+      <tr><td>14</td><td>해양생태계 보존</td><td>해양 쓰레기 수거량 추이와 예측</td></tr>
+      <tr><td>15</td><td>육상생태계 보호</td><td>산림 면적 변화와 생태발자국 계산</td></tr>
+      <tr><td>16</td><td>평화·정의·제도</td><td>알고리즘 판단의 공정성 지표 설계(비율 비교)</td></tr>
+      <tr><td>17</td><td>글로벌 파트너십</td><td>국가 간 지표 비교와 협력 효과 분석</td></tr>
+    </table>
+    <p class="note">SDGs 17목표 명칭은 씨마스 Ⅴ p.189와 연수교재 합본 p.314 목록을 따랐습니다.
+      ‘수학으로 접근할 수 있는 예’ 열은 합본 p.313~314 「5종 교과서 주요 탐구 주제 예시」와 1~4단원 학습 내용을 연결해 구성했습니다.</p>
+  </div>
+</div>

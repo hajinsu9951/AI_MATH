@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ai-math-v22';
+const CACHE_NAME = 'ai-math-v25';
 const ASSETS = [
   './',
   './index.html',
@@ -19,11 +19,19 @@ const ASSETS = [
   './views/mnist.html',
   './views/quickdraw.html',
   './views/hamming.html',
+  './views/imgop.html',
   './views/conv.html',
   './views/filter.html',
   './views/pool.html',
   './views/pipeline.html',
   './views/detect.html',
+  './views/prob.html',
+  './views/trend.html',
+  './views/optim.html',
+  './views/gdsheet.html',
+  './views/decision.html',
+  './views/datalab.html',
+  './views/project.html',
 ];
 
 self.addEventListener('install', (event) => {
@@ -49,6 +57,11 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
+// 런타임 캐시 제외 경로 — 학습지(hwp/hwpx/pdf/xlsx/pptx, 최대 6MB)와
+// 교과서 지면 캡처는 §20에 따라 네트워크 전용입니다. 이 가드가 없으면
+// 학생이 학습지 버튼을 한 번 누를 때마다 대용량 파일이 캐시에 적재됩니다.
+const NOCACHE = /\/assets\/(worksheets|textbook-local)\//;
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   event.respondWith((async () => {
@@ -59,7 +72,7 @@ self.addEventListener('fetch', (event) => {
       const fresh = await fetch(req);
       // same-origin only cache
       const url = new URL(req.url);
-      if (url.origin === location.origin && fresh.ok) cache.put(req, fresh.clone());
+      if (url.origin === location.origin && fresh.ok && !NOCACHE.test(url.pathname)) cache.put(req, fresh.clone());
       return fresh;
     } catch (e) {
       // fallback to index for navigation

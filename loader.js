@@ -1,6 +1,7 @@
 (async function () {
-  // 차시 순서와 일치시킵니다(§11) — 1~5차시 → 6~10차시 → 12~19차시.
-  const order = ['home','intro','mlplay','logic','perceptron','bias','text','tfidf','sim','senti','review','quickdraw','mnist','hamming','conv','filter','pool','pipeline','detect'];
+  // 차시 순서와 일치시킵니다(§11) — 1~5차시 → 6~11차시 → 12~19차시 → 20~27차시 → 28~30차시.
+  // project(30차시)는 반드시 마지막 — 회고 탭의 「우리 팀이 쓴 수학」 지도가 앞선 뷰의 존재를 판정합니다.
+  const order = ['home','intro','mlplay','logic','perceptron','bias','text','tfidf','sim','senti','review','quickdraw','mnist','hamming','imgop','conv','filter','pool','pipeline','detect','prob','trend','optim','gdsheet','decision','datalab','project'];
   const container = document.getElementById('views');
   if (!container) return;
 

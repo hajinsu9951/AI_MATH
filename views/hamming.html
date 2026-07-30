@@ -1,29 +1,283 @@
+<!-- ═══════════ HAMMING (13차시: 이진화·XOR·해밍 거리 분류) ═══════════
+     · 파일 위치: views/hamming.html  (기존 뷰 교체 전체본)
+     · 기존 전역 접두사 h / hb / hdg 와 DOM id(hd-box·hd-res·ubmp·rbtn·hbars·hbest·
+       hoverlap·refpreview·ovpreview·hdg-*)는 그대로 보존합니다.
+       core.js 는 로드 즉시 rHD() 를 부르므로 #hd-box·#hd-res 는 반드시 남아 있어야 합니다.
+     · 이번 개편에서 새로 만든 것은 모두 hbx 접두사입니다.
+     · 뷰 루트 id #v-hamming · 모든 스타일 규칙은 #v-hamming 하위로만 작성
+     ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-hamming">
-  <p class="mono" style="margin-bottom:0.4rem;">해밍 거리</p>
-  <h2>XOR 연산과 유사도 측정</h2>
-  <p class="desc">
-    같은 길이의 두 이진 문자열에서 대응하는 위치의 값이 서로 다른 개수를 해밍 거리라 합니다.
-    XOR 연산 결과에서 1의 개수를 세면 됩니다.
-  </p>
+  <style>
+  /* hamming 뷰 전용 스타일 (#v-hamming 스코프 한정) */
+  #v-hamming .hbx-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-hamming .hbx-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-hamming .hbx-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
 
-  <div class="card">
-    <h3>왜 해밍 거리를 배울까?</h3>
-    <p>컴퓨터는 이미지, 텍스트, 소리 등 모든 데이터를 0과 1로 저장합니다.
-      두 데이터가 얼마나 비슷한지를 판단하려면, 같은 위치에서 값이 다른 개수를 세면 됩니다.
-      이것이 해밍 거리의 핵심 아이디어이며, 데이터 분류의 가장 기본적인 수학적 도구입니다.</p>
-    <p style="margin-top:0.5rem;">해밍 거리는 통신 분야에서 오류 검출 및 정정에 사용되며,
-      생물정보학에서 DNA 서열 비교, 정보 검색에서 유사 문서 탐색,
-      그리고 QR 코드의 오류 복원 등 다양한 분야에서 활용됩니다.</p>
+  /* 표제부 · 워터마크 */
+  #v-hamming .hbx-hero{position:relative;}
+  #v-hamming .hbx-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.10;pointer-events:none;}
+  #v-hamming .hbx-hero>*:not(.hbx-wm){position:relative;}
+  #v-hamming .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-hamming .hbx-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-hamming .hbx-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-hamming .hbx-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-hamming .hbx-ask{border-left:4px solid var(--accent);}
+  #v-hamming .hbx-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-hamming .hbx-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-hamming .hbx-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-hamming .hbx-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-hamming .hbx-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-hamming .hbx-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-hamming .hbx-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;}
+  #v-hamming .hbx-scroll{overflow-x:auto;max-width:100%;}
+  #v-hamming .hbx-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-hamming .hbx-tbl th,#v-hamming .hbx-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-hamming .hbx-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-hamming .hbx-tbl td.d{font-family:var(--mono);font-weight:700;}
+  #v-hamming .hbx-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-hamming .hbx-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-hamming .hbx-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-hamming .hbx-fb b{color:var(--fg);}
+  #v-hamming .hbx-fb:empty{display:none;}
+  #v-hamming .hbx-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-hamming .hbx-in.num{width:5.4rem;text-align:center;}
+  #v-hamming textarea.hbx-ta{width:100%;min-height:4.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:1.0rem;line-height:1.75;background:var(--card);color:var(--fg);resize:vertical;}
+
+  /* 조작 요소 확대 — 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-hamming .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-hamming .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-hamming .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-hamming .tabs{flex-wrap:wrap;}
+  #v-hamming .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-hamming .ws-btn{min-height:44px;}
+  #v-hamming .mat-label{font-size:0.85rem;text-align:left;}
+  #v-hamming #rbtn .btn{min-width:2.8rem;min-height:2.8rem;font-size:0.95rem;padding:0.4rem 0.6rem;}
+  #v-hamming .bsz{min-height:44px;}
+  #v-hamming #hbest,#v-hamming #hd-res{font-family:var(--sans);font-size:1.05rem;font-weight:700;color:var(--fg);
+    background:var(--bg);border-left:5px solid var(--accent);border-radius:0.5rem;padding:0.6rem 0.9rem;line-height:1.8;}
+  #v-hamming #hbest:empty,#v-hamming #hd-res:empty{display:none;}
+
+  /* 단계 토글(details) */
+  #v-hamming .hbx-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-hamming .hbx-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-hamming .hbx-fold>summary::-webkit-details-marker{display:none;}
+  #v-hamming .hbx-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-hamming .hbx-fold[open]>summary::after{content:'▾';}
+  #v-hamming .hbx-fold .bd{padding:0 0 0.9rem;}
+  #v-hamming .hbx-fold .bd p,#v-hamming .hbx-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-hamming .hbx-fold.hbx-locked{opacity:0.62;}
+  #v-hamming .hbx-fold.hbx-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-hamming .hbx-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 활동 4 — 평행이동 실험 */
+  #v-hamming .hbx-gwrap{display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start;justify-content:center;margin:0.9rem 0;}
+  #v-hamming .hbx-gcol{text-align:center;min-width:0;}
+  #v-hamming .hbx-gcol .lb{display:block;font-family:var(--mono);font-size:0.82rem;font-weight:700;color:var(--muted);margin-bottom:0.35rem;}
+  #v-hamming .hbx-gcol .lb.hot{color:var(--red);}
+  #v-hamming .hbx-grid{display:grid;grid-template-columns:repeat(6,1.9rem);gap:2px;background:var(--border);
+    padding:3px;border-radius:6px;width:max-content;margin:0 auto;max-width:100%;}
+  #v-hamming .hbx-c{width:1.9rem;height:1.9rem;background:var(--bg);border-radius:3px;}
+  #v-hamming .hbx-c.on{background:var(--fg);}
+  #v-hamming .hbx-c.diff{background:var(--red);}
+  #v-hamming .hbx-ctrl{display:flex;flex-wrap:wrap;gap:0.6rem 1.1rem;align-items:center;justify-content:center;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem 0.9rem;margin:0.7rem 0;}
+  #v-hamming .hbx-ctrl label{font-size:0.95rem;font-weight:600;color:var(--fg);display:inline-flex;align-items:center;gap:0.45rem;}
+  #v-hamming input[type=range].hbx-r{width:9rem;height:44px;accent-color:var(--fg);cursor:pointer;background:transparent;}
+  #v-hamming .hbx-ctrl b{font-family:var(--mono);font-size:1.05rem;min-width:1.6rem;text-align:center;}
+  #v-hamming .hbx-bars{margin-top:0.8rem;}
+  #v-hamming .hbx-bar{display:flex;align-items:center;gap:0.5rem;margin:0.35rem 0;}
+  #v-hamming .hbx-bar .nm{font-family:var(--mono);font-size:0.9rem;font-weight:700;width:1.6rem;text-align:center;flex-shrink:0;}
+  #v-hamming .hbx-bar .tk{flex:1;min-width:2.5rem;height:1.1rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:9999px;overflow:hidden;}
+  #v-hamming .hbx-bar .tk i{display:block;height:100%;width:0;background:var(--accent);border-radius:9999px;
+    transition:width 0.35s cubic-bezier(0.22,1,0.36,1);}
+  #v-hamming .hbx-bar.best .tk i{background:var(--green);}
+  #v-hamming .hbx-bar.orig .nm{color:var(--blue);}
+  #v-hamming .hbx-bar .vl{font-family:var(--mono);font-size:0.88rem;font-weight:700;width:3.4rem;text-align:right;flex-shrink:0;}
+  #v-hamming .hbx-verdict{font-size:1.05rem;font-weight:700;line-height:1.85;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);border-left:5px solid var(--accent);margin-top:0.8rem;}
+  #v-hamming .hbx-verdict.bad{border-left-color:var(--red);}
+  #v-hamming .hbx-verdict.good{border-left-color:var(--green);}
+
+  /* 사진 · 교과서 캡처 슬롯 */
+  #v-hamming .hbx-photo{margin:0.9rem 0;max-width:min(100%,26rem);}
+  #v-hamming .hbx-photo img{display:block;width:100%;height:auto;border-radius:0.6rem;border:1px solid var(--border);background:#fff;}
+  #v-hamming .hbx-photo .fb{display:none;align-items:center;justify-content:center;width:100%;min-height:8rem;
+    font-size:3rem;background:var(--bg);border:1px solid var(--border);border-radius:0.6rem;}
+  #v-hamming .hbx-photo.nofoto img{display:none;}
+  #v-hamming .hbx-photo.nofoto .fb{display:flex;}
+  #v-hamming .hbx-photo figcaption{font-size:0.8rem;color:var(--muted);line-height:1.65;margin-top:0.35rem;}
+  #v-hamming .hbx-tbrow{display:flex;flex-wrap:wrap;gap:0.7rem;margin-top:0.7rem;}
+  #v-hamming .hbx-tbrow figure{margin:0;flex:1 1 13rem;min-width:0;}
+  #v-hamming .hbx-tbrow img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;background:#fff;}
+  #v-hamming .hbx-tbrow figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.25rem;line-height:1.6;}
+
+  /* 추천 영상 링크 카드 — 공통 .cmn-vd-grid 를 그대로 씁니다 */
+  #v-hamming .hbx-vdlink{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    border:1px solid var(--border);border-radius:0.7rem;overflow:hidden;background:var(--card);transition:all 0.2s;
+    font-family:var(--sans);font-size:1rem;text-align:left;cursor:pointer;width:100%;}
+  #v-hamming .hbx-vdlink:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-hamming .hbx-vdlink .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.2rem;overflow:hidden;}
+  #v-hamming .hbx-vdlink .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-hamming .hbx-vdlink .lock{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.64rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;}
+  #v-hamming .hbx-vdlink .meta{padding:0.55rem 0.7rem 0.75rem;}
+  #v-hamming .hbx-vdlink .meta b{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;}
+  #v-hamming .hbx-vdlink .meta span{display:block;font-size:0.8rem;color:var(--muted);margin-top:0.2rem;line-height:1.55;}
+
+  /* 참고 자료 카드 */
+  #v-hamming .hbx-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-hamming .hbx-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;
+    font-family:var(--sans);font-size:1rem;cursor:pointer;}
+  #v-hamming .hbx-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-hamming .hbx-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;}
+  #v-hamming .hbx-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-hamming .hbx-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-hamming .hbx-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-hamming .hbx-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-hamming *{animation:none !important;transition:none !important;}
+  }
+  @media (max-width:640px){
+    #v-hamming .hbx-wm{display:none;}
+    #v-hamming .hbx-grid{grid-template-columns:repeat(6,1.6rem);}
+    #v-hamming .hbx-c{width:1.6rem;height:1.6rem;}
+    #v-hamming .hbx-fml{font-size:0.8rem;}
+    #v-hamming input[type=range].hbx-r{width:7rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="hbx-hero">
+    <svg class="hbx-wm" viewBox="0 0 240 150" aria-hidden="true" focusable="false">
+      <g font-family="monospace" font-size="17" text-anchor="middle" fill="var(--fg)">
+        <text x="46" y="40">1</text><text x="78" y="40">0</text><text x="110" y="40">1</text>
+        <text x="142" y="40">1</text><text x="174" y="40">0</text><text x="206" y="40">1</text>
+        <text x="46" y="76">1</text><text x="78" y="76">1</text><text x="110" y="76">1</text>
+        <text x="142" y="76">0</text><text x="174" y="76">0</text><text x="206" y="76">0</text>
+        <text x="18" y="40" font-size="13" fill="var(--muted)">A</text>
+        <text x="18" y="76" font-size="13" fill="var(--muted)">B</text>
+        <text x="18" y="114" font-size="13" fill="var(--red)">⊕</text>
+        <text x="46" y="114" fill="var(--muted)">0</text><text x="78" y="114" fill="var(--red)">1</text>
+        <text x="110" y="114" fill="var(--muted)">0</text><text x="142" y="114" fill="var(--red)">1</text>
+        <text x="174" y="114" fill="var(--muted)">0</text><text x="206" y="114" fill="var(--red)">1</text>
+      </g>
+      <path d="M30 92 H222" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="120" y="140" font-family="monospace" font-size="13" fill="var(--muted)" text-anchor="middle">d(A, B) = 3</text>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅲ 단원 · 13차시 · [12인수03-01] · [12인수03-03]</p>
+    <h2>이진화·XOR·해밍 거리 — 다름을 하나의 수로 재기</h2>
+    <p class="desc">
+      12차시에서 손글씨는 784개의 수가 되었습니다. 이제 두 그림이 <b>얼마나 다른가</b>를
+      단 하나의 수로 말해 봅니다. 놀랍게도 필요한 것은 <b>다른 자리의 개수를 세는 일</b>뿐입니다.
+    </p>
   </div>
 
-    <div class="tabs">
-    <button class="tab on" onclick="htab(0,this)">탐구 게임</button>
-    <button class="tab" onclick="htab(1,this)">XOR 원리</button>
-    <button class="tab" onclick="htab(2,this)">비트맵 실습</button>
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① <b>임계값</b>을 기준으로 이미지를 <b>이진 행렬</b>로 표현할 수 있습니다. <b>[12인수03-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② <b>해밍 거리</b>를 이용하여 두 이미지의 유사한 정도를 구하고, 가장 가까운 참조 이미지로 분류하는
+      수학적 방법을 설명할 수 있습니다. <b>[12인수03-03]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 위치가 어긋난 이미지에서 해밍 거리 분류가 <b>실패하는 사례</b>를 관찰하고 그 한계를 설명할 수 있습니다. <b>[12인수03-03]</b>
+    </div>
+    <div class="hbx-goalmap">
+      <button type="button" onclick="hbxSee(0,'hbx-act1')">├ 목표 ① → <b>활동 1</b>(탐구 9단계 중 이진화)·<b>활동 2</b>(XOR과 대칭차집합) →</button>
+      <button type="button" onclick="hbxSee(2,'hbx-act3')">├ 목표 ② → <b>활동 3</b>(내가 그린 숫자와 참조 0~9의 거리 계산·직접 채점) →</button>
+      <button type="button" onclick="hbxSee(3,'hbx-act4')">└ 목표 ③ → <b>활동 4</b>(한 칸 옮겼을 뿐인데 분류가 뒤집히는 실험) →</button>
+    </div>
   </div>
 
-  <!-- TAB 0: GAME -->
-<div class="tpanel on" id="ht0">
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips hbx-keys" data-no-toggle="1">
+    <span class="chip">이진화와 임계값</span>
+    <span class="chip">배타적 논리합 XOR (⊕)</span>
+    <span class="chip">대칭차집합</span>
+    <span class="chip">해밍 거리 d = Σ(Aᵢ ⊕ Bᵢ)</span>
+    <span class="chip">최근접 분류와 한계</span>
+  </div>
+
+  <div class="card hbx-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>두 그림이 ‘얼마나 다른가’를 하나의 수로 나타낼 수 있을까?</li>
+      <li>그 수만으로 인공지능은 어디까지 옳게 분류할 수 있을까?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">두 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="hbx-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 다름을 세어 분류하는 방법</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      마지막 칸의 점선 카드는 <b>선생님이 영상을 하나 더 걸 수 있는 자리</b>입니다.</p>
+    <div id="hbx-videos"></div>
+    <div class="cmn-vd-grid" style="margin-top:0.8rem;">
+      <button class="hbx-vdlink" type="button" onclick="go('mnist')">
+        <span class="th"><span class="lock">돌아보기</span>🔢</span>
+        <span class="meta"><b>12차시 · 이미지는 행렬이다</b>
+          <span>오늘 쓰는 28×28 행렬과 0~255 회색조는 지난 시간에 만들었습니다. 잊었다면 먼저 다녀오세요.</span></span>
+      </button>
+      <a class="hbx-vdlink" href="https://www.youtube.com/results?search_query=%ED%95%B4%EB%B0%8D+%EA%B1%B0%EB%A6%AC+Hamming+distance"
+         target="_blank" rel="noopener">
+        <span class="th">🔎</span>
+        <span class="meta"><b>“해밍 거리” 영상 더 찾기</b>
+          <span>유튜브 검색 · 좋은 영상을 찾으면 위 [＋ 선생님 영상 추가] 칸에 등록해 두세요.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="hbx-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b>
+      이제 아홉 단계의 탐구를 따라가며 ‘다름을 세는 자’를 직접 만들어 봅시다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="hbx-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="htab(0,this)">① 탐구 9단계</button>
+    <button class="tab" type="button" onclick="htab(1,this)">② XOR 원리</button>
+    <button class="tab" type="button" onclick="htab(2,this)">③ 비트맵 분류 실습</button>
+    <button class="tab" type="button" onclick="htab(3,this)">④ 해밍 거리의 한계</button>
+  </div>
+
+  <!-- ══════════ TAB 0 : 활동 1 · 탐구 9단계 (기존 hdg 위젯 보존) ══════════ -->
+  <div class="tpanel on" id="ht0">
+    <div class="card" id="hbx-act1" data-no-toggle="1">
+      <h3>활동 1 · 「다름을 세는 자를 만들다」 — 아홉 단계 탐구</h3>
+      <p>아래 탐구는 <b>차이 검출 → XOR의 정의 → 대칭차집합 → 벡터 연산 → 해밍 거리 → 역연산 → 분류 → 이진화</b> 로
+        이어지는 아홉 단계입니다. 각 단계는 <b>먼저 스스로 답한 뒤</b> 해설이 열립니다.</p>
+      <p style="margin-top:0.5rem;"><b>기록해 두기</b> — 틀린 단계의 번호를 메모해 두면, 마지막 진단 리포트의 오답 노트와 견주어 볼 수 있습니다.</p>
+    </div>
+
     <div class="status" id="hdg-progBox" style="margin-bottom:1rem;">탐구 진행도: <span id="hdg-progTxt">1</span> / 9</div>
 
 <style>
@@ -83,7 +337,7 @@
         text-align:center;
       }
 
-      #v-hamming #ht0 canvas{ background:var(--bg); border-radius:var(--radius); cursor:pointer; border:1px solid var(--border); display:block; margin:0.6rem auto; }
+      #v-hamming #ht0 canvas{ background:var(--bg); border-radius:var(--radius); cursor:pointer; border:1px solid var(--border); display:block; margin:0.6rem auto; max-width:100%; }
 
       #v-hamming #ht0 .hdg-fb{ display:none; margin-top:0.9rem; padding:0.9rem; border-radius:var(--radius); line-height:1.6; }
       #v-hamming #ht0 .hdg-fb.succ{ display:block; background: rgba(90,122,90,0.12); border:1px solid rgba(90,122,90,0.35); color: var(--fg); }
@@ -290,12 +544,81 @@
         <button id="hdg-nBtn" class="btn pri" onclick="hdg_move(1)" style="display:none;">다음으로 진행</button>
       </div>
     </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="hbx-hint" style="margin-bottom:0.6rem;">아홉 단계를 모두 지난 뒤 열어 보면 가장 도움이 됩니다.</p>
+
+      <details class="hbx-fold">
+        <summary>단계 1. 관찰 — 왜 ‘같은 자리끼리’ 비교했을까</summary>
+        <div class="bd">
+          <p>탐구 1에서 결과 행렬을 채울 때, 우리는 언제나 <b>제 i 행 제 j 열과 제 i 행 제 j 열</b>을 짝지어 보았습니다.
+            자리를 옮겨 비교하지 않았습니다. 이 ‘같은 자리끼리’라는 약속 덕분에 계산이 아주 빨라집니다.</p>
+          <p>동시에 이 약속은 <b>한계</b>이기도 합니다. 그림이 통째로 한 칸 밀리면 모든 자리가 어긋나기 때문입니다.
+            그 장면은 활동 4에서 직접 만들어 보게 됩니다.</p>
+        </div>
+      </details>
+
+      <details class="hbx-fold">
+        <summary>단계 2. 정리 — 이진화의 임계값은 왜 필요한가</summary>
+        <div class="bd">
+          <p>회색조 이미지의 성분은 0~255의 정수입니다. 이 값을 그대로 두면 “같다/다르다”를 말하기 어렵습니다.
+            그래서 <b>기준이 되는 값(임계값)</b>을 하나 정하고, 그 값 이상이면 1, 미만이면 0으로 바꿉니다.
+            이 과정을 <b>이진화</b>라고 합니다.</p>
+          <div class="hbx-fml">a′<sub>ij</sub> = 1 (a<sub>ij</sub> ≥ t),   a′<sub>ij</sub> = 0 (a<sub>ij</sub> &lt; t)   · 흔히 t = 128</div>
+          <p>임계값을 낮추면 밝은 획이 더 많이 살아남고, 높이면 아주 밝은 부분만 남습니다.
+            <b>t는 사람이 정하는 값</b>이며, 어떤 값을 고르느냐에 따라 뒤이은 분류 결과까지 달라집니다.</p>
+          <span class="hbx-src">동아출판 「인공지능 수학」 Ⅲ단원 p.86 흑백·회색조 서술과 씨마스 Ⅲ단원 p.88 “0은 검은색, 1은 흰색” 표기를 바탕으로,
+            임계값에 의한 단순화 절차를 수업용으로 재구성</span>
+        </div>
+      </details>
+
+      <details class="hbx-fold">
+        <summary>단계 3. 정의 확인 — XOR · 대칭차집합 · 해밍 거리</summary>
+        <div class="bd">
+          <p><b>배타적 논리합(XOR, ⊕)</b> — 두 값이 <b>서로 다를 때만</b> 1, 같으면 0입니다.
+            0⊕0 = 0, 0⊕1 = 1, 1⊕0 = 1, 1⊕1 = 0.</p>
+          <p><b>대칭차집합</b> — 두 집합 A, B에 대하여 (A ∪ B) − (A ∩ B) = (A − B) ∪ (B − A) 인 영역입니다.
+            “한쪽에만 있는 원소들”이므로 XOR과 완전히 같은 뜻입니다.</p>
+          <p><b>해밍 거리</b> — 길이가 같은 두 문자열 l₁, l₂에 대하여 같은 위치에 있는 <b>서로 다른 문자들의 개수</b>를
+            두 문자열의 해밍 거리라고 합니다. 같은 꼴의 두 행렬 A, B로 확장하면 <b>H(A, B)</b> 로 나타내며,
+            해밍 거리가 작을수록 두 이미지가 유사하다고 판단합니다.</p>
+          <div class="hbx-fml">d(A, B) = Σ (A<sub>i</sub> ⊕ B<sub>i</sub>)  =  H(A, B)  =  값이 다른 성분의 개수</div>
+          <div class="hbx-tbrow">
+            <figure>
+              <img src="assets/textbook-local/씨마스3_p110_해밍거리.jpg" alt="교과서 지면(수업용)" loading="eager"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 「인공지능 수학」 p.110~111 (수업용) — 공개 게시하지 않습니다.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/미래엔3_p105_해밍거리.jpg" alt="교과서 지면(수업용)" loading="eager"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>미래엔 「인공지능 수학」 p.105 (수업용) — 공개 게시하지 않습니다.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/textbook-local/동아3_p103_해밍거리.jpg" alt="교과서 지면(수업용)" loading="eager"
+                   onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아출판 「인공지능 수학」 p.103 (수업용) — 공개 게시하지 않습니다.</figcaption>
+            </figure>
+          </div>
+          <span class="hbx-src">씨마스 「인공지능 수학」 Ⅲ단원 p.110(두 문자열의 해밍 거리)·p.111(두 행렬의 해밍 거리 H(A,B)),
+            미래엔 p.105(H(A,B) 정의), 동아출판 p.103(행렬로의 확장) 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
   </div>
 
+  <!-- ══════════ TAB 1 : 활동 2 · XOR 원리 (기존 hd 위젯 보존) ══════════ -->
+  <div class="tpanel" id="ht1">
+    <div class="card" id="hbx-act2" data-no-toggle="1">
+      <h3>활동 2 · 「⊕ 를 손에 익히다」 — 진리표와 벡터 연산</h3>
+      <p>3차시에서 진리표로 만났던 <b>배타적 논리합(XOR)</b> 이 이미지 비교의 도구가 됩니다.
+        비트를 직접 눌러 바꾸면 ⊕ 결과와 해밍 거리가 <b>즉시</b> 다시 계산됩니다.</p>
+      <p style="margin-top:0.5rem;"><b>미션</b> — ① 해밍 거리를 <b>0</b>으로 만들어 보세요(두 줄을 완전히 같게).
+        ② 이번에는 <b>10</b>으로 만들어 보세요(모든 자리가 다르게). 두 경우가 각각 무엇을 뜻하는지 생각해 봅시다.</p>
+    </div>
 
-  <!-- TAB 1: XOR -->
-<div class="tpanel" id="ht1">
-    <div class="card">
+    <div class="card" data-no-toggle="1">
       <h3>XOR 연산 진리표</h3>
       <p>두 비트가 서로 다를 때 1, 같을 때 0을 출력합니다.</p>
       <div class="math">0 ⊕ 0 = 0   (같음)
@@ -304,86 +627,533 @@
 1 ⊕ 1 = 0   (같음)
 
 해밍 거리 d(A,B) = Σ (Aᵢ ⊕ Bᵢ)</div>
+      <span class="hbx-src">씨마스 「인공지능 수학」 Ⅰ단원 진리표 서술과 Ⅲ단원 p.110~111 해밍 거리 정의를 이어 붙여 재구성</span>
     </div>
 
-    <div class="card">
-      <h3>직접 해보기 — 비트를 클릭하여 값을 바꿔보세요</h3>
-      <p style="margin-bottom:0.8rem;">각 비트를 클릭하면 0과 1이 토글됩니다. XOR 결과와 해밍 거리가 실시간으로 계산됩니다.</p>
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 비트를 눌러 값을 바꿔 보기</h3>
+      <p style="margin-bottom:0.8rem;">A 또는 B의 각 비트를 누르면 0과 1이 바뀝니다. ⊕ 결과와 해밍 거리가 실시간으로 계산됩니다.</p>
       <div id="hd-box" style="display:flex;flex-direction:column;gap:0.5rem;align-items:center;max-width:100%;overflow-x:auto;"></div>
-      <div id="hd-res" class="status" style="text-align:center;font-size:0.85rem;font-weight:600;"></div>
+      <div id="hd-res" class="status" style="text-align:center;"></div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn" type="button" onclick="hbxPreset('1001000001','1011000011')">활동지 예제 A · B</button>
+        <button class="btn" type="button" onclick="hbxPreset('1001000001','1111110110')">활동지 예제 A · C</button>
+        <button class="btn" type="button" onclick="hbxPreset('1011000011','1111110110')">활동지 예제 B · C</button>
+        <button class="btn" type="button" onclick="hbxPreset('0010110101','1000110011')">교과서 예제 l₁ · l₂</button>
+      </div>
+      <p class="hbx-hint">활동지 「활동7(해밍거리와 합성곱)」의 세 문자열 A, B, C와
+        씨마스 p.110 ‘확인하기 1’의 두 문자열 l₁, l₂를 그대로 불러옵니다.
+        세 쌍을 차례로 눌러 보고 <b>가장 유사한 두 문자열</b>이 무엇인지 확인해 보세요.</p>
+      <div class="hbx-fb" id="hbx-a2-fb"></div>
     </div>
 
-    <div class="info">
-      <strong>대칭차집합과의 관계:</strong>
-      XOR 연산은 대칭차집합 <span class="mi">(A∪B)−(A∩B)</span>과 동일한 결과를 보입니다.
-      이 연산에 최소 2단계가 필요하므로, 다층 퍼셉트론에서 은닉층이 2개 이상 필요한 이유와 연결됩니다.
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 세 문자열 중 가장 닮은 짝 고르기</h3>
+      <p>위 세 버튼으로 확인한 값을 적어 봅시다.</p>
+      <div class="hbx-scroll">
+        <table class="hbx-tbl">
+          <tr><th>짝</th><th>해밍 거리</th><th>판단</th></tr>
+          <tr><td>A · B</td><td class="d">?</td><td rowspan="3">거리가 <b>가장 작은</b> 짝이 가장 유사합니다.</td></tr>
+          <tr><td>A · C</td><td class="d">?</td></tr>
+          <tr><td>B · C</td><td class="d">?</td></tr>
+        </table>
+      </div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;margin-top:0.8rem;">
+        <span>가장 유사한 두 문자열은?</span>
+        <button class="btn" type="button" onclick="hbxA2Pick('AB')">A와 B</button>
+        <button class="btn" type="button" onclick="hbxA2Pick('AC')">A와 C</button>
+        <button class="btn" type="button" onclick="hbxA2Pick('BC')">B와 C</button>
+      </div>
+      <div class="hbx-fb" id="hbx-a2-pickfb"></div>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>대칭차집합과의 관계</strong>
+      XOR 연산은 대칭차집합 <span class="mi">(A∪B)−(A∩B)</span> 와 같은 결과를 냅니다.
+      한쪽에만 있는 원소들의 모임이 곧 “값이 서로 다른 자리들”이기 때문입니다.
+      4차시에서 XOR을 단층 퍼셉트론으로 풀 수 없었던 이유(직선 하나로 나눌 수 없음)도 같은 구조에서 나옵니다.
+      <span style="display:block;margin-top:0.5rem;">
+        <button class="btn" type="button" onclick="go('logic')">돌아보기 · 3차시 진리표</button>
+        <button class="btn" type="button" onclick="go('perceptron')">돌아보기 · 4차시 XOR의 벽</button>
+      </span>
     </div>
   </div>
 
-  <!-- TAB 2: BITMAP -->
-  
-  <!-- TAB 2: BITMAP -->
-<div class="tpanel" id="ht2">
-    <p class="desc" style="margin-bottom:1rem;">
-      격자에 숫자를 직접 그려보세요. 클릭/드래그로 흑백을 토글합니다.
-      참조 데이터(0~9)와의 해밍 거리를 계산하여 가장 유사한 숫자를 자동 분류합니다.
-    </p>
-
-    <div style="display:flex;gap:0.3rem;margin-bottom:1rem;flex-wrap:wrap;">
-      <button class="btn bsz active" onclick="setSz(6,this)">6×6</button>
-      <button class="btn bsz" onclick="setSz(8,this)">8×8</button>
-      <button class="btn bsz" onclick="setSz(12,this)">12×12</button>
+  <!-- ══════════ TAB 2 : 활동 3 · 비트맵 분류 실습 (기존 위젯 보존) ══════════ -->
+  <div class="tpanel" id="ht2">
+    <div class="card" id="hbx-act3" data-no-toggle="1">
+      <h3>활동 3 · 「내가 그린 숫자는 무엇으로 분류될까」 — 최근접 분류</h3>
+      <p>격자에 숫자를 직접 그린 뒤, 참조 숫자 0~9와의 해밍 거리를 <b>먼저 손으로 계산해 적고</b>
+        [해밍 거리 계산]으로 채점합니다. 인공지능은 <b>거리가 가장 작은</b> 숫자로 분류합니다.</p>
+      <p style="margin-top:0.5rem;"><b>문제</b> — ① 6×6 격자에 숫자 하나를 그립니다.
+        ② 참조 숫자 버튼을 눌러 미리보기를 띄우고, 겹친 부분을 보며 거리를 셉니다.
+        ③ 열 칸에 내 답을 적고 채점합니다. ④ 8×8·12×12로 크기를 키우면 거리가 어떻게 달라지는지 확인합니다.</p>
+      <span class="hbx-src">씨마스 「인공지능 수학」 Ⅲ단원 p.112 “손글씨 숫자 1, 4, 5의 6×6 행렬과 새 이미지 D의 해밍 거리 비교” 활동을
+        웹으로 옮긴 것입니다. 교사 제작 활동지 「활동7」 1~2번과도 대응합니다.</span>
     </div>
 
-    <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start;">
-      <div style="min-width:14rem;">
-        <p class="mat-label">내 그림</p>
-        <div id="ubmp" class="bmp" aria-label="user bitmap"></div>
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 그리고, 재고, 분류하기</h3>
+      <p class="desc" style="margin-bottom:1rem;">
+        클릭·드래그로 칸을 켜고 끕니다. 이 실습에서는 <b>색칠한 칸을 1</b>, 빈 칸을 0으로 둡니다.
+        교과서(씨마스 p.112)는 검은색을 0, 흰색을 1로 두었는데, 어느 쪽으로 약속해도 <b>해밍 거리는 같습니다</b>
+        — 두 행렬을 동시에 뒤집어도 ‘다른 자리의 개수’는 변하지 않기 때문입니다.
+      </p>
 
-        <div class="btn-row" style="justify-content:flex-start;margin-top:0.8rem;flex-wrap:wrap;">
-          <button class="btn" onclick="clrBmp()">지우기</button>
-          <button class="btn pri" onclick="calcH()">해밍 거리 계산</button>
-        </div>
+      <div style="display:flex;gap:0.3rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <button class="btn bsz active" onclick="setSz(6,this)">6×6</button>
+        <button class="btn bsz" onclick="setSz(8,this)">8×8</button>
+        <button class="btn bsz" onclick="setSz(12,this)">12×12</button>
+      </div>
 
-        <div style="margin-top:1.1rem;">
-          <p class="mat-label" style="margin-bottom:0.4rem;">참조 숫자 미리보기</p>
-          <div id="rbtn" style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.6rem;"></div>
-          <div style="display:flex;gap:0.9rem;flex-wrap:wrap;align-items:flex-start;">
-            <div style="flex:1;min-width:160px;">
-              <div id="refpreview"></div>
-            </div>
-            <div style="flex:1;min-width:160px;">
-              <div id="ovpreview"></div>
+      <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start;">
+        <div style="min-width:14rem;">
+          <p class="mat-label">내 그림</p>
+          <div id="ubmp" class="bmp" aria-label="user bitmap"></div>
+
+          <div class="btn-row" style="justify-content:flex-start;margin-top:0.8rem;flex-wrap:wrap;">
+            <button class="btn" onclick="clrBmp()">지우기</button>
+            <button class="btn pri" onclick="calcH()">해밍 거리 계산</button>
+          </div>
+
+          <div style="margin-top:1.1rem;">
+            <p class="mat-label" style="margin-bottom:0.4rem;">참조 숫자 미리보기</p>
+            <div id="rbtn" style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.6rem;"></div>
+            <div style="display:flex;gap:0.9rem;flex-wrap:wrap;align-items:flex-start;">
+              <div style="flex:1;min-width:160px;">
+                <div id="refpreview"></div>
+              </div>
+              <div style="flex:1;min-width:160px;">
+                <div id="ovpreview"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div style="flex:1;min-width:14rem;">
-        <p class="mat-label">분류 결과</p>
-        <div id="hbars"><p style="font-size:0.8rem;color:var(--muted);">숫자를 그린 후 계산 버튼을 누르세요.</p></div>
-        <div id="hbest" class="status" style="font-weight:600;"></div>
-        <div id="hoverlap" style="margin-top:1rem;"></div>
+        <div style="flex:1;min-width:14rem;">
+          <p class="mat-label">분류 결과</p>
+          <div id="hbars"><p style="font-size:0.8rem;color:var(--muted);">숫자를 그린 후 계산 버튼을 누르세요.</p></div>
+          <div id="hbest" class="status"></div>
+          <div id="hoverlap" style="margin-top:1rem;"></div>
+        </div>
       </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+
+      <details class="hbx-fold">
+        <summary>단계 1. 관찰 — 내가 의도한 숫자와 분류 결과가 같았나</summary>
+        <div class="bd">
+          <p>많은 학생이 “내가 쓴 3인데 8로 분류되었다”는 경험을 합니다.
+            두 숫자가 <b>겹치는 칸이 많기 때문</b>입니다. 겹침 미리보기(내 그림 ∧ 참조)를 보면 그 까닭이 눈에 보입니다.</p>
+          <p>또 격자를 12×12로 키우면 거리의 <b>절댓값</b>이 커집니다. 칸 수가 늘어난 만큼 다른 자리도 늘기 때문입니다.
+            그래서 서로 다른 크기에서 나온 거리를 그대로 견주면 안 됩니다.</p>
+        </div>
+      </details>
+
+      <details class="hbx-fold">
+        <summary>단계 2. 정리 — 최근접 분류의 절차</summary>
+        <div class="bd">
+          <p>① 입력 이미지를 이진 행렬 X로 만든다. ② 참조 이미지 R₀, R₁, …, R₉ 각각과 해밍 거리를 구한다.
+            ③ 거리가 <b>가장 작은</b> 참조의 라벨을 답으로 삼는다.</p>
+          <div class="hbx-fml">분류 결과 = 거리 d(X, R<sub>k</sub>) 가 최소가 되는 k</div>
+          <p>이 방법에는 <b>학습이라고 부를 만한 과정이 없습니다</b>. 참조 이미지를 그대로 저장해 두고
+            매번 전부와 견주기만 합니다. 계산이 쉽고 빠른 대신, 참조가 늘어날수록 비교 횟수도 그대로 늘어납니다.</p>
+        </div>
+      </details>
+
+      <details class="hbx-fold">
+        <summary>단계 3. 정의 확인 — 두 행렬의 해밍 거리 H(A, B)</summary>
+        <div class="bd">
+          <p>같은 꼴의 두 행렬 A, B 에 대하여 같은 위치에 있는 <b>서로 다른 성분들의 개수</b>를
+            두 행렬 A, B 의 해밍 거리라 하고, 기호로 <b>H(A, B)</b> 와 같이 나타냅니다.
+            이때 해밍 거리가 작을수록 각 행렬에 대응하는 두 이미지 데이터가 유사하다고 판단합니다.</p>
+          <p><b>교과서 예시</b> — 3×3 행렬 A, B, C 에 대하여 H(A, B) = 3, H(A, C) = 4, H(B, C) = 7 이면
+            가장 유사한 두 이미지는 A와 B 입니다.</p>
+          <p><b>인물</b> — 해밍 거리는 미국의 수학자 <b>리처드 해밍(R. W. Hamming, 1915~1998)</b> 의 이름에서 왔습니다.
+            그는 통신에서 생기는 오류를 스스로 찾아 고치는 <b>해밍 부호</b>를 만들었습니다.
+            지금도 QR 코드가 일부 손상되어도 읽히는 것은 같은 원리입니다.</p>
+          <span class="hbx-src">씨마스 「인공지능 수학」 Ⅲ단원 p.111 두 행렬의 해밍 거리 정의와 ‘함께 하기 1’ 예시,
+            미래엔 p.105 인물 소개 서술을 재구성</span>
+        </div>
+      </details>
     </div>
   </div>
 
+  <!-- ══════════ TAB 3 : 활동 4 · 해밍 거리의 한계 (신규 hbx 위젯) ══════════ -->
+  <div class="tpanel" id="ht3">
+    <div class="card" id="hbx-act4" data-no-toggle="1">
+      <h3>활동 4 · 「한 칸 옮겼을 뿐인데」 — 해밍 거리가 무너지는 자리</h3>
+      <p>사람은 같은 7을 조금 옆으로 옮겨 써도 여전히 7로 봅니다.
+        그런데 해밍 거리는 <b>같은 자리끼리만</b> 견주기 때문에, 그림이 통째로 밀리면 거의 모든 자리가 어긋납니다.</p>
+      <p style="margin-top:0.5rem;"><b>예상해 보기</b> — 참조 숫자를 오른쪽으로 <b>한 칸</b>만 밀면
+        그 숫자 자신과의 거리는 얼마가 될까요? 0? 1? 아니면 그보다 훨씬 클까요?
+        예상을 말한 뒤 슬라이더를 움직여 확인해 봅시다.</p>
+      <span class="hbx-src">교사 제작 활동지 「활동7(해밍거리와 합성곱)」 2쪽 “7의 손글씨가 조금만 달라져도 정확도가 내려간다” 서술을
+        직접 조작할 수 있는 실험으로 재구성</span>
+    </div>
 
-
-  <div style="height:1px;background:var(--border);margin:1.6rem 0;"></div>
-
-  <div class="card">
-    <h3 style="margin-top:0;">해밍 거리로 이미지를 학습할 때 어떠한 문제점이 있을까요?</h3>
-    <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
-      <img
-        src="Mnist%20%EC%B0%B8%EA%B3%A0%20%EC%82%AC%EC%A7%842.png"
-        onerror="this.onerror=null;this.src='Mnist%202.png';"
-        alt="MNIST 예시 이미지"
-        style="width:240px;max-width:44vw;border-radius:0.8rem;border:1px solid var(--border);background:#fff;display:block;"
-      >
-      <div style="flex:1;min-width:240px;">
-        <p>손글씨 6개를 보면 사람은 0인지 아닌지 인지할수 있지만, 해밍거리를 활용하는 경우에는 위치 및 평행 이동, 확대 및 축소 등을 고려하지 못해 모든 숫자를 0으로 인식하는데는 한계가 있습니다. 이를 해결하기 위해 적용된 방식이 인공신경망을 기반으로 한 딥러닝입니다. 인공지능이 주어진 데이터를 스스로 학습하는 딥러닝 기술 중 다음 시간에는 합성곱 인공 신경망(Convoutional Nenural Network, CNN)을 알아보고자 합니다.</p>
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 숫자를 밀어 보고 거리를 재기</h3>
+      <p>참조 숫자를 고르고, 슬라이더로 <b>가로·세로 이동</b>을 줍니다.
+        오른쪽 붉은 격자는 <b>원본과 다른 자리(⊕ 결과)</b> 이며, 그 붉은 칸의 개수가 곧 해밍 거리입니다.</p>
+      <div class="chips" id="hbx-dig">
+        <span class="chip" onclick="hbxDig(0)">0</span>
+        <span class="chip" onclick="hbxDig(1)">1</span>
+        <span class="chip" onclick="hbxDig(2)">2</span>
+        <span class="chip" onclick="hbxDig(3)">3</span>
+        <span class="chip on" onclick="hbxDig(4)">4</span>
+        <span class="chip" onclick="hbxDig(5)">5</span>
+        <span class="chip" onclick="hbxDig(6)">6</span>
+        <span class="chip" onclick="hbxDig(7)">7</span>
+        <span class="chip" onclick="hbxDig(8)">8</span>
+        <span class="chip" onclick="hbxDig(9)">9</span>
       </div>
+      <div class="hbx-ctrl">
+        <label>가로 이동
+          <input class="hbx-r" id="hbx-dx" type="range" min="-2" max="2" step="1" value="0"
+                 oninput="hbxRun()" aria-label="가로로 옮길 칸 수"><b id="hbx-dxv">0</b>칸</label>
+        <label>세로 이동
+          <input class="hbx-r" id="hbx-dy" type="range" min="-2" max="2" step="1" value="0"
+                 oninput="hbxRun()" aria-label="세로로 옮길 칸 수"><b id="hbx-dyv">0</b>칸</label>
+        <button class="btn" type="button" onclick="hbxReset()">원위치</button>
+        <button class="btn pri" type="button" onclick="hbxLog()">이 결과를 기록</button>
+      </div>
+
+      <div class="hbx-gwrap">
+        <div class="hbx-gcol">
+          <span class="lb">원본 (참조 숫자)</span>
+          <div class="hbx-grid" id="hbx-g0"></div>
+        </div>
+        <div class="hbx-gcol">
+          <span class="lb">옮긴 그림</span>
+          <div class="hbx-grid" id="hbx-g1"></div>
+        </div>
+        <div class="hbx-gcol">
+          <span class="lb hot">다른 자리 (⊕)</span>
+          <div class="hbx-grid" id="hbx-g2"></div>
+        </div>
+      </div>
+
+      <div class="hbx-verdict" id="hbx-verdict">슬라이더를 움직여 보세요.</div>
+      <div class="hbx-bars" id="hbx-bars"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 기록 — 이동과 분류 결과</h3>
+      <p>[이 결과를 기록]을 누르면 아래 표에 한 줄씩 쌓입니다. <b>3줄 이상</b> 기록하면 단계 토글이 열립니다.</p>
+      <div class="hbx-scroll"><table class="hbx-tbl" id="hbx-logtbl"></table></div>
+      <p class="status" id="hbx-logst">기록 0줄</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="hbxLogClear()">기록 지우기</button></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="hbx-lockmsg" id="hbx-a4-lock">🔒 관찰 기록을 <b>3줄 이상</b> 남기면 아래 세 토글이 열립니다.</p>
+
+      <details class="hbx-fold hbx-locked" id="hbx-a4-f1">
+        <summary>단계 1. 관찰 — 한 칸의 이동이 만든 거리</summary>
+        <div class="bd">
+          <p>숫자 <b>4</b> 를 오른쪽으로 <b>한 칸</b>만 밀어 보면, 자기 자신과의 거리가 0에서 <b>17</b> 로 뛰고
+            가장 가까운 숫자는 거리 <b>12</b> 인 <b>9</b> 가 됩니다. 사람 눈에는 여전히 4인데 인공지능은 9라고 답합니다.</p>
+          <p>숫자 <b>7</b> 도 오른쪽으로 한 칸 밀면 36칸 가운데 <b>10칸</b>이 어긋납니다.
+            두 칸을 밀면 15칸이 어긋나 더 이상 7이 가장 가깝지 않게 됩니다.</p>
+          <p>여러분이 기록한 표에서도 같은 일이 일어났는지 확인해 보세요.
+            <b>이동 칸 수가 늘어날수록 거리가 급격히 커진다</b>는 점이 핵심입니다.</p>
+        </div>
+      </details>
+
+      <details class="hbx-fold hbx-locked" id="hbx-a4-f2">
+        <summary>단계 2. 정리 — 해밍 거리의 장점과 단점</summary>
+        <div class="bd">
+          <p><b>장점</b> — 정의가 단순하고 계산이 아주 빠릅니다. 덧셈만 있으면 되고,
+            통신 오류 검출·정정(해밍 부호), DNA 서열 비교, QR 코드 복원 등 여러 분야에서 그대로 쓰입니다.</p>
+          <p><b>단점</b> — <b>같은 자리끼리만</b> 비교하므로 평행이동·확대·축소·회전에 매우 약합니다.
+            또 “어느 자리가 달랐는지”는 알려 주지만 “<b>어떤 모양의 특징</b>이 달랐는지”는 알려 주지 못합니다.</p>
+          <p>그래서 필요한 것이 <b>이미지의 부분을 훑으며 선·모서리·곡선 같은 특징을 찾는</b> 방법입니다.
+            그 계산이 15차시의 <b>합성곱</b>이고, 그것을 층층이 쌓은 것이 18차시의 <b>CNN</b> 입니다.</p>
+          <div class="btn-row">
+            <button class="btn pri" type="button" onclick="go('conv')">미리보기 · 15차시 합성곱</button>
+            <button class="btn" type="button" onclick="go('pipeline')">미리보기 · 18차시 CNN</button>
+          </div>
+          <span class="hbx-src">교사 제작 활동지 「활동7(해밍거리와 합성곱)」 2쪽 ‘해밍거리의 장점·단점’과
+            “MNIST는 왜 정확도가 높을까” 서술을 재구성</span>
+        </div>
+      </details>
+
+      <details class="hbx-fold hbx-locked" id="hbx-a4-f3">
+        <summary>단계 3. 정의 확인 — 이 한계를 무엇이 넘어서는가</summary>
+        <div class="bd">
+          <p>해밍 거리는 두 데이터의 같은 위치를 비교해 다른 개수를 세는 간단한 방법입니다.
+            계산이 쉽고 빠르지만, 손글씨처럼 모양이 조금만 달라져도 다른 부분이 크게 늘어나 정확하게 판단하기 어렵습니다.</p>
+          <p>이 한계를 넘어서기 위해 컴퓨터가 손글씨 숫자를 <b>학습</b>하도록 만든 대표적인 자료가 <b>MNIST</b> 입니다.
+            MNIST는 숫자 그림을 많은 예시로 모아 놓은 데이터로, 컴퓨터가 숫자의 공통된 특징을 스스로 찾도록 돕습니다.</p>
+          <p>이런 이미지 인식에는 <b>CNN</b> 이 많이 쓰이는데, CNN은 그림의 작은 부분을 살피며 선·모서리·곡선 같은 특징을 찾아냅니다.
+            이때 중요한 계산이 바로 다음에 배우게 될 <b>합성곱</b> 입니다.</p>
+          <figure class="hbx-photo" id="hbx-photo-mnist">
+            <img src="Mnist%20%EC%B0%B8%EA%B3%A0%20%EC%82%AC%EC%A7%842.png" alt="위치가 조금씩 다른 손글씨 예시" loading="eager"
+                 onerror="this.onerror=null;this.src='Mnist%202.png';this.addEventListener('error',function(){var f=this.closest('.hbx-photo');if(f)f.classList.add('nofoto');});">
+            <span class="fb" aria-hidden="true">🔢</span>
+            <figcaption>손글씨 여러 장을 사람은 모두 같은 숫자로 읽지만, 해밍 거리는 위치·평행이동·확대·축소를 고려하지 못해 실패합니다.
+              (저장소 내 이미지 <span class="mi">Mnist 2.png</span> — 「Mnist 참고 사진2.png」가 있으면 그 파일이 먼저 표시됩니다.)</figcaption>
+          </figure>
+          <span class="hbx-src">교사 제작 활동지 「활동7」 2쪽 ‘MNIST는 왜 정확도가 높을까’ 문단을 거의 그대로 옮겨 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 우리 조의 결론</h3>
+      <p><b>① 해밍 거리의 장점을 한 문장으로 쓰시오.</b></p>
+      <textarea class="hbx-ta" id="hbx-n1" placeholder="예: 계산이 단순하고 빠르다."></textarea>
+      <p style="margin-top:0.6rem;"><b>② 해밍 거리의 단점을 한 문장으로 쓰시오.</b></p>
+      <textarea class="hbx-ta" id="hbx-n2" placeholder="예: 그림이 조금만 밀려도 거리가 크게 늘어난다."></textarea>
+      <div class="btn-row"><button class="btn" type="button" onclick="hbxNoteSave()">기록 저장</button></div>
+      <p class="status" id="hbx-nst"></p>
     </div>
   </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="hbx-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        회색조 값 0~255를 <b>임계값</b> 하나로 0과 1로 단순화하는 것이 <b>이진화</b> 입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        <b>해밍 거리</b> H(A, B) 는 같은 자리에서 값이 다른 성분의 개수이며, 작을수록 두 이미지가 유사합니다.
+        이는 XOR 결과에서 1의 개수를 세는 것과 같고, 집합으로는 <b>대칭차집합</b>의 원소 개수입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        거리가 가장 작은 참조로 분류하는 <b>최근접 분류</b>는 빠르지만, 그림이 한 칸만 밀려도 무너집니다.
+        그 한계가 <b>합성곱</b>이 필요한 이유입니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문 1. 두 그림이 ‘얼마나 다른가’를 하나의 수로 나타낼 수 있을까?</b></p>
+    <textarea class="hbx-ta" id="hbx-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="hbx-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>두 이미지를 같은 크기의 이진 행렬로 바꾼 뒤, 같은 자리끼리 XOR 연산을 하여 1이 된 자리의 개수를 세면 됩니다.
+          이 수가 해밍 거리 H(A, B) 이며, 0이면 완전히 같은 그림이고 값이 클수록 많이 다른 그림입니다.
+          즉 “다름”이라는 말이 <b>셀 수 있는 수</b>가 되는 것입니다.</p>
+      </div>
+    </details>
+
+    <p style="margin-top:1rem;"><b>핵심 질문 2. 그 수만으로 인공지능은 어디까지 옳게 분류할 수 있을까?</b></p>
+    <textarea class="hbx-ta" id="hbx-ans2" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="hbx-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>글씨의 크기·위치·기울기가 참조와 비슷할 때에만 잘 맞습니다. 해밍 거리는 <b>같은 자리끼리만</b> 견주기 때문에,
+          같은 숫자라도 한 칸 밀리면 거의 모든 자리가 달라져 엉뚱한 숫자로 분류됩니다.
+          “무엇이 달랐는가”가 아니라 “<b>어디가</b> 달랐는가”만 세기 때문입니다.
+          모양의 <b>특징</b>을 찾아 비교하려면 합성곱 같은 다른 계산이 필요합니다.</p>
+        <span class="hbx-src">교사 제작 활동지 「활동7」 2쪽 서술을 재구성</span>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="hbxAnsSave()">내 답 저장</button></div>
+    <p class="status" id="hbx-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="hbx-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 14차시 · 행렬 연산으로 이미지 변형하기</strong><br>
+    오늘은 두 이미지를 <b>비교</b>했습니다. 다음 시간에는 이미지를 <b>바꿉니다</b> —
+    행렬의 덧셈·뺄셈으로 사진을 밝게·어둡게 하고, 255에서 빼서 색을 반전하고,
+    내분의 원리 <span class="mi">aA + (1−a)B</span> 로 두 사진을 자연스럽게 겹칩니다.
+    사진 보정 앱의 필터 버튼 뒤에 숨어 있던 계산을 직접 만들어 보게 됩니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('imgop')">14차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('mnist')">돌아보기 · 12차시 이미지=행렬</button>
+      <button class="btn" type="button" onclick="go('logic')">돌아보기 · 3차시 진리표</button>
+    </span>
+    <span style="display:block;margin-top:0.5rem;font-size:0.9rem;">
+      ※ 14차시 전용 뷰(<span class="mi">imgop</span>)는 준비 중입니다. 그때까지는 15차시 합성곱 뷰에서 미리 살펴볼 수 있습니다.
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「해밍 거리 인식기의 성적표」 — 우리 반 손글씨 30장으로 정확도 재기</h3>
+    <p class="sub">12차시에 모은 손글씨를 이 인식기에 넣어 <b>정확도</b>를 직접 재고,
+      틀린 사례의 원인을 수학의 말로 설명합니다. 정답률보다 <b>실패의 원인 분석</b>이 이 과제의 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 모둠원이 6×6 격자에 숫자를 <b>1인 10장, 모둠 30장 이상</b> 그립니다(어떤 숫자를 그렸는지 먼저 적어 둡니다).<br>
+        ② 매 장마다 [해밍 거리 계산]을 눌러 <b>의도한 숫자</b>와 <b>분류 결과</b>를 표에 기록합니다.<br>
+        ③ 일치한 횟수를 세어 <b>정확도 = (맞은 장수) ÷ (전체 장수)</b> 를 백분율로 구합니다.<br>
+        ④ 틀린 사례 중 <b>2장</b>을 골라, 겹침 미리보기를 보며 “어느 자리들이 달라서 틀렸는지”를 적습니다.<br>
+        ⑤ 활동 4의 실험 도구로 <b>같은 숫자를 한 칸 밀었을 때</b>의 거리를 재어, ④의 원인과 견줍니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 30장 기록표 1장(의도한 숫자 / 분류 결과 / 최소 거리 / 일치 여부)와 정확도(%)<br>
+        · 틀린 사례 2장의 원인 분석(각 3~4문장, 겹침 그림 스케치 포함)<br>
+        · “해밍 거리의 장점은 ___이고 단점은 ___이며, 이를 넘어서려면 ___이 필요하다” 를 포함한 <b>결론 3~5문장</b><br>
+        · (선택) 8×8·12×12에서 다시 잰 정확도와 6×6과의 비교 한 문단</dd>
+      <dt>평가 관점</dt>
+      <dd>· 이진 행렬로 바꾸는 과정과 임계값의 역할을 정확히 설명했는가 <b>[12인수03-01]</b><br>
+        · 해밍 거리를 <b>정확히 계산</b>하고 최근접 분류의 절차를 설명했는가 <b>[12인수03-03]</b><br>
+        · 분류 실패 사례를 찾아 <b>위치가 어긋나면 같은 자리 비교가 무너진다</b>는 수학적 이유로 설명했는가 <b>[12인수03-03]</b><br>
+        · 정확도를 비율로 바르게 구하고, 격자 크기에 따른 거리 비교의 주의점을 언급했는가</dd>
+    </dl>
+    <details class="hbx-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>정확도의 높낮이 자체는 평가하지 않습니다. 낮은 정확도가 나왔을 때 그것을 <b>실패가 아니라 발견</b>으로 다루는지,
+          원인을 “같은 자리끼리만 비교한다”는 정의에서 끌어내는지를 중심으로 봅니다.</p>
+        <p>격자 크기를 바꾸어 비교한 모둠에는, 거리의 절댓값이 아니라 <b>전체 칸 수에 대한 비율</b>로 견주어야 한다는 점을 짚어 줍니다.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 해밍 거리를 더 넓게</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="hbx-refs">
+      <a class="hbx-ref" href="https://tjdgus1121.github.io/activity11_similarity_check.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🧮</span>
+        <span class="bd"><span class="tt">해밍 거리 탐구하기 (활동 11)</span>
+          <span class="ds">단계형 해밍 랩 — 샘플을 불러와 거리 계산과 차이 맵을 확인합니다. 활동지 「활동7」이 직접 가리키는 도구입니다.</span></span>
+      </a>
+      <a class="hbx-ref" href="https://tjdgus1121.github.io/activity10_hamming_distance.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🔢</span>
+        <span class="bd"><span class="tt">손글씨 숫자 → 28×28 행렬 변환기 (활동 10)</span>
+          <span class="ds">내가 그린 숫자를 28×28 행렬로 바꾸어 성분 값을 확인합니다. 활동지 「활동7」 2번 문항에 대응합니다.</span></span>
+      </a>
+      <a class="hbx-ref" href="https://tjdgus1121.github.io/activity9_mnist_recognizer.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>✍️</span>
+        <span class="bd"><span class="tt">숫자 손글씨 인식 테스트 (활동 9)</span>
+          <span class="ds">학습된 모델과 우리 해밍 거리 인식기의 성적을 견주어 봅니다. 활동지 「활동7」 1번 문항에 대응합니다.</span></span>
+      </a>
+      <a class="hbx-ref" href="https://ko.wikipedia.org/wiki/%ED%95%B4%EB%B0%8D_%EA%B1%B0%EB%A6%AC" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>📐</span>
+        <span class="bd"><span class="tt">해밍 거리 — 위키백과(한국어)</span>
+          <span class="ds">정의와 성질, 오류 검출·정정에서의 쓰임이 정리되어 있습니다. ‘해밍 무게’ 개념도 함께 볼 수 있습니다.</span></span>
+      </a>
+      <a class="hbx-ref" href="https://en.wikipedia.org/wiki/Richard_Hamming" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">인물</span>👤</span>
+        <span class="bd"><span class="tt">Richard Hamming (위키백과, 영문)</span>
+          <span class="ds">해밍 부호를 만든 수학자. 통신 오류를 스스로 고치는 아이디어가 어떻게 태어났는지 알 수 있습니다.</span></span>
+      </a>
+      <a class="hbx-ref" href="https://ko.wikipedia.org/wiki/%EB%8C%80%EC%B9%AD%EC%B0%A8%EC%A7%91%ED%95%A9" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>🔗</span>
+        <span class="bd"><span class="tt">대칭차집합 — 위키백과(한국어)</span>
+          <span class="ds">(A∪B)−(A∩B) 와 XOR이 같은 뜻임을 집합의 언어로 확인합니다. 활동 1의 탐구 3·4와 이어집니다.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>13차시 학습지 — 손으로 세며 정리하기</h3>
+    <p>해밍 거리는 <b>손으로 한 번 세어 보아야</b> 몸에 남습니다.
+      실물 활동지를 내려받거나, 웹 활동과 1:1로 대응하는 인쇄용 지면을 뽑아 채워 보세요.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('hbx-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%997_%ED%95%B4%EB%B0%8D%EA%B1%B0%EB%A6%AC%EC%99%80%ED%95%A9%EC%84%B1%EA%B3%B1.hwpx"
+         download="활동7(해밍거리와 합성곱).hwpx">📄 활동 7 — 해밍거리와 합성곱 (HWPX) <span class="sz">HWPX · 약 969 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%997_%ED%95%B4%EB%B0%8D%EA%B1%B0%EB%A6%AC%EC%99%80%ED%95%A9%EC%84%B1%EA%B3%B1.pdf"
+         download="활동7(해밍거리와 합성곱).pdf">📄 활동 7 — 해밍거리와 합성곱 (PDF) <span class="sz">PDF · 약 308 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%EC%9D%B4%EB%AF%B8%EC%A7%80_%ED%98%95%EC%84%B1%ED%8F%89%EA%B0%80_2026.pdf"
+         download="이미지 형성평가문제(2026).pdf">📝 이미지 단원 형성평가 (PDF) <span class="sz">PDF · 약 198 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%EC%9D%B4%EB%AF%B8%EC%A7%80_%ED%98%95%EC%84%B1%ED%8F%89%EA%B0%80_2026.hwp"
+         download="이미지 형성평가문제(2026).hwp">📝 이미지 단원 형성평가 (HWP) <span class="sz">HWP · 약 2.0 MB</span></a>
+    </div>
+    <p class="hbx-hint" style="margin-top:0.6rem;">
+      <b>활동 7 — 해밍거리와 합성곱</b> : 오늘 STEP 2 활동 2·3·4와 <b>1:1 대응</b>하는 손계산 활동지입니다.
+      1쪽은 손글씨 인식 10회 기록과 28×28 변환, 세 문자열 A·B·C의 해밍 거리 계산(문제 1·2),
+      2쪽은 내가 그린 숫자의 최근접 분류 기록과 <b>해밍 거리의 장점·단점</b>, 그리고
+      “MNIST는 왜 정확도가 높을까 — 합성곱으로 가는 길” 읽을거리입니다.<br>
+      <b>이미지 단원 형성평가</b> : 12~19차시 전체를 아우르는 지필 평가지입니다.
+      13차시 마무리 또는 19차시 정리에 배부합니다. <b>이미지 단원 전체 평가지는 이 카드 한 곳에만</b> 둡니다.</p>
+    <div id="hbx-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="hbx-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>13차시 학습지 — 이진화·XOR·해밍 거리 분류</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">학습 목표 ① 임계값을 기준으로 이미지를 이진 행렬로 표현할 수 있다. [12인수03-01]<br>
+      학습 목표 ② 해밍 거리를 이용하여 두 이미지의 유사한 정도를 구하고 가장 가까운 참조 이미지로 분류하는 방법을 설명할 수 있다. [12인수03-03]<br>
+      학습 목표 ③ 위치가 어긋난 이미지에서 해밍 거리 분류가 실패하는 사례를 관찰하고 그 한계를 설명할 수 있다. [12인수03-03]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:56%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>두 그림이 얼마나 다른지를 하나의 수로 나타낼 수 있을까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>두 비트가 서로 다를 때만 1이 되는 연산의 이름은?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0~255의 값을 0과 1로 바꾸려면 무엇이 필요할까?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — 이진화와 XOR</h3>
+    <p class="note">임계값 t = 128. 128 이상이면 1, 미만이면 0으로 바꾸시오.</p>
+    <table>
+      <tr><th style="width:34%;">명도 행렬</th><th>이진화 행렬</th></tr>
+      <tr><td>200 &nbsp; 100 &nbsp; 250<br>&nbsp;&nbsp;30 &nbsp; 128 &nbsp; &nbsp;10<br>255 &nbsp; &nbsp;60 &nbsp; 190</td><td class="blank"></td></tr>
+    </table>
+    <p>· XOR 진리표를 채우시오. 0⊕0 = ( ), 0⊕1 = ( ), 1⊕0 = ( ), 1⊕1 = ( )</p>
+    <p>· 두 집합 A, B에 대하여 XOR에 대응하는 집합은? (A∪B)−(A∩B) = ( ______________ )</p>
+
+    <h3>③ 활동 2 — 문자열의 해밍 거리</h3>
+    <p class="note">A = 1 0 0 1 0 0 0 0 0 1  /  B = 1 0 1 1 0 0 0 0 1 1  /  C = 1 1 1 1 1 1 0 1 1 0</p>
+    <table>
+      <tr><th style="width:20%;">짝</th><th>다른 자리에 ∨ 표시</th><th style="width:16%;">해밍 거리</th></tr>
+      <tr><td>A 와 B</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>A 와 C</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>B 와 C</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>· 가장 유사한 두 문자열은 ( _____ ) 와 ( _____ ) 이고, 그때의 해밍 거리는 ( ____ ) 이다.</p>
+
+    <h3>④ 활동 3 — 6×6 손글씨의 최근접 분류</h3>
+    <p class="note">6×6 격자에 숫자 하나를 그리고, 참조 숫자 0~9와의 해밍 거리를 손으로 세어 적으시오.</p>
+    <table>
+      <tr><th>참조</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr>
+      <tr><th>거리</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>· 내가 그린 숫자 ( ____ ),  분류 결과 ( ____ ),  최소 거리 ( ____ ),  일치 여부 ( O / X )</p>
+
+    <h3>⑤ 활동 4 — 한 칸 옮겼을 때</h3>
+    <table>
+      <tr><th style="width:26%;">이동</th><th>원래 숫자와의 거리</th><th>가장 가까운 숫자</th><th>분류 결과</th></tr>
+      <tr><td>움직이지 않음</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>오른쪽 1칸</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>오른쪽 2칸</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>아래 1칸</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>· 해밍 거리의 장점 :</p>
+    <div class="rule sm"></div>
+    <p>· 해밍 거리의 단점 :</p>
+    <div class="rule sm"></div>
+
+    <h3>⑥ 형성평가</h3>
+    <p>1. 두 문자열 l₁ = 0010110101, l₂ = 1000110011 의 해밍 거리를 구하시오.</p>
+    <div class="rule sm"></div>
+    <p>2. 같은 꼴의 두 행렬 A, B 의 해밍 거리 H(A, B) 의 정의를 쓰시오.</p>
+    <div class="rule sm"></div>
+    <p>3. A = (1, 0, 1, 1, 0), B = (1, 1, 0, 1, 0) 일 때 A ⊕ B 와 해밍 거리를 구하시오.</p>
+    <div class="rule sm"></div>
+    <p>4. 위치가 한 칸 어긋난 손글씨에서 해밍 거리 분류가 실패하는 까닭을 쓰시오.</p>
+    <div class="rule"></div>
+
+    <h3>⑦ 핵심 질문에 답하기</h3>
+    <p>· 두 그림이 ‘얼마나 다른가’를 하나의 수로 나타낼 수 있을까?</p>
+    <div class="rule"></div>
+    <p>· 그 수만으로 인공지능은 어디까지 옳게 분류할 수 있을까?</p>
+    <div class="rule"></div>
+  </div>
+
 </div>

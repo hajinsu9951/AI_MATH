@@ -1,0 +1,1517 @@
+<!-- ═══════════ OPTIM (24~26차시: 손실함수 · 미분계수 · 경사하강법) ═══════════
+     · 파일 위치: views/optim.html  (신규)
+     · 전역 접두사 op · 뷰 루트 id #v-optim · 모든 스타일 규칙은 #v-optim 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     · 이식 근거: 「인공지능 수학 수업 구성실」 내장 앱 loss-analyzer(24)·fog-minimum/contour-game(25)·
+       gd-visual-ax(26) — CDN(MathJax·Google Charts) 의존은 정적 수식·canvas로 대체
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-optim">
+  <style>
+  /* optim 뷰 전용 스타일 (#v-optim 스코프 한정 — 전역 누수 금지) */
+  #v-optim .op-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-optim .op-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-optim .op-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-optim .op-hero{position:relative;}
+  #v-optim .op-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-optim .op-hero>*:not(.op-wm){position:relative;}
+  #v-optim .vw-mark{display:none;}
+  #v-optim .op-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-optim .op-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;width:100%;}
+  #v-optim .op-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-optim .op-ask{border-left:4px solid var(--accent);}
+  #v-optim .op-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-optim .op-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-optim .op-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-optim .op-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-optim .op-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-optim .op-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-optim .op-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;max-width:100%;}
+  #v-optim .op-fml b{color:var(--fg);}
+  #v-optim .op-scroll{overflow-x:auto;max-width:100%;}
+  /* 375px 안전망 — 긴 수식·긴 라벨이 지면을 밀어내지 않게 합니다.
+     표 안은 white-space:nowrap 이 우선하므로 표 모양은 그대로 유지됩니다. */
+  #v-optim *{overflow-wrap:anywhere;}
+  #v-optim .op-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,18rem);}
+  #v-optim .op-tbl th,#v-optim .op-tbl td{border:1px solid var(--border);padding:0.36rem 0.55rem;text-align:center;line-height:1.6;}
+  #v-optim .op-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-optim .op-tbl td.num{font-family:var(--mono);}
+  #v-optim .op-tbl tr.hi td{background:var(--card-h);font-weight:700;}
+  #v-optim .op-tbl tr.bad td{background:rgba(180,65,51,0.13);color:var(--red);font-weight:700;}
+  #v-optim .op-tbl tr.done td{background:rgba(90,122,90,0.13);}
+  #v-optim .op-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-optim .op-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-optim .op-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-optim .op-fb b{color:var(--fg);}
+  #v-optim .op-fb:empty{display:none;}
+  #v-optim .op-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-optim .op-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-optim .op-in.num{width:5.2rem;text-align:center;}
+  #v-optim .op-sel{height:2.4rem;border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);
+    color:var(--fg);font-family:var(--sans);font-size:0.95rem;padding:0 0.5rem;max-width:100%;}
+  #v-optim .op-ta{width:100%;max-width:100%;box-sizing:border-box;min-height:3.6rem;border:1px solid var(--border);
+    border-radius:0.45rem;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:1.0rem;
+    line-height:1.8;padding:0.55rem 0.7rem;resize:vertical;}
+  /* 조작 요소 확대(§15) — 조작 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-optim .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;}
+  #v-optim .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-optim .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-optim .tabs{flex-wrap:wrap;}
+  #v-optim .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-optim .ws-btn{min-height:44px;}
+  #v-optim .op-badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;
+    border:1px solid var(--accent);color:var(--muted);border-radius:9999px;padding:0.1rem 0.5rem;margin-left:0.4rem;
+    vertical-align:middle;}
+
+  /* 단계 토글(details) */
+  #v-optim .op-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-optim .op-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-optim .op-fold>summary::-webkit-details-marker{display:none;}
+  #v-optim .op-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-optim .op-fold[open]>summary::after{content:'▾';}
+  #v-optim .op-fold .bd{padding:0 0 0.9rem;}
+  #v-optim .op-fold .bd p,#v-optim .op-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  /* 예상을 걸기 전에는 조작판을 흐리게 잠급니다(14차시 io-veil 과 같은 방식). */
+  #v-optim .op-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-optim .op-fold.op-locked{opacity:0.62;}
+  #v-optim .op-fold.op-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-optim .op-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 이중 캔버스 (좌 산점도 · 우 손실곡선) */
+  #v-optim .op-duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(17rem,100%),1fr));gap:0.9rem;margin-top:0.8rem;}
+  #v-optim .op-pane{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem;min-width:0;}
+  #v-optim .op-pane>h4{font-size:0.98rem;margin:0 0 0.4rem;color:var(--fg);}
+  #v-optim .op-pane .cap{font-family:var(--mono);font-size:0.74rem;color:var(--muted);line-height:1.7;margin-top:0.35rem;display:block;}
+  #v-optim canvas.op-cv{display:block;width:100%;max-width:100%;height:auto;background:var(--card);
+    border:1px solid var(--border);border-radius:0.4rem;touch-action:none;}
+  #v-optim canvas.op-cv.click{cursor:crosshair;}
+  #v-optim canvas.op-cv.grab{cursor:grab;}
+
+  /* 슬라이더 줄 */
+  #v-optim .op-slide{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem 0.8rem;margin-top:0.8rem;}
+  /* nowrap 금지 — 체크박스 라벨(‘절댓값 손실로 바꾸기 …’)이 길어 375px 에서 지면을 밀어냅니다. */
+  #v-optim .op-slide label{font-family:var(--mono);font-size:0.88rem;color:var(--fg);min-width:0;}
+  #v-optim .op-slide input[type=range]{flex:1 1 11rem;min-width:8rem;max-width:100%;height:2.2rem;accent-color:var(--fg);}
+  #v-optim .op-val{font-family:var(--mono);font-size:1.02rem;font-weight:700;color:var(--fg);
+    background:var(--card-h);border-radius:0.35rem;padding:0.2rem 0.55rem;white-space:nowrap;}
+
+  /* 수치 카드(값 3~4개 나란히) */
+  #v-optim .op-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(8rem,100%),1fr));gap:0.5rem;margin-top:0.7rem;}
+  #v-optim .op-stat{background:var(--bg);border:1px solid var(--border);border-radius:0.45rem;padding:0.5rem 0.6rem;min-width:0;}
+  #v-optim .op-stat .k{display:block;font-family:var(--mono);font-size:0.72rem;color:var(--muted);letter-spacing:0.06em;}
+  #v-optim .op-stat .v{display:block;font-family:var(--mono);font-size:1.05rem;font-weight:700;color:var(--fg);
+    line-height:1.5;word-break:break-all;}
+  #v-optim .op-stat.ok .v{color:var(--green);}
+  #v-optim .op-stat.no .v{color:var(--red);}
+
+  /* 데이터 편집 격자 */
+  #v-optim .op-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(6.2rem,1fr));gap:0.4rem;margin-top:0.6rem;}
+  #v-optim .op-cell{display:flex;align-items:center;gap:0.25rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:0.4rem;padding:0.25rem 0.35rem;min-width:0;}
+  #v-optim .op-cell span{font-family:var(--mono);font-size:0.74rem;color:var(--muted);}
+  #v-optim .op-cell input{width:100%;min-width:0;border:none;background:transparent;color:var(--fg);
+    font-family:var(--mono);font-size:0.92rem;text-align:center;height:2rem;}
+  #v-optim .op-cell input:focus{outline:2px solid var(--fg);outline-offset:1px;border-radius:0.25rem;}
+
+  /* 갱신 수식 카드(경사하강 3단계) */
+  #v-optim .op-steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(9.5rem,100%),1fr));gap:0.5rem;margin-top:0.7rem;}
+  #v-optim .op-s3{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--border);
+    border-radius:0.45rem;padding:0.55rem 0.65rem;opacity:0.4;transition:opacity 0.3s,border-color 0.3s;min-width:0;}
+  #v-optim .op-s3.on{opacity:1;border-left-color:var(--accent);}
+  #v-optim .op-s3 .t{display:block;font-family:var(--mono);font-size:0.72rem;color:var(--muted);letter-spacing:0.06em;}
+  #v-optim .op-s3 .b{display:block;font-family:var(--mono);font-size:0.92rem;color:var(--fg);line-height:1.75;
+    margin-top:0.2rem;word-break:break-all;}
+
+  /* 자취 수직선 */
+  #v-optim .op-trace{margin-top:0.8rem;}
+  #v-optim canvas.op-line{display:block;width:100%;max-width:100%;height:auto;background:var(--bg);
+    border:1px solid var(--border);border-radius:0.4rem;}
+
+  /* 참고 자료 카드 */
+  #v-optim .op-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));gap:0.7rem;margin-top:0.8rem;}
+  #v-optim .op-ref{display:flex;gap:0.65rem;align-items:flex-start;text-decoration:none;background:var(--bg);
+    border:1px solid var(--border);border-radius:var(--radius);padding:0.65rem;color:var(--body);
+    transition:border-color 0.2s;text-align:left;font-family:var(--sans);cursor:pointer;min-width:0;}
+  #v-optim .op-ref:hover{border-color:var(--fg);}
+  #v-optim .op-ref .th{flex:0 0 3.2rem;height:3.2rem;border-radius:0.4rem;background:var(--card-h);
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;position:relative;overflow:hidden;}
+  #v-optim .op-ref .th img{width:100%;height:100%;object-fit:cover;}
+  #v-optim .op-ref .th .bg{position:absolute;bottom:0;left:0;right:0;font-family:var(--mono);font-size:0.55rem;
+    background:var(--fg);color:var(--bg);text-align:center;letter-spacing:0.04em;padding:0.05rem 0;}
+  #v-optim .op-ref .bd{min-width:0;}
+  #v-optim .op-ref .tt{display:block;font-weight:700;color:var(--fg);font-size:0.96rem;line-height:1.5;}
+  #v-optim .op-ref .ds{display:block;font-size:0.86rem;color:var(--muted);line-height:1.6;margin-top:0.2rem;}
+  #v-optim .op-refadd{border-style:dashed;}
+  #v-optim .op-refform{display:none;flex-wrap:wrap;gap:0.5rem;margin-top:0.7rem;}
+  #v-optim .op-refform.on{display:flex;}
+  #v-optim .op-refform .op-in{flex:1 1 12rem;}
+
+  /* 형성평가 해설의 되돌아가기 버튼 */
+  #v-optim .op-back{display:block;margin-top:0.5rem;font-size:0.9rem;}
+  #v-optim .op-back .btn{text-transform:none;font-family:var(--sans);letter-spacing:0;font-size:0.85rem;min-height:2.2rem;padding:0.3rem 0.7rem;}
+
+  /* 탭 안 소제목 · 경고 배너 */
+  #v-optim .op-sub{font-family:var(--mono);font-size:0.76rem;letter-spacing:0.12em;color:var(--muted);
+    margin:1.1rem 0 0.35rem;text-transform:uppercase;}
+  #v-optim .op-warn{display:none;align-items:center;gap:0.5rem;background:rgba(180,65,51,0.12);
+    border:1px solid var(--red);border-radius:0.45rem;padding:0.6rem 0.75rem;margin-top:0.7rem;
+    color:var(--red);font-weight:700;font-size:0.98rem;line-height:1.7;}
+  #v-optim .op-warn.on{display:flex;}
+  #v-optim .op-ok{display:none;align-items:center;gap:0.5rem;background:rgba(90,122,90,0.12);
+    border:1px solid var(--green);border-radius:0.45rem;padding:0.6rem 0.75rem;margin-top:0.7rem;
+    color:var(--green);font-weight:700;font-size:0.98rem;line-height:1.7;}
+  #v-optim .op-ok.on{display:flex;}
+
+  /* 실행 상태 배지 */
+  #v-optim .op-run{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.78rem;
+    border:1px solid var(--border);border-radius:9999px;padding:0.2rem 0.6rem;color:var(--muted);background:var(--bg);}
+  #v-optim .op-run .dot{width:0.55rem;height:0.55rem;border-radius:50%;background:var(--muted);}
+  #v-optim .op-run.go .dot{background:var(--green);}
+  #v-optim .op-run.stop .dot{background:var(--red);}
+
+  /* 기록표 — 세로 스크롤 */
+  #v-optim .op-hist{max-height:17rem;overflow:auto;max-width:100%;border:1px solid var(--border);
+    border-radius:0.45rem;margin-top:0.6rem;}
+  #v-optim .op-hist table{border-collapse:collapse;font-size:0.88rem;width:100%;min-width:22rem;}
+  #v-optim .op-hist th,#v-optim .op-hist td{border-bottom:1px solid var(--border);padding:0.32rem 0.5rem;
+    text-align:right;font-family:var(--mono);white-space:nowrap;}
+  #v-optim .op-hist th{position:sticky;top:0;background:var(--card-h);z-index:1;text-align:center;}
+  #v-optim .op-hist tr.bad td{background:rgba(180,65,51,0.12);color:var(--red);font-weight:700;}
+  #v-optim .op-hist tr.fin td{background:rgba(90,122,90,0.12);}
+
+  /* 안개 게임 */
+  #v-optim .op-fogwrap{position:relative;}
+  #v-optim .op-probes{display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.55rem;}
+  #v-optim .op-probe{font-family:var(--mono);font-size:0.8rem;border:1px solid var(--border);border-radius:9999px;
+    padding:0.15rem 0.55rem;background:var(--bg);color:var(--fg);white-space:nowrap;}
+  #v-optim .op-probe.dn{border-color:var(--green);color:var(--green);}
+  #v-optim .op-probe.up{border-color:var(--red);color:var(--red);}
+
+  /* 등고선 격자 게임 */
+  #v-optim .op-ctr{display:grid;gap:2px;background:var(--border);border-radius:0.4rem;padding:2px;
+    max-width:100%;overflow:auto;margin-top:0.6rem;}
+  #v-optim .op-ctr div{aspect-ratio:1;min-width:1.05rem;border-radius:2px;background:var(--card-h);
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:0.62rem;color:#fff;}
+  #v-optim .op-ctr div.me{outline:2px solid var(--fg);outline-offset:-2px;}
+  #v-optim .op-pad{display:grid;grid-template-columns:repeat(3,3rem);gap:0.3rem;margin-top:0.6rem;justify-content:start;}
+  #v-optim .op-pad button{height:3rem;min-height:44px;border:1px solid var(--border);border-radius:0.4rem;
+    background:var(--card);color:var(--fg);font-size:1.05rem;cursor:pointer;}
+  #v-optim .op-pad button:hover{background:var(--card-h);}
+  #v-optim .op-pad .sp{visibility:hidden;}
+
+  /* 미니 차트 */
+  #v-optim canvas.op-mini{display:block;width:100%;max-width:100%;height:auto;background:var(--bg);
+    border:1px solid var(--border);border-radius:0.4rem;margin-top:0.5rem;}
+
+  /* 빈칸 채우기 */
+  #v-optim .op-blank{display:inline-flex;align-items:center;gap:0.2rem;}
+  #v-optim .op-blank input{width:4.4rem;height:2.3rem;text-align:center;font-family:var(--mono);font-size:0.95rem;
+    border:1px solid var(--border);border-radius:0.35rem;background:var(--card);color:var(--fg);}
+  #v-optim .op-blank input:focus{outline:2px solid var(--fg);outline-offset:1px;}
+  #v-optim .op-blank input.ok{border-color:var(--green);color:var(--green);}
+  #v-optim .op-blank input.no{border-color:var(--red);color:var(--red);}
+
+  /* 교과서 캡처(로컬 전용) 슬롯 */
+  #v-optim .op-tbshot{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.7rem;}
+  #v-optim .op-tbshot figure{margin:0;flex:1 1 min(14rem,100%);min-width:0;}
+  #v-optim .op-tbshot img{width:100%;height:auto;border:1px solid var(--border);border-radius:0.4rem;display:block;}
+  #v-optim .op-tbshot figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);line-height:1.65;margin-top:0.25rem;}
+
+  @media(max-width:640px){
+    #v-optim .op-wm{display:none;}
+    #v-optim .op-tbl{font-size:0.84rem;}
+    #v-optim .op-tbl th,#v-optim .op-tbl td{padding:0.28rem 0.35rem;}
+    #v-optim .op-ctr div{min-width:0.9rem;font-size:0.5rem;}
+  }
+  </style>
+
+  <div class="op-hero">
+    <svg class="op-wm" viewBox="0 0 320 180" role="img" aria-label="손실함수 포물선 위를 굴러 내려가는 공">
+      <path d="M20 30 C90 190, 230 190, 300 30" fill="none" stroke="var(--fg)" stroke-width="3"/>
+      <circle cx="86" cy="112" r="11" fill="var(--red)"/>
+      <path d="M50 118 L124 90" stroke="var(--blue)" stroke-width="3"/>
+      <circle cx="160" cy="152" r="7" fill="var(--green)"/>
+      <path d="M20 160 H300" stroke="var(--border)" stroke-width="2"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 24~26차시 · [12인수04-03] [12인수04-04]</p>
+    <h2>가장 좋은 직선을 찾아가는 세 걸음 — 손실함수 · 미분계수 · 경사하강법</h2>
+    <p class="desc">
+      22~23차시에서는 추세선을 <b>눈으로</b> 그었습니다. 이제 "가장 좋다"를 <b>하나의 수</b>로 정의하고,
+      그 수가 가장 작아지는 곳까지 기계가 스스로 걸어 내려가게 만듭니다.
+      24차시는 <b>목표</b>(손실함수), 25차시는 <b>나침반</b>(미분계수), 26차시는 <b>걸음걸이</b>(경사하강법)입니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표 — 세 차시를 하나의 뷰에서</strong>
+    <div style="margin-top:0.5rem;">
+      ① [24차시] 오차를 <b>제곱하여 더하는 이유</b>를 설명하고, y=ax 꼴 추세선의 손실함수 L(a)를
+      이차함수로 나타내어 그래프에서 최솟값을 찾을 수 있습니다. <b>[12인수04-03]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② [25차시] 할선이 <b>접선에 가까워지는 과정</b>을 관찰하여 함수의 극한과 미분계수의 의미를 설명하고,
+      미분계수의 부호로 손실함수가 줄어드는 방향을 판단할 수 있습니다. <b>[12인수04-04]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ [26차시] 갱신 규칙 <b>a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>)</b>에 따라 값을 반복 갱신하며,
+      초깃값·학습률에 따라 수렴·진동·발산이 갈리는 이유를 설명할 수 있습니다. <b>[12인수04-04]</b>
+    </div>
+    <div class="op-goalmap">
+      <button type="button" onclick="opSee(0,'op-act1')">├ 목표 ① → <b>탭 ① 손실함수</b>(잔차 정사각형과 L(a) 포물선) →</button>
+      <button type="button" onclick="opSee(1,'op-act2')">├ 목표 ② → <b>탭 ② 할선에서 접선으로</b> · <b>탭 ③ 안개 속 최솟값 찾기</b> →</button>
+      <button type="button" onclick="opSee(3,'op-act4')">└ 목표 ③ → <b>탭 ④ 경사하강법</b>(한 스텝 · 자동 실행 · 발산 실험) →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips op-keys" data-no-toggle="1">
+    <span class="chip">오차와 오차의 제곱</span>
+    <span class="chip">손실함수 L(a)</span>
+    <span class="chip">최적화와 최적 추세선</span>
+    <span class="chip">함수의 극한과 접선</span>
+    <span class="chip">미분계수 L′(a)</span>
+    <span class="chip">경사하강법과 학습률</span>
+  </div>
+
+  <div class="card op-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>‘가장 좋은 직선’이라는 말을 수학적으로 어떻게 정의할 수 있을까?</li>
+      <li>안개 속에서 골짜기의 바닥을 찾으려면 발밑의 무엇을 읽어야 하는가?</li>
+      <li>한 걸음의 크기(학습률)는 왜 학습의 성패를 가르는가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">세 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="op-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 오차에서 시작해 경사를 따라 내려가기까지</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      앞의 두 편은 24차시, 가운데 두 편은 25차시, 마지막 한 편은 26차시에 맞춘 영상입니다.</p>
+    <div id="op-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은? <span class="op-badge">24차시</span></h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="op-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b>
+      먼저 "좋은 직선"을 재는 자부터 만들어 봅시다.</p>
+    <p class="op-hint" style="margin-top:0.7rem;">※ <b>25차시</b>의 마중 퀴즈는 탭 ②(할선 → 접선) 맨 위에,
+      <b>26차시</b>의 마중 퀴즈는 탭 ④(경사하강법) 맨 위에 따로 있습니다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="op-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="opTab(0,this)">① 손실함수 <span class="op-badge">24차시</span></button>
+    <button class="tab" type="button" onclick="opTab(1,this)">② 할선 → 접선 <span class="op-badge">25차시</span></button>
+    <button class="tab" type="button" onclick="opTab(2,this)">③ 안개 속 최솟값 <span class="op-badge">25차시</span></button>
+    <button class="tab" type="button" onclick="opTab(3,this)">④ 경사하강법 <span class="op-badge">26차시</span></button>
+  </div>
+
+  <!-- ── 탭 ① 24차시 · 손실함수 L(a) ───────────────────────────────── -->
+  <div class="tpanel on" id="op0">
+
+    <div class="card" id="op-act1" data-no-toggle="1">
+      <h3>활동 1 · 「오차의 평균이 서로 같다면」 — 비교할 수 없는 두 직선</h3>
+      <p>어느 교차로에서 신호 한 번에 지나간 <b>차량 수 x대</b>와 <b>통과 시간 y초</b>를 여섯 번 측정하였습니다.
+        두 사람이 서로 다른 추세선을 내놓았습니다.</p>
+      <div class="math">데이터   (2, 3) (3, 4) (3, 8) (4, 7) (5, 9) (5, 10)
+추세선 f₁(x) = 2x        추세선 f₂(x) = −x + 11</div>
+      <div class="op-duo">
+        <div class="op-pane">
+          <h4>두 추세선을 눈으로 비교하기</h4>
+          <canvas class="op-cv" id="op-cv-a1" width="520" height="360"
+            aria-label="여섯 개의 점과 두 추세선을 나타낸 산점도" role="img"></canvas>
+          <span class="cap">파란 직선 f₁(x) = 2x · 붉은 직선 f₂(x) = −x + 11 · 점선은 각 점의 오차</span>
+        </div>
+        <div class="op-pane">
+          <h4>어느 직선이 더 좋아 보이나요?</h4>
+          <div class="chips" id="op-a1-eye">
+            <button class="chip" type="button" onclick="opLEye('f1',this)">f₁(x) = 2x</button>
+            <button class="chip" type="button" onclick="opLEye('f2',this)">f₂(x) = −x + 11</button>
+            <button class="chip" type="button" onclick="opLEye('same',this)">차이가 없다</button>
+          </div>
+          <p class="status" id="op-a1-eyemsg">먼저 눈으로 하나를 고르면 아래 계산표가 열립니다.</p>
+          <p class="op-hint">눈으로 본 판단을 <b>수 하나</b>로 바꿀 수 있어야 컴퓨터도 같은 판단을 할 수 있습니다.</p>
+        </div>
+      </div>
+      <span class="op-src">출처 — 씨마스 「인공지능 수학」 Ⅳ. 예측과 최적화 p.154 표와 두 추세선 f₁, f₂ 를 그대로 사용</span>
+    </div>
+
+    <div class="card op-veil" id="op-a1-panel" data-no-toggle="1">
+      <h3>조작 — 오차를 세어 보기</h3>
+      <p>표의 빈칸에 <b>오차의 합</b>과 <b>오차의 제곱의 합</b>을 계산해 넣고 [확인]을 누르세요.
+        분수는 소수로 적어도 됩니다.</p>
+      <div class="op-scroll">
+        <table class="op-tbl">
+          <tr><th>x (대)</th><th>y (초)</th><th>f₁ = 2x</th><th>오차 y − f₁</th><th>(오차)²</th>
+              <th>f₂ = −x+11</th><th>오차 y − f₂</th><th>(오차)²</th></tr>
+          <tr><td class="num">2</td><td class="num">3</td><td class="num">4</td><td class="num">−1</td><td class="num">1</td>
+              <td class="num">9</td><td class="num">−6</td><td class="num">36</td></tr>
+          <tr><td class="num">3</td><td class="num">4</td><td class="num">6</td><td class="num">−2</td><td class="num">4</td>
+              <td class="num">8</td><td class="num">−4</td><td class="num">16</td></tr>
+          <tr><td class="num">3</td><td class="num">8</td><td class="num">6</td><td class="num">2</td><td class="num">4</td>
+              <td class="num">8</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td class="num">4</td><td class="num">7</td><td class="num">8</td><td class="num">−1</td><td class="num">1</td>
+              <td class="num">7</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td class="num">5</td><td class="num">9</td><td class="num">10</td><td class="num">−1</td><td class="num">1</td>
+              <td class="num">6</td><td class="num">3</td><td class="num">9</td></tr>
+          <tr><td class="num">5</td><td class="num">10</td><td class="num">10</td><td class="num">0</td><td class="num">0</td>
+              <td class="num">6</td><td class="num">4</td><td class="num">16</td></tr>
+          <tr class="hi"><td colspan="3">합계 →</td>
+              <td><span class="op-blank"><input id="op-a1-s1" type="text" inputmode="text" aria-label="f1 오차의 합"></span></td>
+              <td><span class="op-blank"><input id="op-a1-q1" type="text" inputmode="text" aria-label="f1 오차의 제곱의 합"></span></td>
+              <td></td>
+              <td><span class="op-blank"><input id="op-a1-s2" type="text" inputmode="text" aria-label="f2 오차의 합"></span></td>
+              <td><span class="op-blank"><input id="op-a1-q2" type="text" inputmode="text" aria-label="f2 오차의 제곱의 합"></span></td></tr>
+        </table>
+      </div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="opLA1Check()">확인</button>
+        <button class="btn" type="button" onclick="opLA1Fill()">정답 보기</button></div>
+      <div class="op-fb" id="op-a1-fb"></div>
+      <div class="op-stats" id="op-a1-stats"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="op-fold" data-lock="l-a1" data-lockmsg="위 표의 네 칸을 모두 맞게 채우면 열립니다.">
+        <summary>단계 1 · 관찰 — 왜 오차의 평균으로는 비교할 수 없었나요?</summary>
+        <div class="bd">
+          <p>두 추세선의 오차의 합이 모두 <b>−3</b>, 따라서 오차의 평균도 모두 <b>−½</b>로 같습니다.
+            눈으로는 f₁이 훨씬 가까운데도 두 수가 같아진 것입니다.</p>
+          <p>이유는 하나입니다. f₂의 오차 −6, −4 와 +3, +4 처럼 <b>부호가 반대인 오차들이 더해지면서 서로 상쇄</b>되었기 때문입니다.
+            "크게 틀렸다"는 정보가 덧셈 과정에서 사라졌습니다.</p>
+          <span class="op-src">씨마스 「인공지능 수학」 Ⅳ p.154 ‘지식 Plus — 두 오차의 평균이 서로 같은 이유’ 서술을 재구성</span>
+        </div>
+      </details>
+      <details class="op-fold" data-lock="l-a1" data-lockmsg="위 표의 네 칸을 모두 맞게 채우면 열립니다.">
+        <summary>단계 2 · 정리 — 제곱하면 무엇이 달라지나요?</summary>
+        <div class="bd">
+          <p>오차를 제곱하면 부호가 사라져 <b>모두 0 이상</b>이 되므로 상쇄가 일어나지 않습니다.
+            그 결과 f₁은 11/6 ≒ 1.83, f₂는 77/6 ≒ 12.83 으로 <b>7배 가까운 차이</b>가 드러납니다.</p>
+          <p>또 제곱은 <b>큰 오차에 더 큰 벌점</b>을 줍니다. −6은 36으로, −1은 1로 계산되므로
+            "많이 빗나간 점"이 값에 훨씬 강하게 반영됩니다.</p>
+          <p>절댓값을 씌워도 부호는 없앨 수 있습니다. 그런데도 제곱을 쓰는 결정적인 이유는 25·26차시에서 밝혀집니다
+            — <b>제곱은 어디서나 매끄럽게 기울기를 잴 수 있기</b> 때문입니다.</p>
+        </div>
+      </details>
+      <details class="op-fold">
+        <summary>단계 3 · 정의 확인 — 오차와 손실함수</summary>
+        <div class="bd">
+          <p>실제 측정값 y<sub>i</sub> (i = 1, 2, …, n)와 추세선 f(x) = ax 로 구한 예측값 ax<sub>i</sub> 에 대하여</p>
+          <p class="op-fml"><b>오차</b> : y₁ − ax₁, y₂ − ax₂, …, y<sub>n</sub> − ax<sub>n</sub><br>
+            <b>손실함수</b> : L(a) = { (y₁ − ax₁)² + (y₂ − ax₂)² + ⋯ + (y<sub>n</sub> − ax<sub>n</sub>)² } ÷ n</p>
+          <p>라 합니다. L 은 손실을 뜻하는 <b>Loss</b>의 첫 글자이며, 같은 함수를 비용함수(Cost function)·목적함수(Objective function)라고도 부릅니다.
+            고등학교 교육과정에서는 추세선이 f(x) = ax 인 <b>일변수 손실함수</b>만 다룹니다.</p>
+          <p><b>예 1.</b> 세 점 (1, 2), (2, 3), (3, 5)에 대하여
+            L(a) = {(2 − a)² + (3 − 2a)² + (5 − 3a)²} ÷ 3 = (14a² − 46a + 38) ÷ 3 입니다.<br>
+            <b>예 2.</b> 위 여섯 점에 대하여 L(a) = (88a² − 330a + 319) ÷ 6 입니다.</p>
+          <div class="op-tbshot">
+            <figure><img src="assets/textbook-local/씨마스4_p155_오차와손실함수.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 「인공지능 수학」 Ⅳ p.155 — 오차와 손실함수 정의 (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+            <figure><img src="assets/textbook-local/동아4_p137_손실함수.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아출판 「인공지능 수학」 Ⅳ p.137 — 오차와 손실함수 (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+          </div>
+          <span class="op-src">씨마스 「인공지능 수학」 Ⅳ p.155 정의와 지식 Plus, 동아출판 「인공지능 수학」 Ⅳ p.136~137 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" id="op-act2" data-no-toggle="1">
+      <h3>활동 2 · 「a를 돌려 보기」 — 잔차 정사각형과 L(a) 포물선</h3>
+      <p>슬라이더로 기울기 a 를 바꾸면 <b>왼쪽</b>에서는 직선이 회전하며 <b>잔차 정사각형</b>의 넓이가 바뀌고,
+        <b>오른쪽</b>에서는 그 넓이의 평균이 포물선 위의 점 하나로 찍힙니다. 두 화면은 같은 수를 다르게 보여 줍니다.</p>
+      <div class="op-slide">
+        <label for="op-a">기울기 a</label>
+        <input id="op-a" class="ns" type="range" min="0" max="4" step="0.005" value="1"
+          oninput="opLSlide(this.value)" aria-label="추세선의 기울기 a">
+        <span class="op-val" id="op-a-val">a = 1.000</span>
+        <button class="btn" type="button" onclick="opLSnapOpt()">최적 a로 이동</button>
+      </div>
+      <div class="op-slide">
+        <label><input type="checkbox" id="op-abs" onchange="opLAbs()"> 절댓값 손실로 바꾸기 (오차의 절댓값의 평균)</label>
+      </div>
+      <div class="op-duo">
+        <div class="op-pane">
+          <h4>① 산점도 · 추세선 y = ax · 잔차 정사각형</h4>
+          <canvas class="op-cv" id="op-cv-sc" width="520" height="380"
+            aria-label="산점도와 추세선, 각 점의 잔차를 한 변으로 하는 정사각형" role="img"></canvas>
+          <span class="cap" id="op-sc-cap">정사각형의 한 변 = 그 점의 오차의 크기 · 넓이 = (오차)²</span>
+        </div>
+        <div class="op-pane">
+          <h4>② 손실함수 L(a) 의 그래프</h4>
+          <canvas class="op-cv" id="op-cv-ls" width="520" height="380"
+            aria-label="기울기 a에 대한 손실함수의 그래프와 현재 위치" role="img"></canvas>
+          <span class="cap" id="op-ls-cap">붉은 점 (a, L(a)) · 초록 점은 최솟값 위치</span>
+        </div>
+      </div>
+      <div class="op-stats" id="op-l-stats"></div>
+      <p class="op-sub">데이터 편집 — 값을 바꾸면 두 그래프가 함께 다시 그려집니다</p>
+      <div class="op-grid" id="op-l-grid"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="opLPreset('cars')">씨마스 6점 (차량·통과 시간)</button>
+        <button class="btn" type="button" onclick="opLPreset('three')">씨마스 3점 (1,1) (2,1) (2,3)</button>
+        <button class="btn" type="button" onclick="opLPreset('tea')">아이스티 10점 (27차시 예고)</button>
+      </div>
+      <div class="op-ok" id="op-l-ok"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 두 화면이 같은 것을 말하고 있습니다</h3>
+      <details class="op-fold" data-lock="l-a2" data-lockmsg="슬라이더를 움직여 a 를 세 번 이상 바꾸면 열립니다.">
+        <summary>단계 1 · 관찰 — 정사각형이 가장 작아지는 순간</summary>
+        <div class="bd">
+          <p>정사각형 여섯 개의 넓이의 합이 가장 작아질 때, 오른쪽 붉은 점은 <b>포물선의 꼭짓점</b>에 놓입니다.
+            두 화면은 서로 다른 그림이지만 <b>같은 수</b>를 가리킵니다.</p>
+          <p>a 를 꼭짓점보다 작게 하면 직선이 점들 아래로 눕고, 크게 하면 위로 섭니다.
+            어느 쪽으로 벗어나도 넓이의 합은 커집니다 — 그래서 그래프가 <b>아래로 볼록</b>합니다.</p>
+        </div>
+      </details>
+      <details class="op-fold" data-lock="l-a2" data-lockmsg="슬라이더를 움직여 a 를 세 번 이상 바꾸면 열립니다.">
+        <summary>단계 2 · 관찰 — 절댓값으로 바꾸면 어디가 달라지나요?</summary>
+        <div class="bd">
+          <p>절댓값 손실로 바꾸면 곡선이 <b>여러 개의 선분이 이어진 V 자 꺾은선</b>이 됩니다.
+            꺾인 지점에서는 왼쪽에서 온 기울기와 오른쪽에서 온 기울기가 서로 달라 <b>접선을 하나로 정할 수 없습니다</b>.</p>
+          <p>26차시의 경사하강법은 "지금 서 있는 곳의 기울기"를 매 걸음 읽어야 합니다.
+            기울기를 읽을 수 없는 점이 있는 함수는 그 걸음을 정할 수 없습니다. <b>제곱을 쓰는 진짜 이유</b>가 여기 있습니다.</p>
+        </div>
+      </details>
+      <details class="op-fold">
+        <summary>단계 3 · 정의 확인 — 손실함수의 값과 추세선의 평가</summary>
+        <div class="bd">
+          <p>손실함수는 오차의 제곱의 평균이므로, <b>L(a) 의 값이 작을수록</b> 예측값과 실제 측정값의 차이가 전체적으로 작습니다.
+            그래서 인공지능은 L(a) 로 추세선의 성능을 <b>수치화</b>합니다.</p>
+          <div class="op-scroll"><table class="op-tbl">
+            <tr><th>손실함수 L(a) 의 값</th><th>추세선 f(x) = ax 에 대한 평가</th></tr>
+            <tr><td>a = 15/8 일 때 최소</td><td>데이터를 가장 잘 반영하는 최적 추세선의 기울기가 15/8</td></tr>
+            <tr><td>최솟값 L(15/8) = 77/48</td><td>다른 어떤 a 를 넣어도 손실함수의 값은 77/48 보다 큼</td></tr>
+          </table></div>
+          <span class="op-src">씨마스 「인공지능 수학」 Ⅳ p.156~157 및 p.159 ‘손실함수의 값 ⇔ 추세선에 대한 평가’ 표를 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" id="op-act3" data-no-toggle="1">
+      <h3>활동 3 · 「완전제곱으로 꼭짓점을 찍기」 — 손으로 최적 a 를 구하기</h3>
+      <p>슬라이더로 찾은 값은 눈대중입니다. 이제 <b>이차함수를 완전제곱식으로 고쳐</b> 최적 a 를 정확히 구합니다.
+        씨마스 6점 데이터의 손실함수는 다음과 같습니다.</p>
+      <p class="op-fml">L(a) = (88a² − 330a + 319) ÷ 6 = <b>(44/3)</b>(a − <span class="op-blank"><input id="op-a3-p" type="text" aria-label="꼭짓점의 a좌표"></span>)² + <span class="op-blank"><input id="op-a3-q" type="text" aria-label="최솟값"></span></p>
+      <p class="op-hint">분수로 적어도 되고(예: <b>15/8</b>) 소수로 적어도 됩니다(예: <b>1.875</b>).
+        오차 범위는 소수 셋째 자리까지 허용합니다.</p>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="opLA3Check()">확인</button>
+        <button class="btn" type="button" onclick="opLA3Hint()">전개 과정 보기</button></div>
+      <div class="op-fb" id="op-a3-fb"></div>
+      <div id="op-a3-work"></div>
+    </div>
+
+    <div class="card" id="op-act4" data-no-toggle="1">
+      <h3>활동 4 · 「점 하나가 크게 튀면」 — 제곱 손실과 절댓값 손실의 성격</h3>
+      <p>여섯 번째 측정에서 사고가 나서 통과 시간이 <b>10초 → 30초</b>로 기록되었습니다.
+        점 하나만 바뀌었을 때 두 손실함수의 최적 a 는 각각 얼마나 흔들릴까요?</p>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="opLOut(true)">이상치 (5, 30) 넣기</button>
+        <button class="btn" type="button" onclick="opLOut(false)">원래 데이터로 되돌리기</button>
+      </div>
+      <div class="op-scroll"><table class="op-tbl" id="op-a4-tbl"></table></div>
+      <div class="op-fb" id="op-a4-fb"></div>
+      <span class="op-src">이식 — 「인공지능 수학 수업 구성실」 내장 활동 <b>loss-analyzer</b>(MSE·MAE 이상치 강건성 비교)의
+        계산 구조를 우리 데이터·토큰으로 옮겼습니다. 원본의 MathJax 수식은 정적 수식으로 대체했습니다.</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 이상치가 알려 주는 것</h3>
+      <details class="op-fold" data-lock="l-a4" data-lockmsg="[이상치 넣기]를 한 번 눌러 보면 열립니다.">
+        <summary>단계 1 · 관찰 — 어느 쪽이 더 많이 흔들렸나요?</summary>
+        <div class="bd">
+          <p>제곱 손실의 최적 a 는 <b>1.875 → 3.011</b> 로 크게 옮겨 갔지만,
+            절댓값 손실의 최적 a 는 <b>1.8 그대로</b>였습니다.</p>
+          <p>제곱은 큰 오차에 큰 벌점을 주므로, 튀어 오른 한 점을 달래려고 직선 전체를 그쪽으로 끌어올립니다.
+            절댓값은 벌점이 오차에 비례할 뿐이라 한 점의 발언권이 상대적으로 작습니다.</p>
+        </div>
+      </details>
+      <details class="op-fold">
+        <summary>단계 2 · 정리 — 그래서 무엇을 골라야 할까요</summary>
+        <div class="bd">
+          <p>정답은 하나가 아닙니다. <b>측정 오류가 섞였을 가능성이 높은 데이터</b>에서는 절댓값 손실이 안전하고,
+            <b>큰 오차를 절대 허용할 수 없는 문제</b>(브레이크 거리 예측 등)에서는 제곱 손실이 알맞습니다.</p>
+          <p>다만 교육과정과 실제 인공지능 학습이 제곱 손실을 기본으로 쓰는 이유는 따로 있습니다.
+            <b>어디서나 매끄러워 기울기를 읽을 수 있고, 그 기울기가 다시 일차식이 되어 계산이 간단</b>하기 때문입니다.
+            이 성질이 바로 25·26차시의 열쇠입니다.</p>
+          <span class="op-src">동아출판 「인공지능 수학」 Ⅳ p.136 ‘오차의 절댓값의 합이 최소가 되는 방법을 이용할 수도 있다’ 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>24차시 마무리 → 다음 걸음</strong><br>
+      L(a) 의 꼭짓점은 이차함수라서 완전제곱식으로 <b>정확히</b> 구할 수 있었습니다.
+      그런데 인공지능이 실제로 다루는 손실함수는 변수가 수만 개이고 이차함수보다 훨씬 복잡해, 꼭짓점을 직접 구할 수 없습니다.
+      그렇다면 <b>발밑의 경사만 읽어서</b> 바닥을 찾아갈 수 있을까요?
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="opSee(1,'op-act5')">② 할선 → 접선 (25차시)으로 →</button></span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 25차시 · 할선에서 접선으로 ──────────────────────────── -->
+  <div class="tpanel" id="op1">
+
+    <div class="card" data-no-toggle="1" id="op-warm25-card">
+      <h3>25차시 마중 퀴즈 — 내 생각은? <span class="op-badge">25차시</span></h3>
+      <p style="margin-bottom:1rem;">여기서부터 <b>25차시</b>입니다. 정답을 몰라도 좋습니다.
+        <b>지금의 생각</b>을 골라 보세요. 답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+      <div id="op-warm25"></div>
+      <p style="margin-top:1.1rem;"><b>세 질문의 답은 오늘 탭 ②·③에서 완성됩니다.</b></p>
+    </div>
+
+    <div class="card" id="op-act5" data-no-toggle="1">
+      <h3>활동 5 · 「두 점을 지나는 직선이 한 점에서 접하는 직선이 되기까지」</h3>
+      <p>24차시의 마지막 질문은 <b>"꼭짓점을 직접 구할 수 없다면 어떻게 하나"</b> 였습니다.
+        답은 <b>발밑의 경사</b>를 읽는 것입니다. 먼저 경사를 재는 방법부터 만듭니다.</p>
+      <div class="math">y = f(x) = x² − 4x + 5
+P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h) − f(t) } ÷ h</div>
+      <p>h 를 0에 가깝게 줄이면 점 Q 가 곡선을 따라 P 로 다가오고, 할선 PQ 는 <b>어떤 직선 하나</b>에 한없이 가까워집니다.
+        그 직선을 <b>접선</b>이라 하고, 그 기울기를 <b>미분계수</b>라 합니다.</p>
+
+      <div class="op-slide">
+        <label for="op-t">접점의 x좌표 t</label>
+        <input id="op-t" class="ns" type="range" min="-1" max="5" step="0.25" value="1"
+          oninput="opDSetT(this.value)" aria-label="접점의 x좌표">
+        <span class="op-val" id="op-t-val">t = 1</span>
+      </div>
+      <div class="op-slide">
+        <label for="op-h">간격 h</label>
+        <input id="op-h" class="ns" type="range" min="0" max="10" step="1" value="1"
+          oninput="opDSetH(this.value)" aria-label="두 점 사이의 간격 h">
+        <span class="op-val" id="op-h-val">h = 1</span>
+        <button class="btn" type="button" onclick="opDHalf()">h 를 반으로</button>
+        <button class="btn pri" type="button" onclick="opDAnim()">h → 0 애니메이션</button>
+      </div>
+
+      <div class="op-duo">
+        <div class="op-pane">
+          <h4>① 곡선 · 두 점 P, Q · 할선</h4>
+          <canvas class="op-cv" id="op-cv-sec" width="520" height="400"
+            aria-label="이차함수 곡선 위의 두 점과 할선, 접선" role="img"></canvas>
+          <span class="cap" id="op-sec-cap">파란 직선 = 할선 PQ · 초록 직선 = 접선(극한)</span>
+        </div>
+        <div class="op-pane">
+          <h4>② 기울기의 값이 다가가는 곳</h4>
+          <div class="op-stats" id="op-sec-stats"></div>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="opDRec()">이 값을 표에 기록</button>
+            <button class="btn" type="button" onclick="opDClear()">표 비우기</button>
+          </div>
+          <div class="op-hist" id="op-sec-hist"></div>
+          <p class="op-hint" id="op-sec-msg">h 를 줄이며 [표에 기록]을 세 번 이상 눌러 보세요.</p>
+        </div>
+      </div>
+      <span class="op-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.164 ‘함수의 그래프의 접선’, p.166 ‘이차함수의 미분계수의 계산’의
+        보기 f(x) = x² − 4x + 5 를 그대로 사용</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="op-fold" data-lock="d-sec" data-lockmsg="[표에 기록]을 세 번 이상 누르면 열립니다.">
+        <summary>단계 1 · 관찰 — 기록표의 수는 어디로 다가갔나요?</summary>
+        <div class="bd">
+          <p>t = 1 에서 h 를 1 → 0.5 → 0.1 → 0.01 로 줄이면 할선의 기울기는
+            <b>−1 → −1.5 → −1.9 → −1.99</b> 로 −2 에 한없이 가까워집니다.</p>
+          <p>h 에 0을 <b>대입할 수는 없습니다</b>(분모가 0). 그러나 <b>0에 가까워질 때 값이 어디로 가는지</b>는 말할 수 있습니다.
+            이것이 함수의 극한이고, 그 값이 접선의 기울기입니다.</p>
+        </div>
+      </details>
+      <details class="op-fold" data-lock="d-sec" data-lockmsg="[표에 기록]을 세 번 이상 누르면 열립니다.">
+        <summary>단계 2 · 정리 — 식으로 확인하기</summary>
+        <div class="bd">
+          <p class="op-fml">{ f(t+h) − f(t) } ÷ h
+            = { (t+h)² − 4(t+h) + 5 − (t² − 4t + 5) } ÷ h
+            = (2th + h² − 4h) ÷ h
+            = <b>2t − 4 + h</b></p>
+          <p>여기서 h → 0 이면 값은 <b>2t − 4</b> 입니다. 곧 f′(t) = 2t − 4 이고,
+            t = 1 일 때 f′(1) = −2, t = 2 일 때 f′(2) = 0, t = 3 일 때 f′(3) = 2 입니다.</p>
+          <p>일반적으로 이차함수 f(x) = ax² + bx + c 에 대하여 <b>f′(t) = 2at + b</b> 입니다.
+            이 한 줄만 있으면 어떤 이차함수의 어느 점에서든 경사를 계산할 수 있습니다.</p>
+        </div>
+      </details>
+      <details class="op-fold">
+        <summary>단계 3 · 정의 확인 — 함수의 극한 · 접선 · 미분계수</summary>
+        <div class="bd">
+          <p><b>함수의 극한.</b> 함수 f(x) 에서 x 의 값이 a 가 아니면서 a 에 한없이 가까워질 때 f(x) 의 값이 일정한 값 α 에 한없이 가까워지면,
+            f(x) 는 α 에 <b>수렴</b>한다고 하고 α 를 x = a 에서 f(x) 의 <b>극한값</b>이라 하며
+            기호로 lim<sub>x→a</sub> f(x) = α 와 같이 나타냅니다.</p>
+          <p><b>접선.</b> 곡선 y = f(x) 위의 두 점 P(t, f(t)), Q(t+h, f(t+h)) 에 대하여 h → 0 이면 Q 가 곡선을 따라 P 에 한없이 가까워지고,
+            직선 PQ 는 점 P 를 지나는 어떤 직선 <i>l</i> 에 한없이 가까워집니다. 이 <i>l</i> 을 점 P 에서의 <b>접선</b>, P 를 <b>접점</b>이라 합니다.</p>
+          <p><b>미분계수.</b> 이차함수 y = f(x) 의 그래프 위의 점 P(t, f(t)) 에서 접하는 접선의 기울기를
+            x = t 에서의 <b>미분계수</b>라 하고 기호로 f′(t) 와 같이 나타냅니다.
+            { f(t+h) − f(t) } ÷ h 를 <b>평균변화율</b>, 그 h → 0 극한을 <b>순간변화율</b>이라고도 합니다.</p>
+          <p class="op-hint">함숫값이 없어도 극한값은 있을 수 있습니다. 예를 들어 f(x) = (x² − 2x) ÷ x 는 x = 0 에서 함숫값이 없지만,
+            x ≠ 0 에서 f(x) = x − 2 이므로 lim<sub>x→0</sub> f(x) = −2 입니다.</p>
+          <div class="op-tbshot">
+            <figure><img src="assets/textbook-local/씨마스4_p164_접선.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 「인공지능 수학」 Ⅳ p.164 — 함수의 극한과 접선 (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+            <figure><img src="assets/textbook-local/씨마스4_p166_미분계수.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 「인공지능 수학」 Ⅳ p.166 — 이차함수의 미분계수의 계산 (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+          </div>
+          <span class="op-src">씨마스 「인공지능 수학」 Ⅳ p.163~166 정의·지식 Plus 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" id="op-act6" data-no-toggle="1">
+      <h3>활동 6 · 「부호가 가리키는 방향」 — 내려갈 쪽은 어디인가</h3>
+      <p>이차함수 f(x) = (x − 3)² + 1 의 그래프 위 다섯 점 A, B, C, D, E (x = 1, 2, 3, 4, 5)에서
+        접선을 하나씩 그어 보고, 그 기울기의 <b>부호</b>가 무엇을 알려 주는지 확인합니다.</p>
+      <div class="chips" id="op-a6-pts">
+        <button class="chip on" type="button" onclick="opDSign(1,this)">A (x = 1)</button>
+        <button class="chip" type="button" onclick="opDSign(2,this)">B (x = 2)</button>
+        <button class="chip" type="button" onclick="opDSign(3,this)">C (x = 3)</button>
+        <button class="chip" type="button" onclick="opDSign(4,this)">D (x = 4)</button>
+        <button class="chip" type="button" onclick="opDSign(5,this)">E (x = 5)</button>
+      </div>
+      <div class="op-duo">
+        <div class="op-pane">
+          <h4>다섯 점에서의 접선</h4>
+          <canvas class="op-cv" id="op-cv-sign" width="520" height="380"
+            aria-label="이차함수 위 다섯 점에서의 접선과 내려갈 방향" role="img"></canvas>
+          <span class="cap">선택한 점의 접선은 굵게, 나머지는 옅게 표시됩니다.</span>
+        </div>
+        <div class="op-pane">
+          <h4>판정</h4>
+          <div class="op-stats" id="op-a6-stats"></div>
+          <div class="op-fb" id="op-a6-fb"></div>
+          <p class="op-sub">다섯 점의 미분계수를 크기 순으로</p>
+          <p class="op-fml">f′(1) &lt; f′(2) &lt; f′(3) = 0 &lt; f′(4) &lt; f′(5)</p>
+          <p class="op-hint">기울기가 <b>음수</b>면 오른쪽으로, <b>양수</b>면 왼쪽으로 가야 값이 줄어듭니다.
+            0 이 되는 곳이 바로 바닥입니다.</p>
+        </div>
+      </div>
+      <span class="op-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.165 ‘이차함수의 미분계수의 뜻’의 f(x) = (x − 3)² + 1 과 다섯 점 A~E 를 그대로 사용</span>
+    </div>
+
+    <div class="card" id="op-act7" data-no-toggle="1">
+      <h3>활동 7 · 「24차시의 손실함수에 나침반을 대 보기」</h3>
+      <p>같은 방법을 24차시에서 만든 손실함수에 그대로 적용합니다. 씨마스 6점 데이터의 손실함수는</p>
+      <p class="op-fml">L(a) = (88a² − 330a + 319) ÷ 6 &nbsp;⇒&nbsp; L′(a) = (176a − 330) ÷ 6 = <b>(88a − 165) ÷ 3</b></p>
+      <p>입니다. a 를 옮겨 가며 L′(a) 의 부호와 "어느 쪽으로 가야 하는가"를 읽어 보세요.</p>
+      <div class="op-slide">
+        <label for="op-a7">현재 위치 a</label>
+        <input id="op-a7" class="ns" type="range" min="0" max="4" step="0.01" value="0.6"
+          oninput="opDLoss(this.value)" aria-label="손실함수 위의 현재 위치">
+        <span class="op-val" id="op-a7-val">a = 0.60</span>
+      </div>
+      <div class="op-duo">
+        <div class="op-pane">
+          <h4>L(a) 위의 현재 위치와 접선</h4>
+          <canvas class="op-cv" id="op-cv-dl" width="520" height="380"
+            aria-label="손실함수 위의 현재 위치와 접선, 내려갈 방향 화살표" role="img"></canvas>
+          <span class="cap">화살표가 가리키는 쪽이 손실함수의 값이 줄어드는 방향입니다.</span>
+        </div>
+        <div class="op-pane">
+          <h4>읽기</h4>
+          <div class="op-stats" id="op-a7-stats"></div>
+          <div class="op-fb" id="op-a7-fb"></div>
+          <p class="op-sub">확인 문제</p>
+          <p>a = 3 에서 L′(3) 의 값은? <span class="op-blank"><input id="op-a7-q" type="text" aria-label="L프라임 3의 값"></span>
+            <button class="btn pri" type="button" onclick="opDQ()">확인</button></p>
+          <div class="op-fb" id="op-a7-qfb"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 정리 · 다음 걸음</h3>
+      <details class="op-fold" data-lock="d-loss" data-lockmsg="슬라이더를 세 번 이상 움직이면 열립니다.">
+        <summary>단계 1 · 정리 — 나침반은 방향과 거리까지 알려 줍니다</summary>
+        <div class="bd">
+          <p>L′(a) 의 <b>부호</b>는 어느 쪽으로 가야 하는지를, <b>절댓값</b>은 얼마나 급한 경사에 서 있는지를 알려 줍니다.
+            바닥에서 멀면 경사가 급하고(절댓값이 큼), 가까우면 완만합니다(절댓값이 작음).</p>
+          <p>그러므로 "부호의 반대쪽으로, 절댓값에 비례하는 만큼" 움직이면 바닥에 다가갈 수 있습니다.
+            이 한 문장을 식으로 옮기면 26차시의 <b>갱신식</b>이 됩니다.</p>
+        </div>
+      </details>
+      <details class="op-fold">
+        <summary>단계 2 · 심화 — 절댓값 손실에서는 왜 이 방법이 막히나요</summary>
+        <div class="bd">
+          <p>탭 ①에서 [절댓값 손실]을 켜면 그래프에 <b>꺾인 점</b>이 생깁니다.
+            꺾인 점에서는 왼쪽에서 다가간 할선의 기울기와 오른쪽에서 다가간 할선의 기울기가 서로 달라, 극한값이 하나로 정해지지 않습니다.</p>
+          <p>미분계수가 없으면 나침반이 없는 것과 같습니다. 실제 인공지능도 이런 함수에는 별도의 기법을 씁니다.
+            우리 교육과정에서 <b>제곱 손실만 다루는 이유</b>가 여기 있습니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>25차시 이어서</strong><br>
+      나침반은 손에 들었습니다. 그런데 정말 <b>발밑만 읽어서</b> 바닥을 찾을 수 있을까요?
+      다음 탭에서 안개로 가려진 지형을 직접 걸어 보며 확인합니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="opSee(2,'op-act8')">③ 안개 속 최솟값 찾기로 →</button></span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ 25차시 · 안개 속 최솟값 찾기 ────────────────────────── -->
+  <div class="tpanel" id="op2">
+
+    <div class="card" data-no-toggle="1">
+      <h3>상황 — 눈을 가린 두 사람의 시합</h3>
+      <p>두 사람이 울퉁불퉁한 땅에서 <b>눈을 가린 채</b> 시합합니다. 규칙은 이렇습니다.</p>
+      <div class="op-scroll"><table class="op-tbl">
+        <tr><th>이동 규칙</th><td style="text-align:left;">① 임의의 지점에서 시작해 <b>열 걸음</b>만 이동할 수 있습니다.<br>
+          ② 걸음을 걷기 전마다 서 있는 지점의 땅을 더듬어 <b>경사</b>를 확인할 수 있습니다.</td></tr>
+        <tr><th>승리 조건</th><td style="text-align:left;">열 걸음을 이동한 뒤 <b>가장 낮은 지점에 더 가까운</b> 사람이 이깁니다.</td></tr>
+      </table></div>
+      <p>어떤 전략이 좋을까요? 이 시합이 바로 인공지능이 손실함수의 최솟값을 찾는 상황입니다.</p>
+      <span class="op-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.162 ‘생각 열기’의 시합 규칙·승리 조건을 그대로 사용</span>
+    </div>
+
+    <div class="card" id="op-act8" data-no-toggle="1">
+      <h3>활동 8 · 「안개 속 탐침」 — 함숫값과 경사만 보고 바닥 찾기</h3>
+      <p>아래 캔버스에는 손실함수의 그래프가 있지만 <b>안개에 가려</b> 보이지 않습니다.
+        캔버스를 누르면 그 지점의 <b>함숫값과 그 자리의 경사</b>만 공개됩니다. 탐침은 적을수록 좋습니다.</p>
+      <div class="op-slide">
+        <label>지형</label>
+        <span class="chips" style="margin:0;">
+          <button class="chip on" type="button" onclick="opFogTerrain(2,this)">골짜기 2개</button>
+          <button class="chip" type="button" onclick="opFogTerrain(3,this)">골짜기 3개</button>
+        </span>
+        <button class="btn" type="button" onclick="opFogNew()">새 지형</button>
+        <span class="op-run" id="op-fog-run"><span class="dot"></span><span id="op-fog-runl">탐침 0회</span></span>
+      </div>
+      <div class="op-fogwrap">
+        <canvas class="op-cv click" id="op-cv-fog" width="640" height="380"
+          aria-label="안개에 가려진 손실함수 그래프. 누른 지점의 함숫값과 경사만 공개됩니다." role="img"></canvas>
+      </div>
+      <div class="op-probes" id="op-fog-probes"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="opFogGuess()">여기가 최솟값!</button>
+        <button class="btn" type="button" onclick="opFogReveal()">안개 걷기 (정답 보기)</button>
+        <button class="btn" type="button" onclick="opFogUndo()">마지막 탐침 지우기</button>
+      </div>
+      <p class="op-hint">[여기가 최솟값!] 은 <b>가장 마지막에 누른 지점</b>을 답으로 제출합니다.</p>
+      <div class="op-fb" id="op-fog-fb"></div>
+      <div class="op-stats" id="op-fog-stats"></div>
+      <span class="op-src">이식 — 「인공지능 수학 수업 구성실」 내장 활동 <b>fog-minimum</b>의 지형 생성(포물면 하부포락)과
+        탐침·판정 방식을 1차원 손실함수로 옮겼습니다.</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 전략을 언어로 만들기</h3>
+      <details class="op-fold" data-lock="fog" data-lockmsg="탐침을 세 번 이상 하고 [여기가 최솟값!]을 한 번 눌러 보면 열립니다.">
+        <summary>단계 1 · 관찰 — 나는 어떤 순서로 눌렀나요?</summary>
+        <div class="bd">
+          <p>대부분 이렇게 합니다. ① 아무 데나 한 번 누른다 → ② <b>경사가 음수면 오른쪽</b>, 양수면 왼쪽을 누른다 →
+            ③ 경사의 절댓값이 작아지는 쪽으로 계속 옮긴다 → ④ 경사가 거의 0이 되면 멈춘다.</p>
+          <p>이 네 문장이 경사하강법의 전부입니다. 여러분은 이미 알고리즘을 발견했습니다.</p>
+        </div>
+      </details>
+      <details class="op-fold" data-lock="fog" data-lockmsg="탐침을 세 번 이상 하고 [여기가 최솟값!]을 한 번 눌러 보면 열립니다.">
+        <summary>단계 2 · 정리 — 골짜기가 두 개일 때 생긴 문제</summary>
+        <div class="bd">
+          <p>[안개 걷기]를 눌러 보면, 자기가 찾은 골짜기가 <b>가장 낮은 골짜기가 아닐</b> 때가 있습니다.
+            경사만 읽는 방법은 <b>지금 있는 골짜기의 바닥</b>까지만 데려다 줍니다.</p>
+          <p>이렇게 부분적으로만 가장 낮은 지점을 <b>극솟값</b>, 전체에서 가장 낮은 지점을 <b>최솟값</b>이라 합니다.
+            다행히 우리가 다루는 y = ax 꼴 추세선의 손실함수는 <b>아래로 볼록한 이차함수</b>여서 골짜기가 하나뿐이고,
+            극솟값과 최솟값이 일치합니다.</p>
+          <p>실제 인공지능의 손실함수는 골짜기가 무수히 많습니다. 그래서 초깃값을 여러 번 바꾸어 시작해 보는 방법을 씁니다
+            — 26차시에서 <b>초깃값</b>을 직접 옮겨 확인합니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" id="op-act9" data-no-toggle="1">
+      <h3>활동 9 · 「등고선 지도 걷기」 — 변수가 두 개라면</h3>
+      <p>추세선이 y = ax + b 라면 조절할 값이 <b>두 개</b>여서 지형이 <b>평면 위의 산과 골짜기</b>가 됩니다.
+        아래 격자는 그 지형의 등고선 지도이고, 여러분은 <b>주위 한 칸</b>만 볼 수 있습니다.</p>
+      <div class="op-slide">
+        <label>시야</label>
+        <span class="chips" style="margin:0;">
+          <button class="chip on" type="button" onclick="opCtrView(3,this)">3 × 3 (벌점 0)</button>
+          <button class="chip" type="button" onclick="opCtrView(5,this)">5 × 5 (벌점 5)</button>
+          <button class="chip" type="button" onclick="opCtrView(7,this)">7 × 7 (벌점 12)</button>
+        </span>
+        <button class="btn" type="button" onclick="opCtrNew()">새 지형</button>
+      </div>
+      <div class="op-duo">
+        <div class="op-pane">
+          <h4>내 주변 지도 (숫자는 높이)</h4>
+          <div class="op-ctr" id="op-ctr-grid" role="img" aria-label="현재 위치 주변의 등고선 격자"></div>
+          <div class="op-pad">
+            <button type="button" onclick="opCtrMove(-1,-1)" aria-label="왼쪽 위로">↖</button>
+            <button type="button" onclick="opCtrMove(0,-1)" aria-label="위로">↑</button>
+            <button type="button" onclick="opCtrMove(1,-1)" aria-label="오른쪽 위로">↗</button>
+            <button type="button" onclick="opCtrMove(-1,0)" aria-label="왼쪽으로">←</button>
+            <button type="button" class="sp">·</button>
+            <button type="button" onclick="opCtrMove(1,0)" aria-label="오른쪽으로">→</button>
+            <button type="button" onclick="opCtrMove(-1,1)" aria-label="왼쪽 아래로">↙</button>
+            <button type="button" onclick="opCtrMove(0,1)" aria-label="아래로">↓</button>
+            <button type="button" onclick="opCtrMove(1,1)" aria-label="오른쪽 아래로">↘</button>
+          </div>
+        </div>
+        <div class="op-pane">
+          <h4>기록</h4>
+          <div class="op-stats" id="op-ctr-stats"></div>
+          <div class="btn-row">
+            <button class="btn pri" type="button" onclick="opCtrDone()">여기가 바닥!</button>
+            <button class="btn" type="button" onclick="opCtrRevealAll()">전체 지도 보기</button>
+          </div>
+          <div class="op-fb" id="op-ctr-fb"></div>
+          <p class="op-hint">색이 짙을수록 높고, 옅을수록 낮습니다. 걸음 수 + 시야 벌점이 점수이며 <b>작을수록</b> 좋습니다.</p>
+        </div>
+      </div>
+      <span class="op-src">이식 — 「인공지능 수학 수업 구성실」 내장 활동 <b>contour-game</b>의 지형 생성(가우스 봉우리 합)·시야 벌점·
+        점수 규칙을 우리 팔레트와 접근성 규격으로 옮겼습니다.</span>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>25차시 마무리 → 26차시</strong><br>
+      전략은 말로 완성했습니다. 이제 그 전략을 <b>수식 한 줄</b>로 적고, 기계가 스스로 반복하게 만듭니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="opSee(3,'op-act10')">④ 경사하강법 (26차시)으로 →</button></span>
+    </div>
+
+    <div class="card" data-no-toggle="1" id="op-chk25-card">
+      <h3>25차시 스스로 확인하기 — 미니 체크 3문항 <span class="op-badge">25차시</span></h3>
+      <p style="margin-bottom:0.8rem;">여기까지가 <b>25차시</b>입니다. 세 문항으로 오늘 배운 것을 바로 확인해 봅시다.
+        (24 · 25 · 26차시 <b>종합 9문항</b>은 STEP 3 에 따로 있습니다.)</p>
+      <div id="op-chk25"></div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ④ 26차시 · 경사하강법 ─────────────────────────────────── -->
+  <div class="tpanel" id="op3">
+
+    <div class="card" data-no-toggle="1" id="op-warm26-card">
+      <h3>26차시 마중 퀴즈 — 내 생각은? <span class="op-badge">26차시</span></h3>
+      <p style="margin-bottom:1rem;">여기서부터 <b>26차시</b>입니다. 정답을 몰라도 좋습니다.
+        <b>지금의 생각</b>을 골라 보세요.</p>
+      <div id="op-warm26"></div>
+      <p style="margin-top:1.1rem;"><b>세 질문의 답은 오늘 활동 11·12에서 여러분이 직접 만들어 냅니다.</b></p>
+    </div>
+
+    <div class="card" id="op-act10" data-no-toggle="1">
+      <h3>활동 10 · 「전략을 식 한 줄로」 — 갱신식 세우고 손으로 한 번 갱신하기</h3>
+      <p>25차시에서 얻은 두 문장을 그대로 식으로 옮깁니다.</p>
+      <div class="op-scroll"><table class="op-tbl">
+        <tr><th>25차시에서 관찰한 것</th><th>식으로 옮기면</th></tr>
+        <tr><td style="text-align:left;">L′(a₀) 의 <b>부호와 반대쪽</b>으로 가야 값이 줄어든다</td><td>a₁ − a₀ 의 부호 = −L′(a₀) 의 부호</td></tr>
+        <tr><td style="text-align:left;">L′(a₀) 의 <b>절댓값이 클수록</b> 크게 움직여야 한다</td><td>|a₁ − a₀| 가 |L′(a₀)| 에 비례</td></tr>
+        <tr class="hi"><td style="text-align:left;">두 조건을 한꺼번에 만족시키면</td>
+          <td><b>a₁ − a₀ = −k·L′(a₀)</b> (k &gt; 0)</td></tr>
+      </table></div>
+      <p class="op-fml"><b>경사하강법의 학습을 위한 식</b> &nbsp; a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>) &nbsp;&nbsp;(k &gt; 0, k 를 <b>학습률</b>이라 합니다)</p>
+
+      <p class="op-sub">확인 문제 — 손으로 한 번 갱신</p>
+      <p>① 손실함수 L(a) = 3a² − 2a + 7 에 대하여 a = 5 에서 학습률이 0.1 인 경사하강법으로 <b>1회 갱신</b>한 a 의 값은?
+        <span class="op-blank"><input id="op-a10-q1" type="text" aria-label="1회 갱신한 a의 값"></span></p>
+      <p>② 손실함수 L(a) = a² + 4a + 5 에 대하여 a = −9 에서 1회 갱신한 a 의 값이 12 일 때, <b>학습률</b> k 는?
+        <span class="op-blank"><input id="op-a10-q2" type="text" aria-label="학습률"></span></p>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="opGA10()">확인</button>
+        <button class="btn" type="button" onclick="opGA10Sol()">풀이 보기</button></div>
+      <div class="op-fb" id="op-a10-fb"></div>
+      <div id="op-a10-sol"></div>
+      <span class="op-src">출처 — 씨마스 「인공지능 수학」 Ⅳ p.167 갱신식 유도, p.168 ‘함께 하기 3’·‘확인하기 4’ 문항을 그대로 사용</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 순서도로 보는 경사하강법</h3>
+      <details class="op-fold" data-lock="g-a10" data-lockmsg="위 두 문항을 모두 맞히면 열립니다.">
+        <summary>단계 1 · 정리 — 네 단계의 반복</summary>
+        <div class="bd">
+          <svg viewBox="0 0 320 300" style="width:100%;max-width:20rem;height:auto;display:block;margin:0.5rem auto;"
+            role="img" aria-label="경사하강법의 순서도">
+            <rect x="100" y="6" width="120" height="26" rx="13" fill="var(--card-h)" stroke="var(--border)"/>
+            <text x="160" y="24" font-size="12" fill="var(--fg)" text-anchor="middle" font-family="monospace">시작</text>
+            <path d="M160 32 V48" stroke="var(--fg)" stroke-width="1.6" marker-end="url(#opArw)"/>
+            <defs><marker id="opArw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" fill="var(--fg)"/></marker></defs>
+            <rect x="52" y="48" width="216" height="34" rx="5" fill="var(--bg)" stroke="var(--border)"/>
+            <text x="160" y="69" font-size="11.5" fill="var(--fg)" text-anchor="middle">1단계 · a 의 초깃값을 임의로 정한다</text>
+            <path d="M160 82 V98" stroke="var(--fg)" stroke-width="1.6" marker-end="url(#opArw)"/>
+            <rect x="52" y="98" width="216" height="34" rx="5" fill="var(--bg)" stroke="var(--border)"/>
+            <text x="160" y="119" font-size="11.5" fill="var(--fg)" text-anchor="middle">2단계 · 미분계수 L′(a) 를 계산한다</text>
+            <path d="M160 132 V146" stroke="var(--fg)" stroke-width="1.6" marker-end="url(#opArw)"/>
+            <path d="M160 146 L262 178 L160 210 L58 178 z" fill="var(--card-h)" stroke="var(--border)"/>
+            <text x="160" y="174" font-size="11" fill="var(--fg)" text-anchor="middle">3단계 · L′(a) 의 값이</text>
+            <text x="160" y="188" font-size="11" fill="var(--fg)" text-anchor="middle">0 에 충분히 가까운가?</text>
+            <text x="272" y="174" font-size="10.5" fill="var(--muted)" text-anchor="middle" font-family="monospace">예</text>
+            <text x="160" y="226" font-size="10.5" fill="var(--muted)" text-anchor="middle" font-family="monospace">아니요</text>
+            <path d="M160 210 V232" stroke="var(--fg)" stroke-width="1.6" marker-end="url(#opArw)"/>
+            <rect x="30" y="232" width="260" height="38" rx="5" fill="var(--bg)" stroke="var(--border)"/>
+            <text x="160" y="248" font-size="11" fill="var(--fg)" text-anchor="middle">4단계 · a 의 값을 a − k·L′(a) 로 갱신한다</text>
+            <text x="160" y="263" font-size="10" fill="var(--muted)" text-anchor="middle">(2단계로 되돌아간다)</text>
+            <path d="M30 251 H14 V115 H52" stroke="var(--fg)" stroke-width="1.6" fill="none" marker-end="url(#opArw)"/>
+            <path d="M262 178 H300 V286 H196" stroke="var(--fg)" stroke-width="1.6" fill="none" marker-end="url(#opArw)"/>
+            <rect x="76" y="274" width="120" height="24" rx="12" fill="var(--card-h)" stroke="var(--green)"/>
+            <text x="136" y="290" font-size="11" fill="var(--green)" text-anchor="middle">끝 · 추세선 완성</text>
+          </svg>
+          <p class="op-hint">▲ 씨마스 「인공지능 수학」 Ⅳ p.168 순서도를 우리 팔레트 SVG로 재구성</p>
+          <p>3단계의 판정 기준으로는 <b>|L′(a)| &lt; 0.001</b> 처럼 부등식을 씁니다.
+            이 기준값을 화면에서는 <b>ε</b>(수렴 기준)이라 부릅니다.</p>
+        </div>
+      </details>
+      <details class="op-fold">
+        <summary>단계 2 · 정의 확인 — 초깃값 · 학습률 · 갱신의 종료</summary>
+        <div class="bd">
+          <p><b>초깃값.</b> 경사하강법을 시작할 때 임의로 정하는 최초의 a 의 값입니다.
+            아래로 볼록한 이차함수에서는 어디서 시작해도 같은 바닥에 도달하지만, 도달까지의 <b>걸음 수</b>는 달라집니다.</p>
+          <p><b>학습률 k.</b> 한 번의 갱신에서 a 를 얼마나 큰 폭으로 움직일지 정하는 양의 상수입니다.
+            k 가 너무 크면 최소 지점을 지나쳐 <b>발산</b>하고, 너무 작으면 도달까지 시간이 오래 걸립니다.
+            학습률처럼 사람이 미리 정해 주는 값을 <b>초매개변수(하이퍼파라미터)</b>라고 합니다.</p>
+          <p><b>갱신의 종료.</b> |L′(a<sub>n</sub>)| &lt; ε 이 되면 최솟값에 충분히 가까워졌다고 판단하여 갱신을 멈춥니다.
+            경사하강법은 최솟값을 <b>정확히</b> 구하는 방법이 아니라 <b>충분히 가까운 값</b>을 찾는 방법입니다.</p>
+          <div class="op-tbshot">
+            <figure><img src="assets/textbook-local/씨마스4_p167_갱신식.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 「인공지능 수학」 Ⅳ p.167 — a 의 값을 갱신하는 식 (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+            <figure><img src="assets/textbook-local/동아4_p147_학습률.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>동아출판 「인공지능 수학」 Ⅳ p.147 — 학습률과 경사하강법 (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+          </div>
+          <span class="op-src">씨마스 「인공지능 수학」 Ⅳ p.167~171 및 동아출판 「인공지능 수학」 Ⅳ p.145~149 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" id="op-act11" data-no-toggle="1">
+      <h3>활동 11 · 「경사하강법 시뮬레이터」 — 데이터에서 갱신까지 한 화면에서</h3>
+      <p>왼쪽은 산점도와 추세선의 <b>자취</b>, 오른쪽은 손실함수 위 <b>이동 경로</b>입니다.
+        [한 단계]는 ① 접선 표시 → ② 부호 판정 → ③ 이동의 세 단계를 차례로 보여 줍니다.</p>
+
+      <p class="op-sub">① 데이터 — 값을 고치거나 아래 버튼으로 갈아 끼웁니다</p>
+      <div class="op-grid" id="op-g-grid"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="opGPreset('three')">씨마스 3점 (교과서 예제)</button>
+        <button class="btn" type="button" onclick="opGPreset('cars')">차량 6점</button>
+        <button class="btn" type="button" onclick="opGPreset('tea')">아이스티 10점</button>
+        <button class="btn" type="button" onclick="opGAddRow()">+ 행 추가</button>
+      </div>
+      <div class="op-fml" id="op-g-fml">손실함수와 미분계수가 여기에 표시됩니다.</div>
+
+      <p class="op-sub">② 학습 설정</p>
+      <div class="op-slide">
+        <label for="op-g-lr">학습률 k</label>
+        <input id="op-g-lr" class="ns" type="range" min="0" max="18" step="1" value="10"
+          oninput="opGLr(this.value)" aria-label="학습률 (로그 눈금)">
+        <span class="op-val" id="op-g-lr-val">k = 0.1</span>
+        <span class="op-hint" id="op-g-lr-hint"></span>
+      </div>
+      <div class="op-slide">
+        <label for="op-g-a0">초깃값 a₀</label>
+        <input id="op-g-a0" class="ns" type="range" min="-200" max="400" step="1" value="0"
+          oninput="opGA0(this.value)" aria-label="초깃값">
+        <span class="op-val" id="op-g-a0-val">a₀ = 0.00</span>
+        <label for="op-g-eps" style="margin-left:0.5rem;">수렴 기준 ε</label>
+        <select class="op-sel" id="op-g-eps" onchange="opGReset()" aria-label="수렴 기준">
+          <option value="0.01">0.01</option>
+          <option value="0.001" selected>0.001</option>
+          <option value="0.0001">0.0001</option>
+        </select>
+        <label><input type="checkbox" id="op-g-early" checked onchange="opGReset()"> 수렴 시 조기 종료</label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="opGReset()">↺ 초기화</button>
+        <button class="btn pri" type="button" onclick="opGStep()">한 단계</button>
+        <button class="btn pri" type="button" onclick="opGAuto()" id="op-g-autob">▶ 자동 실행 (30회)</button>
+        <button class="btn" type="button" onclick="opGOpt()">최적값 보기</button>
+        <span class="op-run" id="op-g-run"><span class="dot"></span><span id="op-g-runl">준비됨</span></span>
+      </div>
+
+      <div class="op-steps3" id="op-g-s3">
+        <div class="op-s3" id="op-g-s3a"><span class="t">1단계 · 접선</span><span class="b">—</span></div>
+        <div class="op-s3" id="op-g-s3b"><span class="t">2단계 · 부호 판정</span><span class="b">—</span></div>
+        <div class="op-s3" id="op-g-s3c"><span class="t">3단계 · 이동</span><span class="b">—</span></div>
+      </div>
+
+      <div class="op-duo">
+        <div class="op-pane">
+          <h4>③ 산점도와 추세선의 자취</h4>
+          <canvas class="op-cv" id="op-cv-gsc" width="520" height="380"
+            aria-label="산점도와 갱신에 따라 회전하는 추세선의 자취" role="img"></canvas>
+          <span class="cap">옅은 직선 = 지나온 추세선 · 붉은 직선 = 현재 · 초록 직선 = 최적</span>
+        </div>
+        <div class="op-pane">
+          <h4>④ 손실함수와 이동 경로</h4>
+          <canvas class="op-cv" id="op-cv-gls" width="520" height="380"
+            aria-label="손실함수 위에서 점이 최솟값으로 이동한 경로" role="img"></canvas>
+          <span class="cap">붉은 꺾은선 = (aₙ, L(aₙ)) 의 이동 경로</span>
+        </div>
+      </div>
+
+      <div class="op-stats" id="op-g-stats"></div>
+      <div class="op-warn" id="op-g-warn"></div>
+      <div class="op-ok" id="op-g-ok"></div>
+
+      <p class="op-sub">⑤ a 값의 자취 — 수직선 위에 a₀, a₁, a₂, … 를 찍습니다</p>
+      <div class="op-trace"><canvas class="op-line" id="op-cv-gline" width="640" height="120"
+        aria-label="수직선 위에 표시한 a 값의 자취" role="img"></canvas></div>
+
+      <p class="op-sub">⑥ 갱신 기록</p>
+      <div class="op-hist" id="op-g-hist"></div>
+      <span class="op-src">이식 — 「인공지능 수학 수업 구성실」 내장 활동 <b>gd-visual-ax</b>(갱신식·학습률·ε·조기 종료·재생)의
+        구조를 우리 뷰로 옮겼습니다. 원본의 SVG 차트는 canvas 로, 폰트·색은 우리 토큰으로 대체했습니다.
+        기본 데이터·수치는 씨마스 「인공지능 수학」 Ⅳ p.169 예제와 일치시켰습니다.</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 교과서 표와 맞춰 보기</h3>
+      <details class="op-fold" data-lock="g-run" data-lockmsg="[한 단계] 또는 [자동 실행]을 한 번 눌러 보면 열립니다.">
+        <summary>단계 1 · 확인 — 씨마스 p.169 의 10회 갱신 표</summary>
+        <div class="bd">
+          <p>세 점 (1, 1), (2, 1), (2, 3) 에 대하여 L(a) = 3a² − 6a + 11/3, L′(a) = 6a − 6 이고,
+            a₀ = 0, k = 0.1, 종료 기준 |L′(a)| &lt; 0.001 로 두면 다음과 같습니다.</p>
+          <div class="op-scroll"><table class="op-tbl">
+            <tr><th>갱신 횟수</th><th>a 의 값</th><th>L′(a) 의 값</th></tr>
+            <tr><td>초깃값 a₀</td><td class="num">0</td><td class="num">−6</td></tr>
+            <tr><td>1회 a₁</td><td class="num">0.6</td><td class="num">−2.4</td></tr>
+            <tr><td>2회 a₂</td><td class="num">0.84</td><td class="num">−0.96</td></tr>
+            <tr><td>3회 a₃</td><td class="num">0.936</td><td class="num">−0.384</td></tr>
+            <tr><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+            <tr><td>9회 a₉</td><td class="num">0.999737856</td><td class="num">−0.001572864</td></tr>
+            <tr class="done"><td>10회 a₁₀</td><td class="num">0.9998951424</td><td class="num">−0.0006291456</td></tr>
+          </table></div>
+          <p>|L′(a₁₀)| &lt; 0.001 이므로 10회에서 갱신을 종료하며, 최적화된 추세선은
+            f(x) = 0.9998951424x 입니다. 시뮬레이터의 기록표와 <b>같은 수가 나오는지</b> 확인해 보세요.</p>
+          <span class="op-src">씨마스 「인공지능 수학」 Ⅳ p.169 표를 그대로 옮겨 적었습니다.</span>
+        </div>
+      </details>
+      <details class="op-fold" data-lock="g-run" data-lockmsg="[한 단계] 또는 [자동 실행]을 한 번 눌러 보면 열립니다.">
+        <summary>단계 2 · 관찰 — 갱신을 거듭할수록 무엇이 0 에 가까워지나요?</summary>
+        <div class="bd">
+          <p>a<sub>n</sub> 은 1 에 가까워지고, L′(a<sub>n</sub>) 은 0 에 가까워집니다.
+            둘은 같은 말입니다 — <b>기울기가 0 인 곳이 꼭짓점</b>이기 때문입니다.</p>
+          <p>또 최솟값에 가까워질수록 한 걸음의 크기가 저절로 작아집니다.
+            갱신량이 <b>k·L′(a)</b> 이고 L′(a) 가 작아지기 때문입니다. 목표에 가까울수록 조심스럽게 걷는 셈입니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" id="op-act12" data-no-toggle="1">
+      <h3>활동 12 · 「학습률 실험」 — 예상을 먼저 고르세요</h3>
+      <p>같은 데이터·같은 초깃값에서 <b>학습률 k 만</b> 바꾸어 30회씩 돌려 봅니다.
+        실행하기 전에, 지금의 생각을 걸어 두세요.</p>
+      <p class="op-sub">예상 — 학습률 k 를 키우면?</p>
+      <div class="chips" id="op-a12-guess">
+        <button class="chip" type="button" onclick="opA12Guess(0,this)">언제나 더 빨리 최솟값에 도착한다</button>
+        <button class="chip" type="button" onclick="opA12Guess(1,this)">어느 지점까지는 빨라지고, 넘어서면 오히려 멀어진다</button>
+        <button class="chip" type="button" onclick="opA12Guess(2,this)">속도는 그대로이고 걸음 수만 늘어난다</button>
+      </div>
+      <p class="status" id="op-a12-gmsg">예상을 고르면 아래 [실험 실행] 버튼이 열립니다.</p>
+
+      <div class="op-veil" id="op-a12-panel">
+        <div class="btn-row">
+          <button class="btn pri" type="button" onclick="opGExp()">실험 실행</button>
+          <button class="btn" type="button" onclick="opGExpApply()">가장 빠른 학습률 적용</button>
+        </div>
+        <div class="op-scroll"><table class="op-tbl" id="op-exp-tbl"></table></div>
+        <div class="op-fb" id="op-exp-fb"></div>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>왜 그런가 — 실험한 뒤에 열립니다</h3>
+      <details class="op-fold" data-lock="g-exp" data-lockmsg="위 활동 12에서 [실험 실행]을 한 번 눌러 표를 채우면 열립니다.">
+        <summary>단계 3 · 정의 확인 — 한 줄 계산 |1 − 2Ak|</summary>
+        <div class="bd">
+          <p class="op-fml">L(a) = A·a² + B·a + C 이면 L′(a) = 2A·a + B 이므로
+            a<sub>n+1</sub> − α = <b>(1 − 2Ak)</b>(a<sub>n</sub> − α) &nbsp;(α 는 꼭짓점의 a좌표)</p>
+          <p>즉 최솟값까지의 거리가 매 걸음 <b>|1 − 2Ak| 배</b>가 됩니다.
+            이 값이 1 보다 작으면 수렴, 1 이면 영원히 진동, 1 보다 크면 발산합니다. 음수이면 좌우를 번갈아 뛰는 <b>지그재그</b>가 됩니다.</p>
+          <div class="op-scroll"><table class="op-tbl">
+            <tr><th>1 − 2Ak 의 값</th><th>a 의 움직임</th></tr>
+            <tr><td>0 &lt; 1 − 2Ak &lt; 1</td><td>한 방향으로 곧게 수렴</td></tr>
+            <tr><td>1 − 2Ak = 0</td><td>단 한 번에 꼭짓점 도달 (k = 1/(2A))</td></tr>
+            <tr><td>−1 &lt; 1 − 2Ak &lt; 0</td><td>좌우를 번갈아 뛰며 수렴 (지그재그)</td></tr>
+            <tr><td>1 − 2Ak = −1</td><td>같은 두 점을 영원히 왕복 (진동, k = 1/A)</td></tr>
+            <tr class="bad"><td>|1 − 2Ak| &gt; 1</td><td>점점 멀어짐 (발산)</td></tr>
+          </table></div>
+          <p class="op-hint">이 표가 곧 27차시의 답입니다. 아이스티 데이터는 A = 820 이므로 발산하지 않는 학습률의 상한이
+            1/A ≒ 0.00122 에 불과합니다. 그래서 27차시 실습에서 k = 0.0005 를 쓰고, k = 0.1 은 곧바로 폭발합니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 실험을 정리하기</h3>
+      <details class="op-fold" data-lock="g-exp" data-lockmsg="[실험 실행]을 한 번 눌러 보면 열립니다.">
+        <summary>단계 1 · 정리 — 학습률을 고르는 감각</summary>
+        <div class="bd">
+          <p>학습률은 크면 빠르지만 위험하고, 작으면 안전하지만 느립니다.
+            실무에서는 <b>발산하지 않는 가장 큰 값의 절반 정도</b>에서 시작해 조금씩 조정합니다.</p>
+          <p>또 데이터의 크기(x 의 규모)가 커지면 A = (Σx²)/n 도 커지므로 <b>학습률을 그만큼 줄여야</b> 합니다.
+            27차시에서 기온 x 가 20~35 라는 큰 수여서 k 를 0.0005 까지 낮추는 이유가 바로 이것입니다.</p>
+          <span class="op-src">연수교재 합본 p.292 ‘생각해 보기 3’·p.296 ‘학습률과 반복’ 및 p.298 ④ 관찰 기록을 재구성</span>
+        </div>
+      </details>
+      <details class="op-fold">
+        <summary>단계 2 · 심화 — 데이터를 전부 더하는가 (배치 · 미니배치)</summary>
+        <div class="bd">
+          <p>우리가 쓴 L′(a) 는 <b>모든 데이터</b>의 오차를 더해 만든 값입니다. 이를 <b>배치 경사하강법</b>이라 합니다.
+            기울기가 정확하고 수학적으로 깔끔해 교재에서 이 방식으로 설명합니다.</p>
+          <p>그러나 데이터가 백만 개라면 한 번의 갱신마다 백만 번의 연산이 필요합니다.
+            그래서 실무에서는 32·64·128 개 정도를 무작위로 뽑아 기울기를 어림하는 <b>미니배치</b> 방식을 씁니다.
+            표본조사와 같은 논리입니다.</p>
+          <span class="op-src">연수교재 합본 p.299 교사용 읽기자료 「경사하강법에서 데이터를 정말 다 더하는가?」 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1" id="op-chk26-card">
+      <h3>26차시 스스로 확인하기 — 미니 체크 3문항 <span class="op-badge">26차시</span></h3>
+      <p style="margin-bottom:0.8rem;">여기까지가 <b>26차시</b>입니다. 세 문항으로 오늘 배운 것을 바로 확인해 봅시다.</p>
+      <div id="op-chk26"></div>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="op-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄 — 목표 · 나침반 · 걸음걸이</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        [24차시] 오차를 그냥 더하면 <b>상쇄</b>되어 비교할 수 없으므로 제곱하여 평균을 냅니다.
+        그렇게 만든 <b>L(a) 는 a 에 대한 이차함수</b>이고, 그 꼭짓점이 최적 추세선의 기울기입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        [25차시] 할선의 기울기 { f(t+h) − f(t) } ÷ h 에서 <b>h → 0</b> 의 극한이 접선의 기울기, 곧 <b>미분계수 f′(t)</b> 이며,
+        그 <b>부호가 내려갈 방향</b>, <b>절댓값이 경사의 급함</b>을 알려 줍니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        [26차시] <b>a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>)</b> 을 반복하면 최솟값에 다가갑니다.
+        학습률 k 는 사람이 정하는 값이고, 너무 크면 <b>발산</b>합니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문 1. ‘가장 좋은 직선’이라는 말을 수학적으로 어떻게 정의할 수 있을까?</b></p>
+    <textarea class="op-ta" id="op-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="op-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>각 점의 오차를 제곱해 평균한 값 L(a) 를 정하고, <b>그 값이 가장 작아지는 a</b> 를 가진 직선을 가장 좋은 직선이라 정의합니다.
+          이렇게 정의하면 '좋다'가 눈대중이 아니라 하나의 수의 크기 비교가 되므로, 사람과 기계가 같은 판단을 할 수 있습니다.</p>
+      </div>
+    </details>
+
+    <p style="margin-top:1rem;"><b>핵심 질문 2. 안개 속에서 골짜기의 바닥을 찾으려면 발밑의 무엇을 읽어야 하는가?</b></p>
+    <textarea class="op-ta" id="op-ans2" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="op-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>발밑의 <b>경사</b>, 곧 그 지점에서의 미분계수를 읽습니다. 부호가 음수면 오른쪽, 양수면 왼쪽이 내려가는 쪽이고,
+          절댓값이 크면 바닥이 멀다는 뜻이므로 크게 움직여도 됩니다. 전체 지형을 보지 않고도 한 걸음의 방향과 크기를 정할 수 있습니다.</p>
+      </div>
+    </details>
+
+    <p style="margin-top:1rem;"><b>핵심 질문 3. 한 걸음의 크기(학습률)는 왜 학습의 성패를 가르는가?</b></p>
+    <textarea class="op-ta" id="op-ans3" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="op-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>최솟값까지의 거리가 매 걸음 |1 − 2Ak| 배가 되므로, k 가 너무 크면 이 값이 1 을 넘어 점점 멀어지는 <b>발산</b>이 일어납니다.
+          반대로 너무 작으면 값이 1 에 가까워 걸음이 거의 줄지 않아 학습이 끝나지 않습니다.
+          그래서 학습률은 데이터의 규모(A)에 맞추어 사람이 골라 주어야 하는 <b>초매개변수</b>입니다.</p>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="opAnsSave()">내 답 저장</button></div>
+    <p class="status" id="op-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 24 · 25 · 26차시 종합 9문항</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="op-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 27차시 · 종합 실습: 아이스티 판매 예측 AI</strong><br>
+    여름 매점의 아이스티가 얼마나 팔릴지 예측하는 AI 를 <b>직접 만들어 봅니다</b>.
+    24차시의 MSE 를 스프레드시트 수식으로 조립하고, 26차시의 갱신식을 셀에 연결해
+    a 가 스스로 2 → 2.427 로 자라나는 과정을 표로 기록합니다.
+    학습률 0.1 을 넣으면 오늘 배운 <b>발산</b>이 실제로 눈앞에서 일어납니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('gdsheet')">27차시로 이동 →</button>
+      <button class="btn" type="button" onclick="aimGoLesson('trend','22차시')">돌아보기 · 22~23차시 추세선</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 반 한 걸음 기록장」 — 내 데이터로 만든 최적 추세선</h3>
+    <p class="sub">교실 밖의 두 변량을 직접 재고, 손으로 손실함수를 세워 경사하강법 두 걸음을 걸어 봅니다.
+      계산의 정확성만큼 <b>왜 그 방향으로 움직였는지 설명할 수 있는가</b>가 이 과제의 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 원점을 지나는 관계일 만한 두 변량을 골라 <b>측정값 5쌍 이상</b>을 모읍니다
+        (예: 계단 수 x 와 오르는 시간 y, 컵에 담은 물의 양 x 와 무게 y, 걸음 수 x 와 이동 거리 y).<br>
+        ② 산점도를 손으로 그리고, 눈대중으로 기울기 a 를 두 개 골라 각각의 <b>오차·오차의 제곱</b>을 표로 계산합니다.<br>
+        ③ 손실함수 L(a) 를 <b>ax² + bx + c 꼴로 전개</b>한 뒤 완전제곱식으로 고쳐 최적 a 와 최솟값을 구합니다.<br>
+        ④ L′(a) 를 구하고, 초깃값 a₀ 를 정해 <b>경사하강법 2회 갱신</b>을 손으로 계산합니다(학습률은 스스로 정하고 근거를 씁니다).<br>
+        ⑤ 수직선을 하나 그려 a₀, a₁, a₂ 와 최적 a 를 <b>같은 수직선 위에</b> 표시합니다.<br>
+        ⑥ 웹 도구(<b>optim</b> 탭 ④)에 같은 데이터를 입력해 손계산과 <b>값이 일치하는지</b> 확인하고, 화면을 캡처합니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 측정 표와 산점도 1장(A4, 손글씨 가능)<br>
+        · L(a) 전개·완전제곱 과정과 최적 a, 최솟값<br>
+        · 경사하강법 2회 갱신 계산과 a₀·a₁·a₂ 를 표시한 <b>수직선</b><br>
+        · "내가 정한 학습률은 ___ 이고, 그 이유는 ___ 이다" 를 포함한 결론 3~5문장<br>
+        · (선택) 학습률을 10배로 키웠을 때 무슨 일이 일어났는지 관찰 기록</dd>
+      <dt>평가 관점</dt>
+      <dd>· 오차를 제곱하여 더하는 이유를 <b>상쇄</b>와 <b>큰 오차의 벌점</b>으로 설명했는가 <b>[12인수04-03]</b><br>
+        · 손실함수를 이차함수로 나타내고 최솟값에서 최적 추세선을 찾았는가 <b>[12인수04-03]</b><br>
+        · 갱신식 a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>) 을 정확히 적용하고 <b>부호의 의미</b>를 설명했는가 <b>[12인수04-04]</b><br>
+        · 학습률 선택의 근거를 데이터의 규모와 발산 위험에 비추어 제시했는가 <b>[12인수04-04]</b></dd>
+    </dl>
+    <details class="op-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>최종 예측값의 정확도보다 <b>오차를 줄여 가는 논리적 과정</b>을 중점적으로 평가합니다.
+          복잡한 미분 계산 능력보다, 공학 도구를 통해 최적화의 원리를 직관적으로 이해하고 해석하는 능력을 봅니다.</p>
+        <p>미분계수는 <b>직관적으로</b> 이해하게 하는 것이 성취기준 해설의 요구입니다.
+          극한의 엄밀한 정의나 미분법 공식의 암기를 평가 대상으로 삼지 않습니다.</p>
+        <span class="op-src">연수교재 합본 p.283 ‘평가 유의 사항’ 및 성취기준 해설 [12인수04-04] 서술을 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 굴려 보고, 더 확인하기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="op-refs">
+      <a class="op-ref" href="https://mathlove22.github.io/gradient-descent-sim/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 도구</span>⛷️</span>
+        <span class="bd"><span class="tt">경사하강법 시각화 (gradient-descent-sim)</span>
+          <span class="ds">연수교재가 안내하는 원본 도구입니다. 기본 데이터가 아이스티 학습지 예제와 같아 27차시와 곧바로 이어집니다.
+            미분 계산의 데이터별 기여도 표를 볼 수 있습니다.</span></span>
+      </a>
+      <a class="op-ref" href="https://www.geogebra.org/graphing" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 도구</span>📐</span>
+        <span class="bd"><span class="tt">지오지브라 그래핑 계산기</span>
+          <span class="ds">L(a) = (88a² − 330a + 319)/6 을 직접 입력해 꼭짓점을 확인하고, a 를 슬라이더로 만들어
+            추세선과 손실함수를 나란히 움직여 볼 수 있습니다(씨마스 교과서가 안내하는 도구).</span></span>
+      </a>
+      <a class="op-ref" href="https://www.desmos.com/calculator" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 도구</span>✏️</span>
+        <span class="bd"><span class="tt">Desmos 그래프 계산기</span>
+          <span class="ds">할선과 접선을 직접 만들어 h 를 슬라이더로 줄여 보기에 좋습니다.
+            y = x² − 4x + 5 와 두 점 (1, f(1)), (1+h, f(1+h)) 를 지나는 직선을 그려 보세요.</span></span>
+      </a>
+      <a class="op-ref" href="https://ko.wikipedia.org/wiki/%EA%B2%BD%EC%82%AC_%ED%95%98%EA%B0%95%EB%B2%95" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>📖</span>
+        <span class="bd"><span class="tt">경사 하강법 (위키백과, 한국어)</span>
+          <span class="ds">학습률·수렴 조건·확률적 경사하강법(SGD)까지 한국어로 정리되어 있습니다.
+            심화를 원하는 학생에게 안내합니다.</span></span>
+      </a>
+      <a class="op-ref" href="https://en.wikipedia.org/wiki/Mean_squared_error" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>Σ</span>
+        <span class="bd"><span class="tt">Mean squared error (위키백과, 영문)</span>
+          <span class="ds">평균제곱오차의 정의와 성질, 그리고 절댓값 오차(MAE)와의 차이를 정리한 문서입니다.
+            활동 4의 이상치 실험을 이론으로 확인할 수 있습니다.</span></span>
+      </a>
+      <a class="op-ref" href="https://ko.wikipedia.org/wiki/%EC%B5%9C%EC%86%8C%EC%A0%9C%EA%B3%B1%EB%B2%95" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>📉</span>
+        <span class="bd"><span class="tt">최소제곱법 (위키백과, 한국어)</span>
+          <span class="ds">우리가 완전제곱식으로 구한 최적 a 는 최소제곱법의 가장 단순한 경우입니다.
+            y = ax + b 로 확장하면 어떤 식이 되는지 확인해 보세요(27차시 심화 탭과 연결).</span></span>
+      </a>
+      <button class="op-ref op-refadd" type="button" onclick="opRefAdd()">
+        <span class="th">➕</span>
+        <span class="bd"><span class="tt">＋ 자료 추가</span>
+          <span class="ds">선생님이 URL과 제목을 입력해 자료를 걸 수 있습니다. 이 기기에만 저장됩니다.</span></span>
+      </button>
+    </div>
+    <p class="status" id="op-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>24 · 25 · 26차시 학습지 — 손으로 계산하며 정리하기</h3>
+    <p>웹에서는 관찰과 조작을, 지면에서는 <b>전개와 손계산</b>을 합니다.
+      특히 L(a) 의 완전제곱 전개와 경사하강법 손 갱신은 웹으로 대체할 수 없는 활동이므로 반드시 지면으로 진행합니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet24')">🖨 24차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet25')">🖨 25차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet26')">🖨 26차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <a class="ws-btn sec" href="https://docs.google.com/spreadsheets/d/1kp677h_2PkgYUd8bLjTSt05YnddSIJ4RezhYq5q0t4U/copy"
+         target="_blank" rel="noopener">📊 구글시트 실습 자료 사본 만들기 <span class="sz">27차시 예습용</span></a>
+    </div>
+    <p class="op-hint" style="margin-top:0.6rem;">
+      <b>24차시</b> — 두 추세선의 오차 표, L(a) 전개와 완전제곱, 이상치 실험 기록.<br>
+      <b>25차시</b> — 할선의 기울기 표(h = 1, 0.5, 0.1, 0.01), 미분계수 부호 판정, 안개 탐침 기록.<br>
+      <b>26차시</b> — 갱신식 손계산 2회, 학습률 실험표, a 의 자취 수직선.<br>
+      4단원 실물 활동지는 27차시 <b>구글시트 실습 학습지</b>가 대표 자료입니다(27차시 뷰에서 안내).</p>
+    <div id="op-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 · 24차시 ═════ -->
+  <div class="ws-sheet" id="op-sheet24" aria-hidden="true">
+    <div class="ws-h"><h2>24차시 학습지 — 손실함수 L(a)로 최적 추세선 찾기</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+    <p class="note">학습 목표 ① 오차를 제곱하여 더하는 이유를 설명하고 L(a)를 이차함수로 나타낼 수 있다. [12인수04-03]<br>
+      학습 목표 ② 손실함수의 그래프에서 최솟값을 찾아 최적화된 추세선을 구할 수 있다. [12인수04-03]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:56%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>오차를 그냥 더해 평균을 내면 어떤 문제가 생길까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>오차를 제곱하는 것과 절댓값을 씌우는 것의 차이는?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 1 — 오차의 평균이 같은 두 추세선</h3>
+    <p class="note">데이터 (2, 3) (3, 4) (3, 8) (4, 7) (5, 9) (5, 10) / f₁(x) = 2x, f₂(x) = −x + 11</p>
+    <table>
+      <tr><th>x</th><th>y</th><th>f₁ = 2x</th><th>y − f₁</th><th>(y − f₁)²</th><th>f₂ = −x+11</th><th>y − f₂</th><th>(y − f₂)²</th></tr>
+      <tr><td>2</td><td>3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td>4</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td>8</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>4</td><td>7</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>5</td><td>9</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>5</td><td>10</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th colspan="3">평균</th><td class="blank"></td><td class="blank"></td><th></th><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>오차의 평균으로는 두 추세선을 비교할 수 없다. 그 이유는</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 활동 2·3 — L(a) 를 전개하고 완전제곱식으로 고치기</h3>
+    <p>L(a) = { (3 − 2a)² + (4 − 3a)² + (8 − 3a)² + (7 − 4a)² + (9 − 5a)² + (10 − 5a)² } ÷ 6</p>
+    <div class="rule lg"></div>
+    <p>= ( ______ a² − ______ a + ______ ) ÷ 6 = ______ ( a − ______ )² + ______</p>
+    <p>따라서 최적 추세선은 f(x) = ______ x 이고, 손실함수의 최솟값은 ______ 이다.</p>
+
+    <h3>④ 활동 4 — 이상치 실험</h3>
+    <table>
+      <tr><th style="width:32%;">데이터</th><th>제곱 손실의 최적 a</th><th>절댓값 손실의 최적 a</th></tr>
+      <tr><td>원래 6점</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>(5, 10) → (5, 30) 으로 바꿈</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>더 크게 흔들린 쪽은 __________ 이다. 그 이유는</p>
+    <div class="rule sm"></div>
+
+    <h3>⑤ 핵심 질문</h3>
+    <p><b>‘가장 좋은 직선’이라는 말을 수학적으로 어떻게 정의할 수 있을까?</b></p>
+    <div class="rule sm"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 · 25차시 ═════ -->
+  <div class="ws-sheet" id="op-sheet25" aria-hidden="true">
+    <div class="ws-h"><h2>25차시 학습지 — 내려갈 방향: 극한과 미분계수</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+    <p class="note">학습 목표 ① 할선이 접선에 가까워지는 과정을 관찰하여 함수의 극한과 미분계수의 의미를 설명할 수 있다. [12인수04-04]<br>
+      학습 목표 ② 미분계수의 부호를 이용하여 손실함수의 값이 줄어드는 방향을 판단할 수 있다. [12인수04-04]</p>
+
+    <h3>① 활동 5 — 할선의 기울기가 다가가는 값</h3>
+    <p class="note">f(x) = x² − 4x + 5, P(1, f(1)) 고정. 할선의 기울기 = { f(1+h) − f(1) } ÷ h</p>
+    <table>
+      <tr><th>h</th><td>1</td><td>0.5</td><td>0.1</td><td>0.01</td><td>0.001</td></tr>
+      <tr><th>f(1+h)</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>할선의 기울기</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>h 를 0 에 가깝게 하면 할선의 기울기는 ______ 에 가까워진다. 곧 f′(1) = ______ 이다.</p>
+    <p>식으로 확인 : { f(1+h) − f(1) } ÷ h = ______________________ → h → 0 일 때 ______</p>
+    <div class="rule sm"></div>
+
+    <h3>② 활동 6 — 미분계수의 부호와 내려갈 방향</h3>
+    <p class="note">f(x) = (x − 3)² + 1, f′(t) = 2t − 6</p>
+    <table>
+      <tr><th>점</th><th>x = 1 (A)</th><th>x = 2 (B)</th><th>x = 3 (C)</th><th>x = 4 (D)</th><th>x = 5 (E)</th></tr>
+      <tr><th>f′(x)</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>내려갈 방향 (← / → / 바닥)</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>③ 활동 7 — 24차시 손실함수에 적용</h3>
+    <p>L(a) = (88a² − 330a + 319) ÷ 6 이므로 L′(a) = ______________</p>
+    <table>
+      <tr><th>a</th><th>0.6</th><th>1</th><th>15/8</th><th>3</th></tr>
+      <tr><th>L′(a)</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>a 를 늘려야 / 줄여야</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>④ 활동 8 — 안개 탐침 기록</h3>
+    <table>
+      <tr><th>탐침 순서</th><th>a</th><th>L(a)</th><th>L′(a) 의 부호</th><th>다음에 어디를 누를까</th></tr>
+      <tr><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>4</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>내가 쓴 전략을 네 문장으로 적어 보자.</p>
+    <div class="rule lg"></div>
+
+    <h3>⑤ 핵심 질문</h3>
+    <p><b>안개 속에서 골짜기의 바닥을 찾으려면 발밑의 무엇을 읽어야 하는가?</b></p>
+    <div class="rule sm"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 · 26차시 ═════ -->
+  <div class="ws-sheet" id="op-sheet26" aria-hidden="true">
+    <div class="ws-h"><h2>26차시 학습지 — 경사하강법: 학습률과 수렴·발산</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+    <p class="note">학습 목표 ① 갱신 규칙 aₙ₊₁ = aₙ − k·L′(aₙ) 에 따라 값을 반복 갱신하는 과정을 설명할 수 있다. [12인수04-04]<br>
+      학습 목표 ② 초깃값과 학습률에 따라 수렴·진동·발산이 달라지는 현상을 관찰하고 그 이유를 설명할 수 있다. [12인수04-04]</p>
+
+    <h3>① 활동 10 — 갱신식 세우고 1회 갱신</h3>
+    <p>① L(a) = 3a² − 2a + 7, a₀ = 5, k = 0.1 → L′(a) = ____________, a₁ = ______________ = ______</p>
+    <p>② L(a) = a² + 4a + 5, a₀ = −9, a₁ = 12 일 때 학습률 k = ______ (풀이 과정)</p>
+    <div class="rule sm"></div>
+
+    <h3>② 활동 11 — 세 점 (1, 1), (2, 1), (2, 3) 에 대한 4회 갱신 (a₀ = 0, k = 0.1)</h3>
+    <p class="note">L(a) = 3a² − 6a + 11/3, L′(a) = 6a − 6</p>
+    <table>
+      <tr><th>n</th><th>aₙ</th><th>L′(aₙ)</th><th>−k·L′(aₙ)</th><th>aₙ₊₁</th></tr>
+      <tr><td>0</td><td>0</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">▼ 수직선 위에 a₀, a₁, a₂, a₃ 와 최적 a 를 표시하고, 걸음의 크기가 어떻게 변하는지 화살표로 나타내세요.</p>
+    <div class="rule lg"></div>
+
+    <h3>③ 활동 12 — 학습률 실험</h3>
+    <table>
+      <tr><th>학습률 k</th><th>1 − 2Ak (A = 3)</th><th>움직임 (수렴 / 지그재그 / 진동 / 발산)</th><th>30회 뒤의 a</th></tr>
+      <tr><td>0.05</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0.1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1/6</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0.3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1/3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0.4</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>아이스티 데이터(A = 820)에서 발산하지 않는 학습률의 상한은 대략 ______ 이다. 그 근거는</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 형성평가 (오답만 다시 풀기)</h3>
+    <table>
+      <tr><th style="width:16%;">문항</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+      <tr><th>내 답</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>O / X</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑤ 핵심 질문</h3>
+    <p><b>한 걸음의 크기(학습률)는 왜 학습의 성패를 가르는가?</b></p>
+    <div class="rule sm"></div>
+  </div>
+</div>

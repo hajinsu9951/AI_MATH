@@ -8,7 +8,9 @@
 
   /* 표제부 · 워터마크 */
   #v-logic .lg-hd{position:relative;overflow:hidden;padding-right:0.5rem;}
-  #v-logic .lg-wm{position:absolute;right:-0.5rem;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.1;pointer-events:none;}
+  /* right 를 음수로 두면 표제부 밖으로 0.5rem(=10px) 삐져나가 scrollWidth 를 넓히고,
+     .lg-hd 가 overflow:hidden 이라 그만큼 잘립니다(구동 QA D8). 안쪽 오른쪽 끝에 맞춥니다. */
+  #v-logic .lg-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.1;pointer-events:none;}
   #v-logic .lg-hd .desc{position:relative;}
   @media (max-width:700px){#v-logic .lg-wm{display:none;}}
 
@@ -440,7 +442,9 @@
     <div class="card lg-read">
       <h3>더 알아보기 — 진리표 한 줄이 부른 겨울</h3>
       <p>1957년, 미국의 신경생물학자 프랭크 로젠블랫은 사람 두뇌의 뉴런이 작동하는 원리를 본떠
-        <b>단층 퍼셉트론</b>을 제안하였습니다. 여러 개의 입력을 받아 하나의 출력을 내보내는 이 장치는
+        <b>단층 퍼셉트론</b>을 제안하였습니다.
+        <span class="mi">(연도는 교과서마다 착안 시점인 1957년 또는 논문 발표 시점인 1958년으로 달리 표기합니다. 두 표기 모두 같은 사건을 가리킵니다.)</span>
+        여러 개의 입력을 받아 하나의 출력을 내보내는 이 장치는
         논리곱과 논리합에 해당하는 논리 회로 연산을 실제로 수행해 냈고,
         사람들은 기계가 사람처럼 논리적으로 사고할 날이 머지않았다고 기대하였습니다.</p>
       <p style="margin-top:0.6rem;">그러나 1969년, 매사추세츠 공과 대학의 마빈 민스키와 시모어 페퍼트는 저서

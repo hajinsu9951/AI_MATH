@@ -1,0 +1,1030 @@
+<!-- ═══════════ GDSHEET (27차시: 종합 실습 — 아이스티 판매 예측 AI) ═══════════
+     · 파일 위치: views/gdsheet.html  (신규)
+     · 전역 접두사 gs · 뷰 루트 id #v-gdsheet · 모든 스타일 규칙은 #v-gdsheet 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     · 이식 근거: 「인공지능 수학 수업 구성실」 내장 앱 gd-visual-axb(탭 ④ 두 매개변수 손실 곡면·등고선)
+     · 데이터·수식 근거: 연수교재 합본 p.289~292 (아이스티 10일 학습지·구글시트 TIPs)
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-gdsheet">
+  <style>
+  /* gdsheet 뷰 전용 스타일 (#v-gdsheet 스코프 한정 — 전역 누수 금지) */
+  #v-gdsheet .gs-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-gdsheet .gs-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-gdsheet .gs-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-gdsheet .gs-hero{position:relative;}
+  #v-gdsheet .gs-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-gdsheet .gs-hero>*:not(.gs-wm){position:relative;}
+  #v-gdsheet .vw-mark{display:none;}
+  #v-gdsheet .gs-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-gdsheet .gs-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;width:100%;}
+  #v-gdsheet .gs-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-gdsheet .gs-ask{border-left:4px solid var(--accent);}
+  #v-gdsheet .gs-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-gdsheet .gs-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-gdsheet .gs-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-gdsheet .gs-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-gdsheet .gs-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-gdsheet .gs-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-gdsheet .gs-sub{font-family:var(--mono);font-size:0.76rem;letter-spacing:0.12em;color:var(--muted);
+    margin:1.1rem 0 0.35rem;text-transform:uppercase;}
+  #v-gdsheet .gs-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;max-width:100%;}
+  #v-gdsheet .gs-fml b{color:var(--fg);}
+  #v-gdsheet .gs-scroll{overflow-x:auto;max-width:100%;}
+  /* 375px 안전망 — 셀 수식처럼 띄어쓰기 없는 긴 문자열이 지면을 밀어내지 않게 합니다.
+     표 안은 white-space:nowrap 이 우선하므로 스프레드시트 모양은 그대로 유지됩니다. */
+  #v-gdsheet *{overflow-wrap:anywhere;}
+  /* 셀 수식(=(2/10)*SUMPRODUCT(…) 처럼 띄어쓰기 없는 긴 문자열)이 들어오므로 반드시 강제 줄바꿈 */
+  #v-gdsheet .gs-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);
+    overflow-wrap:anywhere;word-break:break-word;min-width:0;}
+  #v-gdsheet .gs-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-gdsheet .gs-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-gdsheet .gs-fb b{color:var(--fg);}
+  #v-gdsheet .gs-fb:empty{display:none;}
+  #v-gdsheet .gs-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-gdsheet .gs-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-gdsheet .gs-in.num{width:5.6rem;text-align:center;}
+  #v-gdsheet .gs-sel{height:2.4rem;min-height:44px;border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);
+    color:var(--fg);font-family:var(--mono);font-size:0.9rem;padding:0 0.5rem;max-width:100%;min-width:0;
+    text-overflow:ellipsis;}
+  #v-gdsheet .gs-sel.ok{border-color:var(--green);color:var(--green);}
+  #v-gdsheet .gs-sel.no{border-color:var(--red);color:var(--red);}
+  #v-gdsheet .gs-ta{width:100%;max-width:100%;box-sizing:border-box;min-height:3.6rem;border:1px solid var(--border);
+    border-radius:0.45rem;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:1.0rem;
+    line-height:1.8;padding:0.55rem 0.7rem;resize:vertical;}
+  /* 조작 요소 확대 — 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-gdsheet .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;}
+  #v-gdsheet .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-gdsheet .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-gdsheet .tabs{flex-wrap:wrap;}
+  #v-gdsheet .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-gdsheet .ws-btn{min-height:44px;}
+  #v-gdsheet .gs-badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;
+    border:1px solid var(--accent);color:var(--muted);border-radius:9999px;padding:0.1rem 0.5rem;margin-left:0.4rem;
+    vertical-align:middle;}
+  #v-gdsheet .gs-back{display:block;margin-top:0.5rem;font-size:0.9rem;}
+  #v-gdsheet .gs-back .btn{text-transform:none;font-family:var(--sans);letter-spacing:0;font-size:0.85rem;
+    min-height:2.2rem;padding:0.3rem 0.7rem;}
+
+  /* 단계 토글 */
+  #v-gdsheet .gs-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-gdsheet .gs-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-gdsheet .gs-fold>summary::-webkit-details-marker{display:none;}
+  #v-gdsheet .gs-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-gdsheet .gs-fold[open]>summary::after{content:'▾';}
+  #v-gdsheet .gs-fold .bd{padding:0 0 0.9rem;}
+  #v-gdsheet .gs-fold .bd p,#v-gdsheet .gs-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-gdsheet .gs-fold.gs-locked{opacity:0.62;}
+  #v-gdsheet .gs-fold.gs-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-gdsheet .gs-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 미니 시트 — 스프레드시트 모양의 표 (반드시 .gs-scroll 안에 두어 375px 에서 가로 스크롤) */
+  /* 세로 스크롤도 이 상자 안에서 처리합니다 — 이렇게 해야 sticky 헤더가 문서가 아니라
+     이 상자를 기준으로 붙어, 표가 길어져도 페이지에 가로 스크롤이 생기지 않습니다. */
+  #v-gdsheet .gs-scroll.gs-sheetwrap{border:1px solid var(--border);border-radius:0.45rem;margin-top:0.6rem;
+    overflow-y:auto;max-height:min(26rem,62vh);overscroll-behavior:contain;}
+  #v-gdsheet .gs-scroll table.gs-sheet{border-collapse:collapse;font-family:var(--mono);font-size:0.86rem;
+    min-width:34rem;width:100%;}
+  #v-gdsheet .gs-scroll table.gs-sheet.gs-wide{min-width:44rem;}
+  #v-gdsheet table.gs-sheet th,#v-gdsheet table.gs-sheet td{border:1px solid var(--border);padding:0.3rem 0.5rem;
+    text-align:right;white-space:nowrap;}
+  #v-gdsheet table.gs-sheet thead th{background:var(--card-h);text-align:center;font-weight:700;position:sticky;top:0;}
+  #v-gdsheet table.gs-sheet td.col{background:var(--card-h);text-align:center;color:var(--muted);}
+  #v-gdsheet table.gs-sheet td.empty{color:var(--border);}
+  #v-gdsheet table.gs-sheet tr.sum td{background:var(--card-h);font-weight:700;}
+  #v-gdsheet table.gs-sheet tr.bad td{background:rgba(180,65,51,0.13);color:var(--red);font-weight:700;}
+  #v-gdsheet table.gs-sheet tr.fin td{background:rgba(90,122,90,0.13);}
+  #v-gdsheet table.gs-sheet input{width:4.6rem;min-width:0;border:none;background:transparent;color:var(--fg);
+    font-family:var(--mono);font-size:0.86rem;text-align:right;height:1.9rem;}
+  #v-gdsheet table.gs-sheet input:focus{outline:2px solid var(--fg);outline-offset:1px;border-radius:0.2rem;}
+
+  /* 수식 조립 줄 */
+  #v-gdsheet .gs-asm{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));gap:0.6rem;margin-top:0.7rem;}
+  #v-gdsheet .gs-asmrow{background:var(--bg);border:1px solid var(--border);border-radius:0.45rem;padding:0.6rem 0.7rem;min-width:0;}
+  #v-gdsheet .gs-asmrow .cell{display:block;font-family:var(--mono);font-size:0.78rem;color:var(--muted);letter-spacing:0.06em;}
+  #v-gdsheet .gs-asmrow .name{display:block;font-size:0.98rem;font-weight:700;color:var(--fg);margin:0.1rem 0 0.35rem;}
+  #v-gdsheet .gs-asmrow select{width:100%;}
+  #v-gdsheet .gs-asmrow .why{display:block;font-size:0.86rem;line-height:1.65;margin-top:0.35rem;min-height:1.2rem;
+    overflow-wrap:anywhere;word-break:break-word;}
+  #v-gdsheet .gs-asmrow .why.ok{color:var(--green);}
+  #v-gdsheet .gs-asmrow .why.no{color:var(--red);}
+
+  /* 일반 표 */
+  #v-gdsheet .gs-tbl{border-collapse:collapse;font-size:0.9rem;min-width:min(100%,18rem);}
+  #v-gdsheet .gs-tbl th,#v-gdsheet .gs-tbl td{border:1px solid var(--border);padding:0.34rem 0.55rem;text-align:center;line-height:1.6;}
+  #v-gdsheet .gs-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-gdsheet .gs-tbl td.num{font-family:var(--mono);}
+  #v-gdsheet .gs-tbl tr.hi td{background:var(--card-h);font-weight:700;}
+  #v-gdsheet .gs-tbl tr.bad td{background:rgba(180,65,51,0.13);color:var(--red);font-weight:700;}
+  #v-gdsheet .gs-tbl tr.done td{background:rgba(90,122,90,0.13);}
+
+  /* 캔버스 · 이중 패널 */
+  #v-gdsheet .gs-duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(17rem,100%),1fr));gap:0.9rem;margin-top:0.8rem;}
+  #v-gdsheet .gs-pane{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem;min-width:0;}
+  #v-gdsheet .gs-pane>h4{font-size:0.98rem;margin:0 0 0.4rem;color:var(--fg);}
+  #v-gdsheet .gs-pane .cap{font-family:var(--mono);font-size:0.74rem;color:var(--muted);line-height:1.7;margin-top:0.35rem;display:block;}
+  #v-gdsheet canvas.gs-cv{display:block;width:100%;max-width:100%;height:auto;background:var(--card);
+    border:1px solid var(--border);border-radius:0.4rem;touch-action:none;}
+  #v-gdsheet canvas.gs-mini{display:block;width:100%;max-width:100%;height:auto;background:var(--bg);
+    border:1px solid var(--border);border-radius:0.4rem;margin-top:0.5rem;}
+
+  /* 수치 카드 */
+  #v-gdsheet .gs-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(8rem,100%),1fr));gap:0.5rem;margin-top:0.7rem;}
+  #v-gdsheet .gs-stat{background:var(--bg);border:1px solid var(--border);border-radius:0.45rem;padding:0.5rem 0.6rem;min-width:0;}
+  #v-gdsheet .gs-stat .k{display:block;font-family:var(--mono);font-size:0.72rem;color:var(--muted);letter-spacing:0.06em;}
+  #v-gdsheet .gs-stat .v{display:block;font-family:var(--mono);font-size:1.05rem;font-weight:700;color:var(--fg);
+    line-height:1.5;word-break:break-all;}
+  #v-gdsheet .gs-stat.ok .v{color:var(--green);}
+  #v-gdsheet .gs-stat.no .v{color:var(--red);}
+
+  /* 경고 · 완료 배너 */
+  #v-gdsheet .gs-warn{display:none;align-items:center;gap:0.5rem;background:rgba(180,65,51,0.12);
+    border:1px solid var(--red);border-radius:0.45rem;padding:0.6rem 0.75rem;margin-top:0.7rem;
+    color:var(--red);font-weight:700;font-size:0.98rem;line-height:1.7;overflow-wrap:anywhere;min-width:0;}
+  #v-gdsheet .gs-warn.on{display:flex;}
+  #v-gdsheet .gs-ok{display:none;align-items:center;gap:0.5rem;background:rgba(90,122,90,0.12);
+    border:1px solid var(--green);border-radius:0.45rem;padding:0.6rem 0.75rem;margin-top:0.7rem;
+    color:var(--green);font-weight:700;font-size:0.98rem;line-height:1.7;overflow-wrap:anywhere;min-width:0;}
+  #v-gdsheet .gs-ok.on{display:flex;}
+  #v-gdsheet .gs-run{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.78rem;
+    border:1px solid var(--border);border-radius:9999px;padding:0.2rem 0.6rem;color:var(--muted);background:var(--bg);}
+  #v-gdsheet .gs-run .dot{width:0.55rem;height:0.55rem;border-radius:50%;background:var(--muted);}
+  #v-gdsheet .gs-run.go .dot{background:var(--green);}
+  #v-gdsheet .gs-run.stop .dot{background:var(--red);}
+
+  /* 슬라이더 줄 */
+  #v-gdsheet .gs-slide{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem 0.8rem;margin-top:0.8rem;}
+  #v-gdsheet .gs-slide label{font-family:var(--mono);font-size:0.88rem;color:var(--fg);white-space:nowrap;}
+  #v-gdsheet .gs-slide input[type=range]{flex:1 1 11rem;min-width:8rem;max-width:100%;height:2.2rem;accent-color:var(--fg);}
+  #v-gdsheet .gs-val{font-family:var(--mono);font-size:1.02rem;font-weight:700;color:var(--fg);
+    background:var(--card-h);border-radius:0.35rem;padding:0.2rem 0.55rem;max-width:100%;min-width:0;}
+
+  /* 참고 자료 카드 */
+  #v-gdsheet .gs-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));gap:0.7rem;margin-top:0.8rem;}
+  #v-gdsheet .gs-ref{display:flex;gap:0.65rem;align-items:flex-start;text-decoration:none;background:var(--bg);
+    border:1px solid var(--border);border-radius:var(--radius);padding:0.65rem;color:var(--body);
+    transition:border-color 0.2s;text-align:left;font-family:var(--sans);cursor:pointer;min-width:0;}
+  #v-gdsheet .gs-ref:hover{border-color:var(--fg);}
+  #v-gdsheet .gs-ref .th{flex:0 0 3.2rem;height:3.2rem;border-radius:0.4rem;background:var(--card-h);
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;position:relative;overflow:hidden;}
+  #v-gdsheet .gs-ref .th .bg{position:absolute;bottom:0;left:0;right:0;font-family:var(--mono);font-size:0.55rem;
+    background:var(--fg);color:var(--bg);text-align:center;letter-spacing:0.04em;padding:0.05rem 0;}
+  #v-gdsheet .gs-ref .bd{min-width:0;}
+  #v-gdsheet .gs-ref .tt{display:block;font-weight:700;color:var(--fg);font-size:0.96rem;line-height:1.5;}
+  #v-gdsheet .gs-ref .ds{display:block;font-size:0.86rem;color:var(--muted);line-height:1.6;margin-top:0.2rem;}
+  #v-gdsheet .gs-refadd{border-style:dashed;}
+
+  /* 교과서 캡처(로컬 전용) */
+  #v-gdsheet .gs-tbshot{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.7rem;}
+  #v-gdsheet .gs-tbshot figure{margin:0;flex:1 1 min(14rem,100%);min-width:0;}
+  #v-gdsheet .gs-tbshot img{width:100%;height:auto;border:1px solid var(--border);border-radius:0.4rem;display:block;}
+  #v-gdsheet .gs-tbshot figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);line-height:1.65;margin-top:0.25rem;}
+
+  @media(max-width:640px){
+    #v-gdsheet .gs-wm{display:none;}
+    #v-gdsheet .gs-tbl{font-size:0.84rem;}
+    #v-gdsheet .gs-tbl th,#v-gdsheet .gs-tbl td{padding:0.28rem 0.35rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="gs-hero">
+    <svg class="gs-wm" viewBox="0 0 320 180" role="img" aria-label="스프레드시트 표와 우상향 산점도">
+      <rect x="18" y="24" width="150" height="132" rx="4" fill="none" stroke="var(--fg)" stroke-width="2"/>
+      <path d="M18 48 H168 M18 72 H168 M18 96 H168 M18 120 H168 M68 24 V156 M118 24 V156" stroke="var(--border)" stroke-width="1.4"/>
+      <rect x="118" y="48" width="50" height="24" fill="var(--accent)" opacity="0.55"/>
+      <path d="M196 150 H304 M196 150 V32" stroke="var(--border)" stroke-width="1.6"/>
+      <g fill="var(--fg)"><circle cx="212" cy="132" r="4"/><circle cx="230" cy="120" r="4"/><circle cx="248" cy="106" r="4"/>
+        <circle cx="266" cy="88" r="4"/><circle cx="284" cy="68" r="4"/></g>
+      <path d="M204 140 L296 56" stroke="var(--red)" stroke-width="2.6"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 27차시 · [12인수04-02] [12인수04-03] [12인수04-04]</p>
+    <h2>종합 실습 — 아이스티 판매 예측 AI 를 직접 만들기</h2>
+    <p class="desc">
+      여름이 다가옵니다. 기온이 오르면 아이스티가 잘 팔리지만 <b>얼마나 준비해야 할지</b>는 알 수 없습니다.
+      지난 열흘의 기록으로, 24~26차시에 배운 것을 <b>수식 한 칸 한 칸</b>으로 조립해 예측 AI 를 완성합니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 판매 데이터의 경향성을 <b>추세선</b>으로 나타내고 이를 예측에 이용할 수 있습니다. <b>[12인수04-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② <b>MSE 손실함수</b>를 구성하여 최적화된 추세선을 찾을 수 있습니다. <b>[12인수04-03]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ <b>경사하강법의 반복 계산</b>으로 인공지능의 학습 과정을 재현하고 설명할 수 있습니다. <b>[12인수04-04]</b>
+    </div>
+    <div class="gs-goalmap">
+      <button type="button" onclick="gsSee(0,'gs-act1')">├ 목표 ① → <b>탭 ① 데이터 탐색</b>(산점도와 경향성, y = ax 모델 설정) →</button>
+      <button type="button" onclick="gsSee(1,'gs-act2')">├ 목표 ② → <b>탭 ② 손실함수 시트</b>(예측·오차·오차² 열 조립 → MSE) →</button>
+      <button type="button" onclick="gsSee(2,'gs-act4')">└ 목표 ③ → <b>탭 ③ 경사하강 반복표</b> · <b>탭 ④ 두 매개변수(심화)</b> →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips gs-keys" data-no-toggle="1">
+    <span class="chip">MSE 수식</span>
+    <span class="chip">절대참조 $H$2</span>
+    <span class="chip">미분계수 L′(a)</span>
+    <span class="chip">학습 루프와 에포크</span>
+    <span class="chip">하이퍼파라미터</span>
+  </div>
+
+  <div class="card gs-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>AI가 ‘학습했다’는 것은 결국 무엇이 변했다는 뜻인가?</li>
+      <li>사람이 정해 주어야 하는 값과 기계가 스스로 찾는 값은 어떻게 다른가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">두 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="gs-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 기계가 ‘스스로 값을 고치는’ 장면</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      오늘은 24~26차시의 수학을 <b>실제 학습 루프</b>로 잇는 차시입니다.</p>
+    <div id="gs-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>상황 — 매점 아이스티, 며칠 뒤 기온이 32℃ 랍니다</h3>
+    <div class="gs-duo">
+      <div class="gs-pane">
+        <h4>지난 열흘의 기록</h4>
+        <div class="gs-scroll"><table class="gs-tbl">
+          <tr><th>날짜</th><th>1일</th><th>2일</th><th>3일</th><th>4일</th><th>5일</th>
+              <th>6일</th><th>7일</th><th>8일</th><th>9일</th><th>10일</th></tr>
+          <tr><th>기온 x (℃)</th><td class="num">20</td><td class="num">22</td><td class="num">24</td><td class="num">25</td><td class="num">28</td>
+              <td class="num">30</td><td class="num">31</td><td class="num">33</td><td class="num">34</td><td class="num">35</td></tr>
+          <tr><th>판매량 y (잔)</th><td class="num">45</td><td class="num">50</td><td class="num">55</td><td class="num">60</td><td class="num">65</td>
+              <td class="num">72</td><td class="num">76</td><td class="num">82</td><td class="num">85</td><td class="num">90</td></tr>
+        </table></div>
+        <span class="cap">연수교재 합본 p.289 학생 활동지 PART 1 의 데이터를 그대로 사용합니다.</span>
+      </div>
+      <div class="gs-pane">
+        <h4>오늘 만들 것</h4>
+        <p class="gs-fml">1단계 &nbsp;산점도로 경향성 확인 → 모델 <b>y = ax</b> 설정<br>
+          2단계 &nbsp;예측 · 오차 · 오차² 열을 만들고 <b>MSE</b> 완성<br>
+          3단계 &nbsp;<b>aₙ₊₁ = aₙ − k·L′(aₙ)</b> 을 셀에 연결해 반복 학습<br>
+          4단계 &nbsp;학습률을 바꾸어 <b>수렴과 발산</b> 비교</p>
+        <p class="gs-hint">엑셀·구글시트로도 같은 실습을 합니다. 이 화면은 시트의 <b>정답 확인용 짝</b>입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="gs-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 실습에서 완성됩니다.</b>
+      먼저 점들이 어떤 모양으로 흩어져 있는지부터 봅시다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="gs-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="gsTab(0,this)">① 데이터 탐색 <span class="gs-badge">PART 1</span></button>
+    <button class="tab" type="button" onclick="gsTab(1,this)">② 손실함수 시트 <span class="gs-badge">PART 2</span></button>
+    <button class="tab" type="button" onclick="gsTab(2,this)">③ 경사하강 반복표 <span class="gs-badge">PART 3</span></button>
+    <button class="tab" type="button" onclick="gsTab(3,this)">④ 두 매개변수 <span class="gs-badge">심화</span></button>
+  </div>
+
+  <!-- ── 탭 ① PART 1 데이터 탐색 ───────────────────────────────────────── -->
+  <div class="tpanel on" id="gs0">
+    <div class="card" id="gs-act1" data-no-toggle="1">
+      <h3>활동 1 · 「점들의 모양을 먼저 읽기」 — 산점도와 경향성</h3>
+      <p>표의 값을 고치면 산점도가 바로 다시 그려집니다. 값을 바꾸어 보며
+        <b>점들이 어떤 방향으로 흩어져 있는지</b> 먼저 눈으로 읽어 봅시다.</p>
+      <div class="gs-duo">
+        <div class="gs-pane">
+          <h4>산점도</h4>
+          <canvas class="gs-cv" id="gs-cv-sc" width="520" height="380"
+            aria-label="기온과 판매량의 산점도" role="img"></canvas>
+          <span class="cap" id="gs-sc-cap">점 10개 · 원점을 지나는 직선으로 설명할 수 있는지 살펴봅니다.</span>
+        </div>
+        <div class="gs-pane">
+          <h4>관찰 — 점들의 분포를 보고 알 수 있는 사실은?</h4>
+          <div class="chips" id="gs-a1-obs">
+            <button class="chip" type="button" onclick="gsA1Obs(0,this)">기온이 오르면 판매량도 일정하게 오른다</button>
+            <button class="chip" type="button" onclick="gsA1Obs(1,this)">기온이 올라도 판매량은 별 차이가 없다</button>
+            <button class="chip" type="button" onclick="gsA1Obs(2,this)">기온이 오르면 판매량은 오히려 떨어진다</button>
+          </div>
+          <div class="gs-fb" id="gs-a1-fb"></div>
+          <p class="gs-sub">눈대중으로 a 를 찍어 보기</p>
+          <div class="gs-slide">
+            <label for="gs-a1-a">기울기 a</label>
+            <input id="gs-a1-a" class="ns" type="range" min="1" max="4" step="0.01" value="2"
+              oninput="gsA1Slide(this.value)" aria-label="눈대중 기울기">
+            <span class="gs-val" id="gs-a1-aval">a = 2.00</span>
+          </div>
+          <div class="gs-stats" id="gs-a1-stats"></div>
+        </div>
+      </div>
+      <p class="gs-sub">데이터 편집 — 기온 x 와 판매량 y</p>
+      <div class="gs-scroll gs-sheetwrap">
+        <table class="gs-sheet" id="gs-a1-sheet">
+          <thead><tr><th>　</th><th>A · 날짜</th><th>B · 기온 x</th><th>C · 판매량 y</th></tr></thead>
+          <tbody id="gs-a1-body"></tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="gsDataReset()">원래 데이터로</button>
+        <button class="btn" type="button" onclick="gsDataAdd()">+ 행 추가</button>
+        <button class="btn" type="button" onclick="gsDataPasteOpen()">CSV 붙여넣기</button>
+      </div>
+      <div id="gs-paste" style="display:none;">
+        <textarea class="gs-ta" id="gs-paste-ta" placeholder="기온,판매량&#10;20,45&#10;22,50&#10;… (쉼표·탭·공백 모두 인식합니다)"></textarea>
+        <div class="btn-row">
+          <button class="btn pri" type="button" onclick="gsDataPaste()">불러오기</button>
+          <button class="btn" type="button" onclick="gsDataPasteOpen(false)">취소</button>
+        </div>
+      </div>
+      <p class="status" id="gs-paste-st"></p>
+      <span class="gs-src">출처 — 연수교재 합본 p.289 학생 활동지 PART 1(데이터 수집·시각화) 문항과 데이터를 그대로 사용</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="gs-fold" data-lock="a1" data-lockmsg="위 관찰 문항에 답하고 슬라이더를 움직여 보면 열립니다.">
+        <summary>단계 1 · 관찰 — a = 2 와 a = 3, 어느 쪽이 가까웠나요?</summary>
+        <div class="bd">
+          <p>a = 2 라면 기온 20℃ 에서 40잔을 예측합니다. 실제는 45잔이므로 <b>5잔이 부족</b>합니다.
+            a = 3 이라면 60잔을 예측해 <b>15잔이 남습니다</b>.</p>
+          <p>따라서 좋은 a 는 <b>2보다 크고 3보다 작을</b> 것입니다. 그런데 2.4 인지 2.5 인지는 눈으로 정할 수 없습니다.
+            "얼마나 틀렸는가"를 <b>하나의 수</b>로 만들어야 비교가 됩니다.</p>
+        </div>
+      </details>
+      <details class="gs-fold" data-lock="a1" data-lockmsg="위 관찰 문항에 답하고 슬라이더를 움직여 보면 열립니다.">
+        <summary>단계 2 · 정리 — 왜 y = ax 인가요? (b 는 어디로 갔나요)</summary>
+        <div class="bd">
+          <p>직선 형태의 추세선은 원래 y = ax + b 입니다. 그런데 오차의 제곱의 평균이 최소가 되는
+            <b>a 와 b 를 동시에 찾는 것은 어렵기</b> 때문에, 교육과정에서는 b = 0 인 경우만 다룹니다.</p>
+          <p>기온이 0℃ 면 아이스티가 거의 팔리지 않는다고 보면 <b>원점을 지나는 직선</b>이 자연스럽습니다.
+            그래서 a 는 "기온이 1℃ 오를 때 판매량이 몇 잔 늘어나는지"를 뜻하는 <b>가중치</b>가 됩니다.</p>
+          <p>a 와 b 를 동시에 찾는 방법은 <b>탭 ④</b>에서 등고선으로 맛봅니다.</p>
+          <span class="gs-src">동아출판 「인공지능 수학」 Ⅳ p.137 ‘b = 0 인 경우만 생각한다’ 서술 및 합본 p.290 PART 2 를 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>다음 단계</strong> — 이제 "얼마나 틀렸는가"를 수로 만듭니다.
+      시트의 열을 하나씩 조립해 <b>MSE</b> 를 완성해 봅시다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="gsSee(1,'gs-act2')">② 손실함수 시트로 →</button></span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② PART 2 손실함수 시트 ──────────────────────────────────── -->
+  <div class="tpanel" id="gs1">
+    <div class="card" id="gs-act2" data-no-toggle="1">
+      <h3>활동 2 · 「수식 조립하기」 — 예측 · 오차 · 오차² 열 만들기</h3>
+      <p>스프레드시트의 <b>D · E · F 열과 MSE 칸</b>에 들어갈 수식을 골라 조립합니다.
+        네 칸을 모두 맞게 고르면 시트가 채워집니다.</p>
+      <div class="gs-fml">H1 : a(기울기) &nbsp;·&nbsp; H2 : <b id="gs-a2-h2">2</b> &nbsp;(← 아래 입력칸의 값이 들어갑니다)</div>
+      <div class="gs-asm" id="gs-asm"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="gsAsmSolve()">정답 보기</button>
+        <button class="btn" type="button" onclick="gsAsmReset()">다시 고르기</button>
+      </div>
+      <div class="gs-fb" id="gs-asm-fb"></div>
+      <span class="gs-src">출처 — 연수교재 합본 p.290 PART 2 TIPs ①~④(H2·D2·E2·F2·E13 셀 수식)를 그대로 사용</span>
+    </div>
+
+    <div class="card gs-veil" id="gs-a2-panel" data-no-toggle="1">
+      <h3>조작 — a 를 바꾸며 MSE 를 관찰하기</h3>
+      <div class="gs-slide">
+        <label for="gs-a">H2 셀의 a</label>
+        <input id="gs-a" class="ns" type="range" min="1.5" max="3.5" step="0.001" value="2"
+          oninput="gsSlide(this.value)" aria-label="기울기 a">
+        <span class="gs-val" id="gs-a-val">a = 2.000</span>
+        <button class="btn" type="button" onclick="gsSnap(2)">a = 2</button>
+        <button class="btn" type="button" onclick="gsSnap(3)">a = 3</button>
+        <button class="btn" type="button" onclick="gsSnap(2.5)">a = 2.5</button>
+        <button class="btn pri" type="button" onclick="gsSnapOpt()">최적 a</button>
+      </div>
+      <div class="gs-scroll gs-sheetwrap">
+        <table class="gs-sheet gs-wide" id="gs-sheet2">
+          <thead><tr><th>　</th><th>A · 날짜</th><th>B · 기온 x</th><th>C · 판매량 y</th>
+            <th>D · 예측 ax</th><th>E · 오차 y−ax</th><th>F · 오차²</th></tr></thead>
+          <tbody id="gs-body2"></tbody>
+        </table>
+      </div>
+      <div class="gs-stats" id="gs-a2-stats"></div>
+      <div class="gs-duo">
+        <div class="gs-pane">
+          <h4>산점도 · 추세선 · 잔차</h4>
+          <canvas class="gs-cv" id="gs-cv-sc2" width="520" height="360"
+            aria-label="현재 a 에 대한 추세선과 잔차" role="img"></canvas>
+        </div>
+        <div class="gs-pane">
+          <h4>a 에 따른 MSE — L(a) 의 그래프</h4>
+          <canvas class="gs-cv" id="gs-cv-ls2" width="520" height="360"
+            aria-label="a 에 따른 MSE 곡선과 현재 위치" role="img"></canvas>
+          <span class="cap">기록한 (a, MSE) 는 점으로 남습니다. 아래로 볼록한 포물선이 보이나요?</span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="gsRec()">이 (a, MSE) 를 표에 기록</button>
+        <button class="btn" type="button" onclick="gsRecClear()">기록 지우기</button>
+      </div>
+      <div class="gs-scroll"><table class="gs-tbl" id="gs-rec-tbl"></table></div>
+      <div class="gs-ok" id="gs-a2-ok"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <details class="gs-fold" data-lock="a2" data-lockmsg="(a, MSE) 를 네 번 이상 기록하면 열립니다.">
+        <summary>단계 1 · 관찰 — 기록한 점들이 어떤 모양을 이루나요?</summary>
+        <div class="bd">
+          <p>a = 2 에서 <b>157.6</b>, a = 3 에서 <b>277.2</b>, a = 2.5 에서 <b>12.4</b>, a = 2.45 에서 <b>8.47</b> 입니다.
+            2.3 쪽에서 크고, 2.4 근처에서 가장 작아지고, 2.7 로 커지면 다시 커집니다.</p>
+          <p>이 값들을 그래프로 나타내면 <b>아래로 볼록한 포물선</b>, 곧 이차함수의 모양이 됩니다.
+            가장 낮은 지점이 우리가 찾는 최적의 기울기 a 입니다.</p>
+          <span class="gs-src">연수교재 합본 p.291 ‘생각해 보기 2’ 예시 답안의 수치를 재구성</span>
+        </div>
+      </details>
+      <details class="gs-fold" data-lock="a2" data-lockmsg="(a, MSE) 를 네 번 이상 기록하면 열립니다.">
+        <summary>단계 2 · 정리 — 오차를 굳이 제곱해서 평균을 내는 이유</summary>
+        <div class="bd">
+          <p>오차 y − ax 는 양수일 수도 음수일 수도 있습니다. 그냥 더하면 양수 오차와 음수 오차가
+            <b>서로 상쇄</b>되어 전체 오차가 0에 가깝게 왜곡됩니다.</p>
+          <p>모든 오차를 양수로 만들어 <b>크기를 정확히</b> 재려고 제곱한 뒤 평균을 구합니다.
+            이것이 24차시에서 배운 평균제곱오차(MSE)이고, 이 실습에서는 AVERAGE 함수가 그 평균을 맡습니다.</p>
+          <span class="gs-src">연수교재 합본 p.291 ‘생각해 보기 1’ 예시 답안을 재구성</span>
+        </div>
+      </details>
+      <details class="gs-fold">
+        <summary>단계 3 · 정의 확인 — MSE 와 절대참조</summary>
+        <div class="bd">
+          <p class="gs-fml">MSE = L(a) = (1/n) Σ (실제값 − 예측값)² = (1/10) Σ (yᵢ − a·xᵢ)²</p>
+          <p><b>절대참조 $H$2.</b> 행이나 열 앞에 $ 를 붙이면 채우기(드래그)를 해도 주소가 바뀌지 않습니다.
+            D2 에 <b>=B2*$H$2</b> 를 넣고 D11 까지 끌면 B 는 B3, B4… 로 내려가지만 <b>a 는 언제나 H2</b> 를 가리킵니다.</p>
+          <p>만약 =B2*H2 로 쓰면 D3 은 =B3*H3 이 되어 <b>빈 칸을 곱하게</b> 됩니다. 예측이 모두 0 이 되는 흔한 실수입니다.</p>
+          <p><b>AVERAGE.</b> 선택한 칸들의 산술평균을 구하는 함수입니다. =AVERAGE(F2:F11) 은 오차² 열 열 칸의 평균,
+            곧 MSE 입니다. SUM 을 쓰면 데이터 개수가 늘어날 때마다 값이 커져 서로 비교할 수 없습니다.</p>
+          <p><b>열을 나누지 않고 한 칸에 몰아넣는 방법도 있습니다.</b> 교과서는 D·E·F 열을 만들지 않고
+            <b>=ARRAYFORMULA(AVERAGE(($B$2:$B$16−$C2*$A$2:$A$16)^2))</b> 처럼 한 칸에서 MSE 를 구하기도 합니다.
+            결과는 같지만, 우리는 <b>오차 → 오차² → 평균</b>의 세 단계를 눈으로 확인하려고 열을 나누어 씁니다.</p>
+          <div class="gs-tbshot">
+            <figure><img src="assets/textbook-local/합본_p290_MSE시트.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>연수교재 합본 p.290 — PART 2 시트와 TIPs (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+            <figure><img src="assets/textbook-local/씨마스4_p160_스프레드시트.jpg" alt="교과서 지면(수업용)" loading="eager"
+              onerror="var f=this.closest('figure');if(f&amp;&amp;f.parentNode)f.parentNode.removeChild(f);">
+              <figcaption>씨마스 「인공지능 수학」 Ⅳ p.160 — 공학 도구로 손실함수 구하기 (수업용, 공개 게시하지 않습니다)</figcaption></figure>
+          </div>
+          <span class="gs-src">연수교재 합본 p.290 TIPs 및 씨마스 「인공지능 수학」 Ⅳ p.160 탐구 활동 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>남은 문제</strong> — a 를 하나씩 찍어 MSE 를 비교하는 방법은 데이터가 많아지면 불가능합니다.
+      최솟값이 어디인지 <b>자동으로</b> 찾아가려면 어떻게 해야 할까요?
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="gsSee(2,'gs-act4')">③ 경사하강 반복표로 →</button></span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ PART 3 경사하강 반복표 ────────────────────────────────── -->
+  <div class="tpanel" id="gs2">
+    <div class="card" id="gs-act4" data-no-toggle="1">
+      <h3>활동 3 · 「갱신식을 셀에 연결하기」 — a 가 스스로 자라나는 표</h3>
+      <p>미분 공식을 몰라도 됩니다. 스프레드시트가 <b>오차의 방향(미분계수)</b>을 계산해 줍니다.
+        F 열과 G 열, 그리고 다음 행으로 잇는 E3 셀의 수식을 골라 조립하세요.</p>
+      <div class="gs-fml">I1 : 학습률 &nbsp;·&nbsp; I2 : <b id="gs-a4-lr">0.0005</b> &nbsp;&nbsp;|&nbsp;&nbsp; E2 : 초깃값 <b id="gs-a4-a0">2</b></div>
+      <div class="gs-asm" id="gs-asm3"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="gsAsm3Solve()">정답 보기</button>
+        <button class="btn" type="button" onclick="gsAsm3Reset()">다시 고르기</button>
+      </div>
+      <div class="gs-fb" id="gs-asm3-fb"></div>
+      <span class="gs-src">출처 — 연수교재 합본 p.292 PART 3 TIPs ①~⑦(I1·D2·E2·F2·G2·E3 셀 수식)을 그대로 사용</span>
+    </div>
+
+    <div class="card gs-veil" id="gs-a4-panel" data-no-toggle="1">
+      <h3>조작 — 반복 학습 실행하기</h3>
+      <div class="gs-slide">
+        <label for="gs-lr">학습률 k</label>
+        <select class="gs-sel" id="gs-lr" onchange="gsGdReset()" aria-label="학습률">
+          <option value="0.0001">0.0001 — 아주 조심스럽게</option>
+          <option value="0.0005" selected>0.0005 — 권장값</option>
+          <option value="0.0011">0.0011 — 지그재그</option>
+          <option value="0.0012195">0.0012195 — 진동 경계 (1/A)</option>
+          <option value="0.002">0.002 — 발산</option>
+          <option value="0.1">0.1 — 폭발</option>
+        </select>
+        <label for="gs-a0">초깃값 a₀</label>
+        <input class="gs-in num" id="gs-a0" type="text" inputmode="decimal" value="2" oninput="gsGdReset()" aria-label="초깃값">
+        <span class="gs-run" id="gs-gd-run"><span class="dot"></span><span id="gs-gd-runl">준비됨</span></span>
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="gsGdReset()">↺ 초기화</button>
+        <button class="btn pri" type="button" onclick="gsGdStep(1)">1회 실행</button>
+        <button class="btn pri" type="button" onclick="gsGdFill(10)">10회까지 채우기</button>
+        <button class="btn" type="button" onclick="gsGdStep(30)">30회 더</button>
+      </div>
+      <div class="gs-scroll gs-sheetwrap">
+        <table class="gs-sheet gs-wide" id="gs-sheet3">
+          <thead><tr><th>　</th><th>D · 번호</th><th>E · a (기울기)</th>
+            <th>F · 오차의 방향 L′(a)</th><th>G · 다음 a</th><th>MSE</th></tr></thead>
+          <tbody id="gs-body3"></tbody>
+        </table>
+      </div>
+      <div class="gs-stats" id="gs-gd-stats"></div>
+      <div class="gs-warn" id="gs-gd-warn"></div>
+      <div class="gs-ok" id="gs-gd-ok"></div>
+      <div class="gs-duo">
+        <div class="gs-pane">
+          <h4>에포크 – MSE 곡선</h4>
+          <canvas class="gs-mini" id="gs-cv-ep" width="520" height="260"
+            aria-label="반복 횟수에 따른 MSE 의 변화" role="img"></canvas>
+          <span class="cap">초기에 급하게 줄고, 최솟값 근처에서는 아주 미세하게 움직입니다.</span>
+        </div>
+        <div class="gs-pane">
+          <h4>추세선이 회전하는 자취</h4>
+          <canvas class="gs-cv" id="gs-cv-sc3" width="520" height="330"
+            aria-label="갱신에 따라 회전하는 추세선의 자취" role="img"></canvas>
+          <span class="cap">옅은 직선이 지나온 추세선, 붉은 직선이 현재 추세선입니다.</span>
+        </div>
+      </div>
+      <p class="gs-sub">예측해 보기 — 며칠 뒤 기온이 32℃ 라면?</p>
+      <div class="gs-slide">
+        <label for="gs-pred">기온 x</label>
+        <input class="gs-in num" id="gs-pred" type="text" inputmode="decimal" value="32" oninput="gsPredict()" aria-label="예측할 기온">
+        <span class="gs-val" id="gs-pred-out">—</span>
+        <button class="btn" type="button" onclick="gsPredict()">예측</button>
+      </div>
+      <p class="gs-hint" id="gs-pred-note">현재 학습된 a 로 계산합니다. 데이터에 없는 기온에 대한 답이 곧 ‘학습’의 증거입니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 심화</h3>
+      <details class="gs-fold" data-lock="gd" data-lockmsg="[1회 실행] 또는 [10회까지 채우기]를 눌러 보면 열립니다.">
+        <summary>단계 1 · 관찰 — 미분계수가 음수일 때 다음 a 는 왜 커지나요?</summary>
+        <div class="bd">
+          <p>갱신식은 현재 값에서 <b>(학습률 × 미분계수)를 뺍니다</b>.
+            미분계수가 음수라는 것은 지금 지점에서 오른쪽으로 갈 때 손실이 줄어든다는 뜻입니다.</p>
+          <p>따라서 최솟값에 가려면 a 를 <b>양의 방향으로</b> 옮겨야 하고, 음수를 빼는 과정(마이너스 × 마이너스)에서
+            a 가 자연스럽게 증가합니다. 표의 첫 행에서 L′(2) = <b>−700.4</b> 이므로 a 가 2 → 2.3502 로 커집니다.</p>
+          <span class="gs-src">연수교재 합본 p.292 ‘생각해 보기 1’ 예시 답안을 재구성</span>
+        </div>
+      </details>
+      <details class="gs-fold" data-lock="gd" data-lockmsg="[1회 실행] 또는 [10회까지 채우기]를 눌러 보면 열립니다.">
+        <summary>단계 2 · 관찰 — ‘오차의 방향’의 절댓값이 0 에 가까워지는 뜻</summary>
+        <div class="bd">
+          <p>손실함수 L(a) 는 아래로 볼록한 이차함수이고, 그 <b>최저점에서 접선의 기울기가 0</b> 입니다.</p>
+          <p>따라서 L′(a) 가 0 에 가까워진다는 것은 a 가 <b>최솟값(꼭짓점)에 근사적으로 도달</b>했다는 뜻이며,
+            더 이상 수정할 필요가 없는 최적화된 상태가 되었다는 신호입니다.</p>
+          <span class="gs-src">연수교재 합본 p.292 ‘생각해 보기 2’ 예시 답안을 재구성</span>
+        </div>
+      </details>
+      <details class="gs-fold" data-lock="gd" data-lockmsg="[1회 실행] 또는 [10회까지 채우기]를 눌러 보면 열립니다.">
+        <summary>단계 3 · 정리 — 학습률을 0.1 로 바꾸면?</summary>
+        <div class="bd">
+          <p>학습률이 너무 크면 한 번의 갱신마다 <b>보폭이 지나치게 커집니다</b>.
+            최저점을 지나쳐 반대쪽 비탈로 건너뛰고, 손실함수의 값이 이전보다 커지는 <b>발산</b>이 일어납니다.</p>
+          <p>이 데이터는 A = (Σx²)/10 = <b>820</b> 이므로, 26차시에서 정리한 조건 |1 − 2Ak| &lt; 1 에 따라
+            학습률이 1/A ≒ <b>0.00122</b> 보다 작아야 수렴합니다. 0.1 은 그 상한의 80배가 넘습니다.</p>
+          <p>선택 상자에서 0.002 와 0.1 을 골라 표의 색이 어떻게 바뀌는지 확인해 보세요.</p>
+          <span class="gs-src">연수교재 합본 p.292 ‘생각해 보기 3’ 및 p.298 ④ 관찰 기록을 재구성</span>
+        </div>
+      </details>
+      <details class="gs-fold">
+        <summary>단계 4 · 정의 확인 — F2 셀의 복잡한 수식은 무엇인가</summary>
+        <div class="bd">
+          <p>F2 의 수식은 사실 <b>MSE 를 미분한 결과</b>입니다. 손실함수와 나란히 놓고 보면 부분마다 뜻이 있습니다.</p>
+          <p class="gs-fml">L(a) = (1/10) Σ (yᵢ − a·xᵢ)²  &nbsp;⇒&nbsp; L′(a) = <b>(2/10) Σ (a·xᵢ − yᵢ)·xᵢ</b></p>
+          <div class="gs-scroll"><table class="gs-tbl">
+            <tr><th>수식의 부분</th><th>뜻</th></tr>
+            <tr><td style="text-align:left;">E2*$A$2:$A$11 − $B$2:$B$11</td>
+              <td style="text-align:left;">예측값 − 실제값, 곧 (a·xᵢ − yᵢ) — 모델이 정답에서 얼마나 벗어났는가</td></tr>
+            <tr><td style="text-align:left;">SUMPRODUCT( ⋯ , $A$2:$A$11 )</td>
+              <td style="text-align:left;">그 값에 입력값 xᵢ 를 곱해 모두 더함 — 속미분에서 xᵢ 가 곱해진 결과</td></tr>
+            <tr><td style="text-align:left;">2</td><td style="text-align:left;">제곱을 미분할 때 지수 2 가 앞으로 내려온 것</td></tr>
+            <tr><td style="text-align:left;">10 으로 나눔</td><td style="text-align:left;">손실함수가 오차제곱의 <b>평균</b>이므로 데이터 개수로 나눔</td></tr>
+          </table></div>
+          <p><b>SUMPRODUCT</b> 는 선택한 두 열의 칸을 차례로 곱해 모두 더하는 함수입니다.
+            손으로 쓰면 Σ(a·xᵢ − yᵢ)·xᵢ 를 열 번 계산해 더하는 일과 같습니다.</p>
+          <span class="gs-src">연수교재 합본 p.292 ‘생각해 보기 4’ 예시 답안을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>여기까지가 27차시의 본 실습입니다.</strong> 시간이 남는다면 아래 심화 탭에서
+      a 와 b <b>두 개</b>를 동시에 조절하는 경사하강법을 등고선으로 살펴봅니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="gsSee(3,'gs-act5')">④ 두 매개변수 (심화)로 →</button></span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ④ 심화 · 두 매개변수 (gd-visual-axb 이식) ─────────────────── -->
+  <div class="tpanel" id="gs3">
+    <div class="card" id="gs-act5" data-no-toggle="1">
+      <h3>활동 4 · 「골짜기가 평면 위에 있다면」 — y = ax + b 의 등고선 <span class="gs-badge">심화</span></h3>
+      <p>조절할 값이 두 개가 되면 손실함수는 <b>평면 위의 곡면</b>이 됩니다.
+        아래 등고선 지도에서 색이 옅은 곳이 손실이 작은 곳이고, 붉은 꺾은선이 경사하강법이 걸어간 길입니다.</p>
+      <div class="gs-fml">데이터 (1, 3) (2, 5) (3, 8) (4, 9) (5, 12) &nbsp;·&nbsp;
+        L(a, b) = (1/5) Σ (yᵢ − a·xᵢ − b)² &nbsp;·&nbsp;
+        <b>∂L/∂a</b> = (2/5) Σ (a·xᵢ + b − yᵢ)·xᵢ, &nbsp;<b>∂L/∂b</b> = (2/5) Σ (a·xᵢ + b − yᵢ)</div>
+      <p class="gs-hint">기호 ∂ 는 "여러 변수 중 하나만 보고 기울기를 잰다"는 뜻입니다.
+        교육과정 범위를 넘는 내용이므로 <b>계산 결과를 눈으로 관찰</b>하는 데까지만 다룹니다.</p>
+      <div class="gs-slide">
+        <label for="gs-ab-lr">학습률 k</label>
+        <input id="gs-ab-lr" class="ns" type="range" min="0" max="7" step="1" value="4"
+          oninput="gsAbLr(this.value)" aria-label="학습률">
+        <span class="gs-val" id="gs-ab-lr-val">k = 0.05</span>
+        <label for="gs-ab-a0">a₀</label>
+        <input class="gs-in num" id="gs-ab-a0" type="text" inputmode="decimal" value="0" oninput="gsAbReset()" aria-label="a 초깃값">
+        <label for="gs-ab-b0">b₀</label>
+        <input class="gs-in num" id="gs-ab-b0" type="text" inputmode="decimal" value="0" oninput="gsAbReset()" aria-label="b 초깃값">
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="gsAbReset()">↺ 초기화</button>
+        <button class="btn pri" type="button" onclick="gsAbStep(1)">한 단계</button>
+        <button class="btn pri" type="button" onclick="gsAbStep(40)">40회 실행</button>
+        <button class="btn" type="button" onclick="gsAbOpt()">최적값 보기</button>
+        <span class="gs-run" id="gs-ab-run"><span class="dot"></span><span id="gs-ab-runl">준비됨</span></span>
+      </div>
+      <div class="gs-duo">
+        <div class="gs-pane">
+          <h4>(a, b) 평면의 등고선과 이동 경로</h4>
+          <canvas class="gs-cv" id="gs-cv-ctr" width="520" height="420"
+            aria-label="a와 b에 대한 손실함수의 등고선과 경사하강 경로" role="img"></canvas>
+          <span class="cap">색이 옅을수록 손실이 작습니다. 초록 점이 최솟값, 붉은 점이 현재 위치입니다.</span>
+        </div>
+        <div class="gs-pane">
+          <h4>산점도와 직선 y = ax + b</h4>
+          <canvas class="gs-cv" id="gs-cv-ab" width="520" height="330"
+            aria-label="다섯 개의 점과 현재 직선" role="img"></canvas>
+          <div class="gs-stats" id="gs-ab-stats"></div>
+        </div>
+      </div>
+      <div class="gs-warn" id="gs-ab-warn"></div>
+      <div class="gs-ok" id="gs-ab-ok"></div>
+      <span class="gs-src">이식 — 「인공지능 수학 수업 구성실」 내장 활동 <b>gd-visual-axb</b>(두 매개변수 손실 곡면·등고선)의
+        갱신 구조를 우리 뷰로 옮겼습니다. 원본의 SVG 차트는 canvas 로, 데이터는 학생이 손으로도 검산할 수 있는 5점으로 바꾸었습니다.</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 심화 정리</h3>
+      <details class="gs-fold" data-lock="ab" data-lockmsg="[한 단계] 또는 [40회 실행]을 눌러 보면 열립니다.">
+        <summary>단계 1 · 관찰 — 경로가 왜 길고 휘어지나요?</summary>
+        <div class="bd">
+          <p>a 방향의 골짜기는 아주 좁고 b 방향은 아주 완만합니다. 그래서 경로가 먼저 좁은 방향으로 뛰어들고,
+            그다음 <b>골짜기 바닥을 따라 천천히 미끄러지듯</b> 움직입니다.</p>
+          <p>이런 지형에서는 학습률을 크게 하면 좁은 방향에서 발산하고, 작게 하면 완만한 방향에서 학습이 끝나지 않습니다.
+            변수가 늘어날수록 <b>학습률 조절이 어려워지는 이유</b>가 여기 있습니다.</p>
+        </div>
+      </details>
+      <details class="gs-fold">
+        <summary>단계 2 · 심화 — 왜 27차시 데이터로는 이 실험을 하지 않았나</summary>
+        <div class="bd">
+          <p>아이스티 데이터의 기온은 20~35 라는 큰 수입니다. a 방향의 경사는 이 값들의 제곱에 비례해 아주 급하고,
+            b 방향은 완만해서 두 방향의 <b>급함의 비가 수만 배</b>가 됩니다.</p>
+          <p>그러면 어떤 학습률을 골라도 한쪽은 발산하고 다른 쪽은 거의 멈춘 것처럼 보입니다.
+            실무에서는 이럴 때 x 값을 평균이 0 이 되도록 옮기는 등 <b>데이터를 먼저 다듬습니다</b>.
+            그래서 이 심화 탭은 값이 작은 5점 데이터를 씁니다.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="gs-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄 — 재료 · 자, 그리고 스스로 고치는 손</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        점들의 경향성을 <b>y = ax</b> 로 잡으면, 아직 정해지지 않은 <b>a 하나</b>가 우리가 찾아야 할 값이 됩니다.
+        a 는 "기온이 1℃ 오를 때 몇 잔이 더 팔리는지"를 뜻하는 <b>가중치</b>입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        얼마나 틀렸는지는 <b>MSE = (1/10) Σ (yᵢ − a·xᵢ)²</b> 한 수로 잽니다.
+        시트에서는 <b>=B2*$H$2 → =C2−D2 → =E2^2 → =AVERAGE(F2:F11)</b> 네 칸이 그 정의 그대로입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        <b>=E2 − $I$2 * F2</b> 를 <b>=G2</b> 로 다음 행에 이어 붙이면 표가 스스로 자랍니다.
+        a 는 2 → 2.350 → 2.413 → … → <b>2.427</b> 로 다가가고, 이 반복이 곧 <b>AI 의 학습</b>입니다.</li>
+    </ol>
+    <p class="gs-hint" style="margin-top:0.8rem;">한 줄로 요약하면 —
+      <b>손실함수는 자, 미분계수는 나침반, 학습률은 걸음의 크기, 그리고 셀 연결은 걸음을 반복하는 다리</b>입니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문 1. AI가 ‘학습했다’는 것은 결국 무엇이 변했다는 뜻인가?</b></p>
+    <textarea class="gs-ta" id="gs-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="gs-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>바뀐 것은 데이터가 아니라 <b>가중치 a 의 값</b>입니다. 기온과 판매량 표는 처음부터 끝까지 그대로였고,
+          E열의 a 만 2 → 2.350 → 2.413 → … → 2.427 로 옮겨 갔습니다.</p>
+        <p>그 이동의 기준은 <b>손실함수의 값이 줄어드는 방향</b>이었습니다. 그러므로 "학습했다"는 말은
+          <b>손실이 작아지도록 가중치를 고쳐 나갔다</b>는 뜻이고, 학습이 끝났다는 말은 <b>더 고쳐도 손실이 줄지 않는 상태
+          (L′(a) ≒ 0)</b> 에 이르렀다는 뜻입니다.</p>
+      </div>
+    </details>
+
+    <p style="margin-top:1rem;"><b>핵심 질문 2. 사람이 정해 주어야 하는 값과 기계가 스스로 찾는 값은 어떻게 다른가?</b></p>
+    <textarea class="gs-ta" id="gs-ans2" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="gs-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>기계가 스스로 찾는 값은 <b>가중치 a</b> 입니다. 손실함수가 그 값을 어느 쪽으로 얼마나 옮길지 알려 주므로
+          사람이 손대지 않아도 됩니다. 이런 값을 <b>매개변수(파라미터)</b> 라고 합니다.</p>
+        <p>반대로 <b>학습률 k · 초깃값 a₀ · 반복 횟수</b> 는 손실함수가 알려 주지 않습니다.
+          사람이 고르고 실험해서 정해야 하며, 이런 값을 <b>초매개변수(하이퍼파라미터)</b> 라고 합니다.
+          오늘 0.0005 는 잘 수렴했지만 0.1 은 폭발했습니다 — <b>같은 데이터, 같은 수식인데 사람의 선택이 결과를 갈랐습니다</b>.</p>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="gsAnsSave()">내 답 저장</button></div>
+    <p class="status" id="gs-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 27차시 종합 9문항</h3>
+    <p style="margin-bottom:0.8rem;">셀 수식·수치 계산·용어를 함께 묻습니다. 답을 고르면 바로 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="gs-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>4단원을 마치며 — 여기까지가 ‘예측과 최적화’입니다.</strong><br>
+    22차시에서 <b>추세선</b>을 그었고, 24차시에서 <b>손실함수</b>라는 자를 만들었고, 25·26차시에서 <b>미분계수와 갱신식</b>이라는
+    나침반과 걸음을 얻었습니다. 오늘 27차시에는 그 넷을 <b>스프레드시트 한 장</b>에 모아 실제로 학습시켰습니다.
+    다음 5단원에서는 이 도구들을 <b>내가 고른 주제의 데이터</b>에 직접 적용합니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('decision')">28차시로 이동 →</button>
+      <button class="btn" type="button" onclick="aimGoLesson('optim','24차시')">돌아보기 · 24~26차시 손실함수와 경사하강법</button>
+      <button class="btn" type="button" onclick="aimGoLesson('trend','22차시')">돌아보기 · 22~23차시 추세선과 과적합</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「우리 모둠 예측 AI」 — 우리가 모은 데이터로 시트를 학습시키기</h3>
+    <p class="sub">아이스티 대신 <b>우리 학교·우리 동네의 두 변량</b>을 골라 같은 시트를 처음부터 만듭니다.
+      수식을 옮겨 적는 것으로 끝나지 않도록, <b>학습률을 왜 그 값으로 골랐는지</b>를 반드시 글로 남깁니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 원점을 지난다고 볼 수 있는 두 변량을 골라 <b>10일(또는 10개) 이상</b>의 값을 모읍니다
+        (예: 최고기온 x 와 아이스크림 판매량 y, 등교 시각 x 와 지각 인원 y, 강수량 x 와 우산 대출 수 y).<br>
+        ② A~C 열에 데이터를 넣고 <b>분산형 차트</b>로 경향성을 확인합니다(우상향이 아니면 데이터를 바꿉니다).<br>
+        ③ H1·H2 에 a 를 두고 <b>=B2*$H$2 / =C2−D2 / =E2^2 / =AVERAGE(F2:F11)</b> 로 MSE 를 완성합니다.<br>
+        ④ a 를 여섯 값 이상 바꾸어 <b>(a, MSE) 표와 그래프</b>를 만들고, 최솟값이 있을 구간을 눈으로 좁힙니다.<br>
+        ⑤ I2 에 학습률을 두고 F·G·E 열을 연결해 <b>경사하강 반복표</b>를 20행까지 채웁니다.<br>
+        ⑥ 학습률을 <b>세 가지 이상</b>(수렴 · 겨우 수렴 · 발산) 바꾸어 각각의 표를 캡처하고,
+        우리 데이터의 <b>A = (Σx²)/n</b> 을 계산해 수렴 상한 <b>1/A</b> 와 비교합니다.<br>
+        ⑦ 데이터에 없는 x 값 하나를 골라 <b>예측값</b>을 내고, 실제로 확인할 수 있으면 확인해 봅니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 구글시트 링크(보기 권한) 또는 시트 캡처 3장(차트 · MSE 표 · 반복표)<br>
+        · (a, MSE) 표와 손으로 그린 포물선 스케치 1장<br>
+        · 학습률 3종 비교표: k, |1 − 2Ak|, 20회 뒤의 a, 판정(수렴/진동/발산)<br>
+        · "우리가 고른 학습률은 ___ 이고, 그 근거는 A = ___ 이므로 ___ 이다" 를 포함한 결론 5문장 이상<br>
+        · (선택) 예측이 실제와 얼마나 달랐는지, 그 차이의 원인 추측</dd>
+      <dt>평가 관점</dt>
+      <dd>· 공학 도구로 데이터의 경향성을 추세선으로 나타내고 예측에 이용했는가 <b>[12인수04-02]</b><br>
+        · MSE 를 셀 수식으로 <b>정의대로</b> 구성하고(절대참조·AVERAGE) 최적 구간을 찾았는가 <b>[12인수04-03]</b><br>
+        · 갱신식을 셀에 연결해 반복 학습을 구현하고 <b>a 가 변해 가는 까닭</b>을 미분계수의 부호로 설명했는가 <b>[12인수04-04]</b><br>
+        · 학습률 선택의 근거를 <b>데이터의 규모(A)와 수렴 상한</b>에 비추어 제시했는가 <b>[12인수04-04]</b></dd>
+    </dl>
+    <details class="gs-fold" style="margin-top:0.9rem;">
+      <summary>평가 유의 사항 (교사용)</summary>
+      <div class="bd">
+        <p>최종적인 <b>예측값의 정확도보다</b> 스프레드시트로 오차를 줄여 가는 <b>논리적 구현 과정</b>을 중점 평가합니다.
+          복잡한 미분 계산 능력보다, 공학 도구를 통해 최적화의 원리를 직관적으로 이해하고 해석하는 능력을 봅니다.</p>
+        <p>순회 지도에서 특히 볼 곳은 두 군데입니다 — ① <b>=B2*H2</b> 처럼 절대참조를 빠뜨려 예측이 0 이 되는 경우,
+          ② <b>E3 = G2</b> 로 다음 행을 잇지 않아 a 가 자라지 않는 경우. 두 번째가 이 실습의 핵심 연결이므로
+          F·G 열을 3행까지 먼저 채운 뒤 E3:G11 을 한꺼번에 채우도록 안내합니다.</p>
+        <p>모둠 편성은 사전에 완료하고, 1인 1기기(크롬북·태블릿)와 구글 계정 로그인을 도입 5분 안에 확인합니다.</p>
+        <p><b>교재 수치 대조(교사용).</b> 이 뷰의 값은 <b>합본 p.289 의 데이터로 다시 계산한 값</b>입니다.
+          두 곳에서 교재 인쇄본과 달라 보일 수 있으니 미리 확인해 주세요.<br>
+          ① p.290 표의 오차² 일곱째 칸이 <b>169</b> 로 인쇄되어 MSE 가 154.9 로 적혀 있으나, 14² = <b>196</b> 이므로
+          합은 1576, <b>MSE = 157.6</b> 입니다(같은 쪽 아래 (a, MSE) 표에는 157.6 으로 바르게 적혀 있습니다).<br>
+          ② p.291 PART 3 예시 표는 최종 a 가 <b>2.4233</b> 으로 수렴하는데, 이는 Σxy 를 19871 로 계산한 결과입니다.
+          p.289 의 열흘 데이터로는 Σxy = <b>19902</b>, Σx² = 8200 이므로 최적 a = 19902 ÷ 8200 = <b>2.4271</b>,
+          L′(2) = <b>−700.4</b>, a₂ = <b>2.3502</b> 입니다. 학생 시트도 이 값이 나오므로 이 뷰의 값을 정답으로 쓰시면 됩니다.</p>
+        <span class="gs-src">연수교재 합본 p.287 ‘평가 유의 사항’ · p.288 ‘지도상의 유의점(오류 예방)’ 서술을 재구성
+          (합본 쪽수는 PDF 쪽 번호 기준 = 인쇄 지면 번호 + 4)</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 시트로 계속하고, 원리로 되돌아가기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="gs-refs">
+      <a class="gs-ref" href="https://docs.google.com/spreadsheets/u/0/create" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">실습</span>📊</span>
+        <span class="bd"><span class="tt">구글 스프레드시트 새 문서 만들기</span>
+          <span class="ds">빈 시트를 열어 A~C 열에 기온·판매량을 직접 입력해 봅니다.
+            학교 계정으로 로그인되어 있어야 하며, 만든 시트는 모둠원과 공유해 함께 채울 수 있습니다.</span></span>
+      </a>
+      <a class="gs-ref" href="https://support.google.com/docs/table/25273?hl=ko" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">함수</span>Σ</span>
+        <span class="bd"><span class="tt">구글시트 함수 목록 (공식 도움말)</span>
+          <span class="ds">오늘 쓴 <b>AVERAGE · SUMPRODUCT · ABS</b> 의 정의와 예시를 한 곳에서 찾을 수 있습니다.
+            함수 이름을 검색해 인수의 순서를 확인해 보세요.</span></span>
+      </a>
+      <a class="gs-ref" href="https://playground.tensorflow.org/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 도구</span>🎛️</span>
+        <span class="bd"><span class="tt">TensorFlow Playground — 학습률 바꿔 보기</span>
+          <span class="ds">신경망에서도 학습률(Learning rate)만 바꾸면 학습이 되거나 망가집니다.
+            오늘의 0.0005 와 0.1 처럼, 위쪽 Learning rate 를 0.03 과 10 으로 바꾸어 손실 곡선을 비교해 보세요.</span></span>
+      </a>
+      <a class="gs-ref" href="https://mathlove22.github.io/gradient-descent-sim/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 도구</span>⛷️</span>
+        <span class="bd"><span class="tt">경사하강법 시각화 (gradient-descent-sim)</span>
+          <span class="ds">연수교재가 안내하는 원본 도구입니다. 기본 데이터가 오늘의 아이스티 예제와 같아
+            데이터별 미분 기여도까지 확인할 수 있습니다.</span></span>
+      </a>
+      <a class="gs-ref" href="https://www.geogebra.org/graphing" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 도구</span>📐</span>
+        <span class="bd"><span class="tt">지오지브라 그래핑 계산기</span>
+          <span class="ds">L(a) = (8200a² − 39804a + 48384)/10 을 입력하고 a 를 슬라이더로 만들면
+            오늘 시트가 그린 포물선을 정확한 함수로 다시 볼 수 있습니다.</span></span>
+      </a>
+      <a class="gs-ref" href="https://ko.wikipedia.org/wiki/%EA%B2%BD%EC%82%AC_%ED%95%98%EA%B0%95%EB%B2%95" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">개념</span>📖</span>
+        <span class="bd"><span class="tt">경사 하강법 (위키백과, 한국어)</span>
+          <span class="ds">오늘 시트로 손수 돌린 절차의 일반형입니다. 학습률·수렴 조건과, 데이터를 나누어 갱신하는
+            확률적 경사하강법(SGD)까지 한국어로 정리되어 있습니다.</span></span>
+      </a>
+      <button class="gs-ref gs-refadd" type="button" onclick="gsRefAdd()">
+        <span class="th">➕</span>
+        <span class="bd"><span class="tt">＋ 자료 추가</span>
+          <span class="ds">선생님이 URL과 제목을 입력해 자료를 걸 수 있습니다. 이 기기에만 저장됩니다.</span></span>
+      </button>
+    </div>
+    <p class="status" id="gs-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>27차시 학습지 — 연수교재 학생 활동지(PART 1~3) 지면판</h3>
+    <p>이 차시의 <b>대표 실물 자료는 구글시트</b>입니다. 지면 학습지는 시트에 넣을 <b>수식을 미리 손으로 적어 보고</b>,
+      반복표의 앞 몇 줄을 <b>직접 계산해 검산</b>하는 데 씁니다. 기기 오류로 시트를 열 수 없을 때의 대체 자료로도 쓸 수 있습니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('gs-sheet27a')">🖨 PART 1·2 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <button class="ws-btn" type="button" onclick="wsPrint('gs-sheet27b')">🖨 PART 3·정리 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <a class="ws-btn sec" href="https://docs.google.com/spreadsheets/d/1kp677h_2PkgYUd8bLjTSt05YnddSIJ4RezhYq5q0t4U/copy"
+         target="_blank" rel="noopener">📊 구글시트 실습 자료 사본 만들기 <span class="sz">대표 실물 자료</span></a>
+      <a class="ws-btn sec" href="https://docs.google.com/spreadsheets/u/0/create"
+         target="_blank" rel="noopener">📄 빈 시트로 처음부터 만들기 <span class="sz">프로젝트 과제용</span></a>
+    </div>
+    <p class="gs-hint" style="margin-top:0.6rem;">
+      <b>PART 1·2</b> — 데이터 입력 · 산점도 관찰 · a = 2 일 때의 예측·오차·오차² 표와 MSE · (a, MSE) 표와 그래프.<br>
+      <b>PART 3·정리</b> — 셀 수식 여섯 칸 적어 보기 · 반복표 손계산 4행 · 학습률 실험표 · 예측 · 생각해 보기.<br>
+      사본 만들기 링크가 열리지 않으면(권한) 빈 시트로 만들거나, 아래 <b>학습지 링크 추가</b>에 학교 드라이브 사본 주소를 걸어 주세요.</p>
+    <div id="gs-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 · 27차시 PART 1·2 ═════ -->
+  <div class="ws-sheet" id="gs-sheet27a" aria-hidden="true">
+    <div class="ws-h"><h2>27차시 학습지 (1) — 데이터 탐색과 손실함수</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________ 모둠 ______</span></div>
+    <p class="note">학습 목표 ① 데이터의 경향성을 추세선으로 나타내고 예측에 이용할 수 있다. [12인수04-02]<br>
+      학습 목표 ② 스프레드시트로 MSE 손실함수를 구성하여 최적화된 추세선을 찾을 수 있다. [12인수04-03]<br>
+      상황 — 여름철 매점 아이스티. 지난 10일의 기온 x 와 판매량 y 로 예측 AI 를 만든다.</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:58%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>=B2*H2 로 적고 드래그하니 예측값이 모두 0 이 되었다. 무엇이 잘못되었을까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>a 를 바꾸며 MSE 를 그래프로 그리면 어떤 모양이 될까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>AI 가 ‘학습했다’고 할 때 실제로 바뀐 값은 무엇일까?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② PART 1 — 데이터 수집과 시각화</h3>
+    <p class="note">아래 데이터를 시트의 A(날짜)·B(기온)·C(판매량) 열에 입력하고 [삽입]-[차트]-[분산형 차트]를 만든다.</p>
+    <table>
+      <tr><th>날짜</th><td>1일</td><td>2일</td><td>3일</td><td>4일</td><td>5일</td><td>6일</td><td>7일</td><td>8일</td><td>9일</td><td>10일</td></tr>
+      <tr><th>기온 x (℃)</th><td>20</td><td>22</td><td>24</td><td>25</td><td>28</td><td>30</td><td>31</td><td>33</td><td>34</td><td>35</td></tr>
+      <tr><th>판매량 y (잔)</th><td>45</td><td>50</td><td>55</td><td>60</td><td>65</td><td>72</td><td>76</td><td>82</td><td>85</td><td>90</td></tr>
+    </table>
+    <p>관찰 — 점들의 분포를 보고 알 수 있는 사실은? (하나 고르기)<br>
+      □ 기온이 오르면 판매량도 일정하게 오른다. &nbsp;&nbsp; □ 기온이 올라도 판매량은 별 차이가 없다. &nbsp;&nbsp;
+      □ 기온이 오르면 판매량은 오히려 떨어진다.</p>
+    <p>따라서 모델을 y = ______ 로 정한다. 이때 a 가 뜻하는 것은</p>
+    <div class="rule sm"></div>
+
+    <h3>③ PART 2 — a = 2 일 때의 예측 · 오차 · 오차²</h3>
+    <table>
+      <tr><th>기온 x</th><td>20</td><td>22</td><td>24</td><td>25</td><td>28</td><td>30</td><td>31</td><td>33</td><td>34</td><td>35</td></tr>
+      <tr><th>판매량 y</th><td>45</td><td>50</td><td>55</td><td>60</td><td>65</td><td>72</td><td>76</td><td>82</td><td>85</td><td>90</td></tr>
+      <tr><th>예측 D = 2x</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>오차 E = y − D</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>오차² F = E²</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>오차² 의 합 = ______________ 이므로 오차제곱평균 <b>MSE = 합 ÷ 10 = ______________</b></p>
+    <p class="note">시트 수식 — D2 : ______________ &nbsp; E2 : ______________ &nbsp; F2 : ______________ &nbsp;
+      E13 : ______________</p>
+
+    <h3>④ a 를 바꾸며 MSE 를 재기</h3>
+    <table>
+      <tr><th>a</th><td>2</td><td>2.2</td><td>2.4</td><td>2.45</td><td>2.5</td><td>3</td></tr>
+      <tr><th>MSE</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">▼ 가로축 a, 세로축 MSE 로 위의 여섯 점을 찍고 곡선으로 이어 보자. 어떤 모양인가?</p>
+    <div class="rule lg"></div>
+    <p>MSE 가 가장 작아지는 a 는 대략 ______ 과 ______ 사이에 있다.</p>
+
+    <h3>⑤ 생각해 보기</h3>
+    <p><b>1. 오차를 그냥 더하지 않고 굳이 ‘제곱’하여 평균을 구하는 이유는?</b></p>
+    <div class="rule sm"></div>
+    <p><b>2. a 를 하나씩 찍어 보는 방법의 한계는 무엇인가? 자동으로 최솟값을 찾으려면?</b></p>
+    <div class="rule sm"></div>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 · 27차시 PART 3·정리 ═════ -->
+  <div class="ws-sheet" id="gs-sheet27b" aria-hidden="true">
+    <div class="ws-h"><h2>27차시 학습지 (2) — 경사하강법 시뮬레이션과 정리</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________ 모둠 ______</span></div>
+    <p class="note">학습 목표 ③ 경사하강법의 반복 계산으로 인공지능의 학습 과정을 재현하고 설명할 수 있다. [12인수04-04]<br>
+      시트 배치 — A : 기온 x, B : 판매량 y, D : 번호, E : a, F : 오차의 방향 L′(a), G : 다음 a, I2 : 학습률 k</p>
+
+    <h3>① 셀에 넣을 수식을 먼저 손으로 적어 보기</h3>
+    <table>
+      <tr><th style="width:14%;">셀</th><th style="width:44%;">넣을 수식</th><th>그 칸이 하는 일</th></tr>
+      <tr><td>I2</td><td class="blank"></td><td>학습률 k (권장 0.0005)</td></tr>
+      <tr><td>E2</td><td class="blank"></td><td>a 의 초깃값</td></tr>
+      <tr><td>F2</td><td class="blank"></td><td>현재 a 에서의 오차의 방향(미분계수)</td></tr>
+      <tr><td>G2</td><td class="blank"></td><td>한 걸음 옮긴 다음 a</td></tr>
+      <tr><td>E3</td><td class="blank"></td><td>앞 행의 결과를 다음 행의 a 로 잇기</td></tr>
+    </table>
+    <p class="note">F2 는 사실 MSE 를 미분한 결과이다. L(a) = (1/10) Σ (yᵢ − a·xᵢ)² ⇒ L′(a) = ______________________</p>
+
+    <h3>② 반복표 손계산 — a₀ = 2, k = 0.0005</h3>
+    <p class="note">이 데이터에서 L′(a) = 1640a − 3980.4 이다. (Σx² = 8200, Σxy = 19902)</p>
+    <table>
+      <tr><th>번호 n</th><th>aₙ</th><th>L′(aₙ)</th><th>−k · L′(aₙ)</th><th>다음 a</th><th>MSE(aₙ)</th></tr>
+      <tr><td>1</td><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td>157.6</td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>4</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>L′(aₙ) 의 부호는 계속 __________ 이고, 그래서 a 는 계속 __________ 진다.
+      L′ 의 절댓값은 매 걸음 ______ 배가 된다(1 − 2Ak 의 값).</p>
+
+    <h3>③ 학습률 실험 — A = (Σx²)/10 = 820</h3>
+    <table>
+      <tr><th>학습률 k</th><th>1 − 2Ak</th><th>움직임 (수렴 / 지그재그 / 진동 / 발산)</th><th>10회 뒤의 a</th></tr>
+      <tr><td>0.0001</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0.0005</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0.0011</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1/820 ≒ 0.00122</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0.002</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>0.1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>발산하지 않는 학습률의 상한은 ______________ 이다. 그 근거는</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 예측 — 학습이 끝난 a 로</h3>
+    <p>학습된 a = ______________ 이므로, 며칠 뒤 기온이 32℃ 라면 예측 판매량은
+      ______ × 32 = ______________ 잔 → 준비할 수량 약 ______ 잔</p>
+    <p class="note">데이터에 없는 기온에 대해 답을 낼 수 있다는 것이 곧 ‘학습했다’의 증거이다.</p>
+
+    <h3>⑤ 생각해 보기</h3>
+    <p><b>3. ‘오차의 방향’이 음수일 때 다음 a 는 왜 더 커지는가?</b></p>
+    <div class="rule sm"></div>
+    <p><b>4. 반복이 진행되며 ‘오차의 방향’의 절댓값이 0 에 가까워지는 것은 수학적으로 무슨 뜻인가?</b></p>
+    <div class="rule sm"></div>
+
+    <h3>⑥ 형성평가 (오답만 다시 풀기)</h3>
+    <table>
+      <tr><th style="width:16%;">문항</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+      <tr><th>내 답</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th>O / X</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑦ 핵심 질문</h3>
+    <p><b>AI가 ‘학습했다’는 것은 결국 무엇이 변했다는 뜻인가?</b></p>
+    <div class="rule sm"></div>
+    <p><b>사람이 정해 주어야 하는 값과 기계가 스스로 찾는 값은 어떻게 다른가?</b></p>
+    <div class="rule sm"></div>
+  </div>
+</div>
