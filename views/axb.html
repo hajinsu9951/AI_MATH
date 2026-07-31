@@ -1,0 +1,634 @@
+<!-- ═══════════ AXB (30차시: AI는 무엇을 '배우'는가 — 절편까지) ═══════════
+     · 파일 위치: views/axb.html  (신규)
+     · 전역 접두사 xb · 뷰 루트 id #v-axb · 모든 스타일 규칙은 #v-axb 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     · 교육과정 준수: 회전변환·회전행렬·역행렬·행렬식·내적 기호·조건부확률 기호 미사용.
+       편미분(∂)은 본문에서 계산하지 않고 [선택 심화·평가 제외] 배지 아래 소개로만 다룹니다.
+     · 주의: 오늘의 y = ax + b 는 연립방정식(행렬 방정식) Ax = b 가 아닙니다 — 헷갈리지 않기 카드로 초반에 못박습니다.
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-axb">
+  <style>
+  /* axb 뷰 전용 스타일 (#v-axb 스코프 한정 — 전역 누수 금지) */
+  #v-axb .xb-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-axb .xb-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-axb .xb-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-axb .xb-hero{position:relative;}
+  #v-axb .xb-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-axb .xb-hero>*:not(.xb-wm){position:relative;}
+  #v-axb .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-axb .xb-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-axb .xb-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-axb .xb-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-axb .xb-ask{border-left:4px solid var(--accent);}
+  #v-axb .xb-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-axb .xb-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-axb .xb-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-axb .xb-ask li:last-child{margin-bottom:0;}
+
+  /* 헷갈리지 않기 경고 카드 */
+  #v-axb .xb-warn{border-left:5px solid var(--red);}
+  #v-axb .xb-warn h3{color:var(--red);}
+  #v-axb .xb-warn table{border-collapse:collapse;margin-top:0.6rem;width:100%;font-size:0.92rem;}
+  #v-axb .xb-warn th,#v-axb .xb-warn td{border:1px solid var(--border);padding:0.45rem 0.6rem;text-align:left;line-height:1.6;vertical-align:top;}
+  #v-axb .xb-warn th{background:var(--card-h);font-weight:700;white-space:nowrap;}
+
+  /* 공통 조각 */
+  #v-axb .xb-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-axb .xb-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-axb .xb-scroll{overflow-x:auto;max-width:100%;}
+  #v-axb .xb-fml{font-family:var(--mono);font-size:0.9rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;max-width:100%;}
+  #v-axb .xb-tbl{border-collapse:collapse;font-size:0.9rem;min-width:min(100%,22rem);}
+  #v-axb .xb-tbl th,#v-axb .xb-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-axb .xb-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-axb .xb-tbl td.l{text-align:left;}
+  /* 정오답 피드백(§15) — 700 weight · 1.05rem 이상 · 진한 대비 + 배경 하이라이트 */
+  #v-axb .xb-fb{font-size:1.05rem;font-weight:700;line-height:1.8;padding:0.7rem 0.95rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-axb .xb-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-axb .xb-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-axb .xb-fb b{color:var(--fg);}
+  #v-axb .xb-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:1rem;line-height:1.85;}
+  #v-axb .xb-fb:empty{display:none;}
+  #v-axb .xb-badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.06em;
+    border:1px solid var(--border);border-radius:9999px;padding:0.1rem 0.55rem;color:var(--muted);
+    background:var(--bg);vertical-align:middle;margin-left:0.3rem;white-space:nowrap;}
+  #v-axb .xb-badge.adv{border-color:var(--red);color:var(--red);}
+  #v-axb .xb-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-axb .xb-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-axb .xb-in.wide{flex:1 1 16rem;font-family:var(--sans);}
+  #v-axb .xb-in::-webkit-outer-spin-button,#v-axb .xb-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  /* 조작 요소 확대(§15) — 조작 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-axb .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-axb .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;text-transform:none;
+    font-family:var(--sans);}
+  #v-axb .tabs{flex-wrap:wrap;}
+  #v-axb .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-axb .ws-dl{max-width:100%;}
+  #v-axb .ws-btn{min-height:44px;flex-wrap:wrap;max-width:100%;word-break:keep-all;overflow-wrap:anywhere;}
+  #v-axb .mat-label{font-size:0.85rem;letter-spacing:0.06em;}
+
+  /* 슬라이더 행 (탐구①·②에서 공용) */
+  #v-axb .xb-slrow{display:flex;align-items:center;gap:0.6rem;margin:0.6rem 0;flex-wrap:wrap;}
+  #v-axb .xb-slrow .nm{font-family:var(--mono);font-size:0.88rem;font-weight:700;width:6.2rem;flex-shrink:0;}
+  #v-axb .xb-slrow .nm.a{color:var(--red);}
+  #v-axb .xb-slrow .nm.b{color:var(--blue);}
+  #v-axb .xb-slrow input[type=range]{flex:1 1 8rem;min-width:6rem;max-width:100%;accent-color:var(--fg);}
+  #v-axb .xb-slrow input[type=range]:disabled{opacity:0.4;}
+  #v-axb .xb-slrow .vl{font-family:var(--mono);font-size:0.95rem;font-weight:700;width:4rem;text-align:right;flex-shrink:0;}
+
+  /* 캔버스 영역 */
+  #v-axb .xb-canvases{display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;margin-top:0.8rem;}
+  #v-axb .xb-cvbox{flex:1 1 15rem;min-width:0;max-width:100%;text-align:center;}
+  #v-axb .xb-cv{display:block;width:100%;height:auto;max-width:100%;border:1px solid var(--border);
+    border-radius:0.5rem;background:var(--card);touch-action:none;}
+  #v-axb .xb-cvcap{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.35rem;line-height:1.6;}
+  #v-axb .xb-cvcap b{color:var(--fg);}
+
+  /* 상태 표시줄 */
+  #v-axb .xb-stat{display:flex;flex-wrap:wrap;gap:0.5rem 1.1rem;align-items:baseline;margin:0.7rem 0 0.2rem;
+    font-family:var(--mono);font-size:0.92rem;}
+  #v-axb .xb-stat b{font-size:1.05rem;color:var(--fg);}
+  #v-axb .xb-stat .best{color:var(--blue);}
+  #v-axb .xb-ctl{display:flex;flex-wrap:wrap;gap:0.55rem;align-items:center;margin-top:0.7rem;}
+  #v-axb label.xb-chk{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.98rem;color:var(--body);
+    margin:0.8rem 0 0;cursor:pointer;line-height:1.65;}
+  #v-axb label.xb-chk input{width:1.2rem;height:1.2rem;margin-top:0.35rem;flex-shrink:0;accent-color:var(--fg);cursor:pointer;}
+
+  /* 정리 카드 */
+  #v-axb .xb-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-axb .xb-3line li{font-size:1.06rem;font-weight:700;color:var(--fg);line-height:1.75;}
+  #v-axb .xb-obs{width:100%;min-height:4.4rem;resize:vertical;border:1px solid var(--border);border-radius:var(--radius);
+    background:var(--bg);color:var(--fg);padding:0.55rem 0.7rem;font-family:inherit;font-size:0.98rem;
+    line-height:1.8;margin-top:0.5rem;}
+  #v-axb .xb-fold{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.2rem;}
+  #v-axb .xb-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);
+    padding:0.6rem 0;position:relative;padding-right:1.4rem;min-height:44px;display:flex;align-items:center;flex-wrap:wrap;gap:0.4rem;}
+  #v-axb .xb-fold>summary::-webkit-details-marker{display:none;}
+  #v-axb .xb-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-axb .xb-fold[open]>summary::after{content:'▾';}
+  #v-axb .xb-fold>summary .rl{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.12em;color:var(--muted);margin-right:0.6rem;}
+  #v-axb .xb-fold .bd{padding:0.2rem 0 0.5rem;}
+  #v-axb .xb-fold .bd p{font-size:1rem;color:var(--body);line-height:1.85;margin-bottom:0.7rem;}
+
+  /* 참고 자료 · 공학 도구 카드 */
+  #v-axb .xb-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-axb .xb-refwrap{position:relative;min-width:0;}
+  #v-axb .xb-refwrap .rm{position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);
+    color:#fff;border-radius:9999px;width:1.8rem;height:1.8rem;cursor:pointer;font-size:0.95rem;line-height:1;z-index:2;}
+  #v-axb .xb-refwrap .rm:hover{background:var(--red);}
+  #v-axb .xb-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-axb .xb-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-axb .xb-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-axb .xb-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-axb .xb-ref .bd{padding:0.65rem 0.75rem;}
+  #v-axb .xb-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-axb .xb-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;overflow-wrap:anywhere;}
+  #v-axb .xb-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-axb .xb-tool{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.85rem 0.95rem;min-width:0;}
+  #v-axb .xb-tool .hd{display:flex;align-items:center;gap:0.45rem;font-weight:700;font-size:1.02rem;color:var(--fg);}
+  #v-axb .xb-tool .hd .em{font-size:1.3rem;line-height:1;}
+  #v-axb .xb-tool h4{font-size:0.95rem;font-weight:600;color:var(--body);margin:0.35rem 0 0.3rem;line-height:1.6;}
+  #v-axb .xb-tool ol{margin:0 0 0 1.1rem;padding:0;}
+  #v-axb .xb-tool li{font-size:0.92rem;color:var(--body);line-height:1.75;margin-bottom:0.15rem;overflow-wrap:anywhere;word-break:break-word;}
+  #v-axb .xb-tool a{display:inline-block;margin-top:0.45rem;font-size:0.92rem;color:var(--blue);}
+
+  /* 움직임 최소화 설정을 켠 사용자에게는 이동·전환을 즉시 끝냅니다(§9-7). */
+  @media (prefers-reduced-motion:reduce){
+    #v-axb *,#v-axb *::before,#v-axb *::after{transition-duration:0.001ms !important;animation-duration:0.001ms !important;}
+  }
+  @media (max-width:640px){
+    #v-axb .xb-wm{display:none;}
+    #v-axb .xb-slrow .nm{width:5rem;font-size:0.8rem;}
+    #v-axb .xb-warn table{font-size:0.82rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="xb-hero">
+    <svg class="xb-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <line x1="150" y1="20" x2="150" y2="140" stroke="currentColor" stroke-width="3"/>
+      <line x1="40" y1="140" x2="300" y2="140" stroke="currentColor" stroke-width="3"/>
+      <g fill="currentColor">
+        <circle cx="60" cy="130" r="5"/><circle cx="105" cy="110" r="5"/><circle cx="150" cy="90" r="5"/>
+        <circle cx="195" cy="70" r="5"/><circle cx="240" cy="40" r="5"/>
+      </g>
+      <line x1="55" y1="132" x2="245" y2="42" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="150" cy="88" r="6" fill="none" stroke="currentColor" stroke-width="3"/>
+      <text x="160" y="84" font-family="monospace" font-size="16" font-weight="700" fill="currentColor">b</text>
+      <g font-family="monospace" font-size="16" font-weight="700" fill="currentColor">
+        <rect x="40" y="158" width="90" height="6" rx="3" fill="currentColor" opacity="0.35"/>
+        <circle cx="100" cy="161" r="7" fill="currentColor"/>
+        <text x="40" y="176" font-size="13">a</text>
+        <rect x="170" y="158" width="90" height="6" rx="3" fill="currentColor" opacity="0.35"/>
+        <circle cx="230" cy="161" r="7" fill="currentColor"/>
+        <text x="170" y="176" font-size="13">b</text>
+      </g>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">30차시 · Ⅳ. 예측과 최적화</p>
+    <h2>AI는 무엇을 '배우'는가 — 절편까지</h2>
+    <p class="desc">
+      28차시까지 우리는 기울기 <b>a</b> 하나만 움직이며 손실을 줄였습니다. 그런데 좋은 직선이 꼭
+      원점 (0, 0)을 지나야 한다는 법은 없습니다. 오늘은 <b>y = ax + b</b> 에서 기울기 a와 절편 b,
+      두 값을 <b>동시에</b> 움직이며 "AI가 배운다"는 말이 실제로 무엇을 뜻하는지 끝까지 확인합니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① y = ax + b 에서 기울기 a와 절편 b가 경사하강법으로 <b>동시에 갱신</b>되는 과정을 관찰하고 설명할 수 있다. <b>[12인수04-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 절편 b를 0으로 고정한 경우(28차시)와 a, b를 함께 갱신한 경우를 <b>수치로 비교</b>하여, 절편이 예측에 미치는 영향을 설명할 수 있다. <b>[12인수04-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ '학습'이란 손실이 줄어드는 방향으로 <b>가중치가 조금씩 함께 바뀌는 과정</b>임을 자신의 말로 정리할 수 있다. <b>[12인수04-02]</b>
+    </div>
+    <div class="xb-goalmap">
+      <button type="button" onclick="xbSee(0,'xb-t1-problem')">목표 ① → 탐구 ① 「절편 없이는 안 되는 이유」로 이동</button>
+      <button type="button" onclick="xbSee(1,'xb-t2-manip')">목표 ② → 탐구 ② 「a와 b, 함께 내려가기」로 이동</button>
+      <button type="button" onclick="xbSee(1,'xb-summary')">목표 ③ → STEP 3 정리로 이동</button>
+    </div>
+  </div>
+
+  <div class="card xb-warn" data-no-toggle="1">
+    <h3>⚠️ 헷갈리지 않기 — 오늘의 y = ax + b 는 연립방정식 Ax = b 가 아닙니다</h3>
+    <p>16~20차시에서는 큰 글자 <b>A, B</b> 로 행렬을 다루었습니다. 혹시 오늘 제목의 글자 a, x, b를 보고
+      '행렬 방정식 <b>Ax = b</b>(x를 구하는 연립방정식)'를 떠올렸다면, 완전히 다른 이야기입니다.</p>
+    <div class="xb-scroll"><table>
+      <tr><th></th><th>오늘 — y = ax + b</th><th>다른 이야기 — Ax = b</th></tr>
+      <tr><td class="l"><b>a, b의 정체</b></td><td class="l">행렬이 아니라 직선의 <b>기울기·절편</b>(실수 두 개)</td><td class="l">행렬 A, 벡터 b</td></tr>
+      <tr><td class="l"><b>구하는 대상</b></td><td class="l">a와 b (가중치, 우리가 오늘 갱신하는 값)</td><td class="l">x (미지수 벡터)</td></tr>
+      <tr><td class="l"><b>이 교재에서</b></td><td class="l">경사하강법으로 오늘 다룹니다</td><td class="l">역행렬·행렬식이 필요해 다루지 않습니다</td></tr>
+    </table></div>
+    <p class="xb-hint" style="margin-top:0.6rem;">기억할 것은 하나입니다 — 오늘 a, x, b는 모두 <b>그냥 숫자</b>이고, x는 미지수가 아니라 <b>입력값(데이터)</b>입니다.</p>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips xb-keys" data-no-toggle="1">
+    <span class="chip">절편 b</span>
+    <span class="chip">손실함수 L(a, b)</span>
+    <span class="chip">경사하강법(동시 갱신)</span>
+    <span class="chip">학습 = 가중치 갱신</span>
+    <span class="chip">편미분 [선택 심화]</span>
+  </div>
+
+  <div class="card xb-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p>오늘 수업은 이 물음에 답하기 위한 여정입니다. STEP 3에서 다시 만나 답을 완성합니다.</p>
+    <ul>
+      <li>AI가 데이터를 "학습한다"고 할 때, 컴퓨터 안에서 실제로 바뀌는 것은 무엇일까?</li>
+    </ul>
+    <p style="margin-top:0.7rem;"><b>보조 질문 ①</b> 기울기 a만 바뀌는 것과 a, b가 함께 바뀌는 것은 무엇이 다를까요?<br>
+      <b>보조 질문 ②</b> 만약 조절할 수 있는 값(가중치)이 100개라면, '학습'은 어떻게 달라질까요?</p>
+    <p class="xb-src">근거 — 28차시 「경사하강법 — 학습률과 수렴·발산」의 aₙ₊₁ = aₙ − k·L′(aₙ) 를 y = ax + b로 확장</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="xb-step"><p class="mono">STEP 1 · 도입 — 생각 열기 (7분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 가중치는 어떻게 스스로 바뀔까</h3>
+    <p>카드를 누르면 전체 화면으로 재생됩니다(✕ 또는 ESC로 닫기). 선생님께서는
+      <b>[+ 선생님 영상 추가]</b> 칸에 다른 영상을 걸 수 있습니다.</p>
+    <div id="xb-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="xb-warm"></div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="xb-step"><p class="mono">STEP 2 · 전개 — 탐구 활동 (36분)</p></div>
+
+  <div class="info" data-no-toggle="1"><strong>오늘의 서사</strong> —
+    ① 절편 없이는 안 되는 이유를 손으로 확인 → ② a와 b를 <b>함께</b> 경사하강시키며 28차시(a만)와 비교
+    → ③ '학습 = 가중치 갱신'으로 일반화.
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="xbTab(0,this)">① 절편 없이는 안 되는 이유</button>
+    <button class="tab" onclick="xbTab(1,this)">② a와 b, 함께 내려가기</button>
+  </div>
+
+  <!-- ── TAB 0 : 탐구 ① ─────────────────────────────────────────────── -->
+  <div class="tpanel on" id="xb0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (14분)</strong> —
+      절편 b를 0으로 묶어 둔 채(28차시 방식) 기울기 a만 아무리 바꾸어도 손실이 어떤 값 아래로는 내려가지 않음을
+      <b>직접 찾아보며</b> 확인합니다. 진행 순서: <b>문제 상황</b> → <b>조작</b> → <b>관찰·정리</b> → <b>정의 확인</b> → <b>판정 문제</b>.
+    </div>
+
+    <div class="card" data-no-toggle="1" id="xb-t1-problem">
+      <h3>문제 상황 — 원점에 묶인 직선</h3>
+      <p>아래 다섯 개의 점 <b>(−2, 1), (−1, 3), (0, 5), (1, 7), (2, 10)</b> 에 가장 가까운 직선을 찾고 싶습니다.
+        28차시처럼 <b>y = ax</b> (b는 항상 0)만 쓴다면, a를 아무리 잘 고르더라도 이 점들을 완전히 지날 수 있을까요?</p>
+      <div class="btn-row">
+        <input class="xb-in wide" id="xb-t1-guess" type="text" placeholder="예) 원점을 지나야 하니 어려울 것 같다 / 아니다, a만 잘 고르면 된다" aria-label="내 예상">
+        <button class="btn pri" type="button" onclick="xbT1Open()">제출</button>
+      </div>
+      <div class="xb-fb" id="xb-t1-fb0"></div>
+    </div>
+
+    <div class="card xb-veil" id="xb-t1-manip" data-no-toggle="1">
+      <h3>조작 — a 슬라이더로 최선을 다해 맞춰 보기 (b는 0으로 고정)</h3>
+      <p>슬라이더로 <b>a</b>만 움직일 수 있습니다. 손실 L이 가장 작아지는 지점을 찾아보세요.
+        찾아낸 가장 작은 손실은 자동으로 기록됩니다.</p>
+      <div class="xb-slrow">
+        <span class="nm a">기울기 a</span>
+        <input type="range" id="xb-t1-a" min="-1" max="4" step="0.02" value="0">
+        <span class="vl" id="xb-t1-av">0.00</span>
+      </div>
+      <div class="xb-canvases">
+        <div class="xb-cvbox"><canvas class="xb-cv" id="xb-t1-cv" width="300" height="220"></canvas>
+          <p class="xb-cvcap">점 5개(●)와 지금의 직선 y = ax (b = 0 고정)</p></div>
+      </div>
+      <div class="xb-stat">
+        <span>현재 손실 L(a, 0) = <b id="xb-t1-loss">—</b></span>
+        <span class="best">지금까지 찾은 가장 작은 손실 = <b id="xb-t1-best">—</b></span>
+      </div>
+      <div class="btn-row" style="margin-top:0.7rem;">
+        <button class="btn" type="button" onclick="xbT1Reveal()">이론적 최솟값 확인하기</button>
+      </div>
+      <div class="xb-fb" id="xb-t1-fb1"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰·정리 — 그래프를 위아래로 옮기는 힘이 없다</h3>
+      <p>a를 아무리 세밀하게 조절해도(가장 좋은 a = 2.2일 때도) 손실은 <b>27.12</b> 아래로 내려가지 않습니다.
+        다섯 점은 모두 직선보다 <b>위쪽</b>에 몰려 있는데, b = 0으로 고정된 직선은 <b>위아래로 이동할 방법이 없기</b> 때문입니다.
+        기울기만으로는 부족합니다 — 직선을 통째로 밀어 올릴 <b>두 번째 가중치</b>가 필요합니다. 그것이 바로 <b>절편 b</b>입니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제</h3>
+      <div id="xb-t1-check"></div>
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 탐구 ② ─────────────────────────────────────────────── -->
+  <div class="tpanel" id="xb1">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (22분)</strong> —
+      절편 b의 잠금을 풀고, a와 b가 경사하강법에 따라 <b>한 걸음씩 함께</b> 움직이는 과정을 애니메이션으로 관찰합니다.
+      "b 고정" 체크박스로 언제든 28차시 방식과 <b>같은 도구 위에서 직접 비교</b>합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1" id="xb-t2-problem">
+      <h3>문제 상황 — 이번엔 b의 잠금을 풉니다</h3>
+      <p>같은 다섯 개의 점 <b>(−2, 1), (−1, 3), (0, 5), (1, 7), (2, 10)</b> 입니다. 이번에는 a와 b를 <b>모두</b> 0에서 출발시켜,
+        경사하강법이 한 걸음씩 내려가는 모습을 지켜봅니다. 첫걸음만 손으로 확인해 볼까요?</p>
+      <p class="xb-fml">a = 0, b = 0 에서 시작 → 오차로 계산한 "밀어야 할 양"이 a 방향으로 −8.8, b 방향으로 −10.4 였습니다.<br>
+        학습률 k = 0.1 이면, 새 값 = 기존 값 − k × (밀어야 할 양) 이므로<br>
+        <b>a₁ = 0 − 0.1×(−8.8) = 0.88</b> &nbsp;·&nbsp; <b>b₁ = 0 − 0.1×(−10.4) = 1.04</b></p>
+      <p class="xb-hint">28차시에서 a 하나로 했던 계산을, 오늘은 a와 b 두 번 반복할 뿐입니다. 아래 조작에서 이 걸음을 계속 이어가 봅니다.</p>
+    </div>
+
+    <div class="card" id="xb-t2-manip" data-no-toggle="1">
+      <h3>조작 — 경사하강 애니메이션 (두 슬라이더 · 자취 표시)</h3>
+      <p>슬라이더를 직접 움직여 손으로 맞춰볼 수도 있고, <b>[1 걸음 내려가기]</b>나 <b>[자동 재생]</b>으로
+        경사하강법이 스스로 내려가는 모습을 볼 수도 있습니다. 걸음을 옮길 때마다 오른쪽 자취 그래프에 점이 하나씩 남습니다.</p>
+
+      <div class="xb-slrow">
+        <span class="nm a">기울기 a</span>
+        <input type="range" id="xb-t2-a" min="0" max="3" step="0.01" value="0">
+        <span class="vl" id="xb-t2-av">0.00</span>
+      </div>
+      <div class="xb-slrow">
+        <span class="nm b">절편 b</span>
+        <input type="range" id="xb-t2-b" min="0" max="6.5" step="0.01" value="0">
+        <span class="vl" id="xb-t2-bv">0.00</span>
+      </div>
+
+      <label class="xb-chk"><input type="checkbox" id="xb-t2-fix">
+        <span><b>절편 b 고정 (28차시처럼 a만 학습)</b> — 체크하면 b는 0에 묶이고, 걸음마다 a만 움직입니다. 체크를 풀면 처음부터 다시 시작합니다.</span>
+      </label>
+
+      <div class="xb-ctl">
+        <button class="btn pri" type="button" id="xb-t2-step" onclick="xbT2Step()">1 걸음 내려가기</button>
+        <button class="btn" type="button" id="xb-t2-play" onclick="xbT2PlayToggle()">▶ 자동 재생</button>
+        <button class="btn" type="button" onclick="xbT2Reset()">초기화</button>
+      </div>
+
+      <div class="xb-canvases">
+        <div class="xb-cvbox"><canvas class="xb-cv" id="xb-t2-fit" width="300" height="220"></canvas>
+          <p class="xb-cvcap">점 5개와 지금의 직선 <b>y = ax + b</b></p></div>
+        <div class="xb-cvbox"><canvas class="xb-cv" id="xb-t2-trace" width="240" height="220"></canvas>
+          <p class="xb-cvcap">자취 — 가로축 a, 세로축 b. ⊙ 표시가 목표 지점(2.2, 5.2)</p></div>
+      </div>
+
+      <div class="xb-stat">
+        <span>걸음 수 = <b id="xb-t2-n">0</b></span>
+        <span>현재 손실 L(a, b) = <b id="xb-t2-loss">36.80</b></span>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 기울기는 같아도, 절편이 있고 없고의 차이</h3>
+      <p>충분히 걸음을 옮기면 오늘 방식은 <b>a ≈ 2.2, b ≈ 5.2</b>, 손실 <b>0.08</b> 근처로 내려갑니다. 그런데 "b 고정" 모드로
+        같은 걸음을 밟으면 a는 <b>똑같이 2.2</b>로 수렴하는데도 손실은 <b>27.12</b>에 그대로 머뭅니다.</p>
+      <div class="xb-scroll"><table class="xb-tbl">
+        <tr><th></th><th>기울기 a</th><th>절편 b</th><th>손실 L</th></tr>
+        <tr><td class="l">28차시 방식 (b 고정)</td><td>2.20</td><td>0 (고정)</td><td>27.12</td></tr>
+        <tr><td class="l">오늘 방식 (a, b 함께)</td><td>2.20</td><td>5.20</td><td><b>0.08</b></td></tr>
+      </table></div>
+      <p class="xb-hint" style="margin-top:0.5rem;">27.12 ÷ 0.08 = <b>339</b>. 절편 하나를 더 배우는 것만으로 손실이 300배 넘게 줄었습니다 —
+        기울기가 "맞아도" 절편이 없으면 소용없다는 뜻입니다.</p>
+      <details class="xb-fold">
+        <summary><span class="rl">실제 데이터로</span>28차시 아이스티 데이터에도 그대로 적용됩니다</summary>
+        <div class="bd">
+          <p>28차시에서 실제로 학습시킨 아이스티 판매 데이터(기온·판매량 10일치)에서도 같은 일이 벌어집니다.
+            b를 0으로 고정했던 28차시는 a = <b>2.427</b>에 수렴했고 손실은 <b>8.04</b>였습니다.
+            같은 데이터에 오늘처럼 a, b를 함께 학습시키면 a ≈ <b>2.932</b>, b ≈ <b>−14.69</b>로 수렴하고
+            손실은 <b>1.53</b>까지 줄어듭니다(약 1/5.3). 절편을 허락하는 순간 직선이 데이터에 훨씬 가까워집니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정의 확인 — 경사하강법(동시 갱신)과 '학습'</h3>
+      <p><b>경사하강법(동시 갱신)</b> — 오차 정보를 이용해 a가 움직일 방향·양과 b가 움직일 방향·양을 각각 계산하고,
+        학습률 k를 곱해 <b>a와 b를 같은 순간에</b> 조금씩 갱신하는 과정입니다. 28차시의 방법을 가중치 <b>두 개</b>로 넓힌 것입니다.</p>
+      <p><b>학습(learning)</b> — 손실이 줄어드는 방향으로 가중치(오늘은 a와 b)가 <b>한 걸음씩, 함께</b> 바뀌는 과정. 그 이상도 이하도 아닙니다.</p>
+      <details class="xb-fold">
+        <summary><span class="rl">선택 심화</span>"밀어야 할 양"은 사실 편미분입니다<span class="xb-badge adv">평가 제외</span></summary>
+        <div class="bd">
+          <p>오늘 a와 b를 <b>각각</b> 얼마나, 어느 방향으로 밀지 계산한 값은 사실 손실함수 L(a, b)를 <b>a에 대해서만</b>,
+            <b>b에 대해서만</b> 따로 미분한 값입니다. 이렇게 여러 변수 중 <b>하나만 남기고 나머지는 잠깐 상수 취급</b>하여
+            미분하는 것을 <b>편미분</b>이라 하고, 기호로는 ∂L/∂a, ∂L/∂b 로 씁니다.</p>
+          <p>이 다섯 점 자료에서는 ∂L/∂a = (2/5)Σ(ax+b−y)x, ∂L/∂b = (2/5)Σ(ax+b−y) 로 계산됩니다. a=0, b=0일 때
+            값이 각각 −8.8, −10.4로 나온 것도 이 식에서 나옵니다.</p>
+          <p><b>이 내용은 오늘 형성평가와 정기고사 범위에 포함되지 않습니다.</b> 27차시의 "한 값에 대한 미분계수"가
+            변수 두 개로 늘어나면 이런 모습이 된다는 것만 눈으로 확인해 두면 충분합니다. 더 배우고 싶다면
+            대학 과정의 다변수 미적분학에서 정식으로 다룹니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제</h3>
+      <div id="xb-t2-check"></div>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="xb-step"><p class="mono">STEP 3 · 정리 — 배움 다지기 (5분)</p></div>
+
+  <div class="card xb-ask" data-no-toggle="1" id="xb-summary">
+    <h3>오늘의 핵심 · 핵심 질문에 답하기</h3>
+    <ul class="xb-3line">
+      <li>🎚️ y = ax + b 에서는 기울기 a와 절편 b, <b>두 가중치가 동시에</b> 경사하강법으로 갱신된다</li>
+      <li>📉 절편이 없으면(b = 0 고정) 직선이 위아래로 움직이지 못해 손실이 일정 수준 아래로 내려가지 않는다</li>
+      <li>🧠 '학습'이란 손실이 줄어드는 방향으로 가중치들이 <b>조금씩, 함께</b> 바뀌는 과정이다</li>
+    </ul>
+    <p style="margin-top:1rem;"><b>❓ AI가 데이터를 '학습한다'고 할 때, 실제로 바뀌는 것은 무엇일까?</b><br>
+      <b>답</b> — 손실이 줄어드는 방향으로, 컴퓨터 안의 <b>가중치(오늘은 a와 b)</b>가 경사하강법에 따라 한 걸음씩 바뀌는 것입니다.
+      오늘은 가중치가 2개였지만, 실제 인공지능 모델은 이런 가중치를 수백만~수십억 개까지 동시에 갱신합니다 — 원리는 오늘과 같습니다.</p>
+    <label for="xb-obs" style="display:block;margin-top:0.9rem;font-weight:600;color:var(--fg);">내 말로 정리하기 — '학습'이란 무엇인가요? (2~3문장)</label>
+    <textarea class="xb-obs" id="xb-obs" placeholder="예) 학습이란 ... 이다. 왜냐하면 ..."></textarea>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="xb-quiz"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" onclick="go('optim')">
+      <h3>돌아보기 · 28차시 — 경사하강법, 그 시작</h3>
+      <p>기울기 a 하나만 갱신하던 그 자리로 돌아가, 학습률과 수렴·발산을 다시 확인해 봅니다.</p>
+    </div>
+    <div class="card-link" onclick="go('inquiry')">
+      <h3>다음 차시 · 31차시 — 탐구의 다섯 걸음과 윤리의 경계선</h3>
+      <p>Ⅳ단원 예측과 최적화를 마치고, Ⅴ단원 인공지능과 수학 탐구로 넘어갑니다.</p>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고</strong> —
+    Ⅳ단원(예측과 최적화)이 오늘로 끝납니다. 21~30차시에서 배운 상대도수·추세선·손실함수·경사하강법·오늘의
+    '가중치 갱신'을 다음 Ⅴ단원(인공지능과 수학 탐구, 31~34차시)의 <b>실제 탐구 프로젝트</b>에 적용해 볼 차례입니다.
+    <span style="display:block;margin-top:0.5rem;">
+      <button class="btn pri" type="button" onclick="go('inquiry')">31차시로 이동 →</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>우리 모둠 예측 모델에 절편 더하기</h3>
+    <p class="sub">28~29차시에서 만든 "a만 있는" 예측 모델(또는 오늘 위젯의 다섯 점)에 절편 b를 더해 다시 학습시키고,
+      손실이 얼마나 줄었는지 수치로 보고합니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 29차시 스프레드시트 모델(또는 자신이 고른 데이터 5~10개)을 가져옵니다.
+        ② 예측식을 y = ax 에서 <b>y = ax + b</b> 로 바꾸고, a, b 초기값을 0으로 둡니다.
+        ③ 오늘 배운 갱신식으로 <b>5걸음 이상</b> 손으로(또는 스프레드시트로) 계산합니다.
+        ④ b = 0로 고정했을 때와 a, b를 함께 학습했을 때의 <b>손실을 표로 비교</b>합니다.
+        ⑤ '학습'의 의미를 자신의 말로 3~5문장으로 씁니다.</dd>
+      <dt>제출물</dt>
+      <dd>갱신 계산 표(걸음별 a, b, 손실) + 직선 2개를 비교한 그래프 + 3~5문장 서술</dd>
+      <dt>평가 관점</dt>
+      <dd><b>[12인수04-02]</b> a, b가 함께 갱신되는 과정을 정확한 수식·수치로 표현하는가.<br>
+        절편의 역할을 손실 값의 변화로 <b>구체적으로</b> 설명하는가.<br>
+        태도 — '학습'을 자신의 언어로, 오늘 활동에 근거해 서술하는가.</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. 아래 네 도구는 모두 오늘의 다섯 점 <b>(−2,1),(−1,3),(0,5),(1,7),(2,10)</b> 로 실습할 수 있습니다.</p>
+    <div id="xb-ref-custom" class="xb-refs"></div>
+    <div class="btn-row" style="align-items:center;">
+      <input class="xb-in wide" id="xb-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="추가할 자료 주소">
+      <input class="xb-in wide" id="xb-ref-tt" type="text" placeholder="자료 제목(선택)" aria-label="추가할 자료 제목">
+      <button class="btn pri" type="button" onclick="xbRefAdd()">+ 자료 추가</button>
+    </div>
+    <p class="status" id="xb-ref-st">교사용 — 추가한 자료는 이 기기에만 저장됩니다. 패들렛 링크도 여기에 걸 수 있습니다.</p>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.4rem;">공학 도구로 확인하기</p>
+    <div class="xb-tools">
+      <div class="xb-tool">
+        <div class="hd"><span class="em">📊</span>스프레드시트</div>
+        <h4>두 열(a, b)을 갱신해 손으로 경사하강 재현하기</h4>
+        <ol>
+          <li>A·B열에 x, y 값 5개 입력: (−2,1) (−1,3) (0,5) (1,7) (2,10)</li>
+          <li>D2, E2 셀에 a, b 초기값 0 입력</li>
+          <li>F열에 잔차 <b>=$D$2*A2+$E$2-B2</b>, G열에 <b>=F2*A2</b> (a 방향 합산용) 작성</li>
+          <li>새 행에 <b>a_new = D2-0.1*(2/5)*SUM(G2:G6)</b>, <b>b_new = E2-0.1*(2/5)*SUM(F2:F6)</b> 작성 후 아래로 20행 반복</li>
+          <li>20행쯤에서 a, b가 2.2, 5.2 근처로 수렴하는지 확인</li>
+        </ol>
+        <p class="xb-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="xb-tool">
+        <div class="hd"><span class="em">🐍</span>코랩</div>
+        <h4>다섯 점으로 a, b를 함께 갱신하는 파이썬 반복문</h4>
+        <ol>
+          <li>노트북을 열고 <b>런타임 → 모두 실행</b></li>
+          <li><b>x = [-2,-1,0,1,2]; y = [1,3,5,7,10]</b> 입력</li>
+          <li><b>a = 0.0; b = 0.0; k = 0.1</b> 초기화</li>
+          <li><b>for _ in range(24):</b> 잔차 → dLda, dLdb 계산 → a, b 갱신 (오늘 위젯과 같은 식)</li>
+          <li>24번째 a, b 값을 오늘 위젯의 결과와 비교</li>
+        </ol>
+        <a href="https://colab.research.google.com/" target="_blank" rel="noopener">코랩 열기 ↗</a>
+        <p class="xb-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="xb-tool">
+        <div class="hd"><span class="em">📐</span>지오지브라</div>
+        <h4>슬라이더 a, b로 손실 L(a, b)의 최솟값 찾기</h4>
+        <ol>
+          <li><b>geogebra.org/calculator</b> 열기</li>
+          <li>슬라이더 <b>a</b>(0~3), <b>b</b>(0~7) 만들기</li>
+          <li><b>f(x)=a*x+b</b> 그리고 점 A=(−2,1), B=(−1,3), C=(0,5), D=(1,7), E=(2,10) 입력</li>
+          <li>슬라이더를 움직여 다섯 점에 f(x)가 가장 가깝게 지나는 자리를 찾기</li>
+          <li>오늘 위젯이 찾은 (2.2, 5.2)와 비교</li>
+        </ol>
+        <a href="https://www.geogebra.org/calculator" target="_blank" rel="noopener">지오지브라 계산기 열기 ↗</a>
+        <p class="xb-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="xb-tool">
+        <div class="hd"><span class="em">🧮</span>알지오매스</div>
+        <h4>두 슬라이더로 직선과 점을 함께 관찰하기</h4>
+        <ol>
+          <li><b>algeomath.kr</b> → <b>[알지오매스 시작]</b></li>
+          <li>슬라이더 도구로 a, b 만들기</li>
+          <li>직선과 점 5개를 입력해 눈대중으로 맞춰 보기</li>
+          <li>오늘 위젯의 최종값(2.2, 5.2)과 비교</li>
+        </ol>
+        <a href="https://www.algeomath.kr" target="_blank" rel="noopener">알지오매스 열기 ↗</a>
+        <p class="xb-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>30차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>오늘 웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('xb-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+    </div>
+    <p class="xb-hint" style="margin-top:0.5rem;">PDF·HWPX 인쇄물은 별도 준비되면 이 자리에 버튼으로 추가됩니다(NOTE.md 참고).</p>
+    <div id="xb-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄용 학습지 지면 (A4 2쪽) ═════ -->
+  <div class="ws-sheet" id="xb-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>30차시 학습지 — AI는 무엇을 '배우'는가, 절편까지</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>① 마중 퀴즈 기록 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:52%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>a만 잘 조절하면 절편 b는 몰라도 된다 (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>y=ax+b로 넓히면 한 걸음에 갱신되는 값의 개수는?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>'AI가 학습한다'를 가장 정확히 설명한 말은?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 탐구 ① — 절편 없이는 안 되는 이유</h3>
+    <p class="note">다섯 점 (−2,1) (−1,3) (0,5) (1,7) (2,10) 에 y=ax(b=0 고정)를 맞춰 보고 답하세요.</p>
+    <table>
+      <tr><th>내가 찾은 가장 좋은 a</th><th>그때의 손실(눈대중)</th><th>이론적 최솟값 a, 손실</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">b=0으로는 손실이 왜 27.12보다 작아지지 않을까요? (2줄)</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 탐구 ② — a와 b, 함께 내려가기</h3>
+    <p class="note">a=0, b=0에서 출발. 학습률 k=0.1. 첫 걸음을 손으로 계산해 보세요(밀어야 할 양 a방향 −8.8, b방향 −10.4).</p>
+    <table>
+      <tr><th>a₁ = 0 − 0.1×(　　)</th><th>b₁ = 0 − 0.1×(　　)</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">걸음 5, 10, 20에서 위젯이 보여 준 a, b 값을 옮겨 적으세요.</p>
+    <table>
+      <tr><th>걸음</th><th>a</th><th>b</th><th>손실 L</th></tr>
+      <tr><td>5</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>10</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>20</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>④ 형성평가</h3>
+    <ol>
+      <li>y=ax+b에서 절편 b의 역할로 가장 알맞은 것은?<br>
+        ① 기울어진 정도 결정 ② 직선을 위아래로 평행이동 ③ 학습 종료 시점 결정 ④ 데이터 개수 결정 &nbsp; 답: ______</li>
+      <li>b=0 고정 시 손실이 27.12에서 내려가지 않는 까닭은? (1줄)<br>
+        답: ______________________</li>
+      <li>a,b를 함께 학습해 손실이 0.08이 되면, 27.12일 때보다 몇 배 줄어든 것인가?<br>
+        답: ______ 배 (계산: 27.12 ÷ 0.08)</li>
+      <li>a=0,b=0에서 밀어야 할 양이 a방향 −8.8, b방향 −10.4, k=0.1일 때 첫 걸음의 a, b는?<br>
+        a₁=______ , b₁=______</li>
+      <li>28차시와 오늘 수업의 관계를 가장 정확히 설명한 것은?<br>
+        ① 완전히 다른 알고리즘이다 ② 28차시는 오늘 방법에서 b를 0으로 고정한 특수한 경우다
+        ③ 데이터가 더 많이 필요하다 ④ b는 경사하강법과 무관하다 &nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑤ 핵심 질문</h3>
+    <p><b>AI가 데이터를 '학습한다'고 할 때, 실제로 바뀌는 것은 무엇일까?</b></p>
+    <div class="rule lg"></div>
+
+    <h3>⑥ 자기 점검</h3>
+    <table>
+      <tr><th>점검 항목</th><th>◎ / ○ / △</th></tr>
+      <tr><td>a와 b가 함께 갱신되는 경사하강법 과정을 설명할 수 있다</td><td class="blank"></td></tr>
+      <tr><td>절편 b가 없을 때와 있을 때의 차이를 수치로 비교할 수 있다</td><td class="blank"></td></tr>
+      <tr><td>'학습 = 가중치 갱신'이라는 정의를 내 말로 설명할 수 있다</td><td class="blank"></td></tr>
+    </table>
+  </div>
+</div>

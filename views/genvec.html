@@ -1,0 +1,1037 @@
+<!-- ═══════════ GENVEC (35차시: 언어를 벡터로, 다음 말을 확률로) ═══════════
+     · 파일 위치: views/genvec.html  (신규)
+     · 전역 접두사 gv · 뷰 루트 id #v-genvec · 모든 스타일 규칙은 #v-genvec 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     · 6단원 「생성형 AI와 수학」 첫 차시 — 단원 전체가 [선택 심화 · 평가 제외].
+       성취기준 밖 심화이므로 이 뷰에는 성취기준 코드 배지를 달지 않는다(회수 칩으로 대체).
+     · 교육과정 준수: 벡터의 유사도는 11차시와 같은 "성분끼리 곱해 더한 값 ÷ 크기의 곱" 서술만
+       사용하고 그 연산을 가리키는 전문 기호·전문 용어는 소스에 두지 않는다(설계서 §0-3 참조).
+       확률은 상대도수 서술만 사용하고 그 전문 기호도 두지 않는다. 다양성 조절값은 제곱·제곱근
+       정규화만 사용하고 지수함수 기반 정규화 함수는 쓰지 않는다. 가운뎃점은 목록 구분 기호로만 사용.
+       '임베딩'·'어텐션'·'토큰'·'온도'는 [참고 용어] 배지 + 괄호 병기로만 노출.
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-genvec">
+  <style>
+  /* genvec 뷰 전용 스타일 (#v-genvec 스코프 한정 — 전역 누수 금지) */
+  #v-genvec{--warn:#a8631c;--warn-bg:rgba(168,99,28,0.12);}
+  #v-genvec .gv-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-genvec .gv-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-genvec .gv-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-genvec .gv-hero{position:relative;}
+  #v-genvec .gv-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-genvec .gv-hero>*:not(.gv-wm){position:relative;}
+  #v-genvec .vw-mark{display:none;}
+  #v-genvec .gv-adv{background:var(--warn-bg);border:1px solid var(--warn);border-left:4px solid var(--warn);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.8rem 1rem;margin:0.6rem 0 1rem;}
+  #v-genvec .gv-adv h3{margin:0 0 0.4rem;font-size:1.02rem;color:var(--warn);}
+  #v-genvec .gv-adv p{margin:0;font-size:0.95rem;line-height:1.75;color:var(--body);}
+  #v-genvec .gv-badge-adv{display:inline-block;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.05em;
+    border:1px solid var(--warn);color:var(--warn);background:var(--bg);border-radius:9999px;
+    padding:0.15rem 0.6rem;margin-bottom:0.3rem;font-weight:700;}
+  #v-genvec .gv-recall{display:flex;flex-direction:column;gap:0.5rem;margin-top:1rem;background:var(--bg);
+    border:1px dashed var(--border);border-radius:var(--radius);padding:0.75rem 0.9rem;}
+  #v-genvec .gv-recall .ttl{font-size:0.92rem;color:var(--body);line-height:1.7;}
+  #v-genvec .gv-recall .row{display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;}
+  #v-genvec .gv-recall .lb{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-right:0.2rem;}
+  #v-genvec .gv-mini{font-family:var(--mono);font-size:0.76rem;border:1px solid var(--border);border-radius:9999px;
+    padding:0.2rem 0.6rem;background:var(--card);color:var(--body);cursor:pointer;min-height:30px;}
+  #v-genvec .gv-mini:hover{border-color:var(--fg);color:var(--fg);}
+  #v-genvec .gv-goal{margin-top:0.4rem;font-size:1rem;line-height:1.8;}
+  #v-genvec .gv-goal b.gt{color:var(--fg);}
+  #v-genvec .gv-ask{border-left:4px solid var(--accent);}
+  #v-genvec .gv-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-genvec .gv-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-genvec .gv-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-genvec .gv-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-genvec .gv-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-genvec .gv-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-genvec .gv-scroll{overflow-x:auto;max-width:100%;}
+  #v-genvec .gv-fml{font-family:var(--mono);font-size:0.9rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;max-width:100%;white-space:pre;}
+  #v-genvec .gv-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-genvec .gv-tbl th,#v-genvec .gv-tbl td{border:1px solid var(--border);padding:0.38rem 0.6rem;text-align:center;line-height:1.6;}
+  #v-genvec .gv-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-genvec .gv-tbl td.l{text-align:left;}
+  #v-genvec .gv-fb{font-size:1.05rem;font-weight:700;line-height:1.8;padding:0.7rem 0.95rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-genvec .gv-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-genvec .gv-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-genvec .gv-fb b{color:var(--fg);}
+  #v-genvec .gv-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:1rem;line-height:1.85;}
+  #v-genvec .gv-fb:empty{display:none;}
+  #v-genvec .gv-badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.06em;
+    border:1px solid var(--border);border-radius:9999px;padding:0.1rem 0.55rem;color:var(--muted);
+    background:var(--bg);vertical-align:middle;margin-left:0.3rem;white-space:nowrap;}
+  #v-genvec .gv-badge.ref{border-color:var(--accent);color:var(--body);}
+  #v-genvec .gv-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-genvec .gv-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-genvec .gv-in.num{width:4.6rem;text-align:center;}
+  #v-genvec .gv-in.wide{flex:1 1 16rem;font-family:var(--sans);}
+  #v-genvec select.gv-in{padding:0 0.4rem;min-height:44px;}
+  #v-genvec .gv-in::-webkit-outer-spin-button,#v-genvec .gv-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #v-genvec .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-genvec .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-genvec .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;text-transform:none;
+    font-family:var(--sans);}
+  #v-genvec .tabs{flex-wrap:wrap;}
+  #v-genvec .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-genvec .ws-dl{max-width:100%;}
+  #v-genvec .ws-btn{min-height:44px;flex-wrap:wrap;max-width:100%;word-break:keep-all;overflow-wrap:anywhere;}
+  #v-genvec .mat-label{font-size:0.85rem;letter-spacing:0.06em;}
+
+  /* 룰렛·지도·어텐션 캔버스 공통 */
+  #v-genvec .gv-cvwrap{text-align:center;min-width:0;}
+  #v-genvec .gv-cv{display:block;width:100%;height:auto;max-width:100%;border:1px solid var(--border);
+    border-radius:0.5rem;background:var(--card);margin:0 auto;}
+  #v-genvec .gv-cvcap{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin-top:0.35rem;line-height:1.6;}
+
+  /* 지도 위젯 */
+  #v-genvec .gv-eqrow{display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin:0.6rem 0;}
+  #v-genvec .gv-eqrow .op{font-family:var(--mono);font-weight:700;font-size:1.1rem;color:var(--fg);}
+  #v-genvec .gv-preset-lb{font-family:var(--mono);font-size:0.78rem;color:var(--muted);letter-spacing:0.05em;}
+  #v-genvec .gv-mapgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:0.8rem;margin-top:0.8rem;}
+  #v-genvec .gv-mapside{display:flex;flex-direction:column;gap:0.6rem;}
+
+  /* 학급 응답 분포(포인트 없는 여론조사식 막대) */
+  #v-genvec .gv-poll{margin-top:0.7rem;display:flex;flex-direction:column;gap:0.4rem;}
+  #v-genvec .gv-poll .pr{display:flex;align-items:center;gap:0.6rem;font-size:0.88rem;}
+  #v-genvec .gv-poll .pr .lb{flex:0 0 6.4rem;color:var(--body);font-size:0.85rem;overflow-wrap:anywhere;}
+  #v-genvec .gv-poll .pr .bar{flex:1 1 auto;height:1.15rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:9999px;overflow:hidden;min-width:4rem;}
+  #v-genvec .gv-poll .pr .bar i{display:block;height:100%;background:var(--accent);}
+  #v-genvec .gv-poll .pr.mine .bar i{background:var(--fg);}
+  #v-genvec .gv-poll .pr .pc{flex:0 0 3rem;text-align:right;font-family:var(--mono);font-size:0.82rem;color:var(--muted);}
+  #v-genvec .gv-poll .note{font-size:0.78rem;color:var(--muted);margin-top:0.2rem;}
+
+  /* 룰렛 */
+  #v-genvec .gv-wheelbox{display:flex;flex-wrap:wrap;gap:1.1rem;align-items:flex-start;margin-top:0.8rem;}
+  #v-genvec .gv-wheelcol{flex:1 1 15rem;min-width:0;max-width:22rem;}
+  #v-genvec .gv-statcol{flex:1 1 15rem;min-width:0;}
+  #v-genvec .gv-freqbar{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.85rem;}
+  #v-genvec .gv-freqbar .lb{flex:0 0 4.2rem;font-family:var(--mono);}
+  #v-genvec .gv-freqbar .bar{flex:1 1 auto;height:1rem;background:var(--bg);border:1px solid var(--border);border-radius:9999px;overflow:hidden;}
+  #v-genvec .gv-freqbar .bar i{display:block;height:100%;}
+  #v-genvec .gv-freqbar .pc{flex:0 0 3.4rem;text-align:right;font-family:var(--mono);font-size:0.8rem;}
+  #v-genvec .gv-recent{display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.4rem;min-height:1.8rem;}
+  #v-genvec .gv-recent span{font-family:var(--mono);font-size:0.76rem;border:1px solid var(--border);border-radius:9999px;
+    padding:0.15rem 0.55rem;background:var(--bg);}
+  #v-genvec .gv-temprow{display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;margin:0.8rem 0 0.3rem;}
+  #v-genvec .gv-temprow input[type=range]{flex:1 1 12rem;min-width:8rem;max-width:100%;}
+  #v-genvec .gv-tempval{font-family:var(--mono);font-weight:700;font-size:1rem;width:3.6rem;text-align:center;}
+  #v-genvec .gv-ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:-0.2rem;}
+  #v-genvec .gv-sentbatch{display:flex;flex-direction:column;gap:0.25rem;margin-top:0.5rem;font-size:0.92rem;}
+  #v-genvec .gv-sentbatch p{margin:0;padding:0.3rem 0.6rem;background:var(--bg);border-radius:0.35rem;border:1px solid var(--border);}
+
+  /* 어텐션 위젯 */
+  #v-genvec .gv-sentpick{display:flex;gap:0.5rem;flex-wrap:wrap;}
+  #v-genvec .gv-sentpick button{min-height:44px;}
+  #v-genvec .gv-slbox3{display:flex;flex-direction:column;gap:0.6rem;margin-top:0.7rem;}
+  #v-genvec .gv-sl3{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;}
+  #v-genvec .gv-sl3 .nm{font-family:var(--mono);font-size:0.85rem;font-weight:700;width:6.6rem;flex-shrink:0;}
+  #v-genvec .gv-sl3 input[type=range]{flex:1 1 8rem;min-width:6rem;max-width:100%;}
+  #v-genvec .gv-sl3 .vl{font-family:var(--mono);font-size:0.9rem;font-weight:700;width:3.4rem;text-align:right;flex-shrink:0;}
+  #v-genvec .gv-attresult{font-family:var(--mono);font-size:0.92rem;background:var(--bg);border:1px solid var(--border);
+    border-left:4px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.6rem 0.85rem;margin-top:0.6rem;line-height:1.8;}
+
+  /* 정리 카드 */
+  #v-genvec .gv-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-genvec .gv-3line li{font-size:1.06rem;font-weight:700;color:var(--fg);line-height:1.75;}
+  #v-genvec .gv-fold{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.2rem;}
+  #v-genvec .gv-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);
+    padding:0.6rem 0;position:relative;padding-right:1.4rem;min-height:44px;display:flex;align-items:center;flex-wrap:wrap;}
+  #v-genvec .gv-fold>summary::-webkit-details-marker{display:none;}
+  #v-genvec .gv-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-genvec .gv-fold[open]>summary::after{content:'▾';}
+  #v-genvec .gv-fold>summary .rl{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.12em;color:var(--muted);margin-right:0.6rem;}
+  #v-genvec .gv-fold .bd{padding:0.2rem 0 0.5rem;}
+  #v-genvec .gv-fold .bd p{font-size:1rem;color:var(--body);line-height:1.85;margin-bottom:0.7rem;}
+  #v-genvec .gv-fold .bd table{margin-top:0.4rem;}
+  #v-genvec .gv-note{font-family:var(--mono);font-size:0.78rem;color:var(--warn);background:var(--warn-bg);
+    border:1px solid var(--warn);border-radius:var(--radius);padding:0.5rem 0.8rem;margin-bottom:0.8rem;line-height:1.7;}
+
+  /* 참고 자료 · 공학 도구 카드 */
+  #v-genvec .gv-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-genvec .gv-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-genvec .gv-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-genvec .gv-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-genvec .gv-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-genvec .gv-ref .bd{padding:0.65rem 0.75rem;}
+  #v-genvec .gv-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-genvec .gv-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;
+    overflow-wrap:anywhere;}
+  #v-genvec .gv-refwrap{position:relative;min-width:0;}
+  #v-genvec .gv-refwrap .rm{position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);
+    color:#fff;border-radius:9999px;width:1.8rem;height:1.8rem;cursor:pointer;font-size:0.95rem;line-height:1;z-index:2;}
+  #v-genvec .gv-refwrap .rm:hover{background:var(--red);}
+  #v-genvec .gv-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-genvec details.gv-tool{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0;min-width:0;overflow:hidden;}
+  #v-genvec details.gv-tool>summary{list-style:none;cursor:pointer;padding:0.85rem 0.95rem;display:flex;
+    align-items:center;gap:0.45rem;font-weight:700;font-size:1.02rem;color:var(--fg);min-height:44px;position:relative;}
+  #v-genvec details.gv-tool>summary::-webkit-details-marker{display:none;}
+  #v-genvec details.gv-tool>summary::after{content:'자세히 ▸';margin-left:auto;font-size:0.72rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;}
+  #v-genvec details.gv-tool[open]>summary::after{content:'접기 ▾';}
+  #v-genvec details.gv-tool .em{font-size:1.3rem;line-height:1;}
+  #v-genvec details.gv-tool .bd2{padding:0 0.95rem 0.9rem;}
+  #v-genvec details.gv-tool h4{font-size:0.95rem;font-weight:600;color:var(--body);margin:0.1rem 0 0.3rem;line-height:1.6;}
+  #v-genvec details.gv-tool ol{margin:0 0 0 1.1rem;padding:0;}
+  #v-genvec details.gv-tool li{font-size:0.92rem;color:var(--body);line-height:1.75;margin-bottom:0.15rem;overflow-wrap:anywhere;word-break:break-word;}
+  #v-genvec details.gv-tool a{display:inline-block;margin-top:0.45rem;font-size:0.92rem;color:var(--blue);}
+
+  /* 관찰 기록 */
+  #v-genvec .gv-obs{width:100%;min-height:4.4rem;resize:vertical;border:1px solid var(--border);border-radius:var(--radius);
+    background:var(--bg);color:var(--fg);padding:0.55rem 0.7rem;font-family:inherit;font-size:0.98rem;
+    line-height:1.8;margin-top:0.5rem;}
+
+  @media (prefers-reduced-motion:reduce){
+    #v-genvec *,#v-genvec *::before,#v-genvec *::after{transition-duration:0.001ms !important;animation-duration:0.001ms !important;}
+  }
+
+  @media (max-width:640px){
+    #v-genvec .gv-wm{display:none;}
+    #v-genvec .gv-wheelbox{flex-direction:column;}
+    #v-genvec .gv-poll .pr .lb{flex-basis:5rem;}
+    #v-genvec .gv-sl3 .nm{width:5.2rem;font-size:0.78rem;}
+  }
+  #v-genvec table{overflow-wrap:anywhere;}
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="gv-hero">
+    <svg class="gv-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <g fill="none" stroke="currentColor" stroke-width="2.4">
+        <circle cx="40" cy="120" r="3.2" fill="currentColor"/><circle cx="40" cy="60" r="3.2" fill="currentColor"/>
+        <circle cx="100" cy="120" r="3.2" fill="currentColor"/><circle cx="100" cy="60" r="3.2" fill="currentColor"/>
+        <path d="M40 120 L40 60" stroke-dasharray="5 4"/>
+        <path d="M100 120 L100 60"/>
+        <path d="M96 66 L100 60 L104 68" fill="none"/>
+      </g>
+      <g font-family="monospace" font-size="11" fill="currentColor">
+        <text x="46" y="123">남자</text><text x="46" y="64">여자</text>
+        <text x="106" y="123">왕</text><text x="106" y="64">여왕</text>
+      </g>
+      <g transform="translate(230,95) rotate(-90)" fill="none" stroke-width="18">
+        <circle r="34" stroke="currentColor" opacity="0.18"/>
+        <circle r="34" stroke="currentColor" stroke-dasharray="102.5 213.6" stroke-dashoffset="0"/>
+        <circle r="34" stroke="currentColor" opacity="0.6" stroke-dasharray="51.3 213.6" stroke-dashoffset="-102.5"/>
+        <circle r="34" stroke="currentColor" opacity="0.38" stroke-dasharray="34.2 213.6" stroke-dashoffset="-153.8"/>
+        <circle r="34" stroke="currentColor" opacity="0.22" stroke-dasharray="17.1 213.6" stroke-dashoffset="-188"/>
+      </g>
+      <g stroke="currentColor" stroke-width="2.4"><path d="M230 95 L230 66"/></g>
+      <text x="230" y="150" font-family="monospace" font-size="10" fill="currentColor" text-anchor="middle">다음 말 48%</text>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">35차시 · Ⅵ. 생성형 AI와 수학</p>
+    <div class="gv-adv" data-no-toggle="1">
+      <span class="gv-badge-adv">⚠ 선택 심화 · 평가 제외</span>
+      <h3>[선택 심화 · 평가 제외]</h3>
+      <p>이 차시는 <b>교육과정의 성취기준 밖</b>에 있는 <b>선택 심화</b> 내용입니다. <b>지필평가·수행평가에 출제하지 않습니다.</b>
+        대신 조건이 하나 있습니다. 여기서 쓰는 수학은 <b>전부 앞에서 이미 배운 것</b>이어야 합니다. 새 공식을 외우는 시간이 아니라,
+        <b>가지고 있는 도구로 어디까지 설명할 수 있는지 확인하는 시간</b>입니다.
+        그래서 이 단원의 모든 활동에는 "<b>이건 몇 차시에서 온 도구인가</b>"를 알려 주는 회수 칩이 붙어 있습니다.</p>
+    </div>
+    <h2>언어를 벡터로, 다음 말을 확률로</h2>
+    <p class="desc">
+      챗봇은 문장의 뜻을 '아는' 걸까요? 오늘 우리는 챗봇 안에서 두 가지 일만 일어난다는 것을 확인합니다.
+      말을 벡터로 옮기는 일, 그리고 다음에 올 말을 확률로 고르는 일입니다.
+    </p>
+    <div class="gv-recall" data-no-toggle="1">
+      <p class="ttl">🧰 이 시간에 새로 배우는 수학은 없습니다. 오늘 쓰는 도구는 전부 앞에서 배운 것입니다.</p>
+      <div class="row">
+        <span class="lb">오늘 쓰는 도구 →</span>
+        <button class="gv-mini" type="button" onclick="go('text')">8차시 벡터로 표현</button>
+        <button class="gv-mini" type="button" onclick="go('vecop')">10차시 벡터의 덧셈·크기</button>
+        <button class="gv-mini" type="button" onclick="go('sim')">11차시 코사인 유사도</button>
+        <button class="gv-mini" type="button" onclick="go('prob')">21차시 상대도수와 확률</button>
+        <button class="gv-mini" type="button" onclick="go('matmul')">17차시 행렬의 곱셈</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1">
+    <strong>오늘의 학습 목표 <span class="gv-badge ref">선택 심화 — 평가하지 않습니다</span></strong>
+    <div class="gv-goal">
+      ① 단어를 벡터로 옮기면 <b class="gt">의미의 차이가 화살표(벡터의 뺄셈)</b>로 나타남을 확인하고,
+      "왕 − 남자 + 여자 = 여왕"이 왜 성립하는지 <b class="gt">벡터의 덧셈·뺄셈</b>으로 설명할 수 있다.
+      <button class="gv-mini" type="button" onclick="go('vecop')">🧰 8·10차시</button>
+    </div>
+    <div class="gv-goal">
+      ② 두 단어의 가까움을 <b class="gt">코사인 유사도</b>로 재어 빈칸에 들어갈 단어를 고를 수 있다.
+      <button class="gv-mini" type="button" onclick="go('sim')">🧰 11차시</button>
+    </div>
+    <div class="gv-goal">
+      ③ 다음에 올 말을 <b class="gt">상대도수로 만든 확률</b>로 고르는 과정을 룰렛으로 설명하고,
+      다양성 조절값을 바꾸면 확률분포의 모양이 어떻게 달라지는지 말할 수 있다.
+      <button class="gv-mini" type="button" onclick="go('prob')">🧰 21차시</button>
+    </div>
+    <div class="gv-goal">
+      ④ "어디를 볼지 정하는 가중치"로 만든 <b class="gt">가중합</b>이 곧 <b class="gt">행렬의 곱셈</b>임을 계산으로 확인할 수 있다.
+      <button class="gv-mini" type="button" onclick="go('matmul')">🧰 17차시</button>
+    </div>
+    <p style="margin-top:0.6rem;font-size:0.92rem;color:var(--muted);">목표 ①② → STEP 2 활동 ①, 목표 ③ → 활동 ②, 목표 ④ → 활동 ③에서 완성합니다.</p>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips gv-keys" data-no-toggle="1">
+    <span class="chip">단어를 벡터로 옮기기</span>
+    <span class="chip">의미의 차이 = 화살표</span>
+    <span class="chip">다음 말의 확률</span>
+    <span class="chip">다양성 조절값</span>
+    <span class="chip">어디를 볼지 정하는 가중치</span>
+  </div>
+
+  <div class="card gv-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>챗봇은 말의 뜻을 아는 것일까, 다음에 올 말을 고르는 것일까?</li>
+    </ul>
+    <p style="margin-top:0.7rem;"><b>보조 질문</b> — "왕 − 남자 + 여자 = 여왕"이 성립한다면, 챗봇은 뜻을 <b>아는</b> 것 아닐까요?
+      아니면 그것도 화살표 계산일 뿐일까요?</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="gv-step"><p class="mono">STEP 1 · 도입 (8분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 챗봇 안에서는 무슨 일이 일어날까</h3>
+    <p>카드를 누르면 전체 화면으로 재생됩니다(✕ 또는 ESC로 닫기). 4번째 영상은 <b>11차시 회수용</b>입니다.
+      5번째 카드는 유튜브 검색 결과를 <b>새 탭</b>으로 엽니다. 선생님께서는 <b>[+ 선생님 영상 추가]</b> 칸에 다른 영상을 걸 수 있습니다.</p>
+    <div id="gv-videos"></div>
+    <p class="gv-hint">🗣 <b>선생님 발문</b> — 1번 영상은 0~8분 구간만 보아도 오늘 활동 ①이 이해됩니다.
+      <span class="gv-badge">일부 심화</span> 행렬의 곱이 여러 겹 쌓이는 뒷부분은 "이렇게 커진다"는 인상만 보아도 충분합니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>판별하는 AI, 만들어 내는 AI</h3>
+    <div class="gv-scroll">
+      <svg viewBox="0 0 640 220" role="img" style="width:100%;max-width:640px;height:auto;"
+        aria-label="왼쪽은 판별형 AI가 사진 두 장을 개와 고양이 라벨로 나누는 그림, 오른쪽은 생성형 AI가 오늘 학교에 라는 글자에서 다음 말 후보 다섯 가지에 확률을 매겨 내놓는 그림">
+        <rect width="640" height="220" fill="var(--bg)"/>
+        <g font-family="var(--sans)" font-size="13" font-weight="700" fill="var(--fg)">
+          <text x="150" y="24" text-anchor="middle">판별형 — 나눈다</text>
+          <text x="490" y="24" text-anchor="middle">생성형 — 고른다</text>
+        </g>
+        <g>
+          <rect x="30" y="46" width="54" height="40" rx="4" fill="var(--card)" stroke="var(--border)"/>
+          <text x="57" y="70" text-anchor="middle" font-size="20">🐶</text>
+          <rect x="30" y="96" width="54" height="40" rx="4" fill="var(--card)" stroke="var(--border)"/>
+          <text x="57" y="120" text-anchor="middle" font-size="20">🐱</text>
+          <path d="M88 66 H132 M88 116 H132" stroke="var(--muted)" stroke-width="2" fill="none" marker-end="url(#gvArrow)"/>
+          <rect x="134" y="76" width="46" height="46" rx="6" fill="none" stroke="var(--fg)" stroke-width="2"/>
+          <text x="157" y="103" text-anchor="middle" font-family="monospace" font-size="13" fill="var(--fg)">f</text>
+          <path d="M182 90 H214 M182 110 H214" stroke="var(--muted)" stroke-width="2" fill="none" marker-end="url(#gvArrow)"/>
+          <rect x="216" y="80" width="56" height="24" rx="12" fill="var(--card-h)" stroke="var(--border)"/>
+          <text x="244" y="97" text-anchor="middle" font-size="11" fill="var(--fg)">개</text>
+          <rect x="216" y="108" width="56" height="24" rx="12" fill="var(--card-h)" stroke="var(--border)"/>
+          <text x="244" y="125" text-anchor="middle" font-size="11" fill="var(--fg)">고양이</text>
+          <text x="150" y="160" text-anchor="middle" font-size="12" fill="var(--muted)">주어진 것을 나눈다</text>
+        </g>
+        <line x1="320" y1="10" x2="320" y2="200" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <g>
+          <rect x="352" y="90" width="90" height="30" rx="5" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/>
+          <text x="397" y="110" text-anchor="middle" font-family="monospace" font-size="12" fill="var(--fg)">오늘 학교에</text>
+          <path d="M444 105 H468" stroke="var(--muted)" stroke-width="2" fill="none" marker-end="url(#gvArrow)"/>
+          <g font-family="monospace" font-size="10.5" fill="var(--fg)">
+            <path d="M470 105 L560 40" stroke="var(--muted)" fill="none"/><text x="562" y="42">갔다 48%</text>
+            <path d="M470 105 L560 72" stroke="var(--muted)" fill="none"/><text x="562" y="76">간다 24%</text>
+            <path d="M470 105 L560 105" stroke="var(--muted)" fill="none"/><text x="562" y="109">갔어요 16%</text>
+            <path d="M470 105 L560 138" stroke="var(--muted)" fill="none"/><text x="562" y="142">갔니 8%</text>
+            <path d="M470 105 L560 170" stroke="var(--muted)" fill="none"/><text x="562" y="174">갔다가 4%</text>
+          </g>
+          <text x="470" y="200" text-anchor="middle" font-size="12" fill="var(--muted)">다음에 올 것을 고른다</text>
+        </g>
+        <defs><marker id="gvArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="var(--muted)"/></marker></defs>
+      </svg>
+    </div>
+    <p class="gv-cap gv-src">판별형 AI가 "입력된 데이터를 분류"한다면, 생성형 AI는 "새로운 데이터를 창조"합니다. — 천재 지도서 p.327 서술을 재구성</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>챗봇 안에서 일어나는 다섯 걸음</h3>
+    <p>다섯 칸 중 <b>세 칸이 오늘의 활동</b>입니다. 칸을 눌러 보세요.</p>
+    <div class="gv-scroll" id="gv-flow"></div>
+    <div class="gv-fb" id="gv-flow-fb"></div>
+    <p class="gv-src">씨마스 교과서 Ⅴ p.196 도해를 재구성</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요. 답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="gv-warm"></div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="gv-step"><p class="mono">STEP 2 · 전개 (30분)</p></div>
+
+  <div class="info" data-no-toggle="1"><strong>오늘의 서사</strong> —
+    ① 단어를 <b>지도 위의 점</b>으로 → 의미의 차이는 <b>화살표</b> → ② 다음 말은 <b>확률 룰렛</b>으로 →
+    ③ 어디를 볼지 정하는 <b>가중치</b>는 <b>행렬의 곱</b>.
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="gvTab(0,this)">① 말을 벡터로</button>
+    <button class="tab" onclick="gvTab(1,this)">② 다음 말을 확률로</button>
+    <button class="tab" onclick="gvTab(2,this)">③ 어디를 볼지 정하기</button>
+  </div>
+
+  <!-- ── TAB 0 : 활동 ① 말을 벡터로 ─────────────────────── -->
+  <div class="tpanel on" id="gv0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (12분)</strong> <span class="gv-badge">🧰 8·10·11차시 도구</span> —
+      단어를 벡터로 옮기면 <b>의미의 차이가 화살표</b>가 된다는 것을 지도 위에서 직접 확인합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 두 가지 방식, 같은 네 단어</h3>
+      <p>아래는 같은 네 단어를 <b>두 가지 방식</b>으로 벡터로 옮긴 것입니다.</p>
+      <div class="gv-scroll">
+        <table class="gv-tbl">
+          <tr><th>단어</th><th>8차시 방식 (단어 사전 8개)</th><th>오늘 방식 (성분 2개)</th></tr>
+          <tr><td>남자</td><td>(1,0,0,0,0,0,0,0)</td><td>(4, 2)</td></tr>
+          <tr><td>여자</td><td>(0,1,0,0,0,0,0,0)</td><td>(4, 6)</td></tr>
+          <tr><td>왕</td><td>(0,0,1,0,0,0,0,0)</td><td>(9, 2)</td></tr>
+          <tr><td>여왕</td><td>(0,0,0,1,0,0,0,0)</td><td>(9, 6)</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:0.7rem;"><b>질문.</b> 두 방식 중 "<b>왕과 여왕은 남자와 여자의 관계와 같다</b>"는 사실을 담고 있는 쪽은 어디입니까?
+        그렇게 판단한 이유를 한 줄로 적어 보세요.</p>
+      <div class="btn-row" id="gv-a1-q0"></div>
+      <div class="btn-row" style="margin-top:0.6rem;">
+        <input class="gv-in wide" id="gv-a1-note" type="text" placeholder="내 판단의 근거는… (한 줄)" aria-label="내 판단의 근거">
+        <button class="btn pri" type="button" onclick="gvA1Submit()">제출하고 지도 열기</button>
+      </div>
+      <div class="gv-fb" id="gv-a1-fb0"></div>
+    </div>
+
+    <div class="card gv-veil" id="gv-a1-body" data-no-toggle="1">
+      <h3>조작 — 단어 지도와 화살표 끌기</h3>
+      <p class="gv-preset-lb" id="gv-preset-lb">문제 1 / 3</p>
+      <div class="gv-eqrow">
+        <select class="gv-in" id="gv-selA" aria-label="첫째 단어"></select>
+        <span class="op">−</span>
+        <select class="gv-in" id="gv-selB" aria-label="둘째 단어"></select>
+        <span class="op">+</span>
+        <select class="gv-in" id="gv-selC" aria-label="셋째 단어"></select>
+        <button class="btn pri" type="button" onclick="gvArrowDraw(false)">화살표 그리기</button>
+        <button class="btn" type="button" id="gv-freebtn" onclick="gvFreeMode()" disabled>🔓 자유 모드 (문제 3개를 먼저 맞혀 보세요)</button>
+      </div>
+      <div class="gv-cvwrap">
+        <canvas class="gv-cv" id="gv-map" width="600" height="460"></canvas>
+        <p class="gv-cvcap">사람 무리(파랑) · 장소·나라 무리(초록) — 논리 좌표 0~14</p>
+      </div>
+      <div class="btn-row" style="margin-top:0.5rem;">
+        <button class="btn" type="button" id="gv-placetoggle" onclick="gvTogglePlaces()">장소·나라 보기</button>
+      </div>
+      <div class="btn-row" style="margin-top:0.6rem;" id="gv-arrow-answrap">
+        <input class="gv-in wide" id="gv-arrow-ans" type="text" placeholder="도착점의 단어는?" aria-label="도착점 단어 추측">
+        <button class="btn pri" type="button" onclick="gvArrowCheck()">확인</button>
+      </div>
+      <div class="gv-fb" id="gv-arrow-fb"></div>
+      <div class="gv-fml" id="gv-arrow-calc" style="display:none;"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.1rem;">확장 — 도시와 나라로 (씨마스 교과서 예시)</p>
+      <p>씨마스 교과서에 실린 예시를 그대로 확인해 봅시다. <code>한국 − 서울 + 도쿄 = ?</code></p>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="gvCityDemo(0)">한국 − 서울 + 도쿄 계산</button>
+        <button class="btn" type="button" onclick="gvCityDemo(1)">프랑스 − 파리 + 서울 계산</button>
+        <a class="btn" href="https://word2vec.kr" target="_blank" rel="noopener">우동−일본+한국은? word2vec.kr에서 확인 ↗</a>
+      </div>
+      <div class="gv-fb" id="gv-city-fb"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.2rem;">관찰 기록</p>
+      <p>① 자유 모드에서 도착점에 단어가 없던 경우가 있었나요? ② 어떤 조합이었나요? ③ 화살표는 항상 그릴 수 있는데, 왜 그 자리에 단어가 없을까요?</p>
+      <textarea class="gv-obs" id="gv-a1-obs" placeholder="세 줄로 적어 보세요."></textarea>
+    </div>
+
+    <details class="gv-fold">
+      <summary><span class="rl">단계 토글</span>관찰 — 세 화살표가 겹칩니다</summary>
+      <div class="bd">
+        <p><button class="btn pri" type="button" onclick="gvAllArrows()">모든 성별 화살표 보기</button>
+          를 누르면 여자−남자, 여왕−왕, 엄마−아빠, 소녀−소년의 화살표 <b>네 개가 동시에</b> 그려집니다. 그리고 네 화살표는 <b>완전히 겹칩니다.</b></p>
+        <div class="gv-scroll">
+          <table class="gv-tbl">
+            <tr><th>화살표</th><th>성분</th><th>크기</th></tr>
+            <tr><td class="l">여자 − 남자</td><td>(0, 4)</td><td>4</td></tr>
+            <tr><td class="l">여왕 − 왕</td><td>(0, 4)</td><td>4</td></tr>
+            <tr><td class="l">엄마 − 아빠</td><td>(0, 4)</td><td>4</td></tr>
+            <tr><td class="l">한국 − 서울</td><td>(0, 3)</td><td>3</td></tr>
+            <tr><td class="l">일본 − 도쿄</td><td>(0, 3)</td><td>3</td></tr>
+          </table>
+        </div>
+        <p>'성별'이라는 뜻이 하나의 화살표 (0, 4)로 굳어 있고, '나라'라는 뜻이 또 다른 화살표 (0, 3)으로 굳어 있습니다.
+          이것이 "왕 − 남자 + 여자 = 여왕"이 성립하는 이유의 전부입니다. 벡터의 크기는 10차시에서 정의한 그대로 계산했습니다.</p>
+        <p>ⓐ에서 여러분이 적은 근거를 다시 불러왔습니다 — <b id="gv-a1-recall">〈아직 제출하지 않았습니다〉</b></p>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>가까움을 수로 재기 <span class="gv-badge">🧰 11차시 도구</span></h3>
+      <p>지도 위에서 <b>왕 (9, 2)</b>과 가장 비슷한 단어는 무엇일까요? 눈으로 고른 뒤, <b>코사인 유사도</b>로 확인해 봅시다.
+        (11차시와 같은 방법입니다 — <b>성분끼리 곱해 모두 더한 값</b>을 <b>두 벡터의 크기의 곱</b>으로 나눕니다.)</p>
+      <div class="gv-scroll">
+        <table class="gv-tbl">
+          <tr><th>상대 단어</th><th>성분끼리 곱해 더한 값</th><th>두 크기의 곱</th><th>코사인 유사도</th></tr>
+          <tr><td class="l">여왕 (9, 6)</td><td>9×9 + 2×6 = 93</td><td>√85 × √117 ≈ 99.72</td>
+            <td><input class="gv-in num" id="gv-cos-0" type="text" inputmode="decimal" aria-label="여왕과의 코사인 유사도"></td></tr>
+          <tr><td class="l">소년 (2, 2)</td><td>9×2 + 2×2 = 22</td><td>√85 × √8 ≈ 26.08</td>
+            <td><input class="gv-in num" id="gv-cos-1" type="text" inputmode="decimal" aria-label="소년과의 코사인 유사도"></td></tr>
+          <tr><td class="l">서울 (2, 10)</td><td>9×2 + 2×10 = 38</td><td>√85 × √104 ≈ 94.02</td>
+            <td><input class="gv-in num" id="gv-cos-2" type="text" inputmode="decimal" aria-label="서울과의 코사인 유사도"></td></tr>
+        </table>
+      </div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="gvCosCheck()">채점</button></div>
+      <div class="gv-fb" id="gv-cos-fb"></div>
+      <p class="gv-hint">채점을 마치면 위 ⓑ 지도에 왕에서 각 단어로 향하는 반직선이 그려집니다.
+        <button class="gv-mini" type="button" onclick="gvSee(0,'gv-a1-body')">지도 보기</button></p>
+    </div>
+
+    <div class="card" id="gv-a1f-body" data-no-toggle="1">
+      <h3>빈칸에 들어갈 단어 고르기 (천재 교과서 문항 그대로)</h3>
+      <p>다음은 네 단어를 <b>성분 3개짜리</b> 벡터로 옮긴 것입니다.</p>
+      <div class="gv-scroll">
+        <table class="gv-tbl">
+          <tr><th>단어</th><th>고양이</th><th>물고기</th><th>강아지</th><th>귀엽다</th></tr>
+          <tr><td>벡터</td><td>(1, 0, 2)</td><td>(1, 1, 2)</td><td>(0, 2, 1)</td><td>(0, 0, 1)</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:0.6rem;"><b>문제.</b> 코사인 유사도를 이용하여 아래 문장의 빈칸에 들어갈 가장 적합한 단어를 찾으시오.
+        <b>「 ________ 는 귀엽다. 」</b></p>
+      <p class="gv-hint">해결 계획 — ① '귀엽다'와 다른 세 단어 사이의 코사인 유사도를 구한다. ② 값이 가장 큰 단어가 가장 유사한 단어이다. ③ 찾은 단어를 빈칸에 넣어 문장을 완성한다.</p>
+      <div class="gv-scroll">
+        <table class="gv-tbl">
+          <tr><th>상대</th><th>성분끼리 곱해 더한 값</th><th>크기의 곱</th><th>코사인 유사도</th></tr>
+          <tr><td class="l">고양이</td><td>1×0+0×0+2×1 = 2</td><td>√5 × 1 ≈ 2.236</td>
+            <td><input class="gv-in num" id="gv-tj-0" type="text" inputmode="decimal" aria-label="고양이 코사인 유사도"></td></tr>
+          <tr><td class="l">물고기</td><td>1×0+1×0+2×1 = 2</td><td>√6 × 1 ≈ 2.449</td>
+            <td><input class="gv-in num" id="gv-tj-1" type="text" inputmode="decimal" aria-label="물고기 코사인 유사도"></td></tr>
+          <tr><td class="l">강아지</td><td>0×0+2×0+1×1 = 1</td><td>√5 × 1 ≈ 2.236</td>
+            <td><input class="gv-in num" id="gv-tj-2" type="text" inputmode="decimal" aria-label="강아지 코사인 유사도"></td></tr>
+        </table>
+      </div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="gvTjCheck()">채점</button></div>
+      <div class="gv-fb" id="gv-tj-fb"></div>
+      <p class="gv-src">천재 지도서 p.144 (교과서 p.76~77 「문제 해결력 코딩」) 문항을 재구성</p>
+    </div>
+
+    <div class="info">
+      <strong>정의 확인 — 단어를 벡터로 옮기기란 <span class="gv-badge ref">참고 용어: embedding</span></strong>
+      <p style="margin:0.5rem 0 0;"><b>정의.</b> 텍스트 형태의 자연어를 기계가 인식할 수 있도록 <b>수로 나열하여 벡터로 표현하는 것</b>을 말합니다.
+        특히 단어의 의미를 <b>여러 성분에 나누어 담아</b>, 비슷한 뜻의 단어가 <b>가까운 곳</b> 또는 <b>비슷한 방향</b>에 놓이게 하는 방법을
+        <b>단어 임베딩</b>이라고 합니다.</p>
+      <p style="margin:0.4rem 0 0;"><b>왜 필요한가.</b> 8차시의 원-핫 벡터는 두 가지 문제가 있었습니다.
+        ① 단어 사이의 의미를 알 수 없다. ② 긴 글에서는 성분의 개수가 지나치게 커진다(대부분이 0인 <b>희소한</b> 벡터).</p>
+      <p style="margin:0.4rem 0 0;"><b>주의.</b> 오늘 우리가 쓴 지도는 성분이 <b>2개</b>뿐이지만, 실제 모델은 성분이 수백 개입니다.
+        그래서 실제 지도는 그림으로 그릴 수 없습니다. 우리가 본 것은 <b>가장 중요한 두 방향만 남긴 축소판</b>입니다.</p>
+      <p class="gv-src">씨마스 교과서 Ⅱ p.53 · 미래엔 교과서 p.54 · 천재 지도서 p.90 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 활동 ② 다음 말을 확률로 ─────────────────────── -->
+  <div class="tpanel" id="gv1">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (10분)</strong> <span class="gv-badge">🧰 21차시 도구</span> —
+      다음에 올 말을 <b>상대도수로 만든 확률</b>로 고르는 룰렛을 돌리고, 다양성 조절값으로 분포의 모양을 바꿉니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 챗봇은 다섯 후보 중 무엇을 고를까</h3>
+      <p>학습 자료에서 "<b>오늘 학교에</b>" 뒤에 이어진 말을 <b>100번</b> 세어 보았더니 다음과 같았습니다.</p>
+      <div class="gv-scroll">
+        <table class="gv-tbl">
+          <tr><th>다음에 온 말</th><th>갔다</th><th>간다</th><th>갔어요</th><th>갔니</th><th>갔다가</th></tr>
+          <tr><td>횟수</td><td>48</td><td>24</td><td>16</td><td>8</td><td>4</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:0.6rem;"><b>먼저 답해 보세요.</b> 챗봇이 이 다섯 후보 중 하나를 고른다면, 무엇을 고를까요?</p>
+      <div class="btn-row" id="gv-a2-q0"></div>
+      <div class="gv-fb" id="gv-a2-fb0"></div>
+      <div class="btn-row" style="margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="gvA2Open()">상대도수 표 열기</button>
+      </div>
+    </div>
+
+    <div class="card gv-veil" id="gv-a2-body" data-no-toggle="1">
+      <h3>조작 — 확률 만들기 <span class="gv-badge">🧰 21차시 회수</span></h3>
+      <p>각 후보의 <b>상대도수</b>를 구해 확률로 씁니다.</p>
+      <div class="gv-scroll">
+        <table class="gv-tbl">
+          <tr><th>후보</th><th>횟수</th><th>상대도수 = 횟수 ÷ 100</th></tr>
+          <tr><td>갔다</td><td>48</td><td><input class="gv-in num" id="gv-rf-0" type="text" inputmode="decimal" aria-label="갔다의 상대도수"></td></tr>
+          <tr><td>간다</td><td>24</td><td><input class="gv-in num" id="gv-rf-1" type="text" inputmode="decimal" aria-label="간다의 상대도수"></td></tr>
+          <tr><td>갔어요</td><td>16</td><td><input class="gv-in num" id="gv-rf-2" type="text" inputmode="decimal" aria-label="갔어요의 상대도수"></td></tr>
+          <tr><td>갔니</td><td>8</td><td><input class="gv-in num" id="gv-rf-3" type="text" inputmode="decimal" aria-label="갔니의 상대도수"></td></tr>
+          <tr><td>갔다가</td><td>4</td><td><input class="gv-in num" id="gv-rf-4" type="text" inputmode="decimal" aria-label="갔다가의 상대도수"></td></tr>
+          <tr><td><b>합</b></td><td>100</td><td><input class="gv-in num" id="gv-rf-sum" type="text" inputmode="decimal" aria-label="합"></td></tr>
+        </table>
+      </div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="gvRfCheck()">채점 — 룰렛 열기</button></div>
+      <div class="gv-fb" id="gv-rf-fb"></div>
+
+      <div id="gv-wheelwrap" style="display:none;">
+        <p class="mat-label" style="text-align:left;margin-top:1.2rem;">룰렛 돌리기</p>
+        <div class="gv-wheelbox">
+          <div class="gv-wheelcol">
+            <canvas class="gv-cv" id="gv-wheel" width="360" height="360"></canvas>
+            <div class="btn-row" style="margin-top:0.6rem;justify-content:center;">
+              <button class="btn pri" type="button" onclick="gvSpin(1)">1번 돌리기</button>
+              <button class="btn" type="button" onclick="gvSpin(10)">10번 돌리기</button>
+              <button class="btn" type="button" onclick="gvSpin(100)">100번 돌리기</button>
+              <button class="btn" type="button" onclick="gvSpinReset()">초기화</button>
+            </div>
+            <label class="gv-hint" style="display:flex;gap:0.4rem;align-items:center;margin-top:0.5rem;">
+              <input type="checkbox" id="gv-seedchk" onchange="gvSpinReset()"> 이 시드로 고정 — 교사용, 학급 전체에 같은 결과를 보여줍니다
+            </label>
+          </div>
+          <div class="gv-statcol">
+            <p class="mat-label" style="text-align:left;">상대도수 막대(누적)</p>
+            <div id="gv-freqbars"></div>
+            <p class="mat-label" style="text-align:left;margin-top:0.8rem;">뽑힌 문장(최근 8개) · 총 <span id="gv-total">0</span>회</p>
+            <div class="gv-recent" id="gv-recent"></div>
+          </div>
+        </div>
+
+        <p class="mat-label" style="text-align:left;margin-top:1.3rem;">다양성 조절값 <span class="gv-badge ref">참고 용어: 온도(temperature)</span></p>
+        <div class="gv-temprow">
+          <span class="gv-hint">뻔하게</span>
+          <input type="range" id="gv-temp" min="0.5" max="2" step="0.05" value="1" oninput="gvTempInput()">
+          <span class="gv-hint">다양하게</span>
+          <span class="gv-tempval" id="gv-tempval">T = 1.00</span>
+        </div>
+        <div class="gv-ticks"><span>0.5</span><span>1.0</span><span>2.0</span></div>
+        <div class="gv-fml">① 각 확률을 pᵢ, 다양성 조절값을 T라 하자.
+② qᵢ = pᵢ의 (1/T) 제곱   ← T=0.5면 제곱, T=1이면 그대로, T=2면 제곱근
+③ 모든 qᵢ를 그 합으로 나눈다   ← 다시 합이 1이 되도록</div>
+        <div class="gv-scroll">
+          <table class="gv-tbl">
+            <tr><th>T</th><th>갔다</th><th>간다</th><th>갔어요</th><th>갔니</th><th>갔다가</th></tr>
+            <tr><td><b>0.5</b> (뻔하게)</td><td><b>71.6%</b></td><td>17.9%</td><td>8.0%</td><td>2.0%</td><td>0.5%</td></tr>
+            <tr><td><b>1.0</b> (그대로)</td><td><b>48.0%</b></td><td>24.0%</td><td>16.0%</td><td>8.0%</td><td>4.0%</td></tr>
+            <tr><td><b>2.0</b> (다양하게)</td><td><b>33.5%</b></td><td>23.7%</td><td>19.4%</td><td>13.7%</td><td>9.7%</td></tr>
+            <tr id="gv-temp-now"><td><b>지금</b></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          </table>
+        </div>
+
+        <div class="btn-row" style="margin-top:0.8rem;">
+          <button class="btn" type="button" onclick="gvDrawSentences()">5문장 뽑기</button>
+          <button class="btn" type="button" onclick="gvCompareAdd()">비교표에 담기</button>
+        </div>
+        <div class="gv-sentbatch" id="gv-sentbatch"></div>
+        <div class="gv-scroll"><table class="gv-tbl" id="gv-comparetbl" style="margin-top:0.6rem;"></table></div>
+      </div>
+    </div>
+
+    <details class="gv-fold">
+      <summary><span class="rl">단계 토글</span>관찰 — 같은 룰렛, 다른 결과</summary>
+      <div class="bd">
+        <p><b>[100번 돌리기]</b>를 누른 결과를 보세요. 막대의 높이가 <b>원래 확률과 거의 같아졌습니다.</b>
+          21차시에서 동전을 여러 번 던질수록 상대도수가 한 값에 수렴하던 것과 완전히 같은 장면입니다.</p>
+        <p>그런데 <b>1번만 돌리면</b> 어떻습니까? 48%인 '갔다'가 나올 수도, 4%인 '갔다가'가 나올 수도 있습니다.
+          <b>확률이 정해져 있다는 것과, 결과가 정해져 있다는 것은 전혀 다른 말입니다.</b></p>
+        <p>ⓐ에서 여러분이 고른 답은 <b id="gv-a2-recall">〈아직 고르지 않았습니다〉</b>이었습니다. 정답은 ③입니다.</p>
+      </div>
+    </details>
+
+    <details class="gv-fold">
+      <summary><span class="rl">단계 토글</span>정리 — 조절값을 낮추면 뻔해지고, 높이면 다양해진다</summary>
+      <div class="bd">
+        <p><b>T = 0.5</b> — 1등이 71.6%까지 올라갑니다. 거의 언제나 '갔다'가 나옵니다. <b>안전하지만 뻔합니다.</b></p>
+        <p><b>T = 2.0</b> — 1등이 33.5%로 내려오고 꼴찌가 9.7%까지 올라옵니다. <b>다양하지만 이상한 문장도 섞입니다.</b></p>
+        <p>실제 서비스에서 "창의적으로 써 줘"라고 하면 이 값을 올리고, "정확한 사실만 말해 줘"라고 하면 내립니다.
+          다만 <b>값을 아무리 내려도 0%가 되는 후보는 없습니다.</b> 이것이 37차시에서 다룰 문제의 출발점입니다.</p>
+        <p class="gv-src">씨마스 교과서 Ⅴ p.185 「확률적으로 다음 단어를 예측하여 생성」 · RR 2024-01 p.43 「확률적 접근」 서술을 재구성</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── TAB 2 : 활동 ③ 어디를 볼지 정하기 ─────────────────────── -->
+  <div class="tpanel" id="gv2">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (8분)</strong> <span class="gv-badge">🧰 17차시 도구</span> —
+      "어디를 볼지 정하는 가중치"로 만든 가중합이 곧 <b>행렬의 곱셈</b>임을 계산으로 확인합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 같은 글자, 다른 뜻</h3>
+      <p>다음 두 문장에서 <b>'배'</b>는 각각 무슨 뜻입니까?</p>
+      <p>㉠ 과수원<b>에서</b> 배를 <b>따다</b> &nbsp;·&nbsp; ㉡ 항구<b>에서</b> 배를 <b>타다</b></p>
+      <p>글자는 똑같습니다. 그런데 여러분은 어렵지 않게 뜻을 갈랐습니다. <b>무엇을 보고 갈랐습니까?</b></p>
+      <div class="btn-row">
+        <input class="gv-in wide" id="gv-a3-note" type="text" placeholder="한 줄로 적어 보세요" aria-label="무엇을 보고 뜻을 갈랐는지">
+        <button class="btn pri" type="button" onclick="gvA3Submit()">제출하고 조작 열기</button>
+      </div>
+      <div class="gv-fb" id="gv-a3-fb0"></div>
+    </div>
+
+    <div class="card gv-veil" id="gv-a3-body" data-no-toggle="1">
+      <h3>조작 — 가중치 슬라이더와 도착점</h3>
+      <div class="gv-sentpick" id="gv-sentpick">
+        <button class="btn on" type="button" onclick="gvSentPick(0,this)">㉠ 과수원에서 배를 따다</button>
+        <button class="btn" type="button" onclick="gvSentPick(1,this)">㉡ 항구에서 배를 타다</button>
+      </div>
+      <div class="gv-slbox3">
+        <div class="gv-sl3"><span class="nm" id="gv-w1lb">과수원</span>
+          <input type="range" id="gv-w1" min="0" max="1" step="0.05" value="0.5" oninput="gvAttRender()"><span class="vl" id="gv-w1v">0.50</span></div>
+        <div class="gv-sl3"><span class="nm" id="gv-w2lb">-에서</span>
+          <input type="range" id="gv-w2" min="0" max="1" step="0.05" value="0.1" oninput="gvAttRender()"><span class="vl" id="gv-w2v">0.10</span></div>
+        <div class="gv-sl3"><span class="nm" id="gv-w3lb">따다</span>
+          <input type="range" id="gv-w3" min="0" max="1" step="0.05" value="0.4" oninput="gvAttRender()"><span class="vl" id="gv-w3v">0.40</span></div>
+      </div>
+      <p class="gv-hint">세 슬라이더의 값은 <b>합이 1이 되도록 자동으로 정규화</b>되어 계산에 쓰입니다.</p>
+      <div class="gv-cvwrap">
+        <canvas class="gv-cv" id="gv-att" width="520" height="380"></canvas>
+        <p class="gv-cvcap">큰 점 3개 = 뜻 후보(과일·선박·신체) · 작은 점 3개 = 문맥 단어 · ◆ = 가중합 도착점</p>
+      </div>
+      <div class="gv-attresult" id="gv-att-result"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1rem;">실패를 만들어 보기 <span class="gv-badge">필수 미션</span></p>
+      <p><b>미션.</b> 문장 ㉡ 「항구에서 배를 타다」에서 가중치를 조절해 <b>일부러 틀린 뜻으로 도착</b>시켜 보세요.
+        힌트 — 뜻이 담기지 않은 <b>기능어 '-에서'</b>에만 몰아주면 어떻게 될까요?</p>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="gvMissionHint()">기능어에 몰아주기 (0, 1, 0)</button>
+        <button class="btn pri" type="button" onclick="gvMissionCheck()">미션 확인</button>
+      </div>
+      <div class="gv-fb" id="gv-mission-fb"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1.2rem;">관찰 기록</p>
+      <p>① 가중치를 문맥 단어(과수원·항구·따다·타다) 쪽으로 크게 줄 때와 기능어(-에서) 쪽으로 줄 때, 도착점은 어떻게 다른가요?
+        ② 실제 문장 이해에서 "어디를 볼지"가 왜 중요할까요?</p>
+      <textarea class="gv-obs" id="gv-a3-obs" placeholder="두 줄로 적어 보세요."></textarea>
+    </div>
+
+    <details class="gv-fold">
+      <summary><span class="rl">단계 토글</span>정리 — 이 계산은 17차시의 행렬의 곱입니다</summary>
+      <div class="bd">
+        <p>방금 한 계산을 그대로 행렬로 쓰면 이렇게 됩니다. (아래 식은 지금 슬라이더 값 그대로 계산됩니다.)</p>
+        <div class="gv-fml" id="gv-matrix-disp"></div>
+        <p><b>17차시에서 세운 곱셈의 정의 그대로입니다.</b> 앞 행렬의 가로줄과 뒤 행렬의 세로줄을 자리끼리 곱해 더했습니다.
+          19차시에서 신경망의 한 층이 행렬의 곱이었던 것과도 같습니다.</p>
+        <div class="btn-row">
+          <button class="btn" type="button" onclick="go('matmul')">17차시로 이동 →</button>
+          <button class="btn" type="button" onclick="go('fclayer')">19차시로 이동 →</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="gv-fold">
+      <summary><span class="rl">단계 토글</span>정의 확인 — 어디를 볼지 정하는 가중치 <span class="gv-badge ref">참고 용어: 어텐션(attention)</span></summary>
+      <div class="bd">
+        <p><b>정의.</b> 문장의 각 단어에 <b>0 이상이고 합이 1인 가중치</b>를 붙인 뒤, 그 가중치로 단어 벡터들을 <b>가중합</b>하여
+          새로운 벡터를 만드는 계산입니다.</p>
+        <p>씨마스 교과서는 이 일을 이렇게 적었습니다 — 생성 언어 모델은 "이전 문장을 기억하고, <b>중요한 단어가 무엇인지 수학적으로 계산하여</b>
+          대화를 매끄럽게 이어간다."</p>
+        <p>ⓐ에서 여러분이 적은 답은 <b id="gv-a3-recall">〈아직 제출하지 않았습니다〉</b>이었습니다.
+          '과수원'과 '항구'를 봤다고 적었다면, 여러분은 이미 <b>가중치를 그 단어에 크게 준 것</b>입니다.</p>
+        <p class="gv-src">씨마스 교과서 Ⅴ p.185 서술 · RR 2024-01 p.9 「2017년 트랜스포머 모델」 서술을 재구성</p>
+      </div>
+    </details>
+
+    <details class="gv-fold">
+      <summary><span class="rl">단계 토글</span>더 알아보기 — 이 방법이 못 하는 일</summary>
+      <div class="bd">
+        <p>씨마스 교과서는 이 방법의 한계를 분명히 적어 두었습니다.</p>
+        <p>"벡터 연산은 <b>일부 단어 쌍에 대해서는 잘 동작하지만, 모든 언어적 관계를 완벽하게 모델링할 수는 없다.</b>
+          예를 들어 '왕'과 '남자', 그리고 '여왕'과 '여자'와 같은 관계는 잘 표현하지만, <b>더 복잡한 문맥적 뉘앙스는 잘 포착하지 못할 수 있다.</b>"</p>
+        <p>오늘 자유 모드에서 <b>도착점에 단어가 없던 경험</b>을 떠올려 보세요. 화살표는 언제나 그릴 수 있지만, 그 자리에 뜻이 있으리라는
+          보장은 없습니다. 37차시에서 이 이야기를 이어 갑니다.</p>
+        <p class="gv-src">씨마스 교과서 Ⅴ p.197 「정리」 서술을 재구성</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="gv-step"><p class="mono">STEP 3 · 정리 (7분)</p></div>
+
+  <div class="card gv-ask" data-no-toggle="1">
+    <h3>오늘의 핵심 · 핵심 질문에 답하기</h3>
+    <ul class="gv-3line">
+      <li>➡️ 단어를 벡터로 옮기면 의미의 차이가 <b>화살표</b>가 된다. 같은 종류의 차이는 <b>같은 화살표</b>이므로 더하고 빼서 새 단어를 찾을 수 있다.</li>
+      <li>🎡 다음에 올 말은 <b>상대도수로 만든 확률</b>로 고른다. 확률이 정해져 있다는 말과 결과가 정해져 있다는 말은 다르다.</li>
+      <li>⚖️ "어디를 볼지 정하는 가중치"로 만든 <b>가중합</b>은 곧 <b>행렬의 곱셈</b>이다. 오늘 쓴 수학은 전부 8·10·11·17·21차시의 것이다.</li>
+    </ul>
+    <p style="margin-top:1rem;"><b>❓ 챗봇은 말의 뜻을 아는 것일까, 다음에 올 말을 고르는 것일까?</b><br>
+      <b>답</b> — <b>고르는 쪽입니다.</b> 다만 그 고르기가 <b>아주 잘 정리된 지도 위에서</b> 이루어집니다.</p>
+    <details class="gv-fold">
+      <summary><span class="rl">자세히 보기</span>지도가 잘 만들어진 자리에서는 훌륭하고, 없는 자리에서는…</summary>
+      <div class="bd">
+        <p>"왕 − 남자 + 여자 = 여왕"이 성립하는 것을 보면 뜻을 아는 것처럼 보입니다. 그러나 오늘 확인한 것은
+          <b>(0, 4)라는 화살표가 세 군데에서 똑같이 나타난다</b>는 사실뿐입니다. 지도를 그렇게 만들었기 때문에 그렇게 계산되는 것이지,
+          기계가 '남자'와 '여자'의 뜻을 이해한 것은 아닙니다.</p>
+        <p>그래서 챗봇의 대답이 훌륭할 때도 있고 엉뚱할 때도 있습니다. 지도가 잘 만들어진 자리에서는 훌륭하고, 지도에 없는 자리에서는
+          <b>화살표만 그린 채 아무 단어나 집어 옵니다.</b> 그 장면의 이름이 37차시에서 배울 <b>환각</b>입니다.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <div class="gv-note">이 차시의 형성평가는 <b>참고용입니다 — 총점에 반영하지 않습니다.</b> [선택 심화 · 평가 제외]</div>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고, 마지막에 참고 점수와 문항별 복기가 표시됩니다.</p>
+    <div id="gv-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고</strong> —
+    오늘 우리는 <b>말</b>을 수로 옮겼습니다. 다음 시간에는 <b>그림</b> 차례입니다. 그런데 이번에는 벡터가 아니라 <b>행렬</b>입니다 —
+    14·15차시에서 만든 그 행렬입니다. 화면을 가득 채운 잡음이 그림으로 바뀌는 과정을 좇습니다. 놀랍게도 그 과정에 쓰이는 계산은
+    <b>k·A + (1−k)·B</b> 하나뿐입니다. 14차시에서 두 사진을 섞을 때 쓴 그 식입니다.
+    <span style="display:block;margin-top:0.5rem;">
+      <button class="btn pri" type="button" onclick="go('genimg')">다음 차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('imgop')">14차시 다시 보기</button>
+    </span>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다.</p>
+    <div class="gv-refs">
+      <a class="gv-ref" href="https://www.youtube.com/watch?v=g38aoGttLhI" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">🎬 영상</span>🧠</span>
+        <span class="bd"><span class="tt">트랜스포머, ChatGPT가 트랜스포머로 만들어졌죠 — DL5</span>
+          <span class="ds">단어가 벡터가 되는 장면을 그림으로 봅니다. 앞부분만 보아도 오늘 활동 ①이 이해됩니다. (3Blue1Brown 한국어)</span></span>
+      </a>
+      <a class="gv-ref" href="https://www.youtube.com/watch?v=_Z3rXeJahMs" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">🎬 영상</span>🎯</span>
+        <span class="bd"><span class="tt">그 이름도 유명한 어텐션 — DL6</span>
+          <span class="ds">활동 ③의 가중합이 실제 모델에서 어떻게 쓰이는지 봅니다. (3Blue1Brown 한국어)</span></span>
+      </a>
+      <a class="gv-ref" href="https://www.youtube.com/watch?v=gqFhGG6X95s" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">🎬 영상</span>📎</span>
+        <span class="bd"><span class="tt">워드 임베딩</span>
+          <span class="ds">우리말로 가장 짧게 정리한 단어 임베딩 설명. (코드없는 프로그래밍)</span></span>
+      </a>
+      <a class="gv-ref" href="https://www.youtube.com/watch?v=lh--n4GmDZ4" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">🎬 영상 · 11차시 회수</span>📐</span>
+        <span class="bd"><span class="tt">11. 유사도 (8:41)</span>
+          <span class="ds">코사인 유사도를 다시 꺼내 봅니다. (mathT야나수 〈인공지능 수학〉)</span></span>
+      </a>
+      <a class="gv-ref" href="https://word2vec.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">🔧 웹 활동</span>🗺️</span>
+        <span class="bd"><span class="tt">워드투벡 (word2vec.kr)</span>
+          <span class="ds">씨마스 교과서 Ⅴ p.196에 실린 그 사이트. 한국 − 서울 + 도쿄를 직접 넣어 봅니다. 프로젝트 과제에 사용합니다.</span></span>
+      </a>
+      <a class="gv-ref" href="https://poloclub.github.io/transformer-explainer/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">🔧 웹 활동</span>🌡️</span>
+        <span class="bd"><span class="tt">Transformer Explainer</span>
+          <span class="ds">브라우저에서 실제 언어 모델을 돌리며 다음 단어 확률과 온도 슬라이더를 눈으로 봅니다. 활동 ②의 실제 버전(영문 화면).</span></span>
+      </a>
+      <a class="gv-ref" href="https://projector.tensorflow.org/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">🔧 웹 활동</span>🔭</span>
+        <span class="bd"><span class="tt">Embedding Projector</span>
+          <span class="ds">실제 단어 벡터 수천 개를 3차원으로 돌려 봅니다. "성분이 수백 개"라는 말의 실제 모습.</span></span>
+      </a>
+      <a class="gv-ref" href="#text" onclick="go('text');return false;">
+        <span class="th"><span class="bg">🔗 내부 뷰</span>①</span>
+        <span class="bd"><span class="tt">8차시 다시 보기 — 텍스트를 벡터로</span>
+          <span class="ds">원-핫·빈도수 벡터를 만든 시간.</span></span>
+      </a>
+      <a class="gv-ref" href="#vecop" onclick="go('vecop');return false;">
+        <span class="th"><span class="bg">🔗 내부 뷰</span>➕</span>
+        <span class="bd"><span class="tt">10차시 다시 보기 — 벡터의 연산과 크기</span>
+          <span class="ds">오늘의 화살표를 정의한 시간.</span></span>
+      </a>
+      <a class="gv-ref" href="#sim" onclick="go('sim');return false;">
+        <span class="th"><span class="bg">🔗 내부 뷰</span>📐</span>
+        <span class="bd"><span class="tt">11차시 다시 보기 — 얼마나 비슷한가</span>
+          <span class="ds">코사인 유사도를 만든 시간.</span></span>
+      </a>
+      <a class="gv-ref" href="#prob" onclick="go('prob');return false;">
+        <span class="th"><span class="bg">🔗 내부 뷰</span>🎲</span>
+        <span class="bd"><span class="tt">21차시 다시 보기 — 데이터에서 확률 읽기</span>
+          <span class="ds">상대도수가 확률이 되던 시간.</span></span>
+      </a>
+      <a class="gv-ref" href="#matmul" onclick="go('matmul');return false;">
+        <span class="th"><span class="bg">🔗 내부 뷰</span>✖️</span>
+        <span class="bd"><span class="tt">17차시 다시 보기 — 행렬의 곱셈</span>
+          <span class="ds">활동 ③의 계산을 세운 시간.</span></span>
+      </a>
+    </div>
+    <div id="gv-ref-custom" class="gv-refs" style="margin-top:0.8rem;"></div>
+    <div class="btn-row" style="align-items:center;">
+      <input class="gv-in wide" id="gv-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="추가할 자료 주소">
+      <input class="gv-in wide" id="gv-ref-tt" type="text" placeholder="자료 제목(선택)" aria-label="추가할 자료 제목">
+      <button class="btn pri" type="button" onclick="gvRefAdd()">+ 자료 추가</button>
+    </div>
+    <p class="status" id="gv-ref-st">교사용 — 추가한 자료는 이 기기에만 저장됩니다.</p>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.4rem;">공학 도구로 확인하기</p>
+    <div class="gv-tools">
+      <details class="gv-tool">
+        <summary><span class="em">📊</span>스프레드시트 — 다양성 조절값 표 만들기</summary>
+        <div class="bd2">
+          <h4>후보 5개의 확률을 T별로 계산해 막대로 비교합니다</h4>
+          <ol>
+            <li>A열에 후보 5개, B열에 횟수 <b>48, 24, 16, 8, 4</b>를 입력합니다.</li>
+            <li>C2에 <b>=B2/SUM($B$2:$B$6)</b>을 넣고 아래로 채우면 <b>상대도수(확률)</b>가 나옵니다.</li>
+            <li>F1에 조절값 <b>T</b>를 넣고, D2에 <b>=C2^(1/$F$1)</b>을 넣어 아래로 채웁니다.</li>
+            <li>E2에 <b>=D2/SUM($D$2:$D$6)</b>을 넣으면 <b>조절된 확률</b>입니다. F1에 0.5, 1, 2를 차례로 넣어 보세요.</li>
+            <li>C열과 E열을 함께 선택해 <b>묶은 세로 막대</b>로 그리면 활동 ② ⓒ의 그림이 그대로 나옵니다.</li>
+          </ol>
+          <p class="gv-src">예상 결과 — T=0.5일 때 71.6 / 17.9 / 8.0 / 2.0 / 0.5, T=2일 때 33.5 / 23.7 / 19.4 / 13.7 / 9.7</p>
+        </div>
+      </details>
+      <details class="gv-tool">
+        <summary><span class="em">📐</span>지오지브라 — 단어 지도에 화살표 그리기</summary>
+        <div class="bd2">
+          <h4>남자·여자·왕 세 점으로 성별 화살표를 확인합니다</h4>
+          <ol>
+            <li>입력창에 <b>A=(4,2)</b> <b>B=(4,6)</b> <b>C=(9,2)</b>를 차례로 넣어 남자·여자·왕을 찍습니다.</li>
+            <li><b>u=Vector(A,B)</b>를 넣으면 <b>성별 화살표</b>가 그려집니다.</li>
+            <li><b>D=C+u</b>를 넣으면 도착점이 자동으로 찍힙니다. 좌표가 (9,6)인지 확인하세요.</li>
+            <li><b>Vector(C,D)</b>를 추가해 두 화살표가 <b>같은 방향·같은 길이</b>임을 눈으로 확인합니다.</li>
+            <li><b>Length(u)</b>로 크기가 4임을 확인합니다(10차시의 |v|).</li>
+          </ol>
+          <a href="https://www.geogebra.org/classic" target="_blank" rel="noopener">지오지브라 열기 ↗</a>
+        </div>
+      </details>
+      <details class="gv-tool">
+        <summary><span class="em">🧮</span>알지오매스 — 벡터 덧셈을 슬라이더로</summary>
+        <div class="bd2">
+          <h4>화살표가 옮겨 붙는 과정을 애니메이션으로 봅니다</h4>
+          <ol>
+            <li>[기하] 도구에서 좌표평면을 띄우고 점 4개를 찍습니다.</li>
+            <li>[벡터] 도구로 남자→여자 화살표를 그립니다.</li>
+            <li>슬라이더 <b>t</b>(0~1)를 만들고, 왕에서 t배만큼 이동한 점을 찍습니다.</li>
+            <li>슬라이더를 0에서 1로 밀며 <b>화살표가 옮겨 붙는 과정</b>을 애니메이션으로 봅니다.</li>
+          </ol>
+          <p class="gv-src">학급 시연용으로 가장 빠릅니다(설치·로그인 없음).</p>
+          <a href="https://www.algeomath.kr" target="_blank" rel="noopener">알지오매스 열기 ↗</a>
+        </div>
+      </details>
+      <details class="gv-tool">
+        <summary><span class="em">🐍</span>코랩 — 실제 단어 벡터 열어 보기 <span class="gv-badge">교사·희망 학생용</span></summary>
+        <div class="bd2">
+          <h4>실제 사전 학습 벡터로 "왕−남자+여자"를 계산해 봅니다</h4>
+          <ol>
+            <li>새 노트를 만들고 첫 칸에 한국어 사전 학습 벡터를 불러오는 코드를 붙여넣습니다(교사 배부 노트북).</li>
+            <li><b>model.most_similar(positive=['왕','여자'], negative=['남자'])</b>를 실행합니다.</li>
+            <li>결과 목록의 <b>첫 줄과 유사도 값</b>을 활동 ①의 0.933과 비교합니다.</li>
+            <li>우리 지도(성분 2개)와 실제 모델(성분 수백 개)의 차이를 한 줄로 적습니다.</li>
+          </ol>
+          <p class="gv-src">유의 — 실행 시간이 길고 계정이 필요하므로 교사 시연 또는 희망 학생만 진행합니다.</p>
+          <a href="https://colab.research.google.com/" target="_blank" rel="noopener">코랩 열기 ↗</a>
+        </div>
+      </details>
+    </div>
+    <p class="status" style="margin-top:0.8rem;">외부 사이트에서는 <b>개인정보를 입력하지 않습니다.</b> 회원 가입이 필요한 서비스는 교사 안내에 따라 이용하세요.
+      도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>우리말 지도에서 화살표 찾기</h3>
+    <p class="sub">씨마스 교과서 Ⅴ p.196이 소개한 word2vec.kr에서 우리말 단어의 벡터 연산을 직접 해 보고,
+      잘 되는 관계와 잘 안 되는 관계를 갈라 봅니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 참고 자료의 <b>word2vec.kr</b>을 엽니다(회원 가입·개인정보 입력 없음).
+        ② <b>A − B + C</b> 꼴의 식을 <b>5개 이상</b> 만들어 넣고 결과를 표에 적습니다.
+        최소 조건 — <b>성공할 것 같은 식 3개</b>, <b>실패할 것 같은 식 2개</b>를 미리 예상해서 넣습니다.
+        ③ 각 결과에 대해 <b>예상 적중 / 빗나감</b>을 표시하고, 빗나간 식에 대해서는 <b>왜 빗나갔을지</b> 한 줄로 씁니다.
+        ④ 마지막에 오늘 배운 말로 한 문장 결론을 씁니다 — "이 방법은 ______ 관계는 잘 담지만, ______ 관계는 담지 못한다."</dd>
+      <dt>제출물</dt>
+      <dd>A4 반 장 또는 패들렛 카드 1장 — 식 5개 이상의 표(식 / 내 예상 / 실제 결과 / 적중 여부 / 빗나간 이유) + 결론 한 문장</dd>
+      <dt>평가 관점 <span class="gv-badge-adv">선택 심화 · 평가 제외</span></dt>
+      <dd>벡터의 덧셈·뺄셈으로 단어 사이의 관계를 설명했는가, <b>잘 되는 경우와 안 되는 경우를 스스로 구분</b>하고 그 이유를 근거를 들어 썼는가.</dd>
+      <dt>유의</dt>
+      <dd>사람·집단을 비하하거나 차별을 담은 식(예: 특정 직업·성별·국적을 잇는 식)은 만들지 않습니다.
+        결과가 불쾌하게 나왔다면 그 자체를 <b>37차시의 편향 사례로 기록</b>하고 식은 제출물에서 뺍니다.</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>35차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p><span class="gv-badge-adv" style="margin-right:0.4rem;">선택 심화 · 평가 제외</span>원하는 학생만 채웁니다.
+      오늘 웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('gv-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/unit6/35_단어지도.pdf" target="_blank" rel="noopener">📄 단어 지도 좌표표 <span class="sz">PDF · A4 1쪽</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/unit6/35_조절값표.pdf" target="_blank" rel="noopener">📄 다양성 조절값 계산표 <span class="sz">PDF · A4 1쪽</span></a>
+    </div>
+    <p class="gv-hint">파일이 열리지 않으면 아직 학교 서버에 복사되지 않은 것입니다. 선생님께 알려 주세요.</p>
+    <div id="gv-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄용 학습지 지면 (A4 2쪽) ═════ -->
+  <div class="ws-sheet" id="gv-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>35차시 학습지 · [선택 심화 — 평가하지 않습니다. 원하는 학생만 채웁니다.]</h2>
+      <span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>① 벡터와 확률 — 마중 퀴즈 기록</h3>
+    <table>
+      <tr><th style="width:52%;">질문</th><th style="width:14%;">내 답</th><th>이유</th></tr>
+      <tr><td>생성형 AI에 해당하는 것을 모두 고르면?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>원-핫 벡터만으로 알 수 없는 것은?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>같은 질문에 답이 매번 달라지는 이유는?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 단어 지도 — 14개 점 찍고 화살표 그리기</h3>
+    <p class="note">남자(4,2) 여자(4,6) 아빠(6,2) 엄마(6,6) 왕(9,2) 여왕(9,6) 소년(2,2) 소녀(2,6) ·
+      서울(2,10) 한국(2,13) 도쿄(6,10) 일본(6,13) 파리(10,10) 프랑스(10,13)</p>
+    <table>
+      <tr><th style="width:100%;">좌표평면(1cm 눈금) — 14개 점을 찍고 성별 화살표 세 개를 그리세요</th></tr>
+      <tr><td class="blank" style="height:60mm;"></td></tr>
+    </table>
+    <p class="note">화살표 표 — 여자−남자 = ( ___, ___ ) 크기 ___ / 여왕−왕 = ( ___, ___ ) 크기 ___ / 엄마−아빠 = ( ___, ___ ) 크기 ___</p>
+    <p class="note">한국 − 서울 + 도쿄 = ( ___, ___ ) = ______</p>
+
+    <h3>③ 코사인 유사도 — 왕(9,2) 기준</h3>
+    <table>
+      <tr><th>상대</th><th>성분끼리 곱해 더한 값</th><th>크기의 곱</th><th>코사인 유사도</th></tr>
+      <tr><td>여왕(9,6)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>소년(2,2)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>서울(2,10)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">천재 교과서 문항 — 「____는 귀엽다」 세 줄 계산과 답</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 확률과 다양성 조절값</h3>
+    <table>
+      <tr><th>후보</th><th>갔다(48)</th><th>간다(24)</th><th>갔어요(16)</th><th>갔니(8)</th><th>갔다가(4)</th><th>합</th></tr>
+      <tr><td>확률</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <table>
+      <tr><th>T</th><th>갔다</th><th>간다</th><th>갔어요</th><th>갔니</th><th>갔다가</th></tr>
+      <tr><td>0.5</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">관찰 — T를 낮추면 ______, 높이면 ______. 실제 서비스에서는 ______일 때 낮춘다. (계산기 사용 허용)</p>
+
+    <h3>⑤ 가중합과 행렬의 곱</h3>
+    <p class="note">㉡ 항구에서 배를 타다 — 0.5×(9,2) + 0.1×(5,5) + 0.4×(7,1) = ( ___, ___ )</p>
+    <p class="note">같은 계산을 행렬의 곱으로 쓰고, 각 행렬의 크기(⬜×⬜)를 적으시오.</p>
+    <div class="rule sm"></div>
+    <p class="note">실패 실험 — 가중치를 (0, 1, 0)으로 두었을 때 도착점과 가장 가까운 뜻은?</p>
+
+    <h3>⑥ 핵심 질문</h3>
+    <p><b>챗봇은 말의 뜻을 아는 것일까, 다음에 올 말을 고르는 것일까?</b></p>
+    <div class="rule lg"></div>
+
+    <h3>⑦ 형성평가 <span class="note">[선택 심화 — 참고용]</span></h3>
+    <ol>
+      <li>여왕 − 여자 + 남자를 계산하면 어느 단어에 도착하는가? &nbsp; 답: ______</li>
+      <li>고양이(1,0,2)·물고기(1,1,2)·강아지(0,2,1) 중 귀엽다(0,0,1)와 코사인 유사도가 가장 큰 단어는? &nbsp; 답: ______</li>
+      <li>확률 0.48·0.24·0.16·0.08·0.04에 대한 설명 중 옳지 않은 것은? &nbsp; 답: ______</li>
+      <li>다양성 조절값을 낮추면 일어나는 일은? &nbsp; 답: ______</li>
+      <li>가중합 (0.5,0.1,0.4)×[(9,2),(5,5),(7,1)]은 몇×몇 행렬과 몇×몇 행렬의 곱인가? &nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑧ 자기 점검</h3>
+    <table>
+      <tr><th>점검 항목</th><th>◎ / ○ / △</th></tr>
+      <tr><td>단어를 벡터로 옮기면 의미의 차이가 화살표가 됨을 설명할 수 있다</td><td class="blank"></td></tr>
+      <tr><td>다음 말을 확률로 고르는 룰렛의 원리를 설명할 수 있다</td><td class="blank"></td></tr>
+      <tr><td>가중합이 행렬의 곱셈임을 계산으로 확인할 수 있다</td><td class="blank"></td></tr>
+    </table>
+  </div>
+</div>

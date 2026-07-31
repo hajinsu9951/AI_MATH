@@ -1,0 +1,720 @@
+<!-- ═══════════ GENIMG (36차시: 잡음에서 그림으로) ═══════════
+     · 파일 위치: views/genimg.html  (신규)
+     · 전역 접두사 gi · 뷰 루트 id #v-genimg · 모든 스타일 규칙은 #v-genimg 하위로만 작성
+     · 로직은 core-snippet.js 참조 (core.js 끝에 이어 붙일 것 — core.js 자체는 수정하지 않음)
+     · 단원: Ⅵ. 생성형 AI와 수학 [선택 심화 · 평가 제외] · 성취기준 없음 · 회수: 14·15·17·20·28차시
+     · 교육과정 준수: 회전변환·회전행렬·역행렬·행렬식·내적 기호·조건부확률 기호 미사용.
+       '확산 모델'·'초해상도'·'스타일 전이'·'생성형 AI'는 [참고 용어] 배지로만 사용합니다.
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-genimg">
+  <style>
+  /* genimg 뷰 전용 스타일 (#v-genimg 스코프 한정 — 전역 누수 금지) */
+  #v-genimg .gi-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-genimg .gi-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-genimg .gi-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 · 배지 */
+  #v-genimg .gi-hero{position:relative;}
+  #v-genimg .gi-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-genimg .gi-hero>*:not(.gi-wm){position:relative;}
+  #v-genimg .vw-mark{display:none;}
+  #v-genimg .gi-adv{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.78rem;font-weight:700;
+    color:var(--red);border:1px solid var(--red);border-radius:9999px;padding:0.28rem 0.85rem;margin:0.5rem 0 0.7rem;}
+  #v-genimg .gi-recall{display:flex;flex-wrap:wrap;align-items:center;gap:0.4rem;font-size:0.85rem;color:var(--muted);
+    margin-top:0.7rem;line-height:1.9;}
+  #v-genimg .gi-recall b{color:var(--body);font-weight:600;margin-right:0.15rem;}
+  #v-genimg .gi-recall .tag{font-family:var(--mono);font-size:0.72rem;border:1px solid var(--border);border-radius:9999px;
+    padding:0.14rem 0.6rem;color:var(--body);background:var(--bg);white-space:nowrap;}
+  #v-genimg .gi-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-genimg .gi-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-genimg .gi-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-genimg .gi-ask{border-left:4px solid var(--accent);}
+  #v-genimg .gi-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-genimg .gi-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.4rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-genimg .gi-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+
+  /* 공통 조각 */
+  #v-genimg .gi-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-genimg .gi-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-genimg .gi-scroll{overflow-x:auto;max-width:100%;}
+  #v-genimg .gi-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.9;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;max-width:100%;}
+  #v-genimg .gi-tbl-wrap{overflow-x:auto;max-width:100%;}
+  #v-genimg table.gi-tbl{border-collapse:collapse;font-size:0.88rem;min-width:min(100%,20rem);}
+  #v-genimg .gi-tbl th,#v-genimg .gi-tbl td{border:1px solid var(--border);padding:0.35rem 0.55rem;text-align:center;line-height:1.6;}
+  #v-genimg .gi-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-genimg .gi-tbl td.l{text-align:left;}
+  #v-genimg .gi-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.95rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-genimg .gi-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-genimg .gi-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-genimg .gi-fb b{color:var(--fg);}
+  #v-genimg .gi-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:1rem;line-height:1.85;}
+  #v-genimg .gi-fb:empty{display:none;}
+  #v-genimg .gi-badge{display:inline-block;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.05em;
+    border:1px solid var(--border);border-radius:9999px;padding:0.1rem 0.5rem;color:var(--muted);
+    background:var(--bg);vertical-align:middle;margin-left:0.3rem;white-space:nowrap;}
+  #v-genimg .gi-badge.ref{border-color:var(--accent);color:var(--body);}
+  #v-genimg .gi-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-genimg .gi-in.num{width:4.4rem;text-align:center;}
+  #v-genimg .gi-in.wide{flex:1 1 16rem;font-family:var(--sans);}
+  #v-genimg .gi-in.ok{border-color:var(--green);color:var(--green);}
+  #v-genimg .gi-in.no{border-color:var(--red);color:var(--red);}
+  #v-genimg .gi-in::-webkit-outer-spin-button,#v-genimg .gi-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #v-genimg .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-genimg .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-genimg .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;text-transform:none;font-family:var(--sans);}
+  #v-genimg .btn.pick{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-genimg .tabs{flex-wrap:wrap;}
+  #v-genimg .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-genimg .ws-dl{max-width:100%;}
+  #v-genimg .ws-btn{min-height:44px;flex-wrap:wrap;max-width:100%;word-break:keep-all;overflow-wrap:anywhere;}
+  #v-genimg .mat-label{font-size:0.85rem;letter-spacing:0.06em;}
+  #v-genimg .gi-obs{width:100%;min-height:3.2rem;resize:vertical;border:1px solid var(--border);border-radius:var(--radius);
+    background:var(--bg);color:var(--fg);padding:0.5rem 0.65rem;font-family:inherit;font-size:0.95rem;line-height:1.75;margin-top:0.4rem;}
+
+  /* 도입 대조 도해 */
+  #v-genimg .gi-flow{display:flex;flex-direction:column;gap:0.5rem;margin:0.8rem 0;}
+  #v-genimg .gi-flow-row{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:var(--mono);font-size:0.82rem;}
+  #v-genimg .gi-flow-row .box{border:1px solid var(--border);border-radius:0.4rem;padding:0.45rem 0.7rem;background:var(--card);white-space:nowrap;}
+  #v-genimg .gi-flow-row .arrow{color:var(--muted);}
+  #v-genimg .gi-flow-row.up .box{border-color:var(--blue);}
+  #v-genimg .gi-flow-row.down .box{border-color:var(--accent);}
+  #v-genimg .gi-flow-cap{font-size:0.78rem;color:var(--muted);text-align:right;}
+  #v-genimg .gi-mid{text-align:center;font-size:0.85rem;color:var(--fg);font-weight:600;padding:0.3rem 0;border-top:1px dashed var(--border);border-bottom:1px dashed var(--border);}
+
+  /* 캔버스 위젯 */
+  #v-genimg .gi-cvrow{display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start;margin-top:0.7rem;}
+  #v-genimg .gi-cvbox{flex:0 0 auto;text-align:center;min-width:0;}
+  #v-genimg .gi-cv{display:block;width:9rem;height:9rem;max-width:40vw;border:1px solid var(--border);border-radius:0.4rem;
+    background:#000;image-rendering:pixelated;image-rendering:crisp-edges;}
+  #v-genimg .gi-cvcap{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.3rem;line-height:1.6;}
+  #v-genimg .gi-cvcap b{color:var(--fg);}
+  #v-genimg .gi-slbox{flex:1 1 14rem;min-width:0;}
+  #v-genimg .gi-sl{display:flex;align-items:center;gap:0.6rem;margin:0.5rem 0;flex-wrap:wrap;}
+  #v-genimg .gi-sl input[type=range]{flex:1 1 8rem;min-width:6rem;max-width:100%;}
+  #v-genimg .gi-sl .vl{font-family:var(--mono);font-size:0.92rem;font-weight:700;width:3.4rem;text-align:right;flex-shrink:0;}
+  #v-genimg .gi-mini3{display:inline-grid;grid-template-columns:repeat(3,2.6rem);gap:1px;background:var(--border);
+    border:1px solid var(--border);border-radius:0.3rem;padding:1px;margin-top:0.5rem;}
+  #v-genimg .gi-mini3 div{width:2.6rem;height:1.7rem;display:flex;align-items:center;justify-content:center;
+    background:var(--card);font-family:var(--mono);font-size:0.68rem;font-weight:600;color:var(--fg);}
+  #v-genimg .gi-sw9{display:inline-grid;grid-template-columns:repeat(3,2.2rem);gap:2px;margin-top:0.6rem;}
+  #v-genimg .gi-sw9 i{display:block;width:2.2rem;height:2.2rem;border-radius:0.2rem;border:1px solid var(--border);background:var(--card);}
+
+  /* 걸음 로그 · 진행 */
+  #v-genimg .gi-prog{font-family:var(--mono);font-size:0.92rem;font-weight:700;color:var(--fg);margin-top:0.6rem;}
+  #v-genimg .gi-log{font-family:var(--mono);font-size:0.8rem;line-height:1.8;background:var(--bg);border:1px solid var(--border);
+    border-left:4px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.75rem;margin-top:0.55rem;
+    max-height:9rem;overflow-y:auto;overflow-x:auto;white-space:pre;}
+  #v-genimg .gi-curve{width:100%;max-width:22rem;height:auto;margin-top:0.5rem;}
+
+  /* 정리 카드 */
+  #v-genimg .gi-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-genimg .gi-3line li{font-size:1.04rem;font-weight:700;color:var(--fg);line-height:1.75;}
+  #v-genimg .gi-fold{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.2rem;}
+  #v-genimg .gi-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);
+    padding:0.6rem 0;position:relative;padding-right:1.4rem;min-height:44px;display:flex;align-items:center;}
+  #v-genimg .gi-fold>summary::-webkit-details-marker{display:none;}
+  #v-genimg .gi-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-genimg .gi-fold[open]>summary::after{content:'▾';}
+  #v-genimg .gi-fold .bd{padding:0.2rem 0 0.5rem;}
+  #v-genimg .gi-fold .bd p{font-size:1rem;color:var(--body);line-height:1.85;margin-bottom:0.7rem;}
+
+  /* 참고 자료 · 공학 도구 카드 */
+  #v-genimg .gi-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-genimg .gi-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-genimg .gi-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-genimg .gi-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.1rem;overflow:hidden;}
+  #v-genimg .gi-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.6rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.03em;}
+  #v-genimg .gi-ref .bd{padding:0.6rem 0.7rem;}
+  #v-genimg .gi-ref .tt{display:block;font-weight:600;font-size:0.93rem;line-height:1.45;}
+  #v-genimg .gi-ref .ds{display:block;font-size:0.83rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;overflow-wrap:anywhere;}
+  #v-genimg .gi-refwrap{position:relative;min-width:0;}
+  #v-genimg .gi-refwrap .rm{position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);
+    color:#fff;border-radius:9999px;width:1.8rem;height:1.8rem;cursor:pointer;font-size:0.95rem;line-height:1;z-index:2;}
+  #v-genimg .gi-refwrap .rm:hover{background:var(--red);}
+  #v-genimg .gi-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-genimg .gi-tool{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.85rem 0.95rem;min-width:0;}
+  #v-genimg .gi-tool .hd{display:flex;align-items:center;gap:0.45rem;font-weight:700;font-size:1.0rem;color:var(--fg);}
+  #v-genimg .gi-tool .hd .em{font-size:1.25rem;line-height:1;}
+  #v-genimg .gi-tool h4{font-size:0.92rem;font-weight:600;color:var(--body);margin:0.35rem 0 0.3rem;line-height:1.6;}
+  #v-genimg .gi-tool ol{margin:0 0 0 1.1rem;padding:0;}
+  #v-genimg .gi-tool li{font-size:0.9rem;color:var(--body);line-height:1.75;margin-bottom:0.15rem;overflow-wrap:anywhere;word-break:break-word;}
+  #v-genimg .gi-tool a{display:inline-block;margin-top:0.4rem;font-size:0.9rem;color:var(--blue);}
+
+  /* 외부 체험 링크 경고 배너 */
+  #v-genimg .gi-warn{font-size:0.85rem;line-height:1.75;color:var(--body);background:var(--bg);
+    border:1px dashed var(--border);border-radius:0.4rem;padding:0.5rem 0.7rem;margin:0.6rem 0;}
+
+  @media (prefers-reduced-motion:reduce){
+    #v-genimg *,#v-genimg *::before,#v-genimg *::after{transition-duration:0.001ms !important;animation-duration:0.001ms !important;}
+  }
+  @media (max-width:640px){
+    #v-genimg .gi-wm{display:none;}
+    #v-genimg .gi-cv{width:7rem;height:7rem;}
+    #v-genimg .gi-mini3{grid-template-columns:repeat(3,2.2rem);}
+    #v-genimg .gi-mini3 div{width:2.2rem;}
+    #v-genimg .gi-flow-row{font-size:0.72rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="gi-hero">
+    <svg class="gi-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <rect width="320" height="180" fill="none"/>
+      <g>
+        <rect x="14" y="46" width="88" height="88" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+        <g fill="currentColor">
+          <rect x="18" y="50" width="10" height="10" opacity="0.85"/><rect x="30" y="58" width="10" height="10" opacity="0.35"/>
+          <rect x="46" y="50" width="10" height="10" opacity="0.55"/><rect x="60" y="70" width="10" height="10" opacity="0.75"/>
+          <rect x="20" y="80" width="10" height="10" opacity="0.4"/><rect x="70" y="52" width="10" height="10" opacity="0.65"/>
+          <rect x="82" y="90" width="10" height="10" opacity="0.3"/><rect x="40" y="100" width="10" height="10" opacity="0.6"/>
+          <rect x="60" y="110" width="10" height="10" opacity="0.45"/><rect x="86" y="60" width="10" height="10" opacity="0.5"/>
+        </g>
+      </g>
+      <g stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round">
+        <path d="M108 90 h34 m-8 -7 l8 7 l-8 7"/>
+      </g>
+      <text x="125" y="82" font-family="monospace" font-size="10" fill="currentColor">0.9X+0.1A</text>
+      <g fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="206" y="46" width="88" height="88" rx="3"/>
+      </g>
+      <g stroke="currentColor" stroke-width="6" stroke-linecap="round">
+        <path d="M250 62 v56"/><path d="M222 90 h56"/>
+      </g>
+      <text x="160" y="164" font-size="11" fill="currentColor" font-family="monospace" text-anchor="middle" opacity="0.9">같은 식을 여러 번 — 잡음이 그림이 된다</text>
+    </svg>
+    <p class="mono" style="margin-bottom:0.3rem;">36차시 · Ⅵ. 생성형 AI와 수학</p>
+    <div class="gi-adv">⚠ 선택 심화 · 평가 제외</div>
+    <h2>잡음에서 그림으로</h2>
+    <p class="desc">
+      화면 가득한 모래알 같은 잡음이 그림으로 바뀝니다. 마법처럼 보이지만, 한 걸음 한 걸음 뜯어보면
+      전부 <b>14차시에서 두 사진을 섞을 때 썼던 그 계산</b>입니다.
+    </p>
+    <div class="gi-recall"><b>🧰 오늘 쓰는 도구</b>
+      <span class="tag">14차시 실수배·합·내분</span><span class="tag">15차시 RGB 세 행렬·클리핑</span>
+      <span class="tag">20차시 합성곱·특징 맵</span><span class="tag">17차시 행렬의 곱</span>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:1rem;">
+    <strong>오늘의 학습 목표</strong> <span class="gi-badge">선택 심화 — 평가하지 않습니다</span>
+    <div style="margin-top:0.5rem;">① 그림에 잡음이 섞이는 과정을 <b>행렬의 실수배와 합</b> <code>k·A + (1−k)·N</code> 으로 쓰고, 3×3 행렬에서 직접 계산할 수 있다. <span class="gi-badge">🧰 14·15차시</span></div>
+    <div style="margin-top:0.35rem;">② 잡음을 걷어내는 과정도 <b>같은 꼴의 식</b>이며, 여러 번 반복하면 남는 잡음의 비율이 <code>0.9ⁿ</code> 으로 줄어듦을 표로 확인할 수 있다. <span class="gi-badge">🧰 14차시</span></div>
+    <div style="margin-top:0.35rem;">③ 해상도를 높이는 일이 <b>없는 칸을 이웃의 평균으로 채우는 일</b>임을 2×2 → 3×3 계산으로 확인하고, AI가 하는 일은 그와 어떻게 다른지 말할 수 있다. <span class="gi-badge">🧰 14차시</span></div>
+    <div style="margin-top:0.35rem;">④ 화풍을 입히는 일이 <b>픽셀을 섞는 것이 아니라 특징 맵의 성질을 섞는 것</b>임을 20차시의 특징 맵과 연결해 설명할 수 있다. <span class="gi-badge">🧰 20차시</span></div>
+    <div class="gi-goalmap">
+      <button type="button" onclick="giSee(0,'gi-a1-c')">목표 ① → 활동 ① 「잡음이 덮는다」로 이동</button>
+      <button type="button" onclick="giSee(1,'gi-a2-c')">목표 ② → 활동 ② 「잡음을 걷어낸다」로 이동</button>
+      <button type="button" onclick="giSee(2,'gi-a3-c')">목표 ③④ → 활동 ③ 「늘리고 입힌다」로 이동</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips gi-keys" data-no-toggle="1">
+    <span class="chip">만들어 내는 AI</span>
+    <span class="chip">잡음을 섞는 식</span>
+    <span class="chip">되돌리기를 반복하기</span>
+    <span class="chip">해상도 높이기</span>
+    <span class="chip">화풍 입히기</span>
+  </div>
+
+  <div class="card gi-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>잡음에서 그림이 나오는 것은 마법인가, 계산인가?</li>
+    </ul>
+    <p style="margin-top:0.6rem;"><b>보조 질문</b> 만약 계산이라면, 그 계산은 우리가 이미 배운 것 중 무엇입니까?</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="gi-step"><p class="mono">STEP 1 · 도입 — 생각 열기 (7분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상</h3>
+    <p>카드를 누르면 전체 화면으로 재생됩니다. 선생님께서는 <b>[+ 선생님 영상 추가]</b> 칸에 다른 영상을 걸 수 있습니다.</p>
+    <div id="gi-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>같은 도구, 반대 방향</h3>
+    <p>지금까지 우리는 사진을 <b>읽는</b> AI를 만들었습니다. 오늘은 같은 종류의 계산으로 사진을 <b>만드는</b> AI를 봅니다.</p>
+    <div class="gi-flow">
+      <div class="gi-flow-row up">
+        <span class="box">사진</span><span class="arrow">→</span><span class="box">커널 ⊛</span><span class="arrow">→</span>
+        <span class="box">특징 맵</span><span class="arrow">→</span><span class="box">분류</span><span class="arrow">→</span><span class="box">"고양이"</span>
+      </div>
+      <div class="gi-flow-cap">우리가 해 온 일 (3단원) — <b>읽는다</b></div>
+      <div class="gi-mid">행렬은 그대로입니다. 방향만 바뀝니다.</div>
+      <div class="gi-flow-row down">
+        <span class="box">잡음 격자</span><span class="arrow">→</span><span class="box">0.9X+0.1Â</span><span class="arrow">→</span>
+        <span class="box">흐릿한 형태</span><span class="arrow">→</span><span class="box">반복</span><span class="arrow">→</span><span class="box">또렷한 그림</span>
+      </div>
+      <div class="gi-flow-cap">오늘 할 일 — <b>만든다</b></div>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>35차시와 이어 붙이기</h3>
+    <div class="gi-tbl-wrap"><table class="gi-tbl">
+      <tr><th></th><th>35차시 — 말</th><th>36차시 — 그림</th></tr>
+      <tr><td class="l">무엇을 수로 바꾸나</td><td>단어 → <b>벡터</b></td><td>픽셀 → <b>행렬</b></td></tr>
+      <tr><td class="l">어떤 연산을 쓰나</td><td>덧셈·뺄셈, 가중합</td><td>실수배·합, 내분</td></tr>
+      <tr><td class="l">어떻게 만들어 내나</td><td>다음 말을 <b>확률로</b> 뽑는다</td><td>잡음을 <b>조금씩</b> 걷어낸다</td></tr>
+      <tr><td class="l">몇 번 반복하나</td><td>단어 하나마다 1번씩</td><td>그림 한 장에 20~50번</td></tr>
+    </table></div>
+    <p class="gi-src">천재 지도서 p.90은 임베딩을 "텍스트, 이미지, 오디오, 그래프 등 모든 종류의 데이터를 숫자로 바꾸는 기술"로 정의합니다. 어제는 말, 오늘은 그림입니다. — 천재 지도서 p.90 서술을 재구성</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. 답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="gi-warm"></div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="gi-step"><p class="mono">STEP 2 · 전개 — 탐구 활동 (30분)</p></div>
+
+  <div class="tabs" data-no-toggle="1">
+    <button class="tab on" onclick="giTab(0,this)">① 잡음이 덮는다</button>
+    <button class="tab" onclick="giTab(1,this)">② 잡음을 걷어낸다</button>
+    <button class="tab" onclick="giTab(2,this)">③ 늘리고 입힌다</button>
+  </div>
+
+  <!-- ── TAB 0 : 활동 ① 잡음이 덮는다 ─────────────────────── -->
+  <div class="tpanel on" id="gi0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (9분)</strong> — 그림에 잡음을 섞는 계산이 14차시의 내분과 같은 식임을 확인합니다. <span class="gi-badge">🧰 14·15차시</span></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황</h3>
+      <p>아래는 3×3 크기의 아주 작은 흑백 그림입니다. 값이 클수록 밝습니다(0=검정, 255=흰색).</p>
+      <div class="gi-cvrow">
+        <div class="gi-cvbox"><div class="gi-tbl-wrap"><table class="gi-tbl"><tr><td>0</td><td>200</td><td>0</td></tr><tr><td>200</td><td>200</td><td>200</td></tr><tr><td>0</td><td>200</td><td>0</td></tr></table></div><p class="gi-cvcap"><b>그림 A</b> (십자 모양)</p></div>
+        <div class="gi-cvbox"><div class="gi-tbl-wrap"><table class="gi-tbl"><tr><td>120</td><td>40</td><td>200</td></tr><tr><td>10</td><td>250</td><td>30</td></tr><tr><td>180</td><td>60</td><td>140</td></tr></table></div><p class="gi-cvcap"><b>잡음 N</b> (아무 값)</p></div>
+      </div>
+      <p style="margin-top:0.7rem;">이 둘을 반반씩 섞으면 십자 모양이 아직 보일까요? 계산하기 전에 예상부터 골라 보세요.</p>
+      <div class="btn-row" id="gi-a1a-opts">
+        <button class="btn" type="button" onclick="giPoll('a1a',0,this)">보인다</button>
+        <button class="btn" type="button" onclick="giPoll('a1a',1,this)">안 보인다</button>
+        <button class="btn" type="button" onclick="giPoll('a1a',2,this)">모르겠다</button>
+      </div>
+      <p class="status" id="gi-a1a-fb"></p>
+    </div>
+
+    <div class="card" id="gi-a1-c" data-no-toggle="1">
+      <h3>조작 — 아홉 칸 손계산 <span class="gi-badge">자동 채점</span></h3>
+      <p><code>X = 0.5 · A + 0.5 · N</code> 을 계산해 아홉 칸을 채우세요.</p>
+      <div class="gi-tbl-wrap"><table class="gi-tbl" id="gi-b1-tbl"></table></div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="giGradeB1()">채점</button></div>
+      <div class="gi-fb" id="gi-b1-fb"></div>
+      <p class="gi-hint" style="margin-top:0.5rem;">칸을 맞힐 때마다 아래 미니 격자의 해당 칸이 그 밝기의 회색으로 칠해집니다.</p>
+      <div class="gi-sw9" id="gi-b1-sw"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 슬라이더 k 로 실제 사진 덮기</h3>
+      <div class="gi-cvrow">
+        <div class="gi-cvbox"><canvas class="gi-cv" id="gi-k-orig"></canvas><p class="gi-cvcap"><b>원본 A</b></p></div>
+        <div class="gi-cvbox"><canvas class="gi-cv" id="gi-k-res"></canvas><p class="gi-cvcap"><b>X = k·A + (1−k)·N</b></p></div>
+        <div class="gi-slbox">
+          <div class="gi-sl"><input id="gi-k-range" type="range" min="0" max="1" step="0.05" value="1" oninput="giKUpdate()"><span class="vl" id="gi-k-vl">1.00</span></div>
+          <p class="gi-hint" id="gi-k-txt">k = 1.00 → 원본 100% + 잡음 0%</p>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="giKPreset(0.9)">k = 0.9로</button>
+            <button class="btn" type="button" onclick="giKPreset(0.5)">k = 0.5로</button>
+            <button class="btn" type="button" onclick="giKPreset(0.1)">k = 0.1로</button>
+          </div>
+          <p class="gi-hint" style="margin-top:0.5rem;">가운데 3×3 실제 값</p>
+          <div class="gi-mini3" id="gi-k-tbl"></div>
+        </div>
+      </div>
+      <p class="gi-hint" style="margin-top:0.7rem;">⚠ 이 사진은 외부 이미지 없이 이 페이지가 직접 그린 표본입니다(오프라인 안전). 학급 전체가 같은 잡음을 봅니다.</p>
+      <label class="gi-hint" style="display:block;margin-top:0.6rem;">① 숫자가 알아보기 어려워지기 시작한 k 값은?
+        <textarea class="gi-obs" id="gi-k-obs1" onblur="giSaveObs('k1',this.value)" rows="1"></textarea></label>
+      <label class="gi-hint" style="display:block;margin-top:0.5rem;">② 완전히 알아볼 수 없게 된 k 값은?
+        <textarea class="gi-obs" id="gi-k-obs2" onblur="giSaveObs('k2',this.value)" rows="1"></textarea></label>
+      <label class="gi-hint" style="display:block;margin-top:0.5rem;">③ k = 0 일 때 화면에 남은 것은?
+        <textarea class="gi-obs" id="gi-k-obs3" onblur="giSaveObs('k3',this.value)" rows="1"></textarea></label>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 「망가뜨리기는 쉽습니다」</h3>
+      <p>k 를 1에서 0으로 밀어 보면, 그림이 잡음에 잠기는 데는 아무 지능도 필요 없다는 것을 알 수 있습니다. <b>곱하고 더하기만 하면 됩니다.</b></p>
+      <p>그런데 생성형 AI <span class="gi-badge ref">참고 용어</span>는 바로 이 <b>쉬운 방향을 먼저 배웁니다.</b> "잡음을 이만큼 섞으면 그림이 이렇게 된다"를 수없이 많은 사진으로 익힌 뒤, 그 지식을 <b>거꾸로</b> 씁니다. 활동 ②가 그 이야기입니다.</p>
+      <p>ⓐ에서 여러분의 예상은 <b><span id="gi-echo-a1a">아직 선택하지 않음</span></b> 이었습니다. 계산 결과 k = 0.5 에서는 십자가 거의 보이지 않았습니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정리 — 「컬러라면 세 번」</h3>
+      <p>오늘 계산은 흑백이라 행렬이 하나였습니다. 컬러 사진이라면 <b>R·G·B 세 개의 행렬</b>에 <b>각각 같은 계산</b>을 합니다.</p>
+      <div class="gi-fml">X_R = k·A_R + (1−k)·N_R　　X_G = k·A_G + (1−k)·N_G　　X_B = k·A_B + (1−k)·N_B</div>
+      <p>그리고 계산 결과가 0보다 작거나 255보다 크면 <b>잘라 냅니다</b>(15차시의 클리핑).</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="go('rgb')">15차시로 이동 →</button></div>
+      <p class="gi-src">근거 — 15차시 rgb 채널 분리·클리핑 활동 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 활동 ② 잡음을 걷어낸다 ─────────────────────── -->
+  <div class="tpanel" id="gi1">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (11분)</strong> — 잡음을 걷어내는 계산도 같은 꼴의 식이며, 반복 횟수가 늘수록 잡음이 지수적으로 줄어듦을 확인합니다. <span class="gi-badge">🧰 14차시</span></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황</h3>
+      <p>이번에는 <b>완전한 잡음</b>(k=0)에서 출발합니다. 한 걸음의 규칙은 이렇습니다.</p>
+      <div class="gi-fml">X(다음) = 0.9 · X(지금) + 0.1 · Â</div>
+      <p>여기서 <b>Â</b> 는 "모델이 짐작한 원래 그림"입니다.</p>
+      <label class="gi-hint" style="display:block;">이 규칙은 활동 ①의 식과 무엇이 같고 무엇이 다릅니까? (자유 기입)
+        <textarea class="gi-obs" id="gi-a2-guess" onblur="giSaveObs('a2',this.value)" rows="2"></textarea></label>
+    </div>
+
+    <div class="card" id="gi-a2-c" data-no-toggle="1">
+      <h3>조작 — 한 걸음씩 걷어내기</h3>
+      <div class="gi-cvrow">
+        <div class="gi-cvbox"><canvas class="gi-cv" id="gi-d-x"></canvas><p class="gi-cvcap"><b>현재 X</b></p></div>
+        <div class="gi-cvbox"><canvas class="gi-cv" id="gi-d-a"></canvas><p class="gi-cvcap"><b>모델의 짐작 Â</b></p></div>
+      </div>
+      <div class="btn-row" style="margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="giDStep(1)">한 걸음</button>
+        <button class="btn" type="button" onclick="giDStep(10)">열 걸음</button>
+        <button class="btn" type="button" onclick="giDStep(50)">끝까지(50걸음)</button>
+        <button class="btn" type="button" onclick="giDReset()">처음으로</button>
+      </div>
+      <p class="gi-prog" id="gi-d-prog">n = 0 / 50 · 남은 잡음 비율 0.9ⁿ = 1.000</p>
+      <p class="gi-hint">가운데 3×3 실제 값(행렬 연산 단계)</p>
+      <div class="gi-mini3" id="gi-d-mat"></div>
+      <div class="gi-log" id="gi-d-log"></div>
+      <div class="gi-sl" style="margin-top:0.7rem;"><span class="gi-hint">걸음 크기</span>
+        <input id="gi-d-step" type="range" min="0.02" max="0.9" step="0.02" value="0.1" oninput="giDStepChange()">
+        <span class="vl" id="gi-d-stepvl">0.10</span></div>
+      <p class="gi-hint">28차시 경사하강법처럼, 걸음을 크게 하면 빨리 끝나지만 거칠어집니다. 걸음 크기를 0.5 로 바꾸고 [열 걸음]을 눌러 차이를 관찰하세요.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 0.9ⁿ 표 채우기 <span class="gi-badge">자동 채점</span></h3>
+      <p>처음의 잡음이 몇 번 반복하면 얼마나 남는지 계산해 보세요.</p>
+      <div class="gi-tbl-wrap"><table class="gi-tbl">
+        <tr><th>반복 횟수 n</th><td>1</td><td>5</td><td>10</td><td>20</td><td>30</td><td>50</td></tr>
+        <tr><th>남은 비율 0.9ⁿ</th>
+          <td><input class="gi-in num" id="gi-p9-0" type="text" inputmode="decimal"></td>
+          <td><input class="gi-in num" id="gi-p9-1" type="text" inputmode="decimal"></td>
+          <td><input class="gi-in num" id="gi-p9-2" type="text" inputmode="decimal"></td>
+          <td><input class="gi-in num" id="gi-p9-3" type="text" inputmode="decimal"></td>
+          <td><input class="gi-in num" id="gi-p9-4" type="text" inputmode="decimal"></td>
+          <td><input class="gi-in num" id="gi-p9-5" type="text" inputmode="decimal"></td>
+        </tr>
+        <tr><th>백분율</th><td id="gi-p9pct-0">—</td><td id="gi-p9pct-1">—</td><td id="gi-p9pct-2">—</td><td id="gi-p9pct-3">—</td><td id="gi-p9pct-4">—</td><td id="gi-p9pct-5">—</td></tr>
+      </table></div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="giGradeP9()">채점</button></div>
+      <div class="gi-fb" id="gi-p9-fb"></div>
+      <svg class="gi-curve" id="gi-p9-curve" viewBox="0 0 300 120"></svg>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 「같은 식이 두 번 쓰였습니다」</h3>
+      <div class="gi-tbl-wrap"><table class="gi-tbl">
+        <tr><th></th><th>식</th><th>하는 일</th></tr>
+        <tr><td class="l">활동 ①</td><td>X = 0.9·A + 0.1·N</td><td class="l">그림에 잡음을 <b>섞는다</b></td></tr>
+        <tr><td class="l">활동 ②</td><td>X = 0.9·X + 0.1·Â</td><td class="l">잡음에서 그림을 <b>꺼낸다</b></td></tr>
+      </table></div>
+      <p style="margin-top:0.6rem;"><b>글자만 바뀌었을 뿐, 두 식은 완전히 같은 꼴입니다.</b> 둘 다 <code>k·(무엇) + (1−k)·(다른 무엇)</code> — 14차시의 내분입니다.</p>
+      <p>다른 점은 딱 하나, <b>Â 를 어디서 얻는가</b>입니다. 잡음 N 은 아무 값이나 만들면 되지만, Â(원래는 이랬을 것 같다는 짐작)는 <b>수많은 사진으로 학습해야</b> 얻을 수 있습니다.</p>
+      <p>ⓐ에서 여러분이 적은 답은 "<b><span id="gi-echo-a2">아직 입력하지 않음</span></b>" 이었습니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정리 — 「4단원과 이어집니다」</h3>
+      <p>"한 번에 답을 구하지 않고 조금씩 여러 번 다가간다" — <b>28차시 경사하강법</b>에서 만난 생각입니다. 거기서도 <code>a(다음) = a(지금) − k·(기울기)</code> 처럼 작은 걸음을 반복했습니다.</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="go('optim')">28차시로 이동 →</button></div>
+      <p class="gi-src">근거 — 14차시 내분 활동 · RR 2024-01 p.9 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ── TAB 2 : 활동 ③ 늘리고 입힌다 ─────────────────────── -->
+  <div class="tpanel" id="gi2">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (10분)</strong> — 해상도를 높이는 일은 없는 칸을 이웃의 평균으로 채우는 일이고, 화풍 입히기는 픽셀이 아니라 특징 맵을 섞는 일임을 확인합니다. <span class="gi-badge">🧰 14·20차시</span></div>
+
+    <div class="card" id="gi-a3-c" data-no-toggle="1">
+      <h3>문제 상황</h3>
+      <p>아주 작은 그림 <code>A = [[20,80],[60,120]]</code> 을 3×3으로 늘리려고 합니다. 칸이 4개에서 9개로 늘었으니 다섯 칸을 새로 만들어야 합니다.</p>
+      <label class="gi-hint" style="display:block;">물음표 자리에 무엇을 넣으면 좋을까요? 규칙을 한 줄로 제안해 보세요.
+        <textarea class="gi-obs" id="gi-a3-guess" onblur="giSaveObs('a3',this.value)" rows="1"></textarea></label>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 다섯 칸 채우기 <span class="gi-badge">자동 채점</span></h3>
+      <p><b>규칙</b> — 사이에 낀 칸은 양옆(또는 위아래) 값의 평균, 한가운데는 네 모서리 값의 평균입니다.</p>
+      <div class="gi-tbl-wrap"><table class="gi-tbl">
+        <tr><td>20</td><td><input class="gi-in num" id="gi-u5-0" type="text" inputmode="decimal"></td><td>80</td></tr>
+        <tr><td><input class="gi-in num" id="gi-u5-1" type="text" inputmode="decimal"></td><td><input class="gi-in num" id="gi-u5-4" type="text" inputmode="decimal"></td><td><input class="gi-in num" id="gi-u5-2" type="text" inputmode="decimal"></td></tr>
+        <tr><td>60</td><td><input class="gi-in num" id="gi-u5-3" type="text" inputmode="decimal"></td><td>120</td></tr>
+      </table></div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="giGradeU5()">채점</button></div>
+      <div class="gi-fb" id="gi-u5-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 얼마나 많은 수를 만들어야 하나 <span class="gi-badge">자동 채점</span></h3>
+      <div class="gi-tbl-wrap"><table class="gi-tbl">
+        <tr><th>원본</th><th>배율</th><th>원본 픽셀 수</th><th>결과 픽셀 수</th><th>새로 만들 수</th></tr>
+        <tr><td>100×100</td><td>2배</td><td>10,000</td><td><input class="gi-in num" id="gi-px-0" type="text" inputmode="numeric"></td><td><input class="gi-in num" id="gi-px-1" type="text" inputmode="numeric"></td></tr>
+        <tr><td>100×100</td><td>4배</td><td>10,000</td><td><input class="gi-in num" id="gi-px-2" type="text" inputmode="numeric"></td><td><input class="gi-in num" id="gi-px-3" type="text" inputmode="numeric"></td></tr>
+        <tr><td>100×100(컬러)</td><td>2배</td><td>30,000</td><td>120,000</td><td><input class="gi-in num" id="gi-px-4" type="text" inputmode="numeric"></td></tr>
+      </table></div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="giGradePx()">채점</button></div>
+      <div class="gi-fb" id="gi-px-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>체험 링크 — 진짜 초해상도 <span class="gi-badge ref">참고 용어: 초해상도</span></h3>
+      <p class="gi-warn">⚠ 아래 도구는 여러분의 컴퓨터에서 직접 AI 모델을 내려받아 실행합니다(수십 MB, 첫 실행이 느립니다). 사진은 여러분의 기기 안에서만 처리되며 서버로 올라가지 않습니다. 저작권이 있는 그림은 올리지 않습니다.</p>
+      <div class="gi-refs">
+        <a class="gi-ref" href="https://tjdgus1121.github.io/activity13_realesrgan.html" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">웹 활동 ↗</span>🚀</span>
+          <span class="bd"><span class="tt">RealESRGAN 이미지 업스케일러</span><span class="ds">AI가 학습한 방식으로 사진을 크게 만듭니다. 확대 후 세밀한 부분을 원본과 비교해 보세요.</span></span>
+        </a>
+        <a class="gi-ref" href="https://tjdgus1121.github.io/activity12_interpolation.html" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">웹 활동 ↗</span>🎨</span>
+          <span class="bd"><span class="tt">이미지 업스케일러(보간 비교)</span><span class="ds">평균으로 채우는 방식들을 비교합니다. 활동 ③ⓑ의 실제 버전입니다.</span></span>
+        </a>
+      </div>
+      <label class="gi-hint" style="display:block;margin-top:0.6rem;">① AI 확대와 평균 확대의 가장 큰 차이는?
+        <textarea class="gi-obs" id="gi-lnk1-obs1" onblur="giSaveObs('lnk1',this.value)" rows="1"></textarea></label>
+      <label class="gi-hint" style="display:block;margin-top:0.5rem;">② AI가 채워 넣은 무늬 중, 원본에 정말 있었는지 확인할 수 없는 것은?
+        <textarea class="gi-obs" id="gi-lnk1-obs2" onblur="giSaveObs('lnk2',this.value)" rows="1"></textarea></label>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 그냥 섞어 보기 (화풍은 이렇게 만들어지지 않는다)</h3>
+      <p>내용 <code>A=[[100,200],[50,150]]</code>, 화풍 <code>B=[[240,20],[60,220]]</code>. <code>α·A + (1−α)·B</code> 를 계산해 봅시다.</p>
+      <div class="gi-tbl-wrap"><table class="gi-tbl">
+        <tr><th>α</th><th colspan="2">결과</th></tr>
+        <tr><td>0.7</td><td><input class="gi-in num" id="gi-mx-0" type="text" inputmode="decimal"></td><td><input class="gi-in num" id="gi-mx-1" type="text" inputmode="decimal"></td></tr>
+        <tr><td></td><td><input class="gi-in num" id="gi-mx-2" type="text" inputmode="decimal"></td><td><input class="gi-in num" id="gi-mx-3" type="text" inputmode="decimal"></td></tr>
+        <tr><td>0.3</td><td><input class="gi-in num" id="gi-mx-4" type="text" inputmode="decimal"></td><td><input class="gi-in num" id="gi-mx-5" type="text" inputmode="decimal"></td></tr>
+        <tr><td></td><td><input class="gi-in num" id="gi-mx-6" type="text" inputmode="decimal"></td><td><input class="gi-in num" id="gi-mx-7" type="text" inputmode="decimal"></td></tr>
+      </table></div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="giGradeMix()">채점</button></div>
+      <div class="gi-fb" id="gi-mx-fb"></div>
+
+      <div class="gi-cvrow" style="margin-top:0.8rem;">
+        <div class="gi-cvbox"><canvas class="gi-cv" id="gi-mix-cA"></canvas><p class="gi-cvcap"><b>내용</b></p></div>
+        <div class="gi-cvbox"><canvas class="gi-cv" id="gi-mix-cB"></canvas><p class="gi-cvcap"><b>화풍</b></p></div>
+        <div class="gi-cvbox"><canvas class="gi-cv" id="gi-mix-cR"></canvas><p class="gi-cvcap"><b>α·내용+(1−α)·화풍</b></p></div>
+        <div class="gi-slbox">
+          <div class="gi-sl"><input id="gi-mix-range" type="range" min="0" max="1" step="0.05" value="0.5" oninput="giMixUpdate()"><span class="vl" id="gi-mix-vl">0.50</span></div>
+          <p class="gi-hint" id="gi-mix-txt">α = 0.50 → 내용 50% + 화풍 50%</p>
+        </div>
+      </div>
+      <p class="gi-hint" style="margin-top:0.5rem;">이건 화풍 입히기가 아닙니다. 두 그림이 반투명하게 겹쳐 보일 뿐, 붓질이 바뀌지 않았습니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>체험 링크 + 정의 확인 — 진짜 화풍 입히기는 무엇을 섞는가 <span class="gi-badge ref">참고 용어: 스타일 전이</span></h3>
+      <p class="gi-warn">⚠ 아래 도구도 여러분의 기기에서 AI 모델을 내려받아 실행합니다. 저작권이 있는 그림은 화풍 사진으로 올리지 않습니다.</p>
+      <div class="gi-refs">
+        <a class="gi-ref" href="https://tjdgus1121.github.io/activity15_styletransper.html" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">웹 활동 ↗</span>🖌</span>
+          <span class="bd"><span class="tt">AI 스타일 트랜스퍼 체험</span><span class="ds">정해진 화풍 몇 가지를 사진에 입힙니다. 사물 위치가 그대로인지 확인하세요.</span></span>
+        </a>
+        <a class="gi-ref" href="https://tjdgus1121.github.io/activity16_Arbitrary_transfer.html" target="_blank" rel="noopener">
+          <span class="th"><span class="bg">웹 활동 ↗</span>🎨</span>
+          <span class="bd"><span class="tt">AI 스타일 변환 스튜디오</span><span class="ds">내가 고른 그림의 화풍을 입힙니다. 화풍 사진을 단순한 색면으로 바꾸면 결과가 어떻게 달라지나요?</span></span>
+        </a>
+      </div>
+      <p style="margin-top:0.7rem;">ⓔ에서 우리가 섞은 것은 <b>픽셀 값</b>이었습니다. 진짜 화풍 입히기는 <b>20차시에서 만든 특징 맵</b>을 섞습니다 — 내용 사진에서는 "무엇이 어디에 있는가"를, 화풍 사진에서는 "어떤 무늬가 얼마나 자주, 어떤 색과 함께 나타나는가"를 가져와 두 조건을 동시에 만족하는 그림을 조금씩 고쳐 가며 만듭니다. 그래서 결과 그림의 <b>사물 위치는 그대로이고 붓질만 바뀝니다.</b></p>
+      <div class="btn-row"><button class="btn" type="button" onclick="go('cnn')">20차시로 이동 →</button></div>
+      <p class="gi-src">근거 — 20차시 cnn 특징 맵 활동 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="gi-step"><p class="mono">STEP 3 · 정리 — 배움 다지기 (7분)</p></div>
+
+  <div class="card gi-ask" data-no-toggle="1">
+    <h3>오늘의 핵심 · 핵심 질문에 답하기</h3>
+    <ul class="gi-3line">
+      <li>① 잡음을 섞는 일도 걷어내는 일도 똑같이 <b>k·(무엇) + (1−k)·(다른 무엇)</b> — 14차시의 내분 하나면 된다.</li>
+      <li>② 한 걸음의 힘은 10%뿐이지만 <b>50번 반복하면 잡음이 0.5%만 남는다</b>(0.9⁵⁰≈0.005).</li>
+      <li>③ 해상도를 높이는 일은 <b>없는 칸을 채워 넣는 일</b>, 화풍을 입히는 일은 <b>특징 맵의 성질을 옮기는 일</b>이다.</li>
+    </ul>
+    <p style="margin-top:1rem;"><b>❓ 잡음에서 그림이 나오는 것은 마법인가, 계산인가?</b><br>
+      <b>답</b> — 계산입니다. 그것도 우리가 14차시에 이미 만든 계산입니다.</p>
+    <details class="gi-fold">
+      <summary><span class="rl">자세히 보기</span></summary>
+      <div class="bd">
+        <p>오늘 우리가 쓴 식은 <code>k·A + (1−k)·B</code> 하나뿐이었습니다. 잡음을 섞을 때도, 걷어낼 때도, 사진을 크게 만들 때도, 화풍을 겹칠 때도 같은 식이었습니다. 새로 배운 수학은 하나도 없습니다.</p>
+        <p>그러면 무엇이 어렵습니까? <b>Â</b> 입니다. "이 잡음투성이 그림의 원래 모습은 이랬을 것 같다"는 짐작 한 장. 그 짐작을 얻으려면 수억 장의 사진이 필요하고, 그 사진들은 누군가가 찍고 그린 것입니다. <b>그 사진을 마음대로 써도 되는가</b>라는 질문이 여기서 시작됩니다 — 37차시의 주제입니다.</p>
+        <p>그리고 활동 ③ⓒ에서 확인했듯, AI가 채워 넣은 30,000개의 수는 <b>원본에 없던 것</b>입니다. 또렷해 보이지만 <b>지어낸 또렷함</b>입니다. 이것 역시 37차시의 주제입니다.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p class="gi-badge" style="margin-bottom:0.6rem;">선택 심화 — 총점에 반영하지 않습니다</p>
+    <div id="gi-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고</strong> —
+    오늘 우리는 AI가 <b>없던 수 30,000개를 지어내는</b> 장면을 보았습니다. 35차시에서는 <b>확률로 다음 말을 뽑는</b> 장면을 보았고요.
+    다음 시간에는 이렇게 묻습니다 — <b>"지어낸 것이 그럴듯할 때, 우리는 어떻게 알아챌까?"</b>
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('genethics')">다음 차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('genvec')">35차시 다시 보기</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>둘 중 하나 선택</h3>
+    <p class="sub">선택 심화 — 점수 미반영, 피드백만</p>
+    <dl>
+      <dt>선택 A. 「내 사진, 네 번 바꿔 보기」(기본)</dt>
+      <dd>자기 사진 한 장(또는 저작권 걱정 없는 사진)을 골라 ⓐ 밝기 바꾸기(14차시) ⓑ 잡음 섞기(오늘) ⓒ AI로 확대(참고 자료) ⓓ 화풍 입히기(참고 자료)를 각각 해 보고, 어떤 계산이 일어났는지 한 줄씩 씁니다. ⓒⓓ에서는 "원본에 없던 것 중 AI가 지어낸 것"을 하나씩 찾아 표시합니다.
+        제출물 — 사진 5장(원본+결과 4장) · 표 1개(변환 이름/쓰인 계산/달라진 점/지어낸 부분).</dd>
+      <dt>선택 B. 「얼굴 감정 확률로 캐릭터 만들기」(도전) — 교사 사전 안내 필수</dt>
+      <dd>7가지 감정의 확률(합 1)을 표로 채우고, 변환 함수(예: 체력 = 50 + 0.5×(중립+기쁨)×100)로 캐릭터 능력치를 만든 뒤, 그 능력치로 캐릭터 그림 생성 프롬프트 v1을 씁니다. 결과를 보고 부족한 점을 적어 프롬프트 v2 로 고칩니다(37차시 예고편).
+        제출물 — 감정 확률 표 · 변환 함수 식 · 프롬프트 v1·v2 · 두 결과의 차이 3줄.
+        <b>유의</b> — 촬영한 이미지는 저장하지 않습니다. 타인을 촬영할 때는 반드시 동의를 받습니다. 카메라 없이 표만 채우는 방식도 동등하게 인정합니다.</dd>
+      <dt>공통 안내</dt>
+      <dd><b>타인의 사진은 동의 없이 쓰지 않습니다. 촬영 이미지는 저장하지 않습니다.</b> 사람 얼굴이 나온 사진은 본인 것만 씁니다.</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <div class="gi-refs">
+      <a class="gi-ref" href="https://www.youtube.com/watch?v=e2rFsn93o0U" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">Diffusion Model 특집</span><span class="ds">잡음에서 그림이 나오는 아이디어(안될공학).</span></span></a>
+      <a class="gi-ref" href="https://www.youtube.com/watch?v=3YOduhSeOIs" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">AI는 어떻게 사진·영상을 만들어낼까?</span><span class="ds">GAN·트랜스포머·디퓨전(국가과학기술연구회).</span></span></a>
+      <a class="gi-ref" href="https://www.youtube.com/watch?v=FNECqtfn8rI" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">이미지 자료의 처리(1) 합·차와 실수배</span><span class="ds">14차시 회수용(mathT야나수).</span></span></a>
+      <a class="gi-ref" href="https://www.youtube.com/watch?v=WCS3J3hnnVA" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">합성곱과 이미지</span><span class="ds">20차시 회수용(Dr. Bean의 코딩교실).</span></span></a>
+      <a class="gi-ref" href="https://tjdgus1121.github.io/activity13_realesrgan.html" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 활동</span>🚀</span><span class="bd"><span class="tt">RealESRGAN 이미지 업스케일러</span><span class="ds">AI 확대를 브라우저에서 직접.</span></span></a>
+      <a class="gi-ref" href="https://tjdgus1121.github.io/activity12_interpolation.html" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 활동</span>🎨</span><span class="bd"><span class="tt">이미지 업스케일러(보간 비교)</span><span class="ds">평균으로 채우는 방식들을 비교.</span></span></a>
+      <a class="gi-ref" href="https://tjdgus1121.github.io/activity15_styletransper.html" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 활동</span>🖌</span><span class="bd"><span class="tt">AI 스타일 트랜스퍼 체험</span><span class="ds">정해진 화풍을 사진에 입힙니다.</span></span></a>
+      <a class="gi-ref" href="https://tjdgus1121.github.io/activity16_Arbitrary_transfer.html" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 활동</span>🎨</span><span class="bd"><span class="tt">AI 스타일 변환 스튜디오</span><span class="ds">내가 고른 그림의 화풍을 입힙니다.</span></span></a>
+      <a class="gi-ref" href="https://dshskr.notion.site/31e7f8928da38032ba6ff3e30347da87" target="_blank" rel="noopener"><span class="th"><span class="bg">자료</span>🧪</span><span class="bd"><span class="tt">CNN 얼굴 감정 인식·캐릭터 생성 활동안</span><span class="ds">프로젝트 과제 선택 B의 원 자료(대전대신고 하진수).</span></span></a>
+      <a class="gi-ref" href="#" onclick="go('imgop');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">14차시 다시 보기 — 이미지는 행렬이다</span><span class="ds">오늘 쓴 내분 식을 만든 시간.</span></span></a>
+      <a class="gi-ref" href="#" onclick="go('rgb');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">15차시 다시 보기 — RGB 세 행렬</span><span class="ds">컬러 확장과 클리핑.</span></span></a>
+      <a class="gi-ref" href="#" onclick="go('cnn');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">20차시 다시 보기 — CNN 종합</span><span class="ds">화풍의 재료인 특징 맵.</span></span></a>
+      <a class="gi-ref" href="#" onclick="go('optim');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">28차시 다시 보기 — 경사하강법</span><span class="ds">"조금씩 반복한다"의 원형.</span></span></a>
+    </div>
+    <div id="gi-ref-custom" class="gi-refs" style="margin-top:0.8rem;"></div>
+    <div class="btn-row" style="align-items:center;margin-top:0.7rem;">
+      <input class="gi-in wide" id="gi-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="추가할 자료 주소">
+      <input class="gi-in wide" id="gi-ref-tt" type="text" placeholder="자료 제목(선택)" aria-label="추가할 자료 제목">
+      <button class="btn pri" type="button" onclick="giRefAdd()">+ 자료 추가</button>
+    </div>
+    <p class="status" id="gi-ref-st">교사용 — 추가한 자료는 이 기기에만 저장됩니다.</p>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.4rem;">공학 도구로 확인하기</p>
+    <div class="gi-tools">
+      <div class="gi-tool">
+        <div class="hd"><span class="em">📊</span>스프레드시트</div>
+        <h4>3×3 잡음 섞기를 셀 수식으로</h4>
+        <ol>
+          <li>A1:C3에 그림 A, E1:G3에 잡음 N 을 입력</li>
+          <li>I1에 k 값(예 0.5)을 넣기</li>
+          <li>A5에 <code>=$I$1*A1+(1-$I$1)*E1</code> 을 넣고 C7까지 채우기</li>
+          <li>A5:C7에 조건부 서식(색조)을 적용해 그림으로 확인</li>
+          <li>I1을 1→0.9→0.5→0.1→0으로 바꾸며 십자가 사라지는 과정 관찰</li>
+        </ol>
+      </div>
+      <div class="gi-tool">
+        <div class="hd"><span class="em">📐</span>지오지브라</div>
+        <h4>0.9ⁿ 감소 곡선 그리기</h4>
+        <ol>
+          <li><code>f(x)=0.9^x</code> 입력</li>
+          <li><code>A=(20, 0.9^20)</code> 을 찍어 좌표 확인(≈0.122)</li>
+          <li>슬라이더 n(0~50, 정수)을 만들고 <code>B=(n, 0.9^n)</code> 찍기</li>
+          <li>10% 아래로 내려가는 걸음 수 찾기(약 22걸음)</li>
+        </ol>
+        <a href="https://www.geogebra.org/classic" target="_blank" rel="noopener">지오지브라 열기 ↗</a>
+      </div>
+      <div class="gi-tool">
+        <div class="hd"><span class="em">🧮</span>알지오매스</div>
+        <h4>행렬 계산으로 확대 확인</h4>
+        <ol>
+          <li>[계산] 도구에서 행렬 A=[[20,80],[60,120]] 입력</li>
+          <li>각 성분의 평균을 계산해 3×3 결과 만들기</li>
+          <li>각 행·열의 차가 30과 20인지 확인</li>
+        </ol>
+        <a href="https://www.algeomath.kr" target="_blank" rel="noopener">알지오매스 열기 ↗</a>
+      </div>
+      <div class="gi-tool">
+        <div class="hd"><span class="em">🐍</span>코랩 <span class="gi-badge">교사·희망 학생용</span></div>
+        <h4>행렬 연산으로 이미지 변환</h4>
+        <ol>
+          <li>노션 자료실의 「행렬을 이용한 색상 변환」 노트북 열기</li>
+          <li>사진을 올려 R·G·B 세 행렬로 분리(15차시 회수)</li>
+          <li>잡음 행렬을 만들어 <code>k*A+(1-k)*N</code> 계산 칸 추가</li>
+          <li>k 를 바꾸며 결과를 활동 ①ⓒ 관찰 기록과 비교</li>
+        </ol>
+        <a href="https://colab.research.google.com" target="_blank" rel="noopener">코랩 열기 ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>36차시 학습지 <span class="gi-badge">선택 심화 — 평가하지 않습니다</span></h3>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('gi-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/unit6/36_%EC%9E%A1%EC%9D%8C%EC%84%9E%EA%B8%B0.pdf" target="_blank" rel="noopener">📄 3×3 잡음 섞기 계산지 <span class="sz">PDF</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/unit6/36_%ED%99%95%EB%8C%80.pdf" target="_blank" rel="noopener">📄 확대 계산지 <span class="sz">PDF</span></a>
+    </div>
+    <p class="gi-hint">파일이 열리지 않으면 아직 학교 서버에 올라가지 않은 것입니다. 선생님께 알려 주세요.</p>
+    <div id="gi-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄용 학습지 지면 (A4 2쪽) ═════ -->
+  <div class="ws-sheet" id="gi-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>36차시 학습지 · 잡음에서 그림으로 <span class="gi-badge">선택 심화 — 평가하지 않습니다</span></h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>① 덮기와 걷어내기</h3>
+    <p class="note">0.5A + 0.5N 아홉 칸(A: 십자 0/200, N: 120,40,200,10,250,30,180,60,140)</p>
+    <table><tr><td class="blank" style="height:22mm;" colspan="3"></td></tr></table>
+    <p class="note">관찰 3줄 — 알아보기 어려워진 k / 완전히 사라진 k / k=0일 때 남는 것</p>
+    <div class="rule sm"></div><div class="rule sm"></div><div class="rule sm"></div>
+    <p class="note">0.9ⁿ 표 (n=1,5,10,20,30,50) + 백분율</p>
+    <table><tr><th>n</th><th>1</th><th>5</th><th>10</th><th>20</th><th>30</th><th>50</th></tr>
+      <tr><td>비율</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr></table>
+    <p class="note">서술 — 활동①의 식과 활동②의 식은 무엇이 같고 무엇이 다른가?</p>
+    <div class="rule sm"></div><div class="rule sm"></div>
+
+    <h3>② 늘리기와 입히기</h3>
+    <p class="note">2×2 → 3×3 다섯 칸 채우기(A=[[20,80],[60,120]])</p>
+    <table><tr><td class="blank" style="height:20mm;" colspan="3"></td></tr></table>
+    <p class="note">도전 — 같은 방법으로 3×3 → 5×5</p>
+    <table><tr><td class="blank" style="height:26mm;" colspan="3"></td></tr></table>
+    <p class="note">픽셀 수 표(2배·4배·컬러 2배) 3줄</p>
+    <div class="rule sm"></div><div class="rule sm"></div><div class="rule sm"></div>
+    <p class="note">화풍 섞기 계산 — 0.7A+0.3B, 0.3A+0.7B 각 네 칸</p>
+    <table><tr><td class="blank" style="height:16mm;" colspan="2"></td></tr></table>
+    <p class="note">링크 체험 관찰 2줄</p>
+    <div class="rule sm"></div><div class="rule sm"></div>
+    <p class="note">핵심 질문 — 잡음에서 그림이 나오는 것은 마법인가, 계산인가?</p>
+    <div class="rule lg"></div>
+
+    <h3>③ 형성평가 답란</h3>
+    <ol>
+      <li>문항 1 답: ______</li><li>문항 2 답: ______</li><li>문항 3 답: ______</li>
+      <li>문항 4 답: ______</li><li>문항 5 답: ______</li>
+    </ol>
+
+    <h3>④ 교사 추가 슬롯</h3>
+    <div class="rule sm"></div>
+  </div>
+</div>

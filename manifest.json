@@ -1,10 +1,11 @@
 {
   "name": "AI 수학",
   "short_name": "AI 수학",
+  "description": "제작 : 대전대신고등학교 교사 하진수",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f5f0ea",
-  "theme_color": "#1a1714",
+  "background_color": "#f6f5f4",
+  "theme_color": "#0075de",
   "icons": [
     {
       "src": "icon-192.png",

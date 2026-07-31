@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ai-math-v27';
+const CACHE_NAME = 'ai-math-v30';
 const ASSETS = [
   './',
   './index.html',
@@ -23,15 +23,21 @@ const ASSETS = [
   './views/transpose.html',
   './views/matmul.html',
   './views/imgcls.html',
+  './views/fclayer.html',
   './views/cnn.html',
   './views/prob.html',
   './views/trend.html',
   './views/optim.html',
+  './views/loss2.html',
   './views/gdsheet.html',
+  './views/axb.html',
   './views/inquiry.html',
   './views/decision.html',
   './views/datalab.html',
   './views/project.html',
+  './views/genvec.html',
+  './views/genimg.html',
+  './views/genethics.html',
 ];
 
 self.addEventListener('install', (event) => {

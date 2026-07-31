@@ -1,0 +1,665 @@
+<!-- ═══════════ GENETHICS (37차시: 환각과 프롬프트 — 확률 기계의 한계) ═══════════
+     · 파일 위치: views/genethics.html  (신규)
+     · 전역 접두사 ge · 뷰 루트 id #v-genethics · 모든 스타일 규칙은 #v-genethics 하위로만 작성
+     · 로직은 core-snippet.js 참조 (core.js 끝에 이어 붙일 것 — core.js 자체는 수정하지 않음)
+     · 단원: Ⅵ. 생성형 AI와 수학 [선택 심화 · 평가 제외] · 성취기준 없음 · 회수: 5·6·22·31·35·36차시
+     · 전체 37차시의 마지막 차시.
+     · 교육과정 준수: 회전변환·회전행렬·역행렬·행렬식·내적 기호·조건부확률·P(A|B) 기호 미사용.
+     · 개인정보: 네트워크 전송 코드 0줄(fetch/XHR/sendBeacon 금지), 이름·학번 입력칸 0개, localStorage만 사용.
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-genethics">
+  <style>
+  #v-genethics .ge-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-genethics .ge-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-genethics .ge-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  #v-genethics .ge-hero{position:relative;}
+  #v-genethics .ge-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-genethics .ge-hero>*:not(.ge-wm){position:relative;}
+  #v-genethics .vw-mark{display:none;}
+  #v-genethics .ge-adv{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.78rem;font-weight:700;
+    color:var(--red);border:1px solid var(--red);border-radius:9999px;padding:0.28rem 0.85rem;margin:0.5rem 0.5rem 0.7rem 0;}
+  #v-genethics .ge-last{display:inline-flex;align-items:center;gap:0.35rem;font-family:var(--mono);font-size:0.78rem;font-weight:700;
+    color:var(--blue);border:1px solid var(--blue);border-radius:9999px;padding:0.28rem 0.85rem;margin:0.5rem 0 0.7rem;}
+  #v-genethics .ge-recall{display:flex;flex-wrap:wrap;align-items:center;gap:0.4rem;font-size:0.85rem;color:var(--muted);margin-top:0.7rem;line-height:1.9;}
+  #v-genethics .ge-recall b{color:var(--body);font-weight:600;margin-right:0.15rem;}
+  #v-genethics .ge-recall .tag{font-family:var(--mono);font-size:0.72rem;border:1px solid var(--border);border-radius:9999px;padding:0.14rem 0.6rem;color:var(--body);background:var(--bg);white-space:nowrap;}
+  #v-genethics .ge-ask{border-left:4px solid var(--accent);}
+  #v-genethics .ge-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-genethics .ge-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.4rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-genethics .ge-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+
+  #v-genethics .ge-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-genethics .ge-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-genethics .ge-tbl-wrap{overflow-x:auto;max-width:100%;}
+  #v-genethics table.ge-tbl{border-collapse:collapse;font-size:0.88rem;min-width:min(100%,20rem);}
+  #v-genethics .ge-tbl th,#v-genethics .ge-tbl td{border:1px solid var(--border);padding:0.35rem 0.55rem;text-align:center;line-height:1.6;}
+  #v-genethics .ge-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-genethics .ge-tbl td.l{text-align:left;}
+  #v-genethics .ge-tbl td.hit{outline:3px solid var(--fg);outline-offset:-3px;background:var(--card-h);}
+  #v-genethics .ge-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.95rem;border-radius:0.5rem;background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-genethics .ge-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-genethics .ge-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-genethics .ge-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:1rem;line-height:1.85;}
+  #v-genethics .ge-fb:empty{display:none;}
+  #v-genethics .ge-badge{display:inline-block;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.05em;border:1px solid var(--border);border-radius:9999px;padding:0.1rem 0.5rem;color:var(--muted);background:var(--bg);vertical-align:middle;margin-left:0.3rem;white-space:nowrap;}
+  #v-genethics .ge-badge.ref{border-color:var(--accent);color:var(--body);}
+  #v-genethics .ge-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-genethics .ge-in.num{width:5rem;text-align:center;}
+  #v-genethics .ge-in.wide{flex:1 1 16rem;font-family:var(--sans);}
+  #v-genethics .ge-in.ok{border-color:var(--green);color:var(--green);}
+  #v-genethics .ge-in.no{border-color:var(--red);color:var(--red);}
+  #v-genethics .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-genethics .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-genethics .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;text-transform:none;font-family:var(--sans);}
+  #v-genethics .btn.pick{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-genethics .tabs{flex-wrap:wrap;}
+  #v-genethics .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-genethics .ws-dl{max-width:100%;}
+  #v-genethics .ws-btn{min-height:44px;flex-wrap:wrap;max-width:100%;word-break:keep-all;overflow-wrap:anywhere;}
+  #v-genethics .ge-obs{width:100%;min-height:3.2rem;resize:vertical;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--fg);padding:0.5rem 0.65rem;font-family:inherit;font-size:0.95rem;line-height:1.75;margin-top:0.4rem;}
+  #v-genethics .ge-lock{font-size:0.82rem;color:var(--muted);display:flex;align-items:center;gap:0.35rem;margin-top:0.35rem;}
+
+  /* 교사 안내 카드 */
+  #v-genethics .ge-teacher{border:1px solid var(--blue);border-radius:var(--radius);padding:0.2rem 1rem 0.6rem;margin:1rem 0;background:var(--bg);}
+  #v-genethics .ge-teacher>summary{cursor:pointer;list-style:none;font-weight:700;color:var(--blue);padding:0.7rem 0;min-height:44px;display:flex;align-items:center;font-size:0.98rem;}
+  #v-genethics .ge-teacher>summary::-webkit-details-marker{display:none;}
+  #v-genethics .ge-teacher>summary::before{content:'👩‍🏫 ';}
+  #v-genethics .ge-teacher p{font-size:0.92rem;line-height:1.85;color:var(--body);margin-bottom:0.5rem;}
+
+  /* 가상자료 배너 */
+  #v-genethics .ge-sticky{position:sticky;top:0;z-index:5;background:var(--red);color:#fff;font-size:0.85rem;
+    font-weight:600;line-height:1.7;padding:0.6rem 0.9rem;border-radius:0.4rem;margin-bottom:0.8rem;}
+
+  /* 룰렛 · 답 카드 */
+  #v-genethics .ge-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.7rem;margin-top:0.8rem;}
+  #v-genethics .ge-card{border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem 0.85rem;background:var(--card);font-size:0.92rem;line-height:1.9;}
+  #v-genethics .ge-card b.diff{color:var(--accent);text-decoration:underline;text-decoration-style:wavy;text-underline-offset:3px;}
+  #v-genethics .ge-freqrow{display:flex;align-items:center;gap:0.5rem;margin:0.35rem 0;font-size:0.85rem;flex-wrap:wrap;}
+  #v-genethics .ge-freqrow .nm{width:5rem;flex-shrink:0;font-weight:600;color:var(--fg);}
+  #v-genethics .ge-freqbar{flex:1 1 8rem;height:0.9rem;background:var(--border);border-radius:9999px;overflow:hidden;min-width:5rem;}
+  #v-genethics .ge-freqbar i{display:block;height:100%;background:var(--accent);}
+  #v-genethics .ge-freqpct{width:3.4rem;text-align:right;font-family:var(--mono);flex-shrink:0;}
+
+  /* 신호등 */
+  #v-genethics .ge-light{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.85rem;font-weight:700;
+    padding:0.35rem 0.8rem;border-radius:9999px;border:1px solid var(--border);margin-top:0.5rem;}
+  #v-genethics .ge-light.r{color:var(--red);border-color:var(--red);}
+  #v-genethics .ge-light.y{color:#a6790a;border-color:#a6790a;}
+  #v-genethics .ge-light.g{color:var(--green);border-color:var(--green);}
+  #v-genethics .ge-assemble{font-size:0.95rem;line-height:1.9;background:var(--bg);border-left:3px solid var(--accent);
+    border-radius:0 0.4rem 0.4rem 0;padding:0.6rem 0.85rem;margin-top:0.6rem;white-space:pre-wrap;}
+
+  /* 체크리스트 */
+  #v-genethics .ge-chk{display:flex;align-items:flex-start;gap:0.55rem;font-size:0.98rem;color:var(--body);margin:0.6rem 0;line-height:1.7;cursor:pointer;}
+  #v-genethics .ge-chk input{width:1.25rem;height:1.25rem;margin-top:0.3rem;flex-shrink:0;accent-color:var(--fg);cursor:pointer;}
+
+  /* 사례 카드 */
+  #v-genethics .ge-cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0.7rem;margin-top:0.8rem;}
+  #v-genethics .ge-case{border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem 0.85rem;background:var(--card);}
+  #v-genethics .ge-case p{font-size:0.9rem;line-height:1.7;margin-bottom:0.5rem;}
+  #v-genethics .ge-case .btn-row .btn.pick{background:var(--fg);color:var(--bg);}
+  #v-genethics .ge-case .res{font-size:0.85rem;margin-top:0.5rem;line-height:1.7;}
+  #v-genethics .ge-case .res.ok{color:var(--green);}
+  #v-genethics .ge-case .res.no{color:var(--red);}
+
+  /* 5단원 연결 카드 */
+  #v-genethics .ge-topics{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-genethics .ge-tcard{border:1px solid var(--border);border-left:4px solid var(--green);border-radius:0 var(--radius) var(--radius) 0;
+    padding:0.75rem 0.9rem;background:var(--bg);}
+  #v-genethics .ge-tcard h4{font-size:0.98rem;color:var(--fg);margin-bottom:0.3rem;}
+  #v-genethics .ge-tcard p{font-size:0.85rem;color:var(--body);line-height:1.7;margin-bottom:0.3rem;}
+  #v-genethics .ge-tcard .tg{font-family:var(--mono);font-size:0.7rem;color:var(--muted);}
+
+  #v-genethics .ge-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-genethics .ge-3line li{font-size:1.04rem;font-weight:700;color:var(--fg);line-height:1.75;}
+  #v-genethics .ge-fold{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.2rem;}
+  #v-genethics .ge-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);padding:0.6rem 0;position:relative;padding-right:1.4rem;min-height:44px;display:flex;align-items:center;}
+  #v-genethics .ge-fold>summary::-webkit-details-marker{display:none;}
+  #v-genethics .ge-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-genethics .ge-fold[open]>summary::after{content:'▾';}
+  #v-genethics .ge-fold .bd{padding:0.2rem 0 0.5rem;}
+  #v-genethics .ge-fold .bd p{font-size:1rem;color:var(--body);line-height:1.85;margin-bottom:0.7rem;}
+
+  #v-genethics .ge-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-genethics .ge-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-genethics .ge-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-genethics .ge-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;justify-content:center;font-size:2.1rem;overflow:hidden;}
+  #v-genethics .ge-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.6rem;background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.03em;}
+  #v-genethics .ge-ref .bd{padding:0.6rem 0.7rem;}
+  #v-genethics .ge-ref .tt{display:block;font-weight:600;font-size:0.93rem;line-height:1.45;}
+  #v-genethics .ge-ref .ds{display:block;font-size:0.83rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;overflow-wrap:anywhere;}
+  #v-genethics .ge-refwrap{position:relative;min-width:0;}
+  #v-genethics .ge-refwrap .rm{position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);color:#fff;border-radius:9999px;width:1.8rem;height:1.8rem;cursor:pointer;font-size:0.95rem;line-height:1;z-index:2;}
+  #v-genethics .ge-refwrap .rm:hover{background:var(--red);}
+  #v-genethics .ge-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-genethics .ge-tool{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0;padding:0.85rem 0.95rem;min-width:0;}
+  #v-genethics .ge-tool .hd{display:flex;align-items:center;gap:0.45rem;font-weight:700;font-size:1.0rem;color:var(--fg);}
+  #v-genethics .ge-tool .hd .em{font-size:1.25rem;line-height:1;}
+  #v-genethics .ge-tool h4{font-size:0.92rem;font-weight:600;color:var(--body);margin:0.35rem 0 0.3rem;line-height:1.6;}
+  #v-genethics .ge-tool ol{margin:0 0 0 1.1rem;padding:0;}
+  #v-genethics .ge-tool li{font-size:0.9rem;color:var(--body);line-height:1.75;margin-bottom:0.15rem;overflow-wrap:anywhere;word-break:break-word;}
+  #v-genethics .ge-tool a{display:inline-block;margin-top:0.4rem;font-size:0.9rem;color:var(--blue);}
+
+  @media (prefers-reduced-motion:reduce){
+    #v-genethics *,#v-genethics *::before,#v-genethics *::after{transition-duration:0.001ms !important;animation-duration:0.001ms !important;}
+  }
+  @media (max-width:640px){
+    #v-genethics .ge-wm{display:none;}
+    #v-genethics .ge-cards{grid-template-columns:1fr;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="ge-hero">
+    <svg class="ge-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <g fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M40 40 q-18 -18 0 -32" opacity="0"/>
+      </g>
+      <circle cx="46" cy="60" r="14" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M42 74 q-16 8 -16 22 l0 4 l30 0 l0 -4 q0 -14 -14 -22" fill="none" stroke="currentColor" stroke-width="2"/>
+      <g stroke="currentColor" stroke-width="2" fill="none">
+        <path d="M64 56 q26 -30 46 -6"/><path d="M64 62 q30 4 50 20"/><path d="M64 68 q26 34 48 24"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="118" y="42" width="52" height="24" rx="12"/><rect x="150" y="80" width="60" height="24" rx="12"/><rect x="122" y="116" width="56" height="24" rx="12"/>
+      </g>
+      <g stroke="currentColor" stroke-width="2.4" fill="none">
+        <path d="M240 40 h60"/><path d="M270 40 v14"/>
+        <path d="M240 40 l14 -18 l14 18 z" fill="currentColor" opacity="0.85"/>
+        <path d="M300 40 l14 -10 l14 10 z" fill="currentColor" opacity="0.35"/>
+      </g>
+      <text x="255" y="70" font-family="monospace" font-size="10" fill="currentColor">그럴듯함</text>
+      <text x="285" y="70" font-family="monospace" font-size="10" fill="currentColor">사실</text>
+      <text x="160" y="164" font-size="11" fill="currentColor" font-family="monospace" text-anchor="middle" opacity="0.9">그럴듯함과 사실은 다른 저울</text>
+    </svg>
+    <p class="mono" style="margin-bottom:0.3rem;">37차시 · Ⅵ. 생성형 AI와 수학</p>
+    <div class="ge-adv">⚠ 선택 심화 · 평가 제외</div>
+    <div class="ge-last">🏁 전체 37차시의 마지막 차시</div>
+    <h2>환각과 프롬프트 — 확률 기계의 한계</h2>
+    <p class="desc">
+      AI가 아주 자신 있게, 아주 그럴듯하게 틀린 답을 합니다. 이것은 고장이 아니라 <b>구조</b>입니다.
+      오늘은 그 구조를 확률로 설명하고, "그래서 우리는 어떻게 써야 하는가"에 대한 기준을 직접 만듭니다.
+    </p>
+    <div class="ge-recall"><b>🧰 오늘 쓰는 도구</b>
+      <span class="tag">5차시 편향과 정확도의 함정</span><span class="tag">6차시 데이터 윤리 기준</span>
+      <span class="tag">21·22차시 확률과 조건 비교</span><span class="tag">31차시 윤리의 경계선</span><span class="tag">35차시 다음 말의 확률</span>
+    </div>
+  </div>
+
+  <details class="ge-teacher" data-no-toggle="1">
+    <summary>생성형 AI 실사용에 대하여 (교사용 — 학생도 볼 수 있습니다)</summary>
+    <p>대부분의 생성형 AI 서비스는 <b>연령 제한과 계정</b>이 필요합니다. 학교·학급 사정에 따라 다음 세 가지 중 하나로 운영하세요.</p>
+    <p>① <b>교사 시연</b> — 교사 계정으로 앞에서 시연하고 학생은 관찰·기록만 합니다(가장 안전).</p>
+    <p>② <b>사전 준비 응답 묶음</b> — 교사가 미리 받아 둔 답변 10~20개를 배부해 학생이 검증만 수행합니다. 프로젝트 과제도 이 방식으로 동등하게 인정합니다.</p>
+    <p>③ <b>학생 직접 사용</b> — 학교 정책상 허용되고 보호자 동의가 있는 경우에만. 개인 정보 미입력 원칙을 사전에 안내합니다.</p>
+    <p>어느 방식이든 <b>활동 ①·②는 생성형 AI 접속 없이 수행</b>됩니다.</p>
+  </details>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0.5rem;">
+    <strong>오늘의 학습 목표</strong> <span class="ge-badge">선택 심화 — 평가하지 않습니다</span>
+    <div style="margin-top:0.5rem;">① 같은 질문에 다른 답이 나오는 이유를 <b>확률로 뽑기 때문</b>이라고 설명하고, 그것이 곧 <b>환각이 구조적으로 발생하는 이유</b>임을 말할 수 있다. <span class="ge-badge">🧰 21·35차시</span></div>
+    <div style="margin-top:0.35rem;">② AI 답변 자료를 <b>조건으로 범위를 좁혀</b> 비율을 비교하고, 전체 비율 하나만 보면 무엇이 가려지는지 설명할 수 있다. <span class="ge-badge">🧰 5·22차시</span></div>
+    <div style="margin-top:0.35rem;">③ 질문문(프롬프트)을 <b>네 가지 조건</b>을 넣어 v1에서 v2로 고칠 수 있고, 답을 검증하는 <b>5단계 체크리스트</b>를 수행할 수 있다. <span class="ge-badge">🧰 6·31차시</span></div>
+    <div style="margin-top:0.35rem;">④ 생성형 AI를 쓸 때 <b>수학으로 확인할 수 있는 것</b>과 <b>사람이 판단해야 하는 것</b>을 갈라 우리 반의 사용 기준을 만들 수 있다. <span class="ge-badge">🧰 31차시</span></div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips ge-keys" data-no-toggle="1">
+    <span class="chip">그럴듯한 거짓(환각)</span>
+    <span class="chip">찾는 게 아니라 만든다</span>
+    <span class="chip">확률적 접근의 대가</span>
+    <span class="chip">출처와 검증</span>
+    <span class="chip">지어낸 것이 퍼질 때</span>
+  </div>
+
+  <div class="card ge-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul><li>그럴듯한 거짓말이 왜 구조적으로 생기는가, 그리고 우리는 무엇을 확인할 수 있는가?</li></ul>
+    <p style="margin-top:0.6rem;"><b>보조 질문</b> 환각을 완전히 없앨 수 없다면, 우리가 할 수 있는 일은 정확히 무엇까지입니까?</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="ge-step"><p class="mono">STEP 1 · 도입 — 생각 열기 (8분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상</h3>
+    <div id="ge-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>가짜와 진짜가 섞이는 그림</h3>
+    <p>인터넷이라는 그릇 안에 <b>진짜</b>(밝은 원)와 <b>가짜</b>(어두운 원)가 함께 떠 있습니다. AI가 어두운 원을 계속 채워 넣으면, 사람이 하나를 건져 올려도 어느 쪽인지 표정만으로는 알 수 없습니다.</p>
+    <p class="ge-src">인터넷에 잘못된 정보가 쌓이면 결국 무엇이 진짜이고 가짜인지 헷갈립니다. — 씨마스 교과서 Ⅴ p.185 도해를 재구성</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>찾기 vs 만들기</h3>
+    <div class="ge-tbl-wrap"><table class="ge-tbl">
+      <tr><th></th><th>검색 엔진</th><th>생성형 AI</th></tr>
+      <tr><td class="l">하는 일</td><td>있는 문서를 <b>찾아 온다</b></td><td>없던 문장을 <b>그 자리에서 만든다</b></td></tr>
+      <tr><td class="l">결과가 틀리면</td><td>그 문서가 틀린 것</td><td><b>아무도 쓴 적 없는 문장</b>이 틀린 것</td></tr>
+      <tr><td class="l">출처</td><td>링크가 있다</td><td><b>없을 수 있다</b></td></tr>
+      <tr><td class="l">사실 검사</td><td>원문을 열어 보면 된다</td><td><b>만드는 과정에 검사 단계가 없다</b></td></tr>
+    </table></div>
+    <p class="ge-src">생성형 AI는 답을 '찾는' 개념이 아니라 관계성을 분석해 답을 '생성'하는 형태입니다. — RR 2024-01 p.42 서술을 재구성</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <div id="ge-warm"></div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="ge-step"><p class="mono">STEP 2 · 전개 — 탐구 활동 (30분)</p></div>
+
+  <div class="tabs" data-no-toggle="1">
+    <button class="tab on" onclick="geTab(0,this)">① 같은 질문, 다른 답</button>
+    <button class="tab" onclick="geTab(1,this)">② 그럴듯함과 사실은 다른 자다</button>
+    <button class="tab" onclick="geTab(2,this)">③ 잘 묻고, 반드시 확인하기</button>
+  </div>
+
+  <!-- ── TAB 0 : 활동 ① 같은 질문, 다른 답 ─────────────────────── -->
+  <div class="tpanel on" id="ge0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (9분)</strong> — 같은 질문에 다른 답이 나오는 까닭이 확률로 뽑기 때문임을 재현하고, 환각이 구조적임을 확인합니다. <span class="ge-badge">🧰 21·35차시</span></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황</h3>
+      <p>여러분이 챗봇에게 "우리 학교 앞에서 가장 오래된 가게는 어디야?"라고 물었습니다. 챗봇은 아주 자신 있게 가게 이름과 개업 연도를 말해 주었습니다.</p>
+      <label class="ge-hint" style="display:block;">이 답을 믿어도 될까요? 믿는다면 왜, 믿지 않는다면 무엇을 확인해야 할까요?
+        <textarea class="ge-obs" id="ge-a1-guess" onblur="geSaveObs('a1',this.value)" rows="2"></textarea></label>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 같은 질문 3회 재현기</h3>
+      <p class="ge-hint">⚠ 이 룰렛은 <b>실제 AI가 아니라 수업용 모형</b>입니다. 확률 값도 수업을 위해 정한 것입니다. 다만 원리는 같습니다 — 마디마다 후보 중 하나를 확률로 뽑습니다.</p>
+      <p style="font-weight:600;">고정 질문 — "세종대왕이 훈민정음을 반포한 해와, 그 무렵 편찬된 책 하나를 말해 줘."</p>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="geAsk(1)">한 번 물어보기</button>
+        <button class="btn" type="button" onclick="geAsk(3)">세 번 물어보기</button>
+        <button class="btn" type="button" onclick="geAsk(100)">100번 물어보기</button>
+        <button class="btn" type="button" onclick="geAskReset()">초기화</button>
+      </div>
+      <div class="ge-cards" id="ge-cards"></div>
+      <div id="ge-freq" style="margin-top:0.8rem;"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>미션 — 흔들리는 곳 찾기 <span class="ge-badge">필수 미션</span></h3>
+      <p>[100번 물어보기]를 누른 뒤, 다섯 마디 중 <b>가장 잘 흔들리는 마디</b>와 <b>가장 안 흔들리는 마디</b>를 골라 보세요.</p>
+      <div class="btn-row">
+        <select class="ge-in" id="ge-most" aria-label="가장 흔들리는 마디"><option value="">가장 흔들리는 마디</option></select>
+        <select class="ge-in" id="ge-least" aria-label="가장 안 흔들리는 마디"><option value="">가장 안 흔들리는 마디</option></select>
+        <button class="btn pri" type="button" onclick="geCheckMission()">확인</button>
+      </div>
+      <div class="ge-fb" id="ge-mission-fb"></div>
+      <p class="ge-hint" style="margin-top:0.6rem;">여러분이 화면만 보고 이 차이를 알아챌 수 있었습니까?</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="gePoll('m1',0,this)">알 수 있다</button><button class="btn" type="button" onclick="gePoll('m1',1,this)">알 수 없다</button></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정리 — 「룰렛에는 사실 검사 칸이 없습니다」</h3>
+      <div class="ge-tbl-wrap"><table class="ge-tbl">
+        <tr><td>질문 받기</td><td>→</td><td>후보에 확률 매기기</td><td>→</td><td>확률대로 하나 뽑기</td><td>→</td><td>문장 이어 붙이기</td><td>→</td><td>출력</td></tr>
+      </table></div>
+      <p style="margin-top:0.5rem;">위 다섯 단계 어디에도 <b>「사실 확인」 칸이 없습니다.</b> 생성형 AI는 "답을 '찾는' 개념이 아니라 관계성을 분석해 답을 '생성'하는 형태"이기 때문입니다. 그래서 교과서는 "언어 모델의 특성상 환각 현상을 완전히 제거하는 것은 불가능하다"고 적었습니다. 이것은 <b>버그가 아니라 설계의 성질</b>입니다.</p>
+      <p>ⓐ에서 여러분이 적은 답은 "<b><span id="ge-echo-a1">아직 입력하지 않음</span></b>" 이었습니다.</p>
+      <p class="ge-src">근거 — RR 2024-01 p.42 · 씨마스 교과서 Ⅴ p.185 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>더 알아보기 — 「'모르겠다'도 후보 중 하나입니다」</h3>
+      <div class="ge-sl" style="display:flex;align-items:center;gap:0.6rem;">
+        <span class="ge-hint">다양성 조절값</span>
+        <input id="ge-temp-range" type="range" min="0.5" max="2" step="0.1" value="1" oninput="geTempUpdate()">
+        <span class="ge-hint" id="ge-temp-txt">T = 1.0</span>
+      </div>
+      <p style="margin-top:0.5rem;" id="ge-p3-txt"></p>
+      <p>낮추면 답이 일정해지지만 <b>틀린 1등이면 항상 틀립니다.</b> 높이면 다양해지지만 <b>엉뚱한 답이 늘어납니다.</b> 만약 후보 목록에 "확실하지 않습니다"가 있어도, 사람들이 쓴 글에 그런 문장이 드물기 때문에 그 후보의 확률은 대개 낮습니다. <b>그래서 AI는 모를 때도 아는 것처럼 말합니다.</b> 활동 ③에서는 이 문제를 <b>질문 쪽에서</b> 먼저 요구해 해결합니다.</p>
+    </div>
+  </div>
+
+  <!-- ── TAB 1 : 활동 ② 그럴듯함과 사실은 다른 자다 ─────────────────────── -->
+  <div class="tpanel" id="ge1">
+    <div class="ge-sticky" data-no-toggle="1">⚠ 가상 자료 — 아래 100개의 답변 자료는 실제 특정 서비스를 조사한 자료가 <b>아닙니다.</b> 조건을 좁혀 비율을 비교하는 연습을 위한 수업용 가상 자료입니다.</div>
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (11분)</strong> — AI 답변 자료를 조건으로 좁혀 비율을 비교하고, 전체 비율 하나가 가리는 것을 확인합니다. <span class="ge-badge">🧰 5·22차시</span></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황</h3>
+      <p>어떤 학급이 생성형 AI에게 여러 질문을 던져 답변 100개를 모았습니다. 각 답변마다 <b>출처를 함께 제시했는가</b>, <b>사실과 일치하는가</b>를 표시했습니다.</p>
+      <p>먼저 예상해 보세요 — 출처를 제시한 답변과 그렇지 않은 답변 중, 사실과 일치하는 비율이 더 높은 쪽은?</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="gePoll('bc',0,this)">출처 있는 쪽</button><button class="btn" type="button" onclick="gePoll('bc',1,this)">출처 없는 쪽</button><button class="btn" type="button" onclick="gePoll('bc',2,this)">차이 없을 것</button></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 이원분류표 채우기 <span class="ge-badge">자동 채점</span></h3>
+      <div class="ge-tbl-wrap"><table class="ge-tbl" id="ge-bc-tbl">
+        <tr><th></th><th>사실과 일치</th><th>사실과 다름</th><th>계</th></tr>
+        <tr><td class="l">출처를 함께 제시한 답변</td><td data-r="0" data-c="0">54</td><td data-r="0" data-c="1">6</td><td>60</td></tr>
+        <tr><td class="l">출처가 없는 답변</td><td data-r="1" data-c="0">22</td><td data-r="1" data-c="1">18</td><td>40</td></tr>
+        <tr><td class="l">계</td><td>76</td><td>24</td><td>100</td></tr>
+      </table></div>
+      <p class="ge-hint">칸을 누르면 그 범위가 강조됩니다 — 어디를 분모로 삼는지 눈으로 확인하세요.</p>
+      <div class="ge-tbl-wrap" style="margin-top:0.6rem;"><table class="ge-tbl">
+        <tr><th>무엇을 구하나</th><th>분수</th><th>백분율</th></tr>
+        <tr><td class="l">전체 정확률<button class="btn" type="button" style="margin-left:0.4rem;padding:0.2rem 0.5rem;min-height:0;" onclick="geHi('all')">범위 보기</button></td>
+          <td><input class="ge-in wide" id="ge-fr-0" type="text" placeholder="예: 76/100"></td><td><input class="ge-in num" id="ge-pc-0" type="text" inputmode="decimal">%</td></tr>
+        <tr><td class="l">출처 제시 답변의 정확률<button class="btn" type="button" style="margin-left:0.4rem;padding:0.2rem 0.5rem;min-height:0;" onclick="geHi('row0')">범위 보기</button></td>
+          <td><input class="ge-in wide" id="ge-fr-1" type="text" placeholder="예: 54/60"></td><td><input class="ge-in num" id="ge-pc-1" type="text" inputmode="decimal">%</td></tr>
+        <tr><td class="l">출처 없는 답변의 정확률<button class="btn" type="button" style="margin-left:0.4rem;padding:0.2rem 0.5rem;min-height:0;" onclick="geHi('row1')">범위 보기</button></td>
+          <td><input class="ge-in wide" id="ge-fr-2" type="text" placeholder="예: 22/40"></td><td><input class="ge-in num" id="ge-pc-2" type="text" inputmode="decimal">%</td></tr>
+      </table></div>
+      <div class="btn-row" style="margin-top:0.6rem;"><button class="btn pri" type="button" onclick="geGradeBc()">채점</button></div>
+      <div class="ge-fb" id="ge-bc-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 「하나의 수가 가린 것」</h3>
+      <div class="ge-tbl-wrap"><table class="ge-tbl">
+        <tr><th></th><th>정확률</th></tr>
+        <tr><td class="l">출처를 제시한 답변</td><td>90.0%</td></tr>
+        <tr><td class="l">출처가 없는 답변</td><td>55.0%</td></tr>
+        <tr><td class="l"><b>차이</b></td><td><b>35.0%p</b></td></tr>
+      </table></div>
+      <p style="margin-top:0.6rem;"><b>76%라는 하나의 수는 이 35%p의 차이를 완전히 가리고 있었습니다.</b> 5차시에서 "정확도 95%"라는 수 하나 뒤에 숨은 상황을 본 것과 같습니다. 계산 방법도 22차시와 같습니다 — 표 전체가 아니라 <b>조건에 맞는 칸만</b> 남겨 놓고 그 안에서 분수를 만들었습니다.</p>
+      <div class="btn-row"><button class="btn" type="button" onclick="go('bias')">5차시로 이동 →</button><button class="btn" type="button" onclick="go('prob')">22차시로 이동 →</button></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 옮겨 적으면 어떻게 되나 <span class="ge-badge">자동 채점</span></h3>
+      <p>출처가 없는 답변 10개를 그대로 옮겨 적으면 평균 몇 개가 사실과 다를까요? <code>10 × (1 − 0.55) = </code>
+        <input class="ge-in num" id="ge-tr-0" type="text" inputmode="decimal"> 개</p>
+      <p>출처가 있는 답변 10개라면? <code>10 × (1 − 0.90) = </code>
+        <input class="ge-in num" id="ge-tr-1" type="text" inputmode="decimal"> 개</p>
+      <div class="btn-row" style="margin-top:0.4rem;"><button class="btn pri" type="button" onclick="geGradeTr()">채점</button></div>
+      <div class="ge-fb" id="ge-tr-fb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정리 — 「그럴듯함은 사실의 자가 아니다」</h3>
+      <p>AI가 문장을 고르는 기준은 <b>"학습 자료에서 이 다음에 이 말이 얼마나 자주 왔는가"</b>입니다. 이것을 <b>그럴듯함</b>이라 부릅시다. 그런데 그럴듯함과 사실은 서로 다른 자입니다 — 아주 흔한 오해는 그럴듯함이 높고 사실이 아니며, 아주 새로운 진실은 그럴듯함이 낮고 사실입니다. 그래서 확률적 접근은 "통찰적 사고나 혁신적 사고를 제한할 우려"가 있습니다. 우리가 할 수 있는 일은 <b>출처를 표기하거나 여러 개의 응답을 함께 제공</b>하는 것 — 활동 ③이 그 실행입니다.</p>
+      <p class="ge-src">근거 — RR 2024-01 pp.42~43 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ── TAB 2 : 활동 ③ 잘 묻고, 반드시 확인하기 ─────────────────────── -->
+  <div class="tpanel" id="ge2">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (10분)</strong> — 질문문에 네 가지 조건을 넣어 개선하고, 5단계로 답을 검증합니다. <span class="ge-badge">🧰 6·31차시</span></div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황</h3>
+      <p><b>v1</b> — "인공지능 수학에 대해 알려 줘."<br>
+        <b>v2</b> — "고등학교 1학년에게 설명한다고 가정하고, 「인공지능 수학」 과목에서 벡터가 쓰이는 사례를 3가지, 각각 2문장으로 써 줘. 교과서에서 확인할 수 있는 내용만 쓰고, 확실하지 않은 것은 '확실하지 않음'이라고 표시해 줘."</p>
+      <label class="ge-hint" style="display:block;">v2에는 v1에 없는 조건이 몇 가지 들어 있습니다. 찾아서 적어 보세요.
+        <textarea class="ge-obs" id="ge-a3-guess" onblur="geSaveObs('a3',this.value)" rows="2"></textarea></label>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 질문문 네 가지 조건 조립기</h3>
+      <div class="ge-lock">🔒 이 칸에 적은 내용은 이 기기에만 저장됩니다. 서버로 전송되지 않습니다. 개인 정보(이름·학번·연락처)는 적지 마세요.</div>
+      <label class="ge-hint" style="display:block;margin-top:0.5rem;">① 누구에게 · 어느 수준으로 (예: 고등학교 1학년에게 설명한다고 가정하고)
+        <textarea class="ge-obs" id="ge-c0" oninput="geAssemble()" onblur="geSaveObs('c0',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">② 어떤 형식 · 얼마만큼 (예: 3가지를 각각 2문장으로, 표로)
+        <textarea class="ge-obs" id="ge-c1" oninput="geAssemble()" onblur="geSaveObs('c1',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">③ 어디까지 · 무엇을 근거로 (예: 교과서에서 확인할 수 있는 내용만)
+        <textarea class="ge-obs" id="ge-c2" oninput="geAssemble()" onblur="geSaveObs('c2',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">④ 모르면 모른다고 (예: 확실하지 않은 것은 '확실하지 않음'이라고 표시해 줘)
+        <textarea class="ge-obs" id="ge-c3" oninput="geAssemble()" onblur="geSaveObs('c3',this.value)" rows="1"></textarea></label>
+      <div class="ge-light r" id="ge-light">0/4</div>
+      <div class="ge-assemble" id="ge-assemble">(네 조건을 채우면 여기에 완성된 질문문이 조립됩니다)</div>
+      <div class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="geCopy()">복사</button></div>
+      <p class="ge-fb ok" id="ge-light-msg" style="display:none;">v1은 룰렛을 그냥 돌리는 것이고, v2는 룰렛의 후보 목록을 좁혀 주는 것입니다. 특히 4번 조건은 "모르겠다는 후보의 확률이 낮다"는 문제를 질문 쪽에서 보완합니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 5단계 검증 체크리스트 <span class="ge-badge">실제 1회 수행</span></h3>
+      <p>답을 받았다면 반드시 아래 다섯 단계를 거칩니다. 오늘은 교사가 준비한 답변 하나(또는 교사 시연 결과)에 대해 실제로 한 번 돌려 봅니다.</p>
+      <label class="ge-chk"><input type="checkbox" id="ge-chk0" onchange="geCheckList()"><span><b>① 출처가 붙어 있는가</b> — 문서 이름·주소·쪽수가 있는가</span></label>
+      <label class="ge-chk"><input type="checkbox" id="ge-chk1" onchange="geCheckList()"><span><b>② 그 출처가 실제로 있는가</b> — 주소를 직접 열어 본다</span></label>
+      <label class="ge-chk"><input type="checkbox" id="ge-chk2" onchange="geCheckList()"><span><b>③ 출처의 내용이 답과 같은가</b> — 원문에서 그 문장을 찾아본다</span></label>
+      <label class="ge-chk"><input type="checkbox" id="ge-chk3" onchange="geCheckList()"><span><b>④ 다시 물어도 같은 답인가</b> — 같은 질문을 세 번 던져 본다</span></label>
+      <label class="ge-chk"><input type="checkbox" id="ge-chk4" onchange="geCheckList()"><span><b>⑤ 다른 자료에서도 확인되는가</b> — 교과서·공공기관 자료 등 한 곳 이상 교차 확인</span></label>
+      <div class="ge-fb" id="ge-chk-status"></div>
+      <p class="ge-hint" style="margin-top:0.5rem;"><b>2번과 3번을 건너뛰면 검증한 것이 아닙니다.</b> 존재하지 않는 출처를 그럴듯하게 지어내는 것이 환각의 대표적인 모습입니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 프롬프트 v1 → v2 기록지</h3>
+      <div class="ge-lock">🔒 이 기기에만 저장됩니다.</div>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">나의 질문 v1<textarea class="ge-obs" id="ge-log0" onblur="geSaveObs('log0',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">v1 결과에서 아쉬웠던 점<textarea class="ge-obs" id="ge-log1" onblur="geSaveObs('log1',this.value)" rows="2"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">넣기로 한 조건<textarea class="ge-obs" id="ge-log2" onblur="geSaveObs('log2',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">나의 질문 v2 (위 조립기 결과를 붙여넣어도 됩니다)<textarea class="ge-obs" id="ge-log3" onblur="geSaveObs('log3',this.value)" rows="2"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">v2 결과에서 나아진 점<textarea class="ge-obs" id="ge-log4" onblur="geSaveObs('log4',this.value)" rows="2"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">그래도 남은 문제<textarea class="ge-obs" id="ge-log5" onblur="geSaveObs('log5',this.value)" rows="1"></textarea></label>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 사례 카드 여섯 장 나누기</h3>
+      <p>아래 여섯 장을 두 서랍에 나누어 넣으세요 — <b>[A] 검증·측정으로 줄일 수 있다(수학의 몫)</b> / <b>[B] 의도와 가치의 문제다(사람의 몫)</b></p>
+      <div class="ge-cases" id="ge-cases">
+        <div class="ge-case" data-i="0"><p><b>① </b>챗봇이 존재하지 않는 책 제목을 지어냈다</p><div class="btn-row"><button class="btn" type="button" onclick="geCaseSet(0,'A',this)">A 수학의 몫</button><button class="btn" type="button" onclick="geCaseSet(0,'B',this)">B 사람의 몫</button></div><p class="res" id="ge-case-res-0"></p></div>
+        <div class="ge-case" data-i="1"><p><b>② </b>2021년 '유로 2020' 기자 회견에서 유명 축구 선수의 인터뷰가 AI로 만든 가짜였다</p><div class="btn-row"><button class="btn" type="button" onclick="geCaseSet(1,'A',this)">A 수학의 몫</button><button class="btn" type="button" onclick="geCaseSet(1,'B',this)">B 사람의 몫</button></div><p class="res" id="ge-case-res-1"></p></div>
+        <div class="ge-case" data-i="2"><p><b>③ </b>2023년 미 국방부 청사에 검은 연기가 피어오르는 AI 생성 사진이 SNS에 퍼졌다</p><div class="btn-row"><button class="btn" type="button" onclick="geCaseSet(2,'A',this)">A 수학의 몫</button><button class="btn" type="button" onclick="geCaseSet(2,'B',this)">B 사람의 몫</button></div><p class="res" id="ge-case-res-2"></p></div>
+        <div class="ge-case" data-i="3"><p><b>④ </b>특정 직업을 그려 달라고 하면 늘 같은 성별만 나온다</p><div class="btn-row"><button class="btn" type="button" onclick="geCaseSet(3,'A',this)">A 수학의 몫</button><button class="btn" type="button" onclick="geCaseSet(3,'B',this)">B 사람의 몫</button></div><p class="res" id="ge-case-res-3"></p></div>
+        <div class="ge-case" data-i="4"><p><b>⑤ </b>AI 학습에 신문 기사를 허락 없이 썼다며 소송이 제기되었다</p><div class="btn-row"><button class="btn" type="button" onclick="geCaseSet(4,'A',this)">A 수학의 몫</button><button class="btn" type="button" onclick="geCaseSet(4,'B',this)">B 사람의 몫</button></div><p class="res" id="ge-case-res-4"></p></div>
+        <div class="ge-case" data-i="5"><p><b>⑥ </b>출처 없는 답변의 정확률이 55%로, 출처 있는 답변(90%)보다 낮았다</p><div class="btn-row"><button class="btn" type="button" onclick="geCaseSet(5,'A',this)">A 수학의 몫</button><button class="btn" type="button" onclick="geCaseSet(5,'B',this)">B 사람의 몫</button></div><p class="res" id="ge-case-res-5"></p></div>
+      </div>
+      <div class="ge-fb" id="ge-case-tally"></div>
+      <div class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="go('inquiry')">31차시 세 서랍 다시 보기 →</button></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정리 — 「우리 반 사용 기준 만들기」</h3>
+      <p>6차시에서 세운 AI 윤리 기준을 오늘의 경험으로 다시 씁니다. 모둠에서 채워 <b>우리 반 생성형 AI 사용 기준</b>을 만드세요.</p>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">① 어디에 쓰는가<textarea class="ge-obs" id="ge-rule0" placeholder="예: 아이디어를 넓힐 때 쓰고, 사실 확인이 필요한 부분은 반드시 교차 확인한다" onblur="geSaveObs('rule0',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">② 어디에 쓰지 않는가<textarea class="ge-obs" id="ge-rule1" placeholder="예: 제출 과제의 결론을 그대로 옮겨 적지 않는다" onblur="geSaveObs('rule1',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">③ 무엇을 반드시 확인하는가<textarea class="ge-obs" id="ge-rule2" placeholder="예: 5단계 체크리스트를 통과하지 못한 문장은 쓰지 않는다" onblur="geSaveObs('rule2',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">④ 무엇을 밝히는가<textarea class="ge-obs" id="ge-rule3" placeholder="예: AI를 쓴 부분과 질문문을 과제 끝에 함께 적는다" onblur="geSaveObs('rule3',this.value)" rows="1"></textarea></label>
+      <label class="ge-hint" style="display:block;margin-top:0.4rem;">⑤ 무엇을 넣지 않는가<textarea class="ge-obs" id="ge-rule4" placeholder="예: 친구의 이름·사진, 나의 개인 정보를 입력하지 않는다" onblur="geSaveObs('rule4',this.value)" rows="1"></textarea></label>
+      <div class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="geTallyView()">이 기기의 작성 현황 보기</button></div>
+      <p class="ge-fb" id="ge-rule-tally"></p>
+      <p class="ge-src">이 기능은 학급 전체 기기가 자료를 공유할 때 온전히 동작합니다. 지금은 이 기기에 저장된 내용만 표시합니다.</p>
+      <p class="ge-src">근거 — 6차시 dataeth AI 윤리 기준 활동 · RR 2024-01 p.73 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="ge-step"><p class="mono">STEP 3 · 정리 — 배움 다지기 (7분)</p></div>
+
+  <div class="card ge-ask" data-no-toggle="1">
+    <h3>오늘의 핵심 · 핵심 질문에 답하기</h3>
+    <ul class="ge-3line">
+      <li>① 생성형 AI는 답을 <b>찾는</b> 것이 아니라 <b>만든다.</b> 사실 검사 칸이 없어서 그럴듯한 거짓은 고장이 아니라 <b>구조</b>다.</li>
+      <li>② 그래도 <b>잴 수는 있다.</b> 조건을 좁혀 비율을 비교하면(출처 있음 90% ↔ 없음 55%, 차이 <b>35%p</b>) 어디가 위험한지 수로 드러난다.</li>
+      <li>③ 우리가 할 일은 <b>잘 묻기</b>(네 가지 조건)와 <b>반드시 확인하기</b>(5단계 체크리스트). 그리고 확인으로 끝나지 않는 문제가 있다는 것을 아는 것.</li>
+    </ul>
+    <p style="margin-top:1rem;"><b>❓ 그럴듯한 거짓말이 왜 구조적으로 생기는가, 그리고 우리는 무엇을 확인할 수 있는가?</b><br>
+      <b>답</b> — 확률로 만들기 때문에 생기고, 출처·재현·교차 확인까지는 우리가 잴 수 있습니다. 그 너머는 사람의 판단입니다.</p>
+    <details class="ge-fold">
+      <summary><span class="rl">자세히 보기</span></summary>
+      <div class="bd">
+        <p>35차시에서 우리는 다음 말을 확률로 뽑는 룰렛을 만들었습니다. 36차시에서는 없던 픽셀 30,000개를 채워 넣었습니다. 오늘 활동 ①에서 확인한 것은 그 룰렛 어디에도 "이게 사실인가?"를 묻는 칸이 없다는 사실입니다.</p>
+        <p>그러면 우리는 무력한가요? 아닙니다. 활동 ②에서 우리는 <b>35%p라는 수</b>를 얻었습니다. 이 값이 있으면 규칙을 만들 수 있습니다 — "출처가 없는 문장은 과제에 쓰지 않는다."</p>
+        <p>그리고 활동 ③ⓔ에서 사례 여섯 장을 나눠 보니 절반은 A 서랍, 절반은 B 서랍이었습니다. 31차시에서 그은 그 경계선입니다. <b>재는 일은 수학이고, 무엇을 허용할지는 시민이 정합니다.</b></p>
+        <p><b>"확률로 만들어진 답을 받는 사람은, 확률을 아는 사람이어야 한다."</b></p>
+      </div>
+    </details>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p class="ge-badge" style="margin-bottom:0.6rem;">선택 심화 — 총점에 반영하지 않습니다</p>
+    <div id="ge-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1">
+    <strong>여기까지가 37차시 전 과정입니다 🏁</strong>
+    <p style="margin-top:0.5rem;">1차시에서 우리는 "인공지능은 입력과 출력을 잇는 함수 f를 찾는 기계"라고 정의했습니다. 오늘 37차시에서 그 f가 <b>확률로 말을 고르는 기계</b>임을 확인했습니다.</p>
+    <p style="margin-top:0.5rem;"><b>그런데 6단원은 끝이 아니라 재료입니다.</b> 5단원의 탐구 프로젝트(31~34차시)로 이 재료를 가져가 보세요. 아래 여섯 개의 주제는 오늘까지 배운 도구만으로 끝까지 수행할 수 있는 것들입니다.</p>
+    <div class="ge-topics" id="ge-topics">
+      <div class="ge-tcard"><h4>T1 · 챗봇의 원리 이해</h4><p>단어 임베딩에 쓰이는 벡터의 연산과 기하학적 표현</p><p class="tg">8·10·11·35차시 · x=단어 쌍 / y=유사도</p><div class="btn-row"><button class="btn" type="button" onclick="go('inquiry')">31차시에서 계획하기 →</button></div></div>
+      <div class="ge-tcard"><h4>T2 · 질문을 바꾸면 답이 좋아지는가</h4><p>조건을 좁혀 비율 비교하기(v1 통과율 ↔ v2 통과율)</p><p class="tg">5·22·37차시 · x=질문 방식 / y=검증 통과율</p><div class="btn-row"><button class="btn" type="button" onclick="go('datalab')">33차시에서 계산하기 →</button></div></div>
+      <div class="ge-tcard"><h4>T3 · 우리말 단어 지도의 빈틈 찾기</h4><p>벡터의 덧셈·뺄셈이 성립하는 관계와 성립하지 않는 관계 분류</p><p class="tg">10·11·35차시 · x=관계 유형 / y=성립 여부·유사도</p><div class="btn-row"><button class="btn" type="button" onclick="go('inquiry')">31차시에서 계획하기 →</button></div></div>
+      <div class="ge-tcard"><h4>T4 · 반복 횟수와 그림의 품질</h4><p>0.9ⁿ 의 감소와 결과 품질의 관계, 걸음 크기의 맞교환</p><p class="tg">14·28·36차시 · x=반복 횟수 / y=남은 잡음 비율</p><div class="btn-row"><button class="btn" type="button" onclick="go('datalab')">33차시에서 계산하기 →</button></div></div>
+      <div class="ge-tcard"><h4>T5 · AI 확대는 무엇을 지어내는가</h4><p>확대 전후 픽셀 수의 변화와 새로 생긴 값의 비율</p><p class="tg">14·15·36차시 · x=확대 배율 / y=새로 만든 수의 개수·비율</p><div class="btn-row"><button class="btn" type="button" onclick="go('datalab')">33차시에서 계산하기 →</button></div></div>
+      <div class="ge-tcard"><h4>T6 · 생성형 AI 사용 기준 만들기</h4><p>사례를 두 서랍(수학의 몫 ↔ 사람의 몫)으로 분류하고 근거 제시</p><p class="tg">5·6·31·37차시 · x=사례 유형 / y=분류와 근거</p><div class="btn-row"><button class="btn" type="button" onclick="go('inquiry')">31차시에서 계획하기 →</button></div></div>
+    </div>
+    <p class="ge-src">근거 — 씨마스 교과서 Ⅴ 탐구 5단계(주제 선정 → 자료 수집·분석 → 탐구 수행 → 결과 정리 → 평가·고찰) 서술을 재구성. 각 카드는 5단원 31~34차시로 그대로 가져갈 수 있습니다.</p>
+    <div class="btn-row" style="margin-top:0.8rem;">
+      <button class="btn" type="button" onclick="go('inquiry')">31차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('decision')">32차시 사례 분석 →</button>
+      <button class="btn" type="button" onclick="go('datalab')">33차시 탐구 수행 →</button>
+      <button class="btn" type="button" onclick="go('project')">34차시 발표 →</button>
+    </div>
+    <div class="btn-row" style="margin-top:0.6rem;">
+      <button class="btn" type="button" onclick="go('genimg')">36차시 다시 보기</button>
+      <button class="btn" type="button" onclick="go('genvec')">35차시 다시 보기</button>
+    </div>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「AI 답변 20개 검증 보고서」</h3>
+    <p class="sub">선택 심화 — 점수에 반영하지 않고 피드백만 제공합니다</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 교과·생활 관련 질문 10개를 정해 v1(단순)·v2(네 조건 포함) 두 벌로 물어 답변 20개를 모읍니다. 생성형 AI 사용은 학교 정책과 교사 안내를 따르며, 계정이 없으면 교사가 준비한 답변 묶음으로 대체할 수 있습니다(동등 인정).
+        ② 답변마다 출처 여부(예/아니오), 5단계 체크리스트 통과 여부(예/아니오)를 표시합니다.
+        ③ 이원분류표를 만들어 전체/v1/v2 통과율을 계산합니다.
+        ④ 두 통과율의 차이(%p)를 구하고 한 문장으로 씁니다.
+        ⑤ 우리 반 사용 기준 5줄(활동 ③ⓕ)을 붙입니다.</dd>
+      <dt>제출물</dt>
+      <dd>질문 10개 목록 · 이원분류표 1개 · 비율 3개와 차이(%p) · 결론 1문장 · 사용 기준 5줄 (A4 1쪽)</dd>
+      <dt>평가 관점</dt>
+      <dd>조건으로 범위를 좁혀 비율을 정확히 계산했는가, 전체 비율과 조건별 비율의 차이를 근거로 결론을 세웠는가, 검증 절차를 실제로 수행했는가.</dd>
+      <dt>유의</dt>
+      <dd><b>개인 정보(이름·학번·연락처·사진)를 생성형 AI에 입력하지 않습니다.</b> 친구·교사·특정인에 대해 묻지 않습니다. 받은 답변을 인용할 때는 질문문과 함께 적습니다.</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <div class="ge-refs">
+      <a class="ge-ref" href="https://www.youtube.com/watch?v=t4FIMh_LNcg" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">모르면 찍는 인공지능?</span><span class="ds">오늘 주 디딤영상(EBS 지식채널e).</span></span></a>
+      <a class="ge-ref" href="https://www.youtube.com/watch?v=F-wHYNeU4Ps" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">"AI도 거짓말해요?" 정확하고 안전한 정보 찾는 법</span><span class="ds">검증 방법 요약(서울AI재단).</span></span></a>
+      <a class="ge-ref" href="https://www.youtube.com/watch?v=L_c_4RUUlDE" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">빅테크들, 저작권 규정 무시한 채 AI 학습 데이터 수집</span><span class="ds">학습 자료 출처 문제(YTN 사이언스).</span></span></a>
+      <a class="ge-ref" href="https://www.youtube.com/watch?v=GqZj1Ctpl_A" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">"무단 AI 학습 그만" 지상파 3사, 네이버에 저작권 소송</span><span class="ds">국내 사례(서울경제TV).</span></span></a>
+      <a class="ge-ref" href="https://www.youtube.com/watch?v=pdWS539POm8" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">데이터 편향과 인공지능의 윤리</span><span class="ds">5차시 회수용(사이언스프렌즈).</span></span></a>
+      <a class="ge-ref" href="https://www.youtube.com/watch?v=RufLe4Q5FYs" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">데이터의 편향성 ①</span><span class="ds">KERIS 연수 자료.</span></span></a>
+      <a class="ge-ref" href="https://www.youtube.com/watch?v=i-ybvGDJ-Ng" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">데이터의 편향성 ②</span><span class="ds">KERIS 연수 자료.</span></span></a>
+      <a class="ge-ref" href="https://www.bigkinds.or.kr/" target="_blank" rel="noopener"><span class="th"><span class="bg">데이터</span>📊</span><span class="bd"><span class="tt">빅카인즈</span><span class="ds">뉴스 빅데이터. 사례를 직접 찾아 교차 확인할 때 씁니다.</span></span></a>
+      <a class="ge-ref" href="https://www.data.go.kr/" target="_blank" rel="noopener"><span class="th"><span class="bg">데이터</span>📊</span><span class="bd"><span class="tt">공공데이터포털</span><span class="ds">교차 확인용 1차 자료의 창구.</span></span></a>
+      <a class="ge-ref" href="https://kosis.kr/index/index.do" target="_blank" rel="noopener"><span class="th"><span class="bg">데이터</span>📊</span><span class="bd"><span class="tt">국가통계포털 KOSIS</span><span class="ds">AI 답변의 수치를 대조할 때.</span></span></a>
+      <a class="ge-ref" href="https://www.aihub.or.kr" target="_blank" rel="noopener"><span class="th"><span class="bg">자료</span>📚</span><span class="bd"><span class="tt">AI 허브</span><span class="ds">AI 학습용 데이터의 수집·공개 방식을 볼 수 있는 곳.</span></span></a>
+      <a class="ge-ref" href="#" onclick="go('bias');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">5차시 다시 보기 — 빅데이터와 편향</span><span class="ds">활동 ②의 원형.</span></span></a>
+      <a class="ge-ref" href="#" onclick="go('dataeth');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">6차시 다시 보기 — 데이터의 얼굴과 AI 윤리 기준</span><span class="ds">활동 ③ⓕ의 원형.</span></span></a>
+      <a class="ge-ref" href="#" onclick="go('prob');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">22차시 다시 보기 — 조건이 있는 확률과 스팸 필터</span><span class="ds">활동 ②의 계산 방법.</span></span></a>
+      <a class="ge-ref" href="#" onclick="go('inquiry');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">31차시 다시 보기 — 탐구의 다섯 걸음과 윤리의 경계선</span><span class="ds">활동 ③ⓔ 서랍 분류의 원형.</span></span></a>
+      <a class="ge-ref" href="#" onclick="go('genvec');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">35차시 다시 보기</span><span class="ds">오늘 이야기의 뿌리 ①.</span></span></a>
+      <a class="ge-ref" href="#" onclick="go('genimg');return false;"><span class="th"><span class="bg">내부 뷰</span>🔗</span><span class="bd"><span class="tt">36차시 다시 보기</span><span class="ds">오늘 이야기의 뿌리 ②.</span></span></a>
+    </div>
+    <div id="ge-ref-custom" class="ge-refs" style="margin-top:0.8rem;"></div>
+    <div class="btn-row" style="align-items:center;margin-top:0.7rem;">
+      <input class="ge-in wide" id="ge-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="추가할 자료 주소">
+      <input class="ge-in wide" id="ge-ref-tt" type="text" placeholder="자료 제목(선택)" aria-label="추가할 자료 제목">
+      <button class="btn pri" type="button" onclick="geRefAdd()">+ 자료 추가</button>
+    </div>
+    <p class="status" id="ge-ref-st">교사용 — 추가한 자료는 이 기기에만 저장됩니다. 외부 사이트에서 개인정보를 입력하지 않습니다.</p>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.4rem;">공학 도구로 확인하기</p>
+    <div class="ge-tools">
+      <div class="ge-tool">
+        <div class="hd"><span class="em">📊</span>스프레드시트 <span class="ge-badge">프로젝트 필수 도구</span></div>
+        <h4>검증 결과표를 만들고 조건별 비율 구하기</h4>
+        <ol>
+          <li>A열 질문번호, B열 v1/v2, C열 출처있음(예/아니오), D열 체크리스트 통과(예/아니오) 20행</li>
+          <li>전체 통과율: <code>=COUNTIF(D2:D21,"예")/COUNTA(D2:D21)</code></li>
+          <li>v2만의 통과율: <code>=COUNTIFS(B2:B21,"v2",D2:D21,"예")/COUNTIF(B2:B21,"v2")</code></li>
+          <li>v1도 같은 방식으로 구해 v2−v1 로 %p 차이를 계산</li>
+        </ol>
+      </div>
+      <div class="ge-tool">
+        <div class="hd"><span class="em">📐</span>지오지브라</div>
+        <h4>세 비율을 한눈에 비교하기</h4>
+        <ol>
+          <li>[스프레드시트 보기]에서 A열에 전체·출처있음·출처없음, B열에 76·90·55 입력</li>
+          <li>A1:B3 선택 후 [막대그래프]</li>
+          <li><code>y=76</code> 직선을 추가해 전체 비율선 긋기</li>
+        </ol>
+        <a href="https://www.geogebra.org/classic" target="_blank" rel="noopener">지오지브라 열기 ↗</a>
+      </div>
+      <div class="ge-tool">
+        <div class="hd"><span class="em">🧮</span>알지오매스</div>
+        <h4>룰렛 시뮬레이션 만들기</h4>
+        <ol>
+          <li>[블록 코딩]에서 무작위 수(1~100) 블록 꺼내기</li>
+          <li>구간으로 후보를 나누어 누적 확률 만들기</li>
+          <li>100번 반복해 각 후보의 등장 횟수 세기</li>
+        </ol>
+        <a href="https://www.algeomath.kr" target="_blank" rel="noopener">알지오매스 열기 ↗</a>
+      </div>
+      <div class="ge-tool">
+        <div class="hd"><span class="em">🐍</span>코랩 <span class="ge-badge">교사·희망 학생용</span></div>
+        <h4>이원분류표를 코드로 집계하기</h4>
+        <ol>
+          <li>20행짜리 표를 리스트로 입력</li>
+          <li>조건에 맞는 개수 / 조건에 맞는 전체 로 세 비율 계산</li>
+          <li>주의 — 실제 AI 응답 원문이나 개인 정보를 붙여 넣지 않습니다.</li>
+        </ol>
+        <a href="https://colab.research.google.com" target="_blank" rel="noopener">코랩 열기 ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>37차시 학습지 <span class="ge-badge">선택 심화 — 평가하지 않습니다</span></h3>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('ge-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/unit6/37_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8.pdf" target="_blank" rel="noopener">📄 검증 체크리스트 카드 <span class="sz">PDF</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/unit6/37_%EA%B2%80%EC%A6%9D%EA%B8%B0%EB%A1%9D%EC%A7%80.pdf" target="_blank" rel="noopener">📄 AI 답변 검증 기록지 <span class="sz">PDF</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/unit6/37_%EC%82%AC%EC%9A%A9%EA%B8%B0%EC%A4%80.pdf" target="_blank" rel="noopener">📄 우리 반 사용 기준 게시용 <span class="sz">PDF</span></a>
+    </div>
+    <p class="ge-hint">파일이 열리지 않으면 아직 학교 서버에 올라가지 않은 것입니다. 선생님께 알려 주세요.</p>
+    <div id="ge-wslinks"></div>
+    <div class="btn-row" style="margin-top:0.8rem;"><button class="btn" type="button" onclick="geClearAll()">🗑 내 기록 지우기</button></div>
+    <p class="status">이 기기에 저장된 37차시 입력 기록을 모두 지웁니다(확인 1회).</p>
+  </div>
+
+  <!-- ═════ 인쇄용 학습지 지면 (A4 2쪽) ═════ -->
+  <div class="ws-sheet" id="ge-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>37차시 학습지 · 환각과 프롬프트 <span class="ge-badge">선택 심화 — 평가하지 않습니다</span></h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>① 왜 생기는가, 어떻게 재는가</h3>
+    <p class="note">룰렛 관찰 — 가장 흔들린 마디 ________ / 가장 안 흔들린 마디 ________</p>
+    <p class="note">흐름도 — [질문 받기] → [ ______ ] → [ ______ ] → [문장 이어 붙이기] → [출력], 없는 칸은 ______이다</p>
+    <p class="note">이원분류표(6칸) + 세 비율(전체/출처있음/출처없음) + 차이 ____%p</p>
+    <table><tr><td class="blank" style="height:22mm;" colspan="3"></td></tr></table>
+    <p class="note">출처 없는 답변 10개를 옮기면 평균 ____개가 다르다</p>
+    <p class="note">서술 — 76%라는 하나의 수가 가린 것은 무엇인가?</p>
+    <div class="rule sm"></div><div class="rule sm"></div>
+
+    <h3>② 어떻게 물을 것인가</h3>
+    <p class="note">나의 질문 v1</p><div class="rule sm"></div>
+    <p class="note">네 조건(누구에게/형식·분량/범위·근거/불확실 표시)</p>
+    <table><tr><td class="blank" style="height:18mm;" colspan="2"></td></tr></table>
+    <p class="note">나의 질문 v2</p><div class="rule sm"></div><div class="rule sm"></div>
+    <p class="note">5단계 검증 체크리스트 ☐☐☐☐☐ + 통과하지 못한 항목과 이유</p>
+    <div class="rule sm"></div>
+    <p class="note">사례 6장 A/B 분류 + 가장 판단이 어려웠던 사례와 이유</p>
+    <div class="rule sm"></div><div class="rule sm"></div>
+    <p class="note">우리 반 사용 기준 5줄</p>
+    <div class="rule sm"></div><div class="rule sm"></div><div class="rule sm"></div>
+    <p class="note">핵심 질문 서술 — 그럴듯한 거짓말이 왜 구조적으로 생기는가, 우리는 무엇을 확인할 수 있는가?</p>
+    <div class="rule lg"></div>
+    <p class="note">형성평가 답란 — 1.____ 2.____ 3.____ 4.____ 5.____</p>
+    <p class="note"><b>마지막 칸 — 37차시를 마치며.</b> 1차시의 "함수 f를 찾는 기계"라는 정의를, 지금 여러분의 한 문장으로 다시 써 보세요.</p>
+    <div class="rule sm"></div><div class="rule sm"></div><div class="rule sm"></div>
+  </div>
+</div>

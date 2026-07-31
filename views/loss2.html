@@ -1,0 +1,992 @@
+<!-- ═══════════ LOSS2 (26차시: 오차를 재는 두 개의 자) ═══════════
+     · 파일 위치: views/loss2.html  (신규)
+     · 전역 접두사 l2 · 뷰 루트 id #v-loss2 · 모든 스타일 규칙은 #v-loss2 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 의 [블록 A] 참조
+     · 교육과정 준수 — 두 손실함수 L(a)·M(a)는 모두 y=ax 에 대한 **일변수함수**입니다
+       ([12인수04-03] 해설 "일변수함수로 정의된 손실함수만"). MAE·MSE 는 [참고 용어] 배지로만 씁니다.
+       내적 기호·조건부확률 기호·회전변환은 쓰지 않습니다.
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-loss2">
+  <style>
+  /* loss2 뷰 전용 스타일 (#v-loss2 스코프 한정 — 전역 누수 금지) */
+  #v-loss2 .l2-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-loss2 .l2-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-loss2 .l2-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;}
+
+  /* 표제부 · 워터마크 */
+  #v-loss2 .l2-hero{position:relative;}
+  #v-loss2 .l2-wm{position:absolute;right:0;top:-0.6rem;width:16rem;max-width:44%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-loss2 .l2-hero>*:not(.l2-wm){position:relative;}
+  #v-loss2 .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-loss2 .l2-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-loss2 .l2-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-loss2 .l2-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-loss2 .l2-ask{border-left:4px solid var(--accent);}
+  #v-loss2 .l2-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-loss2 .l2-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-loss2 .l2-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-loss2 .l2-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-loss2 .l2-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-loss2 .l2-hint{font-size:0.9rem;color:var(--muted);line-height:1.7;}
+  #v-loss2 .l2-scroll{overflow-x:auto;width:100%;max-width:100%;}
+  #v-loss2 .l2-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.95;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.6rem 0.85rem;margin:0.55rem 0;
+    overflow-x:auto;max-width:100%;white-space:pre-wrap;}
+  #v-loss2 .l2-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,20rem);}
+  #v-loss2 .l2-tbl th,#v-loss2 .l2-tbl td{border:1px solid var(--border);padding:0.38rem 0.55rem;text-align:center;line-height:1.6;}
+  #v-loss2 .l2-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-loss2 .l2-tbl td.l{text-align:left;}
+  #v-loss2 .l2-tbl tr.sum td,#v-loss2 .l2-tbl tr.sum th{background:var(--bg);font-weight:700;}
+  #v-loss2 .l2-tbl input{width:4.1rem;height:2.1rem;border:1px solid var(--border);border-radius:0.35rem;
+    text-align:center;font-family:var(--mono);font-size:0.95rem;background:var(--card);color:var(--fg);padding:0 0.2rem;}
+  #v-loss2 .l2-tbl input:focus{outline:2px solid var(--fg);outline-offset:-2px;background:#fff;}
+  #v-loss2 .l2-tbl input.ok{border-color:var(--green);border-width:2px;background:rgba(90,122,90,0.1);}
+  #v-loss2 .l2-tbl input.no{border-color:var(--red);border-width:2px;background:rgba(180,65,51,0.09);}
+  #v-loss2 .l2-tbl input::-webkit-outer-spin-button,#v-loss2 .l2-tbl input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+
+  /* 정오답 피드백(§15) — 700 weight · 1.05rem 이상 · 진한 대비 + 배경 하이라이트 */
+  #v-loss2 .l2-fb{font-size:1.05rem;font-weight:700;line-height:1.8;padding:0.7rem 0.95rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-loss2 .l2-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-loss2 .l2-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-loss2 .l2-fb b{color:var(--fg);}
+  #v-loss2 .l2-fb .x{display:block;font-weight:400;color:var(--body);margin-top:0.35rem;font-size:1rem;line-height:1.85;}
+  #v-loss2 .l2-fb:empty{display:none;}
+  #v-loss2 .l2-badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.06em;
+    border:1px solid var(--border);border-radius:9999px;padding:0.1rem 0.55rem;color:var(--muted);
+    background:var(--bg);vertical-align:middle;margin-left:0.3rem;white-space:nowrap;}
+  #v-loss2 .l2-badge.std{border-color:var(--blue);color:var(--blue);}
+  #v-loss2 .l2-badge.ref{border-color:var(--accent);color:var(--body);}
+  #v-loss2 .l2-badge.abs{border-color:var(--green);color:var(--green);}
+  #v-loss2 .l2-badge.sq{border-color:var(--red);color:var(--red);}
+  #v-loss2 .l2-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-loss2 .l2-in.num{width:5.2rem;text-align:center;}
+  #v-loss2 .l2-in.wide{flex:1 1 17rem;font-family:var(--sans);}
+  #v-loss2 .l2-in::-webkit-outer-spin-button,#v-loss2 .l2-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+
+  /* 조작 요소 확대(§15) — 조작 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-loss2 .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-loss2 .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-loss2 .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;text-transform:none;
+    font-family:var(--sans);}
+  #v-loss2 .tabs{flex-wrap:wrap;}
+  #v-loss2 .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-loss2 .mat-label{font-size:0.85rem;letter-spacing:0.06em;}
+  #v-loss2 .ws-dl{max-width:100%;}
+  #v-loss2 .ws-btn{min-height:44px;flex-wrap:wrap;max-width:100%;word-break:keep-all;overflow-wrap:anywhere;}
+
+  /* 이중 캔버스 — ≥1024 나란히 / 768~1023 상하 · 높이 0.8배 / ≤640 1열 */
+  #v-loss2 .l2-duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:0.9rem 0 0.4rem;}
+  #v-loss2 .l2-cvbox{min-width:0;}
+  #v-loss2 .l2-cv{display:block;width:100%;height:auto;max-width:100%;border:1px solid var(--border);
+    border-radius:0.5rem;background:var(--bg);touch-action:none;}
+  #v-loss2 .l2-cvcap{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin-top:0.3rem;line-height:1.7;text-align:center;}
+  #v-loss2 .l2-cvcap b{color:var(--fg);}
+  @media (max-width:1023px){ #v-loss2 .l2-duo{grid-template-columns:minmax(0,1fr);} }
+
+  /* 수치 패널(항상 펼침) */
+  #v-loss2 .l2-nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:0.55rem;margin-top:0.8rem;}
+  #v-loss2 .l2-num{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.55rem 0.7rem;min-width:0;}
+  #v-loss2 .l2-num .k{display:block;font-family:var(--mono);font-size:0.7rem;letter-spacing:0.05em;color:var(--muted);line-height:1.6;}
+  #v-loss2 .l2-num .v{display:block;font-family:var(--mono);font-size:1.12rem;font-weight:700;color:var(--fg);line-height:1.6;
+    overflow-wrap:anywhere;}
+  #v-loss2 .l2-num.abs{border-left:4px solid var(--green);}
+  #v-loss2 .l2-num.sq{border-left:4px solid var(--red);}
+
+  /* 슬라이더 행 */
+  #v-loss2 .l2-sl{display:flex;align-items:center;gap:0.6rem;margin:0.7rem 0 0.2rem;flex-wrap:wrap;}
+  #v-loss2 .l2-sl .nm{font-family:var(--mono);font-size:0.95rem;font-weight:700;flex-shrink:0;}
+  #v-loss2 .l2-sl input[type=range]{flex:1 1 12rem;min-width:8rem;max-width:100%;height:2.2rem;}
+  #v-loss2 .l2-sl .vl{font-family:var(--mono);font-size:1.05rem;font-weight:700;width:4.2rem;text-align:right;flex-shrink:0;}
+
+  /* 강조 발견 카드 */
+  #v-loss2 .l2-disc{border:2px solid var(--fg);border-radius:var(--radius);background:var(--bg);
+    padding:0.95rem 1.1rem;margin-top:0.9rem;display:none;}
+  #v-loss2 .l2-disc.on{display:block;}
+  #v-loss2 .l2-disc p{font-size:1.05rem;line-height:1.9;color:var(--fg);margin-bottom:0.4rem;}
+  #v-loss2 .l2-disc p:last-child{margin-bottom:0;}
+  #v-loss2 .l2-disc .big{font-family:var(--mono);font-size:1.25rem;font-weight:700;}
+
+  /* 두 수 나란히(활동 ① 합계) */
+  #v-loss2 .l2-two{display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;
+    margin:0.9rem 0 0.2rem;min-height:3.4rem;}
+  #v-loss2 .l2-two .big{font-family:var(--mono);font-size:2.2rem;font-weight:700;color:var(--fg);line-height:1.2;}
+  #v-loss2 .l2-two .big span{display:block;font-family:var(--mono);font-size:0.72rem;font-weight:400;color:var(--muted);
+    letter-spacing:0.08em;text-align:center;}
+  #v-loss2 .l2-two .qm{font-size:1.8rem;color:var(--red);}
+  @media (prefers-reduced-motion:no-preference){
+    #v-loss2 .l2-two .qm{animation:l2blink 1.1s ease-in-out infinite;}
+  }
+  @keyframes l2blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+
+  /* 정리 · 접이식 */
+  #v-loss2 .l2-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-loss2 .l2-3line li{font-size:1.06rem;font-weight:700;color:var(--fg);line-height:1.8;}
+  #v-loss2 .l2-fold{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.2rem;}
+  #v-loss2 .l2-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);
+    padding:0.6rem 0;position:relative;padding-right:1.4rem;min-height:44px;display:flex;align-items:center;}
+  #v-loss2 .l2-fold>summary::-webkit-details-marker{display:none;}
+  #v-loss2 .l2-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-loss2 .l2-fold[open]>summary::after{content:'▾';}
+  #v-loss2 .l2-fold>summary .rl{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.12em;color:var(--muted);margin-right:0.6rem;}
+  #v-loss2 .l2-fold .bd{padding:0.2rem 0 0.5rem;}
+  #v-loss2 .l2-fold .bd p{font-size:1rem;color:var(--body);line-height:1.9;margin-bottom:0.7rem;}
+  #v-loss2 .l2-fold .bd p:last-child{margin-bottom:0;}
+
+  /* 참고 자료 · 공학 도구 카드 */
+  #v-loss2 .l2-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-loss2 .l2-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-loss2 .l2-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-loss2 .l2-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-loss2 .l2-ref .th img{width:100%;height:100%;object-fit:cover;}
+  #v-loss2 .l2-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;z-index:2;}
+  #v-loss2 .l2-ref .bd{padding:0.65rem 0.75rem;}
+  #v-loss2 .l2-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-loss2 .l2-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;overflow-wrap:anywhere;}
+  #v-loss2 .l2-refwrap{position:relative;min-width:0;}
+  #v-loss2 .l2-refwrap .rm{position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);
+    color:#fff;border-radius:9999px;width:1.8rem;height:1.8rem;cursor:pointer;font-size:0.95rem;line-height:1;z-index:3;}
+  #v-loss2 .l2-refwrap .rm:hover{background:var(--red);}
+  #v-loss2 .l2-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-loss2 .l2-tool{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.85rem 0.95rem;min-width:0;}
+  #v-loss2 .l2-tool .hd{display:flex;align-items:center;gap:0.45rem;font-weight:700;font-size:1.02rem;color:var(--fg);}
+  #v-loss2 .l2-tool .hd .em{font-size:1.3rem;line-height:1;}
+  #v-loss2 .l2-tool h4{font-size:0.95rem;font-weight:600;color:var(--body);margin:0.35rem 0 0.3rem;line-height:1.65;}
+  #v-loss2 .l2-tool ol{margin:0 0 0 1.1rem;padding:0;}
+  #v-loss2 .l2-tool li{font-size:0.92rem;color:var(--body);line-height:1.8;margin-bottom:0.15rem;}
+  #v-loss2 .l2-tool a{display:inline-block;margin-top:0.45rem;font-size:0.92rem;color:var(--blue);}
+
+  /* 관찰 기록 */
+  #v-loss2 .l2-obs{width:100%;min-height:4.2rem;resize:vertical;border:1px solid var(--border);border-radius:var(--radius);
+    background:var(--bg);color:var(--fg);padding:0.55rem 0.7rem;font-family:inherit;font-size:0.98rem;
+    line-height:1.8;margin-top:0.5rem;}
+
+  /* 도입 SVG */
+  #v-loss2 .l2-fig{display:block;width:100%;max-width:100%;height:auto;margin:0.8rem auto 0.2rem;}
+  #v-loss2 .l2-cap{font-family:var(--mono);font-size:0.76rem;color:var(--muted);text-align:center;line-height:1.75;margin-top:0.4rem;}
+  #v-loss2 .l2-cap b{color:var(--fg);}
+
+  @media (prefers-reduced-motion:reduce){
+    #v-loss2 *,#v-loss2 *::before,#v-loss2 *::after{transition-duration:0.001ms !important;animation-duration:0.001ms !important;}
+  }
+  @media (max-width:640px){
+    #v-loss2 .l2-nums{grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));}
+    #v-loss2 .l2-two .big{font-size:1.7rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="l2-hero" data-no-toggle="1">
+    <svg class="l2-wm" viewBox="0 0 320 180" role="img" aria-label="포물선과 꺾은선을 겹쳐 그린 두 손실함수 그림">
+      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 152 H150 M28 26 V162"/>
+        <path d="M40 60 L74 118 L108 44 L142 20" stroke-dasharray="0" opacity="0.55"/>
+        <path d="M186 34 Q234 176 296 42"/>
+        <path d="M182 138 L214 66 L246 96 L286 40"/>
+      </g>
+      <g fill="currentColor">
+        <circle cx="40" cy="60" r="6"/><circle cx="74" cy="118" r="6"/><circle cx="108" cy="44" r="6"/><circle cx="142" cy="20" r="6"/>
+        <circle cx="241" cy="112" r="7"/><circle cx="214" cy="66" r="7"/>
+      </g>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">26차시 · Ⅳ. 예측과 최적화</p>
+    <h2>오차를 재는 두 개의 자 — 절댓값 손실과 제곱 손실</h2>
+    <p class="desc">
+      지난 시간에 우리는 오차를 <b>제곱해서</b> 더했습니다. 그런데 왜 하필 제곱일까요?
+      <b>절댓값</b>으로 재도 부호는 똑같이 사라집니다. 오늘은 같은 자료를 두 개의 자로 재어,
+      <b>'가장 좋은 직선'이 서로 달라지는 장면</b>을 직접 만들어 봅니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 오차를 단순히 더하면 <b>부호가 상쇄</b>되는 것을 확인하고, <b>오차의 절댓값의 평균</b>과
+      <b>오차의 제곱의 평균</b>으로 각각 손실함수를 만들어 그 값을 구할 수 있다.
+      <span class="l2-badge std">12인수04-03</span>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 두 손실함수를 최소로 하는 추세선의 기울기가 <b>서로 다를 수 있음</b>을 관찰하고,
+      이상치가 섞인 자료에서 어느 자가 더 안정적인지 근거를 들어 설명할 수 있다.
+      <span class="l2-badge std">12인수04-03</span>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 절댓값으로 정의한 손실함수의 그래프가 <b>꺾인 점</b>을 가지며 그 점에서는 접선을 하나로 정할 수 없음을
+      확인하고, 인공지능이 제곱을 표준으로 쓰는 이유를 설명할 수 있다.
+      <span class="l2-badge std">12인수04-03</span> <span class="l2-badge std">12인수04-04 연계</span>
+    </div>
+    <div class="l2-goalmap">
+      <button type="button" onclick="l2See(0,'l2-a1-body')">목표 ① → 활동 ① 「부호가 지워 버린 오차」 · 활동 ② 「두 개의 자로 재기」로 이동</button>
+      <button type="button" onclick="l2See(2,'l2-a3-body')">목표 ② → 활동 ③ 「이상치 한 개의 힘」으로 이동</button>
+      <button type="button" onclick="l2See(2,'l2-flat')">목표 ③ → 활동 ③ 「평평한 바닥」 실험으로 이동</button>
+    </div>
+    <p class="l2-src">준수 확인 — 오늘 다루는 두 손실함수 <b>L(a)</b>·<b>M(a)</b> 는 <b>모두 y = ax 에 대한 일변수함수</b>입니다.
+      (2022 개정 교육과정 [12인수04-03] 해설 "y = ax 형태의 추세선에 대하여 일변수함수로 정의된 손실함수만을 다룬다")</p>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips l2-keys" data-no-toggle="1">
+    <span class="chip">오차의 상쇄</span>
+    <span class="chip">오차의 절댓값의 평균</span>
+    <span class="chip">오차의 제곱의 평균</span>
+    <span class="chip">이상치와 강건성</span>
+    <span class="chip">꺾인 점</span>
+  </div>
+
+  <div class="card l2-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p>오늘 수업은 이 물음에 답하기 위한 여정입니다. STEP 3에서 다시 만나 답을 완성합니다.</p>
+    <ul>
+      <li>'가장 좋은 직선'은 오차를 어떤 자로 재느냐에 따라 달라지는가?</li>
+    </ul>
+    <p style="margin-top:0.7rem;"><b>보조 질문</b> — 부호를 없애는 방법이 절댓값과 제곱 둘 다인데,
+      인공지능은 왜 하필 <b>제곱</b>을 표준으로 골랐을까요?</p>
+    <p class="l2-src">근거 — 연수교재 합본 p.255 「부호를 제거하여 모두 양수로 처리」 · p.259 교수학습 TIP 서술을 재구성</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="l2-step"><p class="mono">STEP 1 · 도입 — 같은 과녁, 다른 자 (8분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 모델의 잘못을 재는 자는 몇 개나 있을까</h3>
+    <p>카드를 누르면 전체 화면으로 재생됩니다(✕ 또는 ESC로 닫기).
+      세 번째 카드는 <b>유튜브 검색</b>을 새 탭으로 엽니다(실존이 확인된 영상만 임베드한다는 원칙).
+      선생님께서는 <b>[+ 선생님 영상 추가]</b> 칸에 다른 영상을 걸 수 있습니다.</p>
+    <p class="l2-hint">⚠️ 1번 영상에는 <b>RMSE·R²</b> 처럼 우리 교육과정 밖의 지표가 함께 나옵니다.
+      <b>“모델을 재는 자가 여러 개 있다”</b> 는 사실만 확인하면 충분합니다. <span class="l2-badge ref">일부 심화</span></p>
+    <div id="l2-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>같은 과녁, 다른 자 — 같은 빗나감인데 점수가 다릅니다</h3>
+    <svg class="l2-fig" viewBox="0 0 760 250" role="img"
+         aria-label="네 발의 화살이 꽂힌 과녁과 절댓값 자·제곱 자가 각각 9점과 27점을 매기는 그림">
+      <rect width="760" height="250" fill="var(--bg)"/>
+      <!-- 왼쪽: 과녁 -->
+      <g>
+        <circle cx="120" cy="125" r="86" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <circle cx="120" cy="125" r="60" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <circle cx="120" cy="125" r="32" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <circle cx="120" cy="125" r="5" fill="var(--fg)"/>
+        <line x1="34" y1="125" x2="206" y2="125" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <!-- 화살 4발: 위로 1·아래로 3·위로 1·아래로 4 (부호가 섞여 있음) -->
+        <g stroke-width="2.4">
+          <line x1="120" y1="125" x2="120" y2="105" stroke="var(--blue)"/>
+          <circle cx="120" cy="105" r="7" fill="var(--blue)"/>
+          <line x1="120" y1="125" x2="120" y2="185" stroke="var(--red)"/>
+          <circle cx="120" cy="185" r="7" fill="var(--red)"/>
+          <line x1="120" y1="125" x2="150" y2="105" stroke="var(--blue)"/>
+          <circle cx="150" cy="105" r="7" fill="var(--blue)"/>
+          <line x1="120" y1="125" x2="70" y2="205" stroke="var(--red)"/>
+          <circle cx="70" cy="205" r="7" fill="var(--red)"/>
+        </g>
+        <text x="120" y="38" font-size="15" font-family="monospace" fill="var(--fg)" text-anchor="middle" font-weight="700">빗나감 1, 3, 1, 4</text>
+        <text x="120" y="232" font-size="13" font-family="monospace" fill="var(--muted)" text-anchor="middle">위·아래 방향이 섞여 있습니다</text>
+      </g>
+      <!-- 가운데: 두 개의 자 -->
+      <g transform="translate(258,52)">
+        <rect x="0" y="0" width="200" height="60" rx="8" fill="var(--card)" stroke="var(--green)" stroke-width="2.5"/>
+        <text x="16" y="37" font-size="22" font-family="monospace" fill="var(--green)" font-weight="700">| |</text>
+        <text x="66" y="26" font-size="15" font-family="monospace" fill="var(--fg)">절댓값 자</text>
+        <text x="66" y="47" font-size="12.5" font-family="monospace" fill="var(--muted)">1 + 3 + 1 + 4</text>
+        <g stroke="var(--green)" stroke-width="1.4">
+          <line x1="12" y1="52" x2="188" y2="52"/>
+          <line x1="34" y1="52" x2="34" y2="44"/><line x1="78" y1="52" x2="78" y2="44"/>
+          <line x1="122" y1="52" x2="122" y2="44"/><line x1="166" y1="52" x2="166" y2="44"/>
+        </g>
+        <rect x="0" y="86" width="200" height="60" rx="8" fill="var(--card)" stroke="var(--red)" stroke-width="2.5"/>
+        <text x="16" y="123" font-size="20" font-family="monospace" fill="var(--red)" font-weight="700">( )²</text>
+        <text x="66" y="112" font-size="15" font-family="monospace" fill="var(--fg)">제곱 자</text>
+        <text x="66" y="133" font-size="12.5" font-family="monospace" fill="var(--muted)">1 + 9 + 1 + 16</text>
+        <g stroke="var(--red)" stroke-width="1.4">
+          <line x1="12" y1="138" x2="188" y2="138"/>
+          <line x1="26" y1="138" x2="26" y2="130"/><line x1="58" y1="138" x2="58" y2="126"/>
+          <line x1="106" y1="138" x2="106" y2="122"/><line x1="170" y1="138" x2="170" y2="116"/>
+        </g>
+      </g>
+      <!-- 오른쪽: 점수 -->
+      <g>
+        <path d="M478 82 h34 l-10 -9 M478 82 h34 l-10 9" fill="none" stroke="var(--green)" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M478 168 h34 l-10 -9 M478 168 h34 l-10 9" fill="none" stroke="var(--red)" stroke-width="2.6" stroke-linecap="round"/>
+        <text x="600" y="98" font-size="52" font-family="monospace" fill="var(--green)" text-anchor="middle" font-weight="700">9</text>
+        <text x="600" y="184" font-size="52" font-family="monospace" fill="var(--red)" text-anchor="middle" font-weight="700">27</text>
+        <text x="682" y="94" font-size="13" font-family="monospace" fill="var(--muted)">점</text>
+        <text x="694" y="180" font-size="13" font-family="monospace" fill="var(--muted)">점</text>
+      </g>
+    </svg>
+    <p class="l2-cap"><b>같은 빗나감인데도 자에 따라 점수가 달라집니다. 그러면 '가장 잘 쏜 사람'도 달라질까요?</b><br>
+      (자료 (1, 0), (2, 5), (3, 2), (4, 8) 에서 추세선 f(x) = x 의 오차 크기 1, 3, 1, 4 를 그린 것입니다.)</p>
+    <p class="l2-hint">🗣 <b>선생님 발문</b> — 두 자의 점수가 다른 것은 당연합니다. 그런데 <b>순위</b>도 달라질 수 있을까요?</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="l2-warm"></div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="l2-step"><p class="mono">STEP 2 · 전개 — 탐구 활동 (30분)</p></div>
+
+  <div class="info" data-no-toggle="1"><strong>오늘의 서사</strong> —
+    ① 오차를 그냥 더했더니 <b>5와 −5</b> 로 막힌다 → ② 두 개의 자를 만들었더니 <b>최적 기울기가 어긋난다</b>
+    → ③ 이상치 하나를 넣었더니 <b>한쪽 자가 훨씬 크게 흔들린다</b>, 그런데 그 자가 표준이다.
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" type="button" role="tab" onclick="l2Tab(0,this)">① 부호가 지워 버린 오차</button>
+    <button class="tab" type="button" role="tab" onclick="l2Tab(1,this)">② 두 개의 자로 재기</button>
+    <button class="tab" type="button" role="tab" onclick="l2Tab(2,this)">③ 이상치 한 개의 힘</button>
+  </div>
+
+  <!-- ── 활동 ① ── -->
+  <div class="tpanel on" id="l2p0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (7분)</strong> —
+      오차를 그냥 더하면 <b>왜 비교가 불가능해지는지</b> 직접 계산해서 확인합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 여러분이 심판입니다</h3>
+      <p>다음은 어떤 자료와, 그 자료를 설명하겠다고 제안된 <b>두 추세선</b>입니다.</p>
+      <div class="l2-scroll">
+        <table class="l2-tbl">
+          <tr><th>x</th><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+          <tr><th>y</th><td>0</td><td>5</td><td>2</td><td>8</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:0.7rem;"><b>f(x) = x</b> 와 <b>g(x) = 2x</b> 중 어느 것이 이 자료를 더 잘 대표한다고 생각하나요?
+        먼저 <b>눈으로만</b> 골라 보세요. 정답 판정은 하지 않습니다.</p>
+      <div class="btn-row" id="l2-a1-pick"></div>
+      <p class="mat-label" style="text-align:left;margin-top:0.6rem;">우리 반 응답</p>
+      <div id="l2-a1-dist" class="l2-scroll"></div>
+      <p style="margin-top:0.7rem;">그리고 <b>그 판단을 어떻게 수로 증명할지</b> 한 줄로 적어 보세요.
+        활동 ① 끝에서 여러분이 적은 문장을 다시 불러옵니다.</p>
+      <input class="l2-in wide" id="l2-a1-why" type="text" placeholder="예) 점에서 직선까지의 거리가 전체적으로 짧은 쪽이 낫다" aria-label="내 판단의 근거">
+      <p class="l2-src">합본(연수교재) p.254 「명확히 판단하기 어렵다」 문제 제시 방식(답을 먼저 주지 않음) 서술을 재구성</p>
+    </div>
+
+    <div class="card" id="l2-a1-body" data-no-toggle="1">
+      <h3>조작 — 오차 칸 8개를 직접 채우기 (자동 채점)</h3>
+      <div class="l2-duo">
+        <div class="l2-cvbox">
+          <canvas class="l2-cv" id="l2-a1-cv" width="440" height="330"></canvas>
+          <p class="l2-cvcap">칸을 맞히면 그 점에서 <b>추세선까지의 잔차 선분</b>이 나타납니다 ·
+            <b style="color:var(--blue);">파랑 = 위로 벗어남(+)</b> · <b style="color:var(--red);">빨강 = 아래로 벗어남(−)</b></p>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="l2A1Line('f')" id="l2-a1-bf">f(x) = x 보기</button>
+            <button class="btn" type="button" onclick="l2A1Line('g')" id="l2-a1-bg">g(x) = 2x 보기</button>
+            <button class="btn" type="button" onclick="l2A1Line('both')" id="l2-a1-bb">둘 다 보기</button>
+          </div>
+        </div>
+        <div class="l2-cvbox">
+          <div class="l2-scroll"><table class="l2-tbl" id="l2-a1-tbl"></table></div>
+          <div class="btn-row">
+            <button class="btn pri" type="button" onclick="l2A1Check()">채점하기</button>
+            <button class="btn" type="button" onclick="l2A1Clear()">지우기</button>
+          </div>
+          <div class="l2-fb" id="l2-a1-fb"></div>
+        </div>
+      </div>
+      <div class="l2-two" id="l2-a1-two"></div>
+      <p class="l2-hint">힌트 — <b>오차 = (실제값 y) − (예측값)</b> 입니다. 부호를 빠뜨리지 마세요.</p>
+    </div>
+
+    <div class="card">
+      <h3>관찰 — 합만 보면 무엇이 보이지 않는가</h3>
+      <p>두 합은 <b>5</b> 와 <b>−5</b>, 크기가 같고 부호만 다릅니다. 이 두 수만 보면 어느 직선이 나은지 말할 방법이 없습니다.</p>
+      <p>왼쪽 그림을 다시 보세요. f(x) = x 쪽에는 파란 선분(위로 벗어남)이, g(x) = 2x 쪽에는 빨간 선분(아래로 벗어남)이 더 많습니다.
+        <b>서로 다른 방향의 빗나감이 덧셈에서 지워져</b> 같은 크기의 합을 만든 것입니다.</p>
+      <p>씨마스 교과서는 이 상황을 두 관점으로 갈라 설명합니다. <b>그래프로 비교</b>하면 “점들에 전체적으로 더 가까운 쪽”을 보고,
+        <b>표로 비교</b>하면 “오차의 절댓값이 전체적으로 더 작거나 같은 쪽”을 봅니다. 우리는 오늘 <b>표 쪽 길</b>을 끝까지 갑니다.</p>
+      <p class="l2-src">씨마스 교과서 Ⅳ p.154 「두 오차의 평균이 서로 같은 이유 — 반대 부호를 가진 오차들이 덧셈 과정에서 상쇄되었기 때문」 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정리 — 내 근거는 어땠나</h3>
+      <p>문제 상황에서 여러분이 적은 근거를 다시 불러왔습니다.</p>
+      <div class="l2-fb" id="l2-a1-echo"></div>
+      <div class="btn-row"><button class="btn" type="button" onclick="l2A1Echo()">내 근거 다시 보기</button></div>
+      <p>여기에 ‘가깝다’, ‘전체적으로’, ‘많이 벗어나지 않는다’ 같은 말이 들어 있다면 여러분은 이미
+        <b>오차의 크기</b>를 재려 한 것입니다. 다만 그 말을 아직 수식으로 옮기지 않았을 뿐입니다.</p>
+      <p>오차의 크기를 수식으로 옮기는 방법이 두 가지 있습니다. <b>절댓값</b>과 <b>제곱</b>입니다.
+        활동 ②에서 두 자를 모두 만들어 봅니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>정의 확인 — 오차와 상쇄</h3>
+      <p><b>오차</b> = (실제 측정값 y) − (추세선으로 구한 예측값 f(x))</p>
+      <p>오차는 부호를 가지므로, 오차를 단순히 더하거나 평균을 내면 <b>부호가 서로 지워질(상쇄될) 수 있습니다.</b>
+        따라서 오차의 합이나 평균은 예측의 정확성을 재는 자로 쓸 수 없습니다.</p>
+      <p>미래엔 교과서는 여기에 이름을 하나 더 붙입니다 — <b>오차의 절댓값</b>을 <b>오차의 크기</b>라고 부르고,
+        “오차의 크기가 전체적으로 작을수록 추세선이 데이터의 경향성을 잘 나타냈다”고 판단합니다.</p>
+      <p class="l2-src">합본 p.255 · 씨마스 교과서 Ⅳ p.150·154 · 미래엔 교과서 Ⅳ p.131 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 스스로 확인하기</h3>
+      <p id="l2-a1-q1t"></p>
+      <div class="btn-row" id="l2-a1-q1"></div>
+      <div class="l2-fb" id="l2-a1-q1fb"></div>
+      <div class="btn-row" style="margin-top:1.2rem;">
+        <button class="btn pri" type="button" onclick="l2Tab(1,null)">활동 ②로 넘어가기 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 활동 ② ── -->
+  <div class="tpanel" id="l2p1">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (13분) · 오늘의 주력 활동</strong> —
+      두 자로 각각 채점해 보고, <b>무한히 많은 직선 중 최고</b>를 두 자가 서로 다르게 고른다는 것을 확인합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 두 채점이 같은 순위를 줄까</h3>
+      <p>오차의 부호를 없애는 방법이 두 가지 있었습니다. 이제 각각으로 두 직선을 채점해 보고,
+        <b>두 채점 결과가 같은 순위를 주는지</b> 확인합시다.</p>
+      <p>그리고 더 큰 질문 하나. 우리는 f 와 g <b>두 개만</b> 비교하고 있습니다.
+        <b>y = ax</b> 꼴 직선은 무한히 많은데, 그 무한히 많은 직선 중 <b>최고</b>를 찾을 수는 없을까요?</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 1 — 절댓값 표·제곱 표 채우기 (자동 채점)</h3>
+      <div class="chips" id="l2-a2-sub">
+        <span class="chip on" data-sub="abs">절댓값 자</span>
+        <span class="chip" data-sub="sq">제곱 자</span>
+      </div>
+      <div class="l2-scroll"><table class="l2-tbl" id="l2-a2-tbl"></table></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="l2A2Check()">채점하기</button>
+        <button class="btn" type="button" onclick="l2A2Clear()">지우기</button>
+      </div>
+      <div class="l2-fb" id="l2-a2-fb"></div>
+      <div id="l2-a2-verdict"></div>
+    </div>
+
+    <div class="card" id="l2-a2-body" data-no-toggle="1">
+      <h3>조작 2 — a를 움직여 두 곡선을 겹쳐 보기 <span class="l2-badge">핵심 발견 장면</span></h3>
+      <div class="l2-sl">
+        <span class="nm">기울기 a</span>
+        <input type="range" id="l2-a2-a" min="0" max="4" step="0.05" value="1"
+               oninput="l2A2Slide(this.value)" aria-label="추세선 y = ax 의 기울기 a">
+        <span class="vl" id="l2-a2-av">1.00</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="l2A2Go(2)">절댓값 자 최저점으로</button>
+        <button class="btn" type="button" onclick="l2A2Go(1.6)">제곱 자 최저점으로</button>
+        <button class="btn" type="button" onclick="l2A2Sweep()" id="l2-a2-sweep">두 최저점 사이 왕복</button>
+        <button class="btn" type="button" onclick="l2A2Mode()" id="l2-a2-mode">잔차 정사각형 보기</button>
+      </div>
+      <div class="l2-duo">
+        <div class="l2-cvbox">
+          <canvas class="l2-cv" id="l2-a2-cvL" width="440" height="340"></canvas>
+          <p class="l2-cvcap">왼쪽 — 산점도와 <b>y = ax</b> · 잔차 선분과 <b>잔차 정사각형/막대</b></p>
+        </div>
+        <div class="l2-cvbox">
+          <canvas class="l2-cv" id="l2-a2-cvR" width="440" height="340"></canvas>
+          <p class="l2-cvcap">오른쪽 — <b style="color:var(--red);">L(a) 매끄러운 포물선</b> 과
+            <b style="color:var(--green);">M(a) 꺾은선</b> 을 겹쳐 그린 것 · ▼ 는 각 곡선의 최저점</p>
+        </div>
+      </div>
+      <div class="l2-nums">
+        <div class="l2-num"><span class="k">현재 a</span><span class="v" id="l2-n-a">1.00</span></div>
+        <div class="l2-num abs"><span class="k">M(a) 절댓값 자</span><span class="v" id="l2-n-m">2.25</span></div>
+        <div class="l2-num sq"><span class="k">L(a) 제곱 자</span><span class="v" id="l2-n-l">6.75</span></div>
+        <div class="l2-num abs"><span class="k">절댓값 자 최적 a</span><span class="v" id="l2-n-ma">2</span></div>
+        <div class="l2-num sq"><span class="k">제곱 자 최적 a</span><span class="v" id="l2-n-la">1.6</span></div>
+      </div>
+      <p class="l2-hint" style="margin-top:0.6rem;">⚠️ <b>축 배율 주의</b> — M(a)와 L(a)는 값의 크기가 다르므로
+        오른쪽 그림은 <b>두 곡선을 각각 자기 최댓값에 맞추어 정규화해</b> 겹쳐 그린 것입니다.
+        눈에 보이는 가파름을 절대적으로 비교하지 말고, <b>수치 패널의 값</b>으로 판단하세요.</p>
+
+      <p class="mat-label" style="text-align:left;margin-top:1rem;">학생 과제 — 두 곡선의 최저점 찾기</p>
+      <p>슬라이더를 움직여 두 곡선의 <b>최저점의 a 값</b>을 각각 찾아 적으세요.</p>
+      <div class="btn-row" style="align-items:center;">
+        <span class="l2-hint">절댓값 자의 최적 a =</span>
+        <input class="l2-in num" id="l2-a2-ans1" type="number" step="0.05" placeholder="?" aria-label="절댓값 자의 최적 a">
+        <span class="l2-hint">제곱 자의 최적 a =</span>
+        <input class="l2-in num" id="l2-a2-ans2" type="number" step="0.05" placeholder="?" aria-label="제곱 자의 최적 a">
+        <button class="btn pri" type="button" onclick="l2A2Ans()">확인</button>
+      </div>
+      <div class="l2-fb" id="l2-a2-ansfb"></div>
+      <div class="l2-disc" id="l2-a2-disc">
+        <p><b>같은 자료인데 최적 기울기가 다릅니다.</b></p>
+        <p class="big" style="color:var(--green);">절댓값 자 → y = 2x</p>
+        <p class="big" style="color:var(--red);">제곱 자 → y = 1.6x</p>
+        <p>즉 “가장 좋은 직선”이라는 말은 <b>어떤 자로 재는지를 정하고 나서야</b> 뜻을 갖습니다.</p>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>계산으로 확인 — 제곱 자의 최적 a는 왜 정확히 1.6인가</h3>
+      <p>버튼을 누르면 전개 과정이 한 줄씩 열립니다. 눈으로 찾은 ▼의 자리를 계산으로 확정합니다.</p>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="l2Expand()" id="l2-exp-btn">L(a) 계산 →</button>
+        <button class="btn" type="button" onclick="l2ExpandReset()">처음부터</button>
+      </div>
+      <div class="l2-fml" id="l2-exp"></div>
+      <div class="l2-fb" id="l2-exp-fb"></div>
+      <p class="l2-src">합본 p.257~258 · 씨마스 교과서 Ⅳ p.155~156 서술을 재구성 · 전개 패널은 「loss-analyzer」 방식을 이식</p>
+    </div>
+
+    <div class="card">
+      <h3>관찰 — 절댓값 자의 그래프는 왜 꺾여 있는가</h3>
+      <p>M(a)를 절댓값 기호 없이 다시 써 봅시다. 각 항에서 절댓값 안이 0이 되는 a를 찾으면
+        <b>a = 0, 2/3, 2, 2.5</b> 네 자리가 나옵니다. 이 네 자리가 <b>꺾인 점</b>입니다.</p>
+      <p>그 사이 구간에서는 각 항의 부호가 바뀌지 않으므로 M(a)는 <b>일차식</b>, 즉 직선 조각이 됩니다.
+        구간별 기울기는 차례로 <b>−2.5, −2, −0.5, +1.5, +2.5</b> 이고,
+        기울기의 부호가 음에서 양으로 바뀌는 자리인 <b>a = 2</b> 에서 최솟값 1.75 를 갖습니다.</p>
+      <p>눈여겨볼 점 — <b>최저점이 하필 꺾인 자리</b>입니다. 매끄러운 포물선의 꼭짓점과는 사정이 전혀 다릅니다.</p>
+      <div class="l2-scroll" style="margin-top:0.6rem;">
+        <table class="l2-tbl">
+          <tr><th>구간</th><th>a &lt; 0</th><th>0 ~ 2/3</th><th>2/3 ~ 2</th><th>2 ~ 2.5</th><th>2.5 &lt; a</th></tr>
+          <tr><th>M(a)의 기울기</th><td>−2.5</td><td>−2</td><td>−0.5</td><td>+1.5</td><td>+2.5</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>정의 확인 — 두 손실함수</h3>
+      <p>변량 x의 값 x₁, x₂, ⋯, xₙ 에 대응하는 변량 y의 값이 각각 y₁, y₂, ⋯, yₙ 일 때,
+        원점을 지나는 추세선 <b>y = ax</b> 에 대하여</p>
+      <p><b>오차의 제곱의 평균으로 정의된 손실함수</b> (교육과정의 ‘손실함수’) <span class="l2-badge ref">참고 용어 : MSE · 평균제곱오차</span></p>
+      <div class="l2-fml">L(a) = (1/n) { (y₁ − ax₁)² + (y₂ − ax₂)² + ⋯ + (yₙ − axₙ)² }
+   → a에 대한 <b>이차함수</b> · 그래프는 아래로 볼록한 <b>포물선</b></div>
+      <p><b>오차의 절댓값의 평균으로 정의된 손실함수</b> <span class="l2-badge ref">참고 용어 : MAE · 절대 손실함수</span></p>
+      <div class="l2-fml">M(a) = (1/n) { |y₁ − ax₁| + |y₂ − ax₂| + ⋯ + |yₙ − axₙ| }
+   → a에 대한 <b>일차식 조각</b>의 이음 · 그래프는 <b>꺾은선</b></div>
+      <p>둘 다 <b>변수가 a 하나뿐인 일변수함수</b>이고, 값이 작을수록 좋은 추세선입니다.
+        우리 교육과정은 y = ax 꼴에 대한 <b>일변수 손실함수만</b> 다룹니다.</p>
+      <p class="l2-src">씨마스 교과서 Ⅳ p.155 · 미래엔 교과서 Ⅳ p.137 「절대 손실함수 M(a)」 · 합본 p.257·258 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 스스로 확인하기</h3>
+      <div class="l2-scroll">
+        <table class="l2-tbl">
+          <tr><th>a</th><th>절댓값 자 M(a)</th><th>제곱 자 L(a)</th></tr>
+          <tr><td>1.6</td><td>1.95</td><td><b>4.05</b> ← 제곱 자 최소</td></tr>
+          <tr><td>2</td><td><b>1.75</b> ← 절댓값 자 최소</td><td>5.25</td></tr>
+        </table>
+      </div>
+      <p id="l2-a2-q1t" style="margin-top:0.8rem;"></p>
+      <div class="btn-row" id="l2-a2-q1"></div>
+      <div class="l2-fb" id="l2-a2-q1fb"></div>
+      <div class="btn-row" style="margin-top:1.2rem;">
+        <button class="btn pri" type="button" onclick="l2Tab(2,null)">활동 ③으로 넘어가기 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 활동 ③ ── -->
+  <div class="tpanel" id="l2p2">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표 (10분)</strong> —
+      점 하나를 끌어올려 두 최적 직선이 <b>서로 다른 속도로</b> 따라오는 것을 보고, 그런데도 왜 제곱 자가 표준인지 답합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 점 하나만 어긋나면</h3>
+      <p>실제 자료에는 사고가 섞입니다. 센서가 고장 나서 하루치 값이 터무니없이 크게 기록되기도 하고,
+        축제 때문에 판매량이 갑자기 10배가 되기도 합니다. 이런 값을 <b>이상치</b>라고 합니다.
+        (미래엔 교과서는 <b>이상점</b>이라고 부릅니다.)</p>
+      <p><b>점 하나만 어긋나면 최적 직선은 얼마나 흔들릴까요?</b> 두 자 중 어느 자가 덜 흔들릴지 먼저 예상해 보세요.</p>
+      <div class="btn-row" id="l2-a3-pick"></div>
+      <div class="l2-fb" id="l2-a3-pickfb"></div>
+    </div>
+
+    <div class="card" id="l2-a3-body" data-no-toggle="1">
+      <h3>조작 — 네 번째 점을 위아래로 끌어올리기</h3>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="l2A3Preset(8)">원래 자료 (4, 8)</button>
+        <button class="btn" type="button" onclick="l2A3Preset(30)">이상치 (4, 30)</button>
+        <button class="btn" type="button" onclick="l2A3Preset(40)">극단 이상치 (4, 40)</button>
+        <button class="btn" type="button" onclick="l2A3Flat()" id="l2-flat">평평한 바닥</button>
+      </div>
+      <div class="btn-row" style="align-items:center;">
+        <span class="l2-hint">마우스가 없으면 여기에 값을 적으세요 — 네 번째 점의 y =</span>
+        <input class="l2-in num" id="l2-a3-y" type="number" min="0" max="40" step="0.5" value="8"
+               oninput="l2A3SetY(this.value)" aria-label="네 번째 점의 y 값">
+        <input type="range" id="l2-a3-yr" min="0" max="40" step="0.5" value="8"
+               oninput="l2A3SetY(this.value)" aria-label="네 번째 점의 y 값 슬라이더" style="flex:1 1 10rem;min-width:8rem;height:2.2rem;">
+      </div>
+      <div class="l2-duo">
+        <div class="l2-cvbox">
+          <canvas class="l2-cv" id="l2-a3-cvL" width="440" height="340"></canvas>
+          <p class="l2-cvcap">왼쪽 — <b style="color:var(--green);">초록 = 절댓값 자의 최적 직선</b> ·
+            <b style="color:var(--red);">주황(붉은) = 제곱 자의 최적 직선</b> · 큰 점을 <b>위아래로 끌어</b> 보세요</p>
+        </div>
+        <div class="l2-cvbox">
+          <canvas class="l2-cv" id="l2-a3-cvR" width="440" height="340"></canvas>
+          <p class="l2-cvcap">오른쪽 — 두 손실 곡선과 ▼ 마커가 실시간으로 움직입니다</p>
+        </div>
+      </div>
+      <div class="l2-nums">
+        <div class="l2-num"><span class="k">네 번째 점 y</span><span class="v" id="l2-n3-y">8</span></div>
+        <div class="l2-num abs"><span class="k">절댓값 자 최적 a</span><span class="v" id="l2-n3-ma">2</span></div>
+        <div class="l2-num sq"><span class="k">제곱 자 최적 a</span><span class="v" id="l2-n3-la">1.60</span></div>
+        <div class="l2-num abs"><span class="k">절댓값 자 변화율</span><span class="v" id="l2-n3-mp">0%</span></div>
+        <div class="l2-num sq"><span class="k">제곱 자 변화율</span><span class="v" id="l2-n3-lp">0%</span></div>
+      </div>
+      <div class="l2-fb" id="l2-a3-note"></div>
+
+      <p class="mat-label" style="text-align:left;margin-top:1rem;">기록표 — 관찰한 값을 손으로 적어 두세요 (자동 채점 없음)</p>
+      <div class="l2-scroll">
+        <table class="l2-tbl" id="l2-a3-log"></table>
+      </div>
+      <p class="l2-hint">참고값 — y = 8 → <b>2 / 1.60</b> · y = 30 → <b>2.5 / 4.53</b> · y = 40 → <b>2.5 / 5.87</b></p>
+    </div>
+
+    <div class="card">
+      <h3>관찰 — 무엇이 얼마나 흔들렸나</h3>
+      <p>(4, 8) → (4, 30) 으로 점 하나를 올렸을 때,
+        제곱 자의 최적 기울기는 <b>1.60 → 4.53</b> (약 <b>183%</b> 이동),
+        절댓값 자의 최적 기울기는 <b>2 → 2.5</b> (<b>25%</b> 이동) 입니다.</p>
+      <p>왼쪽 그림을 보세요. 붉은 직선(제곱 자)은 나머지 세 점을 <b>모두 버리고</b> 이상치를 향해 올라가 버렸습니다.
+        초록 직선(절댓값 자)은 세 점 근처에 남아 있습니다.</p>
+      <p>왜 이렇게 되는가 — 제곱 자에서 오차 22는 벌점 <b>484</b> 를 만듭니다. 다른 점들의 벌점을 다 합쳐도 이 하나를 못 이깁니다.
+        절댓값 자에서 오차 22의 벌점은 그냥 <b>22</b> 이고, 다른 점들과 <b>같은 비중</b>입니다.</p>
+      <p class="l2-src">합본 p.256 「극단값에 과도하게 민감」 · 미래엔 교과서 Ⅳ p.137 「엉뚱한 점 하나가 바꾼 최적 추세선의 운명」 서술을 재구성</p>
+    </div>
+
+    <div class="card">
+      <h3>정리 — 그럼 절댓값 자가 더 좋은 자인가</h3>
+      <p>이상치에 대해서는 <b>절댓값 자가 더 강건</b>합니다. 그런데도 인공지능은 대부분 제곱 자를 씁니다.</p>
+      <div class="l2-scroll">
+        <table class="l2-tbl">
+          <tr><th>관점</th><th>절댓값 자 M(a)</th><th>제곱 자 L(a)</th></tr>
+          <tr><td class="l">이상치</td><td><b style="color:var(--green);">강건하다</b></td><td>크게 끌려간다</td></tr>
+          <tr><td class="l">큰 오차 벌주기</td><td>작은 오차와 같은 비중</td><td><b style="color:var(--red);">큰 오차를 더 크게 벌한다</b></td></tr>
+          <tr><td class="l">그래프의 모양</td><td>꺾은선 — 꺾인 점에서 접선을 정할 수 없다</td><td><b style="color:var(--red);">매끄러운 포물선 — 어디서나 접선이 하나</b></td></tr>
+          <tr><td class="l">최적 기울기</td><td>구간 전체가 될 수 있다</td><td><b style="color:var(--red);">꼭짓점 하나로 정해진다</b></td></tr>
+          <tr><td class="l">계산</td><td>완전제곱식으로 정리 안 됨</td><td><b style="color:var(--red);">완전제곱식으로 최솟값이 바로 나온다</b></td></tr>
+        </table>
+      </div>
+      <p style="margin-top:0.8rem;">27차시에서 우리는 “내려갈 방향”을 접선의 기울기(미분계수)로 읽고, 28차시에서 그 방향으로 조금씩 이동합니다.
+        <b>꺾인 점이 있으면 그 방향 자체를 정할 수 없습니다.</b> 그래서 제곱 자가 표준이 됩니다.</p>
+      <p class="l2-src">합본 p.256(장단점 서술) · p.259(교수학습 TIP) 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>정의 확인 + 「평평한 바닥」 실험 — 꺾인 점</h3>
+      <p>위의 <b>[평평한 바닥]</b> 버튼을 누르면 자료가 <b>(1, 2), (2, 2), (3, 9)</b> 로 바뀝니다. 오른쪽 캔버스를 보세요.</p>
+      <p>절댓값 자의 꺾은선은 <b>2 ≤ a ≤ 3</b> 에서 <b>완전히 수평</b>입니다.
+        즉 <b>M(a) = 5/3</b> 이 그 구간의 <b>모든 a</b> 에서 최솟값입니다. a = 2 도, a = 2.4 도, a = 3 도 모두 “최적”입니다.
+        같은 자료에 제곱 자를 쓰면 최적 기울기는 <b>a = 33/14 ≈ 2.36 하나뿐</b>입니다.</p>
+      <div class="l2-fml"><b>꺾인 점</b> — 꺾은선에서 직선 조각이 바뀌는 점.
+   이 점에서는 왼쪽에서 다가갈 때의 기울기와 오른쪽에서 다가갈 때의 기울기가 달라
+   <b>접선을 하나로 정할 수 없다.</b>
+   또 기울기가 0인 조각이 있으면 <b>최솟값을 주는 a가 무수히 많아진다.</b></div>
+      <p style="margin-top:0.7rem;"><b>생각해 보기</b> — 컴퓨터가 이 평평한 바닥 위에 서 있다면,
+        어느 쪽으로 한 걸음 가라고 말해 줄 수 있을까요?</p>
+      <textarea class="l2-obs" id="l2-a3-obs" placeholder="한 줄로 적어 보세요. (이 기기에만 저장됩니다)"></textarea>
+      <p class="l2-src">합본 p.259 교수학습 TIP 「V자로 꺾여 미분이 정의되지 않고, 최솟값이 구간에서 나타날 수 있다」 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="l2-step"><p class="mono">STEP 3 · 정리 (7분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ul class="l2-3line">
+      <li>① 오차를 그냥 더하면 <b>부호가 상쇄</b>되므로, 절댓값이나 제곱으로 부호를 없앤 뒤 평균을 낸다. 둘 다 <b>일변수 손실함수</b>다.</li>
+      <li>② 같은 자료에서 <b>절댓값 자는 a = 2, 제곱 자는 a = 1.6</b> 을 최적이라 한다. <b>‘가장 좋은 직선’은 자를 정한 다음에야 정해진다.</b></li>
+      <li>③ 절댓값 자는 이상치에 <b>강건</b>하지만 그래프에 <b>꺾인 점</b>이 있어 방향을 정할 수 없다. 그래서 인공지능은 매끄러운 <b>제곱 자</b>를 표준으로 쓴다.</li>
+    </ul>
+  </div>
+
+  <div class="card l2-ask" data-no-toggle="1">
+    <h3>핵심 질문의 답</h3>
+    <ul><li>‘가장 좋은 직선’은 오차를 어떤 자로 재느냐에 따라 달라지는가?</li></ul>
+    <p style="margin-top:0.7rem;font-size:1.06rem;font-weight:700;color:var(--fg);">
+      → <b>그렇습니다.</b> 오늘 같은 자료에서 두 자가 서로 다른 기울기(2 와 1.6)를 최적이라고 말했습니다.</p>
+    <details class="l2-fold">
+      <summary><span class="rl">더 보기</span>자세히 보기 — 손실함수를 고르는 일은 계산이 아니라 사람의 결정입니다</summary>
+      <div class="bd">
+        <p>“최적”은 자료만으로 정해지지 않습니다. <b>손실함수를 무엇으로 정할지</b>가 함께 정해져야 비로소 최적이 하나 정해집니다.
+          이것은 인공지능 전체에 걸쳐 되풀이되는 구조입니다.</p>
+        <p>5차시에서 “정확도”를 어떻게 정의하느냐에 따라 같은 모델의 성적이 95%에서 50%로 바뀐 것과 똑같은 이야기입니다.</p>
+        <p>그리고 손실함수를 고르는 일은 계산이 아니라 <b>사람의 결정</b>입니다.
+          무엇을 더 크게 벌할지, 이상치를 믿을지 버릴지를 사람이 먼저 정해야 합니다.</p>
+        <div class="btn-row">
+          <button class="btn" type="button" onclick="l2GoView('bias')">5차시 「정확도 95%의 함정」 보기 →</button>
+          <button class="btn" type="button" onclick="l2GoView('optim',0)">25차시 「손실함수 L(a)」 다시 보기 →</button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 5문항</h3>
+    <p style="margin-bottom:1rem;">한 문항씩 진행합니다. 답을 고르면 <b>정답과 해설</b>이 바로 나오고,
+      마지막에 <b>총점과 복기 목록</b>이 뜹니다.</p>
+    <div id="l2-quiz"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1" style="border-left:4px solid var(--blue);">
+    <h3>다음 차시 예고 — 27차시 「내려갈 방향: 극한과 미분계수」</h3>
+    <p>오늘 마지막에 이런 물음을 남겼습니다. <b>“평평한 바닥 위에서는 어느 쪽으로 가라고 말해 줄까?”</b></p>
+    <p>다음 시간에는 반대로, 매끄러운 포물선 위의 한 점에서 <b>“이쪽으로 내려가면 됩니다”</b> 라고 알려 주는 수학 도구를 만듭니다.
+      점 두 개를 잇는 직선(할선)을 점점 가깝게 붙여 <b>접선</b>을 만드는 과정입니다.</p>
+    <div class="btn-row">
+      <button class="btn pri" type="button" onclick="l2GoView('optim',1)">27차시로 이동 →</button>
+      <button class="btn" type="button" onclick="l2GoView('optim',0)">25차시 손실함수 되짚기 ←</button>
+    </div>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>내 데이터에 맞는 자 고르기</h3>
+    <p class="sub">오늘 배운 “자에 따라 최적이 달라진다”를 <b>여러분의 자료</b>로 확인합니다.
+      두 손실값 표를 직접 만들고, 이상치를 일부러 넣어 두 최적 a가 각각 얼마나 움직이는지 비교합니다.</p>
+    <dl>
+      <dt>무엇을 하나요</dt>
+      <dd>내 생활에서 두 변량이 관련되어 보이는 자료를 <b>7일치</b> 모읍니다.
+        (예: 하루 걸음 수와 수면 시간 / 공부 시간과 다음 날 컨디션 점수 / 기온과 마신 물의 양)</dd>
+      <dt>어떻게 하나요</dt>
+      <dd>① 표를 만들고 산점도를 그립니다(모눈종이 또는 스프레드시트).<br>
+        ② <b>y = ax</b> 꼴로 두고, a를 <b>0.5씩</b> 바꾸며 오차의 절댓값의 평균 M(a)와 오차의 제곱의 평균 L(a)를
+        각각 계산해 표로 만듭니다(최소 5개의 a).<br>
+        ③ 두 표에서 각각 최솟값을 주는 a를 찾아 <b>두 값이 같은지 다른지</b> 적습니다.<br>
+        ④ 7일치 중 <b>하루를 일부러 이상치로 바꾸어</b>(예: 값을 3배로) ②를 다시 하고,
+        두 최적 a가 각각 얼마나 움직였는지 비교합니다.</dd>
+      <dt>제출물</dt>
+      <dd>A4 1장 또는 스프레드시트 링크 — 자료 표 · 산점도 1장 · a에 따른 두 손실값 표 ·
+        최적 a 비교 한 문단 · <b>“내 자료에는 어느 자가 맞다고 생각하는가, 그 이유는”</b> 3문장</dd>
+      <dt>평가 관점</dt>
+      <dd><b>[12인수04-03]</b> 일변수 손실함수를 자료에 맞게 구성하고 그 값을 비교하여 최적화된 추세선을 판단하는가.<br>
+        태도 — 계산 결과가 아니라 <b>자를 고르는 판단</b>을 자기 언어로 쓰는가.</dd>
+      <dt>개인정보 안내</dt>
+      <dd>수면 시간·컨디션처럼 개인적인 자료는 <b>학급 내부 공유만</b> 합니다. 이름 없이 제출해도 좋습니다.</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="l2-refs">
+      <a class="l2-ref" href="https://mathlove22.github.io/gradient-descent-sim/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>📉</span>
+        <span class="bd"><span class="tt">경사하강법 시각화 도구</span>
+          <span class="ds">왼쪽에서 직선을 돌리면 오른쪽 손실 포물선의 점이 함께 움직입니다. 오늘 오른쪽 캔버스의 원형입니다. (합본 p.293 수록 도구)</span></span>
+      </a>
+      <a class="l2-ref" href="https://www.geogebra.org/classic" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">공학 도구</span>📐</span>
+        <span class="bd"><span class="tt">지오지브라 클래식</span>
+          <span class="ds">스프레드시트에 자료를 넣고 슬라이더 a로 두 손실함수의 그래프를 직접 만들어 볼 수 있습니다. (합본 p.260~261 절차)</span></span>
+      </a>
+      <a class="l2-ref" href="https://www.desmos.com/calculator?lang=ko" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">공학 도구</span>✏️</span>
+        <span class="bd"><span class="tt">데스모스 그래프 계산기</span>
+          <span class="ds">절댓값 기호를 그대로 입력해 M(a)의 꺾은선을 즉시 그려 볼 수 있습니다. 꺾인 점 네 자리를 눈으로 확인하기 좋습니다.</span></span>
+      </a>
+      <a class="l2-ref" href="https://dshskr.notion.site/a8736118af634382b956a27bbeb8af5c" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">자료실</span>🗂️</span>
+        <span class="bd"><span class="tt">인공지능수학 수업 수행 활동 자료실</span>
+          <span class="ds">「4-1. 예측과 최적화(최종)」 손실함수 실습 자료와 경사하강법 콜랩이 들어 있습니다. (대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실)</span></span>
+      </a>
+      <button class="l2-ref" type="button" onclick="l2GoView('optim',0)" style="text-align:left;cursor:pointer;font:inherit;">
+        <span class="th"><span class="bg">내부 뷰</span>🔗</span>
+        <span class="bd"><span class="tt">25차시 손실함수 L(a) 다시 보기</span>
+          <span class="ds">오늘의 제곱 자를 처음 만든 시간입니다. 잔차 정사각형과 완전제곱식이 거기에 있습니다.</span></span>
+      </button>
+      <button class="l2-ref" type="button" onclick="l2GoView('bias')" style="text-align:left;cursor:pointer;font:inherit;">
+        <span class="th"><span class="bg">내부 뷰</span>🔗</span>
+        <span class="bd"><span class="tt">5차시 정확도의 함정</span>
+          <span class="ds">“기준을 무엇으로 정하느냐”가 결론을 바꾼다는, 오늘과 똑같은 구조를 다룹니다.</span></span>
+      </button>
+    </div>
+    <div id="l2-ref-custom" class="l2-refs" style="margin-top:0.8rem;"></div>
+    <div class="btn-row" style="align-items:center;">
+      <input class="l2-in wide" id="l2-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="추가할 자료 주소">
+      <input class="l2-in wide" id="l2-ref-tt" type="text" placeholder="자료 제목(선택)" aria-label="추가할 자료 제목">
+      <button class="btn pri" type="button" onclick="l2RefAdd()">+ 자료 추가</button>
+    </div>
+    <p class="status" id="l2-ref-st">교사용 — 추가한 자료는 이 기기에만 저장됩니다. 패들렛 링크도 여기에 걸 수 있습니다.</p>
+
+    <p class="mat-label" style="text-align:left;margin-top:1.4rem;">공학 도구로 확인하기</p>
+    <div class="l2-tools">
+      <div class="l2-tool">
+        <div class="hd"><span class="em">📊</span>스프레드시트</div>
+        <h4>a를 0.1씩 바꾸며 두 손실값 표를 한 번에 만들기</h4>
+        <ol>
+          <li>A열에 x(1, 2, 3, 4), B열에 y(0, 5, 2, 8) 입력</li>
+          <li><b>E1</b> 에 a 값을 두고 C2에 <b>=B2-$E$1*A2</b> (오차) 를 입력해 아래로 드래그</li>
+          <li>D2에 <b>=ABS(C2)</b>, E2에 <b>=C2^2</b> 를 입력해 아래로 드래그</li>
+          <li><b>=AVERAGE(D2:D5)</b> 가 M(a), <b>=AVERAGE(E2:E5)</b> 가 L(a)</li>
+          <li>E1을 0부터 4까지 0.1씩 바꾸어 두 열의 최솟값 위치를 비교(<b>차트 → 꺾은선</b>으로 겹쳐 보기)</li>
+        </ol>
+        <a href="https://docs.google.com/spreadsheets/u/0/create" target="_blank" rel="noopener">빈 스프레드시트 열기 ↗</a>
+        <p class="l2-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="l2-tool">
+        <div class="hd"><span class="em">📐</span>지오지브라</div>
+        <h4>슬라이더 a로 두 손실 곡선을 동시에 그리기</h4>
+        <ol>
+          <li><b>geogebra.org/classic</b> 열기 → 슬라이더 <b>a</b> 만들기(0 ~ 4, 증가 0.05)</li>
+          <li>입력창에 <b>L(t)=((0-t)^2+(5-2t)^2+(2-3t)^2+(8-4t)^2)/4</b></li>
+          <li>입력창에 <b>M(t)=(abs(0-t)+abs(5-2t)+abs(2-3t)+abs(8-4t))/4</b></li>
+          <li>두 그래프가 함께 보이면 <b>Min(L, 0, 4)</b>, <b>Min(M, 0, 4)</b> 로 최저점 확인</li>
+          <li>얻은 두 값이 <b>1.6</b> 과 <b>2</b> 인지 화면 값과 대조</li>
+        </ol>
+        <a href="https://www.geogebra.org/classic" target="_blank" rel="noopener">지오지브라 클래식 열기 ↗</a>
+        <p class="l2-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="l2-tool">
+        <div class="hd"><span class="em">🧮</span>알지오매스</div>
+        <h4>절댓값 함수의 꺾인 점을 눈으로 확인하기</h4>
+        <ol>
+          <li><b>algeomath.kr</b> → <b>[알지오매스 시작]</b> → 수식 입력</li>
+          <li><b>y = |x| + |5-2x| + |2-3x| + |8-4x|</b> 입력(4로 나누기 전 형태)</li>
+          <li>확대해 꺾이는 자리 <b>4곳</b>의 x좌표를 읽기</li>
+          <li>읽은 값이 <b>0, 2/3, 2, 2.5</b> 와 같은지 확인</li>
+          <li>같은 화면에 <b>y = 30x²-96x+93</b> 을 겹쳐 그려 모양의 차이 비교</li>
+        </ol>
+        <a href="https://www.algeomath.kr" target="_blank" rel="noopener">알지오매스 열기 ↗</a>
+        <p class="l2-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="l2-tool">
+        <div class="hd"><span class="em">🐍</span>코랩</div>
+        <h4>두 손실 곡선을 코드 8줄로 겹쳐 그리기</h4>
+        <ol>
+          <li>코랩에서 새 노트북 만들기 → 셀에 아래를 입력</li>
+          <li><b>import numpy as np, matplotlib.pyplot as plt</b></li>
+          <li><b>x=np.array([1,2,3,4]); y=np.array([0,5,2,8]); a=np.linspace(0,4,401)</b></li>
+          <li><b>L=[((y-t*x)**2).mean() for t in a]; M=[abs(y-t*x).mean() for t in a]</b></li>
+          <li><b>plt.plot(a,L); plt.plot(a,M); plt.show()</b> → 최저점의 a를 <b>a[np.argmin(L)]</b> 로 확인</li>
+        </ol>
+        <a href="https://colab.research.google.com/" target="_blank" rel="noopener">코랩 열기 ↗</a>
+        <p class="l2-src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>26차시 학습지 — 손으로 두 개의 자를 만들어 보기</h3>
+    <p>웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.
+      <b>[학습지 인쇄]</b> 는 A4 <b>2쪽</b> 지면으로 인쇄됩니다.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('l2-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="https://docs.google.com/spreadsheets/d/1kp677h_2PkgYUd8bLjTSt05YnddSIJ4RezhYq5q0t4U/copy"
+         target="_blank" rel="noopener">📊 아이스티 구글시트 실습본 <span class="sz">외부 링크 · 사본 만들기</span></a>
+      <a class="ws-btn sec" href="https://docs.google.com/spreadsheets/u/0/create"
+         target="_blank" rel="noopener">📄 빈 스프레드시트로 시작 <span class="sz">외부 링크</span></a>
+    </div>
+    <p class="l2-hint" style="margin-top:0.5rem;">💡 <b>구글시트 확장 과제</b> — 29차시 실습본을 열어
+      오차 열 옆에 <b>=ABS(...)</b> 열을 하나 더 만들면, 같은 자료를 <b>절댓값 자</b>로도 잴 수 있습니다.
+      두 열의 최솟값이 서로 다른 a에서 나오는지 확인해 보세요. (구글 계정 로그인 필요)</p>
+    <div id="l2-wslinks"></div>
+  </div>
+
+  <!-- ═════ 인쇄용 학습지 지면 (A4 2쪽) ═════ -->
+  <div class="ws-sheet" id="l2-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>26차시 학습지 — 오차를 재는 두 개의 자</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>① 마중 퀴즈 기록 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:54%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>오차가 −5, +5 이면 “두 날 모두 정확히 예측했다” (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>절댓값과 제곱은 둘 다 손실함수로 쓸 수 있는가</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>이상치가 있을 때 제곱 자의 최적 a는?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 ① — 오차표 손계산 (자료 (1,0), (2,5), (3,2), (4,8))</h3>
+    <table>
+      <tr><th>x</th><th>y</th><th>f(x)=x 예측</th><th>오차 y−f</th><th>|오차|</th><th>오차²</th>
+        <th>g(x)=2x 예측</th><th>오차 y−g</th><th>|오차|</th><th>오차²</th></tr>
+      <tr><td>1</td><td>0</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td>
+        <td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td>5</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td>
+        <td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td>
+        <td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>4</td><td>8</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td>
+        <td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><th colspan="3">합 / 평균</th><td class="blank"></td><td class="blank"></td><td class="blank"></td>
+        <td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">두 오차의 <b>합</b>은 각각 ______ 와 ______ 입니다. 이 두 수만으로 우열을 가릴 수 있습니까? 왜 그런가요?</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 활동 ② — L(a) 전개와 완전제곱식</h3>
+    <p class="note">L(a) = (1/4) &#123; ( ___ − ___a )² + ( ___ − ___a )² + ( ___ − ___a )² + ( ___ − ___a )² &#125;</p>
+    <p class="note">　　 = (1/4)( ______ a² − ______ a + ______ ) = ______ a² − ______ a + ______</p>
+    <p class="note">　　 = ______ ( a − ______ )² + ______ 　→ 최적 기울기 a = ______ , 최솟값 = ______</p>
+
+    <h3>④ 활동 ② — M(a)의 꺾인 점과 구간별 기울기</h3>
+    <p class="note">각 항의 절댓값 안이 0이 되는 a : |0 − a| → a = ____ ／ |5 − 2a| → a = ____ ／
+      |2 − 3a| → a = ____ ／ |8 − 4a| → a = ____</p>
+    <table>
+      <tr><th>구간</th><th>a &lt; 0</th><th>0 ~ 2/3</th><th>2/3 ~ 2</th><th>2 ~ 2.5</th><th>2.5 &lt; a</th></tr>
+      <tr><th>M(a)의 기울기</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">기울기의 부호가 음에서 양으로 바뀌는 자리 a = ______ 　→ 최솟값 M = ______</p>
+
+    <div style="page-break-before:always;"></div>
+    <div class="ws-h"><h2>26차시 학습지 (2/2) — 이상치와 꺾인 점</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
+
+    <h3>⑤ 활동 ③ — 이상치 기록표</h3>
+    <table>
+      <tr><th>네 번째 점 y</th><th>절댓값 자 최적 a</th><th>제곱 자 최적 a</th><th>제곱 자의 변화율(%)</th></tr>
+      <tr><td>8 (원래)</td><td class="blank"></td><td class="blank"></td><td>0 %</td></tr>
+      <tr><td>30 (이상치)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>40 (극단)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">변화율 = (새 값 − 처음 값) ÷ (처음 값) × 100 (%)</p>
+
+    <h3>⑥ 두 자의 비교표 — 직접 채우기</h3>
+    <table>
+      <tr><th style="width:26%;">관점</th><th>절댓값 자 M(a)</th><th>제곱 자 L(a)</th></tr>
+      <tr><td>이상치</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>큰 오차 벌주기</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>그래프의 모양</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>최적 기울기의 개수</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>계산(완전제곱식)</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑦ 「평평한 바닥」 — 자료 (1, 2), (2, 2), (3, 9)</h3>
+    <p class="note">M(2) = ______ ／ M(2.5) = ______ ／ M(3) = ______ 　→ 세 값이 같습니까? ______</p>
+    <p class="note">같은 자료에 제곱 자를 쓰면 최적 기울기는 a = ______ <b>하나뿐</b>입니다.</p>
+    <p class="note">컴퓨터가 이 평평한 바닥 위에 서 있다면, 어느 쪽으로 한 걸음 가라고 말해 줄 수 있을까요?</p>
+    <div class="rule sm"></div>
+
+    <h3>⑧ 형성평가 답란</h3>
+    <ol>
+      <li>L(a)와 최적 기울기 짝짓기 — 답: ______</li>
+      <li>제곱을 쓰면 생기는 차이(복수 선택) — 답: ______</li>
+      <li>두 손실값 표에서 읽을 수 있는 결론 — 답: ______</li>
+      <li>M(a)가 구간에서 수평일 때 옳지 <b>않은</b> 것 — 답: ______</li>
+      <li>축제 날 이상치가 섞인 자료에 대한 가장 타당한 말 — 답: ______</li>
+    </ol>
+
+    <h3>⑨ 핵심 질문 서술</h3>
+    <p><b>‘가장 좋은 직선’을 말할 때 반드시 함께 말해야 하는 것은 무엇인가?</b> (4줄)</p>
+    <div class="rule lg"></div>
+
+    <h3>⑩ 자기 점검</h3>
+    <table>
+      <tr><th>점검 항목</th><th>◎ / ○ / △</th></tr>
+      <tr><td>오차를 그냥 더하면 왜 안 되는지 설명할 수 있다</td><td class="blank"></td></tr>
+      <tr><td>M(a)와 L(a)를 자료에서 직접 계산할 수 있다</td><td class="blank"></td></tr>
+      <tr><td>두 자의 최적 기울기가 다를 수 있음을 예를 들어 말할 수 있다</td><td class="blank"></td></tr>
+      <tr><td>인공지능이 제곱 자를 표준으로 쓰는 이유를 말할 수 있다</td><td class="blank"></td></tr>
+    </table>
+  </div>
+</div>
