@@ -1,0 +1,1180 @@
+<!-- ═══════════ VECOP (10차시: 문장을 더하고, 늘이고, 재기 — 벡터의 연산과 크기) ═══════════
+     · 파일 위치: views/vecop.html  (신규)
+     · 전역 접두사 vc · 뷰 루트 id #v-vecop · 모든 스타일 규칙은 #v-vecop 하위로만 작성
+     · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
+     · 교육과정 준수 — 이 차시가 다루는 벡터의 연산은 덧셈·뺄셈·실수배뿐입니다.
+       두 벡터를 곱하는 연산과 관련된 용어·기호는 [12인수02-03] 유의 사항의 금지 항목이므로
+       화면·해설·인쇄물 어디에도 쓰지 않았습니다.
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-vecop">
+  <style>
+  /* vecop 뷰 전용 스타일 (#v-vecop 스코프 한정 — 전역 누수 금지) */
+  #v-vecop .vc-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-vecop .vc-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-vecop .vc-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-vecop .vc-hero{position:relative;}
+  #v-vecop .vc-wm{position:absolute;right:0;top:-0.6rem;width:16rem;max-width:44%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-vecop .vc-hero>*:not(.vc-wm){position:relative;}
+  #v-vecop .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-vecop .vc-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-vecop .vc-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-vecop .vc-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-vecop .vc-ask{border-left:4px solid var(--accent);}
+  #v-vecop .vc-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-vecop .vc-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;
+    color:var(--fg);font-size:1.03rem;word-break:keep-all;}
+  #v-vecop .vc-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-vecop .vc-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-vecop .vc-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;
+    line-height:1.7;display:block;}
+  #v-vecop .vc-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-vecop .vc-fml{font-family:var(--mono);font-size:0.92rem;line-height:1.95;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;}
+  #v-vecop .vc-scroll{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;}
+  #v-vecop .vc-tbl{border-collapse:collapse;font-size:0.92rem;min-width:min(100%,19rem);}
+  #v-vecop .vc-tbl th,#v-vecop .vc-tbl td{border:1px solid var(--border);padding:0.38rem 0.55rem;
+    text-align:center;line-height:1.6;white-space:nowrap;}
+  #v-vecop .vc-tbl th{background:var(--card-h);font-weight:600;}
+  #v-vecop .vc-tbl td.lb{background:var(--bg);font-family:var(--mono);font-weight:700;color:var(--fg);}
+  #v-vecop .vc-tbl tr.sum td{background:var(--card-h);font-weight:700;color:var(--fg);}
+  #v-vecop .vc-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);word-break:keep-all;}
+  #v-vecop .vc-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-vecop .vc-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-vecop .vc-fb b{color:var(--fg);}
+  #v-vecop .vc-fb:empty{display:none;}
+  #v-vecop .vc-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-vecop .vc-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.5rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-vecop .vc-in.num{width:3.9rem;text-align:center;}
+  #v-vecop .vc-in.ok{border-color:var(--green);background:#eaf1ea;}
+  #v-vecop .vc-in.no{border-color:var(--red);background:#f7ebe9;}
+  #v-vecop .vc-in.shake{animation:vc-shake 0.4s;}
+  @keyframes vc-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+  /* 조작 요소 확대(spec §15) — 조작 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px */
+  #v-vecop .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;}
+  #v-vecop .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-vecop .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-vecop .tabs{flex-wrap:wrap;}
+  #v-vecop .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.8rem;}
+  #v-vecop .ws-btn{min-height:44px;}
+  #v-vecop select.vc-sel{height:2.4rem;border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);
+    color:var(--fg);font-family:var(--sans);font-size:0.95rem;padding:0 0.5rem;max-width:100%;}
+  #v-vecop textarea.vc-ta{width:100%;min-height:4.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:1.0rem;line-height:1.75;background:var(--card);
+    color:var(--fg);resize:vertical;}
+  #v-vecop .vc-lab{font-family:var(--mono);font-size:0.86rem;font-weight:700;color:var(--fg);
+    letter-spacing:0.04em;margin:0.9rem 0 0.35rem;display:block;}
+  #v-vecop .vc-row{display:flex;flex-wrap:wrap;gap:0.5rem 0.7rem;align-items:center;margin:0.6rem 0;}
+  #v-vecop .vc-row label{font-family:var(--mono);font-size:0.88rem;color:var(--fg);
+    display:inline-flex;align-items:center;gap:0.35rem;}
+
+  /* 단계 토글(details) — 조작 전에는 잠깁니다 */
+  #v-vecop .vc-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-vecop .vc-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;
+    word-break:keep-all;}
+  #v-vecop .vc-fold>summary::-webkit-details-marker{display:none;}
+  #v-vecop .vc-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-vecop .vc-fold[open]>summary::after{content:'▾';}
+  #v-vecop .vc-fold .bd{padding:0 0 0.9rem;}
+  #v-vecop .vc-fold .bd p,#v-vecop .vc-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;
+    margin-bottom:0.6rem;word-break:keep-all;}
+  #v-vecop .vc-fold.vc-locked{opacity:0.62;}
+  #v-vecop .vc-fold.vc-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-vecop .vc-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 배너(다음 차시 연결 · 오개념 경고) */
+  #v-vecop .vc-ban{border-left:4px solid var(--blue);background:var(--bg);border-radius:0 0.4rem 0.4rem 0;
+    padding:0.75rem 0.95rem;margin:0.9rem 0 0;font-size:1.0rem;line-height:1.85;color:var(--body);word-break:keep-all;}
+  #v-vecop .vc-ban b{color:var(--fg);}
+  #v-vecop .vc-ban.warn{border-left-color:#c9922f;background:#fdf3d8;color:#6b551f;}
+  #v-vecop .vc-ban.warn b{color:#5a4517;}
+
+  /* 활동 ① — 후기 카드 · 단어 배지 · 합 애니메이션 */
+  #v-vecop .vc-rev{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);
+    padding:0.75rem 0.85rem;margin-bottom:0.7rem;}
+  #v-vecop .vc-rev .hd{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.4rem;}
+  #v-vecop .vc-rev .hd .k{font-family:var(--mono);font-size:0.8rem;font-weight:700;color:var(--bg);
+    background:var(--fg);border-radius:9999px;padding:0.14rem 0.6rem;}
+  #v-vecop .vc-rev .hd .tx{font-size:0.98rem;color:var(--body);line-height:1.75;flex:1 1 12rem;min-width:0;
+    word-break:keep-all;}
+  #v-vecop .vc-wchips{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.35rem;}
+  #v-vecop .vc-wchip{font-family:var(--sans);font-size:0.95rem;border-radius:9999px;padding:0.3rem 0.7rem;
+    border:1px solid var(--border);background:var(--card);color:var(--body);cursor:pointer;min-height:44px;
+    display:inline-flex;align-items:center;gap:0.3rem;transition:all 0.18s;}
+  #v-vecop .vc-wchip .ic{font-family:var(--mono);font-size:0.78rem;opacity:0.8;}
+  #v-vecop .vc-wchip.p{background:var(--blue);border-color:var(--blue);color:#fff;}
+  #v-vecop .vc-wchip.n{background:var(--red);border-color:var(--red);color:#fff;}
+  #v-vecop .vc-wchip.u{background:var(--card-h);border-color:var(--muted);color:var(--fg);}
+  #v-vecop .vc-badge{display:inline-block;font-family:var(--sans);font-weight:700;font-size:0.92rem;
+    border-radius:9999px;padding:0.16rem 0.7rem;color:#fff;background:var(--muted);}
+  #v-vecop .vc-badge.p{background:var(--blue);}
+  #v-vecop .vc-badge.n{background:var(--red);}
+  #v-vecop .vc-badge.z{background:var(--muted);}
+  #v-vecop .vc-sumfx{font-family:var(--mono);font-size:0.8rem;color:var(--muted);display:block;line-height:1.5;}
+  #v-vecop .vc-tbl tr.drop td{animation:vc-drop 0.5s cubic-bezier(0.22,1,0.36,1);}
+  @keyframes vc-drop{from{transform:translateY(-12px);opacity:0.2;}to{transform:none;opacity:1;}}
+  #v-vecop .vc-bars{margin-top:0.7rem;}
+  #v-vecop .vc-cbar{display:flex;align-items:center;gap:0.5rem;margin:0.4rem 0;}
+  #v-vecop .vc-cbar .nm{font-family:var(--mono);font-size:0.8rem;width:5.6rem;flex-shrink:0;color:var(--fg);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #v-vecop .vc-cbar .tk{flex:1;min-width:2.5rem;height:1.05rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:9999px;overflow:hidden;}
+  #v-vecop .vc-cbar .tk i{display:block;height:100%;width:0;background:var(--accent);border-radius:9999px;
+    transition:width 0.45s cubic-bezier(0.22,1,0.36,1);}
+  #v-vecop .vc-cbar .vl{font-family:var(--mono);font-size:0.82rem;font-weight:700;width:3.4rem;text-align:right;flex-shrink:0;}
+
+  /* 활동 ② — 좌우 대칭 막대 */
+  #v-vecop .vc-dbars{margin-top:0.8rem;display:flex;flex-direction:column;gap:0.35rem;}
+  #v-vecop .vc-dbar{display:grid;grid-template-columns:5.2rem 1fr 3.4rem;align-items:center;gap:0.45rem;}
+  #v-vecop .vc-dbar .nm{font-family:var(--mono);font-size:0.8rem;color:var(--fg);overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap;}
+  #v-vecop .vc-dbar .mid{position:relative;height:1.5rem;background:var(--bg);border:1px solid var(--border);
+    border-radius:0.3rem;overflow:hidden;}
+  #v-vecop .vc-dbar .mid .zero{position:absolute;left:50%;top:0;bottom:0;width:0;border-left:1px dashed var(--muted);}
+  #v-vecop .vc-dbar .mid i{position:absolute;top:0.22rem;bottom:0.22rem;border-radius:0.2rem;
+    transition:width 0.4s cubic-bezier(0.22,1,0.36,1),left 0.4s cubic-bezier(0.22,1,0.36,1);}
+  #v-vecop .vc-dbar .mid i.pos{background:var(--blue);left:50%;}
+  #v-vecop .vc-dbar .mid i.neg{background:var(--red);}
+  #v-vecop .vc-dbar .vl{font-family:var(--mono);font-size:0.82rem;font-weight:700;text-align:right;}
+  #v-vecop .vc-dbar.top .nm::after{content:' ★';color:var(--accent);}
+  #v-vecop .vc-dbar.zero-on .mid{outline:2px solid var(--fg);outline-offset:-1px;}
+  #v-vecop .vc-dbar.zero-on .nm{color:var(--fg);font-weight:700;}
+  #v-vecop .vc-legend{display:flex;gap:0.9rem;flex-wrap:wrap;font-size:0.85rem;color:var(--muted);margin-top:0.5rem;}
+  #v-vecop .vc-legend span{display:inline-flex;align-items:center;gap:0.3rem;}
+  #v-vecop .vc-legend i{width:0.85rem;height:0.85rem;border-radius:0.2rem;display:inline-block;}
+
+  /* 캔버스(위치벡터 · 실수배) */
+  #v-vecop canvas.vc-cv{display:block;width:100%;max-width:min(100%,30rem);height:auto;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);margin:0.6rem auto 0.3rem;
+    touch-action:manipulation;}
+  #v-vecop input[type=range].vc-k{flex:1 1 12rem;min-width:0;height:44px;accent-color:var(--fg);cursor:pointer;background:transparent;}
+  #v-vecop .vc-kval{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--fg);white-space:nowrap;}
+  #v-vecop .vc-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(16rem,100%),1fr));gap:1rem;margin-top:0.7rem;}
+  #v-vecop .vc-pane{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.8rem;min-width:0;}
+  #v-vecop .vc-pane>h4{font-size:1.0rem;margin:0 0 0.5rem;color:var(--fg);}
+  #v-vecop .vc-steps{display:flex;flex-direction:column;gap:0.45rem;margin-top:0.6rem;}
+  #v-vecop .vc-stepline{display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;font-family:var(--mono);
+    font-size:0.92rem;color:var(--fg);background:var(--bg);border:1px solid var(--border);border-radius:0.4rem;
+    padding:0.45rem 0.6rem;}
+  #v-vecop .vc-stepline .st{font-size:0.74rem;color:var(--muted);width:100%;letter-spacing:0.06em;}
+  #v-vecop .vc-radical{display:inline-flex;align-items:stretch;font-family:var(--mono);font-size:1.0rem;}
+  #v-vecop .vc-radical .rt{font-size:1.15rem;}
+  #v-vecop .vc-radical .un{border-top:1.5px solid currentColor;padding:0 0.2rem;}
+
+  /* 사진 · 교과서 캡처 슬롯 */
+  /* 로컬 캡처가 있으면(수업용) 그것을, 없으면(공개 배포) SVG 도해를 보여 줍니다. */
+  #v-vecop .vc-fig{margin:0.9rem 0;}
+  #v-vecop .vc-fig img{display:none;width:100%;max-width:22rem;height:auto;border-radius:0.5rem;border:1px solid var(--border);}
+  #v-vecop .vc-fig.hasfoto img{display:block;}
+  #v-vecop .vc-fig.hasfoto .vc-svgbox{display:none;}
+  #v-vecop .vc-fig figcaption{font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:0.35rem;}
+  #v-vecop .vc-svgbox{width:100%;max-width:34rem;margin:0.7rem auto 0.2rem;}
+  #v-vecop .vc-svgbox svg{display:block;width:100%;height:auto;}
+
+  /* 추천 영상 링크 카드(임베드 차단 · 검색) — 공통 .cmn-vd-grid 를 그대로 씁니다 */
+  #v-vecop .vc-vdlink{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    border:1px solid var(--border);border-radius:0.7rem;overflow:hidden;background:var(--card);transition:all 0.2s;}
+  #v-vecop .vc-vdlink:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-vecop .vc-vdlink .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.2rem;overflow:hidden;}
+  #v-vecop .vc-vdlink .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-vecop .vc-vdlink .lock{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.64rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;}
+  #v-vecop .vc-vdlink .meta{padding:0.55rem 0.7rem 0.75rem;}
+  #v-vecop .vc-vdlink .meta b{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;word-break:keep-all;}
+  #v-vecop .vc-vdlink .meta span{display:block;font-size:0.8rem;color:var(--muted);margin-top:0.2rem;
+    line-height:1.55;word-break:keep-all;}
+
+  /* 참고 자료 카드 */
+  #v-vecop .vc-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-vecop .vc-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;
+    font-family:var(--sans);font-size:1rem;cursor:pointer;}
+  #v-vecop .vc-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-vecop .vc-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;}
+  #v-vecop .vc-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-vecop .vc-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-vecop .vc-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;word-break:keep-all;}
+  #v-vecop .vc-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;word-break:keep-all;}
+
+  /* 공학 도구 가이드 카드 */
+  #v-vecop .vc-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-vecop .vc-tool{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:var(--radius);padding:0.85rem;min-width:0;}
+  #v-vecop .vc-tool h4{font-size:1.0rem;margin:0 0 0.35rem;color:var(--fg);}
+  #v-vecop .vc-tool ol{margin:0.3rem 0 0.6rem 1.1rem;padding:0;}
+  #v-vecop .vc-tool li{font-size:0.92rem;color:var(--body);line-height:1.75;margin-bottom:0.25rem;word-break:keep-all;}
+  #v-vecop .vc-tool a{font-size:0.88rem;color:var(--blue);word-break:break-all;}
+  #v-vecop code{font-family:var(--mono);font-size:0.85rem;background:var(--card-h);border-radius:0.25rem;
+    padding:0.05rem 0.3rem;word-break:break-all;overflow-wrap:anywhere;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-vecop *{animation:none !important;transition:none !important;}
+  }
+  @media (max-width:640px){
+    #v-vecop .vc-wm{display:none;}
+    #v-vecop .vc-fml{font-size:0.8rem;}
+    #v-vecop .vc-cbar .nm{width:4.4rem;font-size:0.72rem;}
+    #v-vecop .vc-dbar{grid-template-columns:4.2rem 1fr 2.9rem;}
+    #v-vecop .vc-dbar .nm{font-size:0.72rem;}
+    #v-vecop .vc-in.num{width:3.3rem;}
+    #v-vecop .vc-tbl{font-size:0.84rem;}
+    #v-vecop .vc-tbl th,#v-vecop .vc-tbl td{padding:0.3rem 0.4rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="vc-hero">
+    <svg class="vc-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <g stroke="var(--blue)" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M40 34 L150 88"/><path d="M40 90 L150 90"/><path d="M40 146 L150 92"/>
+      </g>
+      <path d="M158 90 L286 90" stroke="var(--fg)" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M286 90 l-15 -8 v16 z" fill="var(--fg)"/>
+      <circle cx="40" cy="34" r="6" fill="var(--blue)"/><circle cx="40" cy="90" r="6" fill="var(--blue)"/>
+      <circle cx="40" cy="146" r="6" fill="var(--blue)"/>
+      <circle cx="154" cy="90" r="9" fill="var(--accent)"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅱ. 텍스트 데이터 처리 · 10차시 · [12인수02-01]</p>
+    <h2>문장을 더하고, 늘이고, 재기 — 벡터의 연산과 크기</h2>
+    <p class="desc">
+      후기 세 개를 ‘합한다’는 것은 무슨 뜻일까요? 문장의 ‘크기’는 무엇일까요?
+      오늘 만드는 네 가지 연산이 다음 시간 ‘비슷하다’를 재는 자의 <b>부품</b>이 됩니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 같은 차원의 두 벡터의 <b>덧셈·뺄셈</b>과 벡터의 <b>실수배</b>를 성분끼리 계산하고,
+      그 결과가 텍스트 데이터에서 무엇을 뜻하는지 설명할 수 있습니다. <b>[12인수02-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 텍스트 데이터를 <b>위치벡터</b>로 나타내고 <b>벡터의 크기</b> |a|를 구하여,
+      글의 길이와 반복이 벡터의 크기에 어떻게 반영되는지 설명할 수 있습니다.
+      <b>[12인수02-01]</b> <b>[12인수02-03] 연계</b>
+    </div>
+    <div class="vc-goalmap">
+      <button type="button" onclick="vcSee(0,'vc-act1')">├ 목표 ① → <b>활동 ①·②·③</b>(합·차·실수배를 직접 계산) →</button>
+      <button type="button" onclick="vcSee(3,'vc-act4')">└ 목표 ② → <b>활동 ④</b>(화살표를 그려 크기를 재고, 다음 차시의 거리와 잇기) →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips vc-keys" data-no-toggle="1">
+    <span class="chip">벡터·성분·차원·상등</span>
+    <span class="chip">벡터의 덧셈과 뺄셈</span>
+    <span class="chip">벡터의 실수배</span>
+    <span class="chip">위치벡터</span>
+    <span class="chip">벡터의 크기</span>
+  </div>
+
+  <div class="card vc-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>문장 두 개를 <b>‘합한다’</b>는 것은 무슨 뜻일까?</li>
+      <li>문장의 <b>‘크기’</b>란 무엇일까?</li>
+    </ul>
+    <p style="margin-top:0.7rem;">두 질문 모두 STEP 3 정리에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 (8분) ═════ -->
+  <div class="vc-step"><p class="mono">STEP 1 · 도입</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 후기 세 개를 한 장으로 합칠 수 있을까</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      <b>주 디딤영상</b>은 제작자 설정으로 페이지 안에서 재생할 수 없어 <b>새 탭</b>으로 열립니다.</p>
+    <div id="vc-videos"></div>
+    <div class="cmn-vd-grid" style="margin-top:0.8rem;">
+      <a class="vc-vdlink" href="https://www.youtube.com/watch?v=RQczdgwONaQ" target="_blank" rel="noopener">
+        <span class="th"><span class="lock">↗ 새 탭</span>
+          <img src="https://img.youtube.com/vi/RQczdgwONaQ/hqdefault.jpg" alt="" loading="lazy"
+               onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="meta"><b>인공지능과 수학교육 1. 집합·십진법과 이진법·벡터</b>
+          <span>수학교육학자 김정현(단국대) · <b>주 디딤영상</b>. 후반부 ‘벡터’ 구간을 지정 시청합니다.
+            이 영상은 외부 삽입이 막혀 있어 유튜브에서 열립니다.</span></span>
+      </a>
+      <a class="vc-vdlink"
+         href="https://www.youtube.com/results?search_query=%EB%B2%A1%ED%84%B0%EC%9D%98+%ED%81%AC%EA%B8%B0+%EA%B5%AC%ED%95%98%EA%B8%B0"
+         target="_blank" rel="noopener">
+        <span class="th">🔎</span>
+        <span class="meta"><b>「벡터의 크기」 영상 더 찾기</b>
+          <span>유튜브 검색 · 활동 ④에 들어가기 전에 한 번 더 보고 싶을 때 선생님과 함께 고릅니다.</span></span>
+      </a>
+    </div>
+    <p class="vc-hint" style="margin-top:0.7rem;">
+      위 그리드의 <b>[벡터의 덧셈과 뺄셈]</b> 카드는 〈기하〉 과목 기준이라 <b>화살표를 작도하는 방법</b>이 중심입니다.
+      우리는 <b>성분끼리 계산하는 방법</b>으로 다루므로, 작도가 궁금한 학생만 보면 됩니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>세 사람의 후기를 한 장으로 합치면?</h3>
+    <div class="vc-svgbox">
+      <svg viewBox="0 0 460 260" role="img" aria-label="세 후기의 감성 벡터가 아래로 모여 하나의 물음표 벡터로 합쳐지는 그림">
+        <rect width="460" height="260" fill="var(--bg)"/>
+        <g font-family="monospace" font-size="12" fill="var(--muted)">
+          <text x="230" y="20" text-anchor="middle">(긍정 단어 수, 부정 단어 수, 중립 단어 수)</text>
+        </g>
+        <g>
+          <rect x="20" y="34" width="126" height="52" rx="8" fill="var(--card)" stroke="var(--border)"/>
+          <text x="83" y="55" text-anchor="middle" font-size="12" fill="var(--body)">후기 A</text>
+          <text x="83" y="74" text-anchor="middle" font-size="11" fill="var(--muted)">달고 맛있어요</text>
+          <rect x="20" y="94" width="126" height="34" rx="6" fill="var(--blue)" opacity="0.16"/>
+          <text x="83" y="116" text-anchor="middle" font-family="monospace" font-size="15" fill="var(--fg)">(3, 0, 2)</text>
+
+          <rect x="167" y="34" width="126" height="52" rx="8" fill="var(--card)" stroke="var(--border)"/>
+          <text x="230" y="55" text-anchor="middle" font-size="12" fill="var(--body)">후기 B</text>
+          <text x="230" y="74" text-anchor="middle" font-size="11" fill="var(--muted)">작지만 신선해요</text>
+          <rect x="167" y="94" width="126" height="34" rx="6" fill="var(--accent)" opacity="0.34"/>
+          <text x="230" y="116" text-anchor="middle" font-family="monospace" font-size="15" fill="var(--fg)">(2, 2, 2)</text>
+
+          <rect x="314" y="34" width="126" height="52" rx="8" fill="var(--card)" stroke="var(--border)"/>
+          <text x="377" y="55" text-anchor="middle" font-size="12" fill="var(--body)">후기 C</text>
+          <text x="377" y="74" text-anchor="middle" font-size="11" fill="var(--muted)">늦고 별로예요</text>
+          <rect x="314" y="94" width="126" height="34" rx="6" fill="var(--red)" opacity="0.16"/>
+          <text x="377" y="116" text-anchor="middle" font-family="monospace" font-size="15" fill="var(--fg)">(1, 4, 1)</text>
+        </g>
+        <g stroke="var(--fg)" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.8">
+          <path d="M83 134 C83 168, 200 168, 220 182"/>
+          <path d="M230 134 L230 180"/>
+          <path d="M377 134 C377 168, 260 168, 240 182"/>
+        </g>
+        <path d="M230 196 l-9 -12 h18 z" fill="var(--fg)"/>
+        <rect x="146" y="200" width="168" height="44" rx="9" fill="var(--card-h)" stroke="var(--fg)" stroke-width="1.6"/>
+        <text x="230" y="229" text-anchor="middle" font-family="monospace" font-size="19" fill="var(--fg)">( ?, ?, ? )</text>
+      </svg>
+    </div>
+    <p>긍정 단어 수 · 부정 단어 수 · 중립 단어 수를 순서대로 담은 벡터를 <b>감성 벡터</b>라고 합니다.
+      세 후기를 한 장으로 합치면 이 물음표에는 어떤 수가 들어갈까요?</p>
+    <span class="vc-src">출처 — 미래엔 「인공지능 수학」 Ⅱ 단원 pp.65~66 서술을 재구성</span>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="vc-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문은 모두 같은 것을 묻고 있었습니다 — 벡터끼리 계산하면 텍스트에서 무슨 일이 일어나는가.</b>
+      오늘은 더하고(합), 빼고(차), 늘이고(실수배), 재는(크기) 네 가지를 만들어 봅니다.</p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 (30분) ═════ -->
+  <div class="vc-step"><p class="mono">STEP 2 · 전개</p></div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>네 가지 부품을 만듭니다 — 합 · 차 · 실수배 · 크기</strong><br>
+    연산 하나마다 <b>텍스트 데이터에서의 쓰임</b>이 하나씩 붙어 있습니다.
+    합은 <b>전체 여론</b>, 차는 <b>두 글의 다른 점 목록</b>, 실수배는 <b>분량 조절</b>, 크기는 <b>글의 분량을 재는 수 하나</b>입니다.
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="vcTab(0,this)">① 덧셈</button>
+    <button class="tab" type="button" onclick="vcTab(1,this)">② 뺄셈</button>
+    <button class="tab" type="button" onclick="vcTab(2,this)">③ 실수배</button>
+    <button class="tab" type="button" onclick="vcTab(3,this)">④ 위치벡터와 크기</button>
+  </div>
+
+
+  <!-- ── 탭 ① 활동 ① 덧셈 ─────────────────────────────────────────────── -->
+  <div class="tpanel on" id="vc0">
+    <div class="card" id="vc-act1" data-no-toggle="1">
+      <h3>활동 ① · 「우리 반 후기를 한 장으로」 — 벡터의 덧셈</h3>
+      <p>학교 매점에 후기 세 건이 올라왔습니다.</p>
+      <div class="math">후기 A   새로 나온 빵이 달고 맛있어요. 정말 좋네요. 다음에 또 주문할게요.
+후기 B   크기가 작아 실망했는데 신선하고 당도가 높네요.
+후기 C   상한 것이 많고 배송이 늦어서 별로예요. 실망!</div>
+      <p><b>문제</b> 세 후기를 각각 (긍정 단어 수, 부정 단어 수, 중립 단어 수)로 적어 봅시다.
+        그리고 <b>매점 후기 전체의 분위기</b>를 하나의 벡터로 나타낼 수 있을까요?</p>
+      <span class="vc-src">출처 — 미래엔 「인공지능 수학」 Ⅱ 단원 pp.65~66의 사과 후기 3건을 학교 상황으로 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 단어에 배지를 붙이고, 세 줄을 한 줄로 모으기</h3>
+      <p class="vc-hint">단어를 누를 때마다 배지가 <b>긍정 → 부정 → 중립 → 없음</b> 순으로 바뀌고,
+        아래 표의 세 칸이 자동으로 채워집니다. 표의 칸에 직접 수를 입력해도 됩니다.</p>
+      <div id="vc-a1-revs"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="vcA1Reset()">배지 지우기</button>
+        <button class="btn pri" type="button" onclick="vcA1Check()">감성 벡터 채점</button>
+      </div>
+      <div class="vc-fb" id="vc-a1-fb"></div>
+
+      <span class="vc-lab">감성 벡터 표 — 성분을 채우고 감성 점수를 구해 봅시다</span>
+      <div class="vc-scroll">
+        <table class="vc-tbl" id="vc-a1-tbl">
+          <thead><tr><th>후기</th><th>긍정<br>단어 수</th><th>부정<br>단어 수</th><th>중립<br>단어 수</th>
+            <th>감성 점수<br>(첫째 − 둘째)</th><th>판정</th></tr></thead>
+          <tbody id="vc-a1-body"></tbody>
+        </table>
+      </div>
+      <p class="status" id="vc-a1-st">세 후기의 성분과 감성 점수를 모두 맞히면 [전체 후기 합치기]가 열립니다.</p>
+
+      <div class="btn-row">
+        <button class="btn pri" type="button" id="vc-a1-sum" onclick="vcA1Sum()" disabled>전체 후기 합치기</button>
+        <button class="btn" type="button" id="vc-a1-corpus" onclick="vcA1Corpus()">우리 학급 말뭉치로 하기</button>
+      </div>
+      <div class="vc-fb" id="vc-a1-sumfb"></div>
+      <div id="vc-a1-corpusbox"></div>
+      <span class="vc-src">출처 — 미래엔 「인공지능 수학」 Ⅱ 단원 p.67 「A + B + C = (6, 6, 5)」 서술을 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="vc-lockmsg" id="vc-a1-lock">먼저 위에서 <b>[전체 후기 합치기]</b>까지 해 보세요. 그 뒤에 열립니다.</p>
+      <details class="vc-fold vc-locked" data-need="a1">
+        <summary>단계 1 — 관찰: 개별과 전체가 다릅니다</summary>
+        <div class="bd">
+          <p>세 후기는 긍정 하나, 중립 하나, 부정 하나였습니다. 그런데 합친 (6, 6, 5)의 점수는 0 —
+            <b>전체는 중립</b>입니다. 긍정 단어 6개와 부정 단어 6개가 정확히 맞섰기 때문입니다.</p>
+          <p>개별 후기만 보던 눈으로는 알 수 없던 사실입니다. 합 벡터는 하나하나 읽어서는 보이지 않는 것을 보여 줍니다.</p>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a1">
+        <summary>단계 2 — 정리: 합 벡터는 ‘전체를 보는 눈’입니다</summary>
+        <div class="bd">
+          <p>후기가 100건, 1000건이면 하나하나 읽을 수 없습니다. 각 후기를 같은 기준의 벡터로 만들어
+            <b>더하면</b>, 전체의 분위기를 벡터 하나로 요약할 수 있습니다.</p>
+          <p>이때 반드시 <b>같은 단어집합(같은 차원)</b>을 써야 합니다.
+            7차시에서 전체집합 U를 먼저 만든 것이 이 때문입니다.</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="go('text')">7차시 단어집합 다시 보기</button></div>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a1">
+        <summary>단계 3 — 정의 확인: 벡터의 덧셈</summary>
+        <div class="bd">
+          <p>차원이 같은 두 벡터 a = (a₁, …, aₙ), b = (b₁, …, bₙ)에 대하여 <b>성분끼리의 합</b>을 성분으로 하는
+            벡터를 두 벡터의 <b>합</b>이라 하고 다음과 같이 나타냅니다.</p>
+          <div class="vc-fml">a + b = (a₁ + b₁,  a₂ + b₂,  …,  aₙ + bₙ)</div>
+          <p>세 개 이상도 더할 수 있고 결합법칙이 성립하며, <b>차원이 다르면 더할 수 없습니다.</b></p>
+          <span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 · 미래엔 Ⅱ 단원 p.66 ·
+            천재교육 Ⅱ 단원 p.66 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 학급 말뭉치 전체의 빈도수 벡터</h3>
+      <p><b>“학급 말뭉치 전체의 빈도수 벡터는 각 문장의 빈도수 벡터를 모두 더한 것과 같습니다.”</b></p>
+      <p>교과서도 같은 말을 여백에 적어 두었습니다 — “전체집합의 빈도수 벡터는 단어집합 빈도수 벡터의 합”.
+        8차시에서 문서 전체의 빈도표를 만든 일이, 실은 벡터의 덧셈이었습니다.</p>
+      <span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 여백 노트를 재구성</span>
+
+      <span class="vc-lab">판정 문제 1 — P = (2, 1, 4, 0), Q = (0, 1, −2, 3)일 때 P + Q 는?</span>
+      <div class="vc-row" id="vc-a1-q"></div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="vcA1Q()">채점</button></div>
+      <div class="vc-fb" id="vc-a1-qfb"></div>
+      <span class="vc-src">출처 — 미래엔 「인공지능 수학」 Ⅱ 단원 p.66 문제 2를 재구성</span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 활동 ② 뺄셈 ─────────────────────────────────────────────── -->
+  <div class="tpanel" id="vc1">
+    <div class="card" id="vc-act2" data-no-toggle="1">
+      <h3>활동 ② · 「두 글은 어디서 갈리나」 — 벡터의 뺄셈</h3>
+      <p>두 뉴스 기사에 같은 단어집합을 대고 단어의 개수를 센 표입니다.</p>
+      <div class="vc-scroll">
+        <table class="vc-tbl">
+          <thead><tr><th>단어집합</th><th>인공지능</th><th>데이터</th><th>학교</th><th>수업</th><th>미래</th></tr></thead>
+          <tbody>
+            <tr><td class="lb">기사 a</td><td>10</td><td>5</td><td>1</td><td>1</td><td>5</td></tr>
+            <tr><td class="lb">기사 b</td><td>3</td><td>2</td><td>1</td><td>4</td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>문제</b> 두 기사는 얼마나, 그리고 <b>어느 단어에서</b> 다를까요? 두 벡터를 빼 보면 무엇이 보일까요?</p>
+      <span class="vc-src">출처 — 동아출판 「인공지능 수학」 Ⅱ 단원 p.49 문제 3의 자료 형식을 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 차를 구하고, 부호로 읽기</h3>
+      <span class="vc-lab">a − b 를 성분끼리 계산해 다섯 칸을 채워 봅시다</span>
+      <div class="vc-row" id="vc-a2-q"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="vcA2Check()">채점</button>
+        <button class="btn" type="button" onclick="vcA2Zero()">0인 성분 찾기</button>
+      </div>
+      <div class="vc-fb" id="vc-a2-fb"></div>
+
+      <span class="vc-lab">부호 막대 — 파란쪽은 기사 a가, 붉은쪽은 기사 b가 더 많이 쓴 단어입니다</span>
+      <div class="vc-dbars" id="vc-a2-bars"></div>
+      <div class="vc-legend">
+        <span><i style="background:var(--blue);"></i>양수 — 기사 a가 더 많이 씀</span>
+        <span><i style="background:var(--red);"></i>음수 — 기사 b가 더 많이 씀</span>
+        <span>★ 절댓값 상위 3개</span>
+      </div>
+      <p class="status" id="vc-a2-st">다섯 칸을 모두 맞히면 막대가 나타납니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 두 벡터를 같게 만들어 보기</h3>
+      <p class="vc-hint">기사 b의 다섯 수를 고쳐 <b>a − b 가 모든 성분에서 0</b>이 되도록 만들어 보세요.
+        0이 되는 순간 무슨 일이 일어나는지 확인합니다.</p>
+      <div class="vc-row" id="vc-a2-eq"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="vcA2EqReset()">처음 값으로</button>
+      </div>
+      <p class="vc-fml" id="vc-a2-eqline">a − b = ( 7, 3, 0, −3, 3 )</p>
+      <div class="vc-fb" id="vc-a2-eqfb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="vc-lockmsg" id="vc-a2-lock">먼저 위에서 <b>a − b 다섯 칸</b>을 채워 채점해 보세요. 그 뒤에 열립니다.</p>
+      <details class="vc-fold vc-locked" data-need="a2">
+        <summary>단계 1 — 관찰: 차 벡터가 알려 주는 것</summary>
+        <div class="bd">
+          <p>차 벡터 (7, 3, 0, −3, 3)에서 <b>부호</b>는 누가 더 많이 썼는가를, <b>절댓값</b>은 얼마나 차이 나는가를 알려 줍니다.</p>
+          <p>0인 자리는 두 글이 똑같이 쓴 단어입니다. 그러니까 차 벡터는 <b>“두 글의 다른 점 목록”</b>입니다.</p>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a2">
+        <summary>단계 2 — 정리: 두 벡터가 같다는 것</summary>
+        <div class="bd">
+          <p>두 벡터가 같으면 대응하는 성분이 모두 같으므로 모든 차가 0, 즉 차 벡터가 <b>영벡터</b>입니다.
+            이때 두 종점 사이의 거리도 0이 됩니다.</p>
+          <p>반대로 차 벡터의 성분이 클수록 두 글은 멀리 떨어져 있습니다 —
+            <b>‘멀다’를 수 하나로 만들려면 차 벡터의 크기를 재면 됩니다.</b></p>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a2">
+        <summary>단계 3 — 정의 확인: 벡터의 뺄셈과 차 벡터</summary>
+        <div class="bd">
+          <div class="vc-fml">a − b = (a₁ − b₁,  a₂ − b₂,  …,  aₙ − bₙ) = a + (−b)</div>
+          <p>좌표평면에서 두 위치벡터 OA, OB에 대하여 <b>AB = b − a</b>이고,
+            그 크기는 |AB| = √((b₁ − a₁)² + (b₂ − a₂)²)입니다.</p>
+          <p>두 벡터가 같으면 두 벡터의 종점 사이의 거리는 <b>0</b>입니다.</p>
+          <span class="vc-src">출처 — 천재교육 「인공지능 수학」 Ⅱ 단원 pp.66~67 ·
+            씨마스 Ⅱ 단원 pp.72~73 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>다음 차시로 이어집니다</strong><br>
+      다음 시간에 배울 <b>유클리드 유사도</b>의 정의는 놀랄 만큼 간단합니다 — <b>d(a, b) = |b − a|</b>.
+      오늘 만든 차 벡터의 <b>크기</b>를 재면 그것이 곧 두 글 사이의 거리입니다.
+      그 크기를 재는 방법은 <b>활동 ④</b>에서 만듭니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn" type="button" onclick="vcSee(3,'vc-act4')">활동 ④로 이동 →</button>
+      </span>
+    </div>
+  </div>
+
+
+  <!-- ── 탭 ③ 활동 ③ 실수배 ───────────────────────────────────────────── -->
+  <div class="tpanel" id="vc2">
+    <div class="card" id="vc-act3" data-no-toggle="1">
+      <h3>활동 ③ · 「늘이고 줄이기」 — 실수배와 평균 후기</h3>
+      <p><b>문제</b> 같은 후기를 실수로 두 번 붙여 올린 사람이 있습니다.
+        이 사람의 후기는 다른 사람 것보다 ‘더 중요한’ 후기가 될까요?
+        그리고 우리 반 30명의 후기를 대표하는 <b>‘평균 후기’</b>는 어떻게 구할까요?</p>
+      <p class="vc-hint">기준이 되는 감성 벡터는 <b>a = (3, 1, 2)</b> 입니다.
+        (긍정 단어 3개, 부정 단어 1개, 중립 단어 2개 — 감성 점수는 3 − 1 = 2로 ‘긍정’입니다.)</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — k를 움직이면 표와 화살표가 함께 움직입니다</h3>
+      <div class="vc-row">
+        <input class="vc-k" id="vc-a3-k" type="range" min="0.5" max="3" step="0.1" value="1"
+               aria-label="실수배 k 값" oninput="vcA3K(this.value)">
+        <span class="vc-kval" id="vc-a3-kv">k = 1.0</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="vcA3Set(2)">2배 복사</button>
+        <button class="btn" type="button" onclick="vcA3Set(0.5)">½로 줄이기</button>
+        <button class="btn" type="button" onclick="vcA3Set(1)">되돌리기(k = 1)</button>
+        <button class="btn" type="button" onclick="vcA3Trail()" id="vc-a3-trailbtn">자취 남기기 켜기</button>
+      </div>
+
+      <div class="vc-grid2">
+        <div class="vc-pane">
+          <h4>성분 표</h4>
+          <div class="vc-scroll">
+            <table class="vc-tbl" id="vc-a3-tbl">
+              <thead><tr><th></th><th>첫째</th><th>둘째</th><th>셋째</th><th>감성 점수</th><th>판정</th></tr></thead>
+              <tbody>
+                <tr><td class="lb">a</td><td>3</td><td>1</td><td>2</td><td>2</td>
+                    <td><span class="vc-badge p">긍정</span></td></tr>
+                <tr class="sum"><td class="lb" id="vc-a3-klb">1a</td>
+                    <td id="vc-a3-c0">3</td><td id="vc-a3-c1">1</td><td id="vc-a3-c2">2</td>
+                    <td id="vc-a3-sc">2</td><td id="vc-a3-vd"><span class="vc-badge p">긍정</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="vc-hint" style="margin-top:0.5rem;" id="vc-a3-note">
+            k를 키우면 성분도, 감성 점수도 k배가 됩니다. 그런데 <b>판정은 바뀌지 않습니다.</b></p>
+        </div>
+        <div class="vc-pane">
+          <h4>화살표 — 두 성분을 골라 좌표평면에 그립니다</h4>
+          <div class="vc-row">
+            <label>가로축
+              <select class="vc-sel" id="vc-a3-ax" onchange="vcA3Draw()">
+                <option value="0" selected>첫째 성분</option><option value="1">둘째 성분</option><option value="2">셋째 성분</option>
+              </select></label>
+            <label>세로축
+              <select class="vc-sel" id="vc-a3-ay" onchange="vcA3Draw()">
+                <option value="0">첫째 성분</option><option value="1" selected>둘째 성분</option><option value="2">셋째 성분</option>
+              </select></label>
+          </div>
+          <canvas class="vc-cv" id="vc-a3-cv" aria-label="원점에서 뻗은 화살표가 k배에 따라 방향선 위를 미끄러지는 그림" role="img"></canvas>
+          <p class="vc-hint">점선은 <b>원래 방향선</b>입니다. k를 아무리 키워도 화살표 끝은 이 선 위를 벗어나지 않습니다.</p>
+        </div>
+      </div>
+
+      <span class="vc-lab">평균 벡터 — 활동 ①의 합 벡터 (6, 6, 5)에 1/3을 곱해 봅시다</span>
+      <div class="vc-row">
+        <label>반올림
+          <select class="vc-sel" id="vc-a3-rd" onchange="vcA3Mean()">
+            <option value="2" selected>소수 둘째 자리</option><option value="1">소수 첫째 자리</option><option value="0">정수</option>
+          </select></label>
+        <button class="btn pri" type="button" onclick="vcA3Mean()">평균 벡터 구하기</button>
+      </div>
+      <div class="vc-fb" id="vc-a3-meanfb"></div>
+      <span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 실수배 서술을 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="vc-lockmsg" id="vc-a3-lock">먼저 <b>k 슬라이더</b>를 움직여 보세요. 그 뒤에 열립니다.</p>
+      <details class="vc-fold vc-locked" data-need="a3">
+        <summary>단계 1 — 관찰: 무엇이 바뀌고 무엇이 그대로인가</summary>
+        <div class="bd">
+          <p>k를 키우면 모든 성분이 함께 커지고 화살표가 길어집니다.
+            그런데 화살표가 <b>가리키는 방향은 조금도 바뀌지 않습니다.</b></p>
+          <p>감성 점수는 k배가 되지만 <b>부호가 그대로여서 판정도 바뀌지 않습니다.</b></p>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a3">
+        <summary>단계 2 — 정리: 실수배는 ‘분량’만 바꿉니다</summary>
+        <div class="bd">
+          <p>실수배는 글의 <b>경향</b>은 그대로 두고 <b>분량</b>만 바꾸는 연산입니다.
+            그래서 같은 이야기를 길게 쓴 글과 짧게 쓴 글은 <b>방향이 같고 크기만 다른</b> 두 벡터가 됩니다.</p>
+          <p>이 사실은 다음 차시에서 결정적인 문제가 됩니다 —
+            <b>거리로 재면 두 글이 멀어 보이지만, 방향으로 재면 완전히 같은 글입니다.</b></p>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a3">
+        <summary>단계 3 — 정의 확인: 벡터의 실수배</summary>
+        <div class="bd">
+          <p>실수 k와 벡터 a = (a₁, …, aₙ)에 대하여 모든 성분에 k를 곱한 벡터를 a의 <b>실수배</b>라 하고
+            다음과 같이 나타냅니다.</p>
+          <div class="vc-fml">k a = (k a₁,  k a₂,  …,  k aₙ)　(단, k는 실수)</div>
+          <p>특히 1a = a, (−1)a = −a입니다. 여러 벡터의 합에 1/n을 곱한 것을 <b>평균 벡터</b>라고 부를 수 있습니다.</p>
+          <span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 서술을 재구성</span>
+        </div>
+      </details>
+      <details class="vc-fold" data-need="">
+        <summary>더 알아보기 — 벡터의 합에 대한 성질</summary>
+        <div class="bd">
+          <p>차원이 같은 세 벡터 a, b, c에 대하여 다음이 성립합니다.</p>
+          <div class="vc-fml">㉠ a + b = b + a
+㉡ (a + b) + c = a + (b + c)
+㉢ 1a = a,  (−1)a = −a
+㉣ a + (−a) = 0　(모든 성분이 0인 벡터를 영벡터 0이라고 합니다)
+㉤ a − b = a + (−b)</div>
+          <p>실수의 계산과 똑같이 다루면 됩니다.</p>
+          <span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 「지식 Plus」 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>오개념 주의 — “성분이 3배면 판정도 3배로 긍정적이다”</h3>
+      <div class="vc-ban warn">
+        ⚠️ 이런 오해가 흔합니다. 감성 점수는 3배가 되지만, <b>판정을 정하는 것은 점수의 부호</b>입니다.
+        같은 글을 세 번 붙여 올려도 그 사람의 의견이 세 배가 되는 것은 아닙니다.<br>
+        그래서 실제 분석에서는 후기의 <b>길이를 맞추거나 크기를 1로 고치는</b> 처리를 합니다 —
+        11차시의 L2 정규화가 바로 그 처리입니다.
+        <span style="display:block;margin-top:0.5rem;">
+          <button class="btn" type="button" onclick="go('sim')">11차시 유사도 미리 보기 →</button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ④ 활동 ④ 위치벡터와 크기 ───────────────────────────────────── -->
+  <div class="tpanel" id="vc3">
+    <div class="card" id="vc-act4" data-no-toggle="1">
+      <h3>활동 ④ · 「문장의 크기를 재다」 — 위치벡터와 |a|</h3>
+      <p><b>문제</b> “이 글은 길다”를 <b>수 하나로</b> 나타낼 수 있을까요?
+        문장을 좌표평면 위의 화살표로 그려 놓고 그 길이를 재 봅시다.</p>
+      <figure class="vc-fig" id="vc-a4-fig">
+        <img src="assets/textbook-local/vecop_씨마스_p72_위치벡터.png" alt="씨마스 Ⅱ 단원 p.72 위치벡터 지면 (수업용)"
+             loading="lazy" onload="this.closest('figure').classList.add('hasfoto');"
+             onerror="this.removeAttribute('src');">
+        <div class="vc-svgbox" id="vc-a4-svg">
+          <svg viewBox="0 0 360 220" role="img" aria-label="원점 O에서 점 A까지의 화살표와 두 성분이 이루는 직각삼각형">
+            <rect width="360" height="220" fill="var(--bg)"/>
+            <g stroke="var(--border)" stroke-width="1">
+              <path d="M40 190 H340"/><path d="M40 190 V20"/>
+            </g>
+            <path d="M40 190 L250 70" stroke="var(--fg)" stroke-width="3" stroke-linecap="round"/>
+            <path d="M250 70 l-15 1 l7 12 z" fill="var(--fg)"/>
+            <g stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="5 4">
+              <path d="M250 70 V190"/><path d="M250 70 H40"/>
+            </g>
+            <path d="M234 190 v-16 h16" fill="none" stroke="var(--muted)" stroke-width="1.4"/>
+            <circle cx="40" cy="190" r="4" fill="var(--fg)"/>
+            <circle cx="250" cy="70" r="5" fill="var(--accent)" stroke="var(--fg)" stroke-width="1.6"/>
+            <g font-family="monospace" font-size="13" fill="var(--fg)">
+              <text x="26" y="205">O</text>
+              <text x="258" y="64">A(a₁, a₂)</text>
+              <text x="132" y="207">a₁</text>
+              <text x="258" y="136">a₂</text>
+              <text x="120" y="118">|a|</text>
+            </g>
+            <text x="200" y="212" font-family="monospace" font-size="12" fill="var(--muted)">|a| = √(a₁² + a₂²)</text>
+          </svg>
+        </div>
+        <figcaption>원점 O에서 종점 A까지의 거리가 벡터의 크기 |a|입니다.
+          씨마스 「인공지능 수학」 Ⅱ 단원 p.72 도해를 재구성 (지면 캡처가 있으면 수업용으로 우선 표시됩니다)</figcaption>
+      </figure>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 화살표를 그리고, 길이를 계산합니다</h3>
+      <div class="vc-grid2">
+        <div class="vc-pane">
+          <h4>성분 고치기 — a = (a₁, a₂, a₃)</h4>
+          <div class="vc-row" id="vc-a4-comp"></div>
+          <div class="btn-row">
+            <button class="btn" type="button" onclick="vcA4Preset('base')">기준 a = (3, 1, 2)</button>
+            <button class="btn" type="button" onclick="vcA4Preset('double')">2배 복사 → 2a</button>
+            <button class="btn" type="button" onclick="vcA4Preset('zero')">성분 하나를 0으로</button>
+          </div>
+          <div class="vc-row">
+            <label>가로축
+              <select class="vc-sel" id="vc-a4-ax" onchange="vcA4Draw()">
+                <option value="0" selected>첫째 성분</option><option value="1">둘째 성분</option><option value="2">셋째 성분</option>
+              </select></label>
+            <label>세로축
+              <select class="vc-sel" id="vc-a4-ay" onchange="vcA4Draw()">
+                <option value="0">첫째 성분</option><option value="1" selected>둘째 성분</option><option value="2">셋째 성분</option>
+              </select></label>
+          </div>
+          <p class="vc-hint">성분이 세 개 이상이면 그림으로 다 그릴 수 없으므로,
+            축 두 개를 골라 <b>2차원으로 투영해서</b> 봅니다.</p>
+        </div>
+        <div class="vc-pane">
+          <h4>위치벡터 캔버스</h4>
+          <canvas class="vc-cv" id="vc-a4-cv" aria-label="원점에서 종점까지의 위치벡터 화살표" role="img"></canvas>
+          <p class="vc-fml" id="vc-a4-cur">a = (3, 1, 2) 　|a| = √14 ≈ 3.74</p>
+        </div>
+      </div>
+
+      <span class="vc-lab">|a| 계산 3단 — 제곱 → 합 → 근호 순서로 채워 봅시다</span>
+      <div class="vc-steps" id="vc-a4-steps"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="vcA4Check()">채점</button>
+        <button class="btn" type="button" onclick="vcA4Show()" id="vc-a4-showbtn" disabled>계산 과정 보기</button>
+      </div>
+      <div class="vc-fb" id="vc-a4-fb"></div>
+
+      <span class="vc-lab">크기 비교표 — 값이 바뀔 때마다 한 줄씩 쌓입니다</span>
+      <div class="vc-scroll">
+        <table class="vc-tbl" id="vc-a4-log">
+          <thead><tr><th>벡터</th><th>제곱의 합</th><th>크기 |a|</th><th>근삿값</th></tr></thead>
+          <tbody id="vc-a4-logbody"></tbody>
+        </table>
+      </div>
+      <div class="vc-fb" id="vc-a4-logfb"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="vcA4Diff()">활동 ②의 차 벡터 크기 재기</button>
+        <button class="btn" type="button" onclick="vcA4LogClear()">표 비우기</button>
+      </div>
+      <span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 ·
+        천재교육 Ⅱ 단원 pp.66~67 서술을 재구성</span>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 토글 — 관찰 · 정리 · 정의 확인</h3>
+      <p class="vc-lockmsg" id="vc-a4-lock">먼저 <b>|a| 계산 3단</b>을 채워 채점해 보세요. 그 뒤에 열립니다.</p>
+      <details class="vc-fold vc-locked" data-need="a4">
+        <summary>단계 1 — 관찰: 크기는 무엇을 반영하나</summary>
+        <div class="bd">
+          <p>성분이 커지면 크기도 커집니다. 성분에 0이 많으면 크기가 작습니다.
+            같은 글을 두 번 붙이면 크기가 정확히 2배가 됩니다. 즉 <b>크기는 글의 ‘분량’을 담고 있습니다.</b></p>
+          <p>반대로 크기만 보고서는 그 글이 긍정인지 부정인지 알 수 없습니다 —
+            <b>방향 정보는 크기에 담기지 않습니다.</b></p>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a4">
+        <summary>단계 2 — 정리: 위치벡터와 크기를 왜 만드나</summary>
+        <div class="bd">
+          <p>문장을 벡터로 바꾸면 문장 하나가 <b>공간 위의 점 하나</b>가 됩니다.
+            그때부터 우리는 수학이 이미 가지고 있는 두 개의 자를 쓸 수 있습니다.</p>
+          <p>① <b>점과 점 사이의 거리</b> — 오늘 만든 차 벡터의 크기　② <b>화살표가 이루는 각</b> — 다음 시간.
+            오늘 만든 것은 그 두 자의 부품입니다.</p>
+        </div>
+      </details>
+      <details class="vc-fold vc-locked" data-need="a4">
+        <summary>단계 3 — 정의 확인: 위치벡터와 벡터의 크기</summary>
+        <div class="bd">
+          <p>벡터를 좌표평면 위의 고정된 한 점 O를 <b>시점</b>으로 하는 화살표로 나타내고
+            그 <b>종점의 좌표</b>로 표현한 것을 <b>위치벡터</b>라고 합니다.</p>
+          <p>시점과 종점 사이의 거리를 그 벡터의 <b>크기</b>라 하고 기호로 |a|와 같이 씁니다.</p>
+          <div class="vc-fml">|a| = √(a₁² + a₂² + … + aₙ²)</div>
+          <p><b>두 벡터가 같으면 두 벡터의 종점 사이의 거리는 0입니다.</b></p>
+          <span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 ·
+            천재교육 Ⅱ 단원 pp.66~67 서술을 재구성</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>확인 문제 — 손으로 한 번 더</h3>
+      <span class="vc-lab">문제 1. a = (3, 1, 2)일 때 |a|를 구하시오.</span>
+      <div class="vc-row" id="vc-a4-q1"></div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="vcA4Q1()">채점</button></div>
+      <div class="vc-fb" id="vc-a4-q1fb"></div>
+
+      <span class="vc-lab">문제 2. a = (3, 0, 3, 2, 1), b = (1, 1, 0, 1, 2)에 대하여
+        (1) a − b (2) 두 벡터의 종점 사이의 거리를 구하시오.</span>
+      <div class="vc-row" id="vc-a4-q2"></div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="vcA4Q2()">채점</button></div>
+      <div class="vc-fb" id="vc-a4-q2fb"></div>
+      <span class="vc-src">출처 — 천재교육 「인공지능 수학」 Ⅱ 단원 p.66 보기 ·
+        p.67 확인하기 3 문항을 재구성</span>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>다음 차시로 이어집니다</strong><br>
+      방금 구한 <b>4</b>가 다음 시간 첫 화면에 나옵니다.
+      다음 차시의 제목은 「얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까」입니다.
+      오늘 만든 차 벡터의 크기가 <b>‘거리 자’</b>이고, 아직 만들지 않은 <b>‘방향 자’</b>가 하나 더 있습니다.
+      <span style="display:block;margin-top:0.6rem;">
+        <button class="btn pri" type="button" onclick="go('sim')">11차시로 이동 →</button>
+      </span>
+    </div>
+  </div>
+
+
+  <!-- ═════ STEP 3 · 정리 (7분) ═════ -->
+  <div class="vc-step"><p class="mono">STEP 3 · 정리</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄 — 네 부품을 손에 들었습니다</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        벡터의 <b>덧셈·뺄셈</b>은 <b>성분끼리</b> 계산하며 차원이 같아야 합니다 —
+        합은 <b>전체 여론</b>을, 차는 <b>두 글의 다른 점 목록</b>을 줍니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
+        <b>실수배</b> k a = (k a₁, …, k aₙ)는 방향은 그대로 두고 <b>분량만</b> 바꿉니다 —
+        같은 글을 두 번 붙이면 2a입니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        <b>벡터의 크기</b> |a| = √(a₁² + … + aₙ²)는 원점에서 종점까지의 거리이고,
+        <b>차 벡터의 크기가 두 글 사이의 거리</b>입니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>핵심 질문 1. 문장 두 개를 ‘합한다’는 것은 무슨 뜻일까?</b></p>
+    <textarea class="vc-ta" id="vc-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="vc-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>문장을 <b>같은 단어집합 기준의 벡터</b>로 바꾸면, 두 문장을 합하는 일은
+          <b>각 단어의 개수를 자리마다 더하는 일</b>이 됩니다.
+          그래서 후기 100건의 분위기도 벡터 하나로 요약할 수 있습니다.</p>
+      </div>
+    </details>
+
+    <p style="margin-top:1rem;"><b>핵심 질문 2. 문장의 ‘크기’란 무엇일까?</b></p>
+    <textarea class="vc-ta" id="vc-ans2" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="vc-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>문장의 크기는 <b>원점에서 그 문장이 놓인 점까지의 거리</b>이며,
+          <b>글의 분량</b>(길이와 반복)을 담고 있습니다.</p>
+        <p>방향은 담기지 않습니다 — 그래서 다음 시간에 자가 하나 더 필요합니다.</p>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="vcAnsSave()">내 답 저장</button></div>
+    <p class="status" id="vc-ans-st">저장한 답은 이 기기에만 남고, [학습지 인쇄]에도 함께 실립니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="vc-quiz"></div>
+    <details class="vc-fold" style="margin-top:0.9rem;">
+      <summary>서술형 추가 문항 — 채점 기준까지 함께 보기</summary>
+      <div class="bd">
+        <p><b>문항.</b> 어떤 후기의 감성 벡터가 (2, 5, 3)입니다. 이 후기를 <b>그대로 3번</b> 이어 붙인 글의
+          감성 벡터와 감성 점수를 구하고, 판정이 바뀌는지 쓰시오.</p>
+        <textarea class="vc-ta" id="vc-q5" placeholder="3a = ( , , ), 감성 점수 = , 판정은 …"></textarea>
+        <div class="btn-row"><button class="btn" type="button" onclick="vcQ5()">모범 답안·채점 기준 보기</button></div>
+        <div class="vc-fb" id="vc-q5fb"></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 11차시 「얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까」</strong><br>
+    오늘 우리는 차 벡터의 크기가 두 글 사이의 거리라는 것을 확인했습니다(확인 문제 2의 답 <b>4</b>).
+    다음 시간에는 이 거리 자로 재는 <b>유클리드 유사도</b>와, 크기를 무시하고 방향만 보는 <b>코사인 유사도</b>를 나란히 놓습니다.
+    코사인 유사도의 분모에 있는 <b>“크기의 곱” |a| · |b|</b> 가 바로 오늘 만든 크기입니다.
+    그리고 두 자가 서로 <b>다른 답</b>을 내놓는 순간을 직접 만들어 봅니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('sim')">11차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('tfidf')">돌아보기 · 9차시 TF-IDF</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「내 한 주를 벡터로」 — 합 · 평균 · 크기</h3>
+    <p class="sub">오늘 만든 네 가지 연산을 내가 실제로 쓴 글에 그대로 얹어 봅니다.
+      계산의 정확성과 함께 <b>각 연산의 결과가 텍스트에서 무엇을 뜻하는지 자기 말로 설명</b>하는 것이 이 과제의 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 최근 일주일 동안 내가 쓴 글(또는 즐겨 보는 채널의 댓글) <b>5건</b>을 고릅니다.
+        개인을 특정할 수 있는 이름·별명은 지우고 옮깁니다.<br>
+        ② 각 글의 감성 벡터 <b>(긍정 단어 수, 부정 단어 수, 중립 단어 수)</b>를 구해 표로 만듭니다.<br>
+        ③ 5건의 <b>합 벡터</b>와 <b>평균 벡터</b>(합에 1/5을 곱한 것)를 구합니다.<br>
+        ④ 각 글의 <b>크기 |a|</b>를 소수 둘째 자리까지 구해 표에 덧붙입니다.<br>
+        ⑤ 성분이 많아 손 계산이 번거로우면 아래 <b>참고 자료의 공학 도구</b>(지오지브라·알지오매스·스프레드시트)를 쓸 수 있습니다.</dd>
+      <dt>제출물</dt>
+      <dd>· 표 1장(5행 + 합 행 + 평균 행, 크기 |a| 열 포함)<br>
+        · <b>“크기가 가장 큰 글은 왜 컸는가, 그리고 크기가 큰 글이 더 중요한 글인가”</b> 를 <b>한 문단(4~6문장)</b></dd>
+      <dt>평가 관점</dt>
+      <dd>· 벡터의 덧셈·실수배·크기를 정확히 계산했는가 <b>[12인수02-01]</b><br>
+        · 각 연산의 결과가 텍스트에서 무엇을 뜻하는지 <b>자기 말로 설명</b>했는가 <b>[12인수02-01]</b><br>
+        · 크기가 ‘분량’을 담을 뿐 ‘중요도’를 담지는 않는다는 점을 근거를 들어 판단했는가</dd>
+    </dl>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 계산을 확인하고, 화살표를 직접 그려 보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="vc-refs">
+      <a class="vc-ref" href="https://www.geogebra.org/calculator" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">계산 도구</span>🧮</span>
+        <span class="bd"><span class="tt">지오지브라 계산기</span>
+          <span class="ds">성분이 많은 벡터의 합·실수배·크기를 빠르게 확인할 수 있습니다. 프로젝트 과제 ③·④에 쓰세요.</span></span>
+      </a>
+      <a class="vc-ref" href="https://www.algeomath.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">계산 도구</span>📐</span>
+        <span class="bd"><span class="tt">알지오매스</span>
+          <span class="ds">국내에서 개발한 수학 공학 도구입니다. 좌표평면에 위치벡터를 그려 크기를 눈으로 확인할 때 좋습니다.</span></span>
+      </a>
+      <a class="vc-ref" href="https://www.desmos.com/calculator" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">계산 도구</span>📈</span>
+        <span class="bd"><span class="tt">데스모스 그래프 계산기 <b>[선택]</b></span>
+          <span class="ds">두 점과 원점을 찍어 화살표와 거리를 그려 볼 수 있습니다. 활동 ④의 그림을 그대로 재현해 보세요.</span></span>
+      </a>
+      <a class="vc-ref" href="https://colab.research.google.com" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">코드</span>🐍</span>
+        <span class="bd"><span class="tt">구글 코랩</span>
+          <span class="ds">설치 없이 브라우저에서 파이썬을 실행합니다. 아래 가이드 카드의 다섯 줄로 |a|를 계산해 손계산과 맞춰 봅니다.</span></span>
+      </a>
+      <a class="vc-ref" href="https://www.ebssw.kr" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">사이트</span>🏫</span>
+        <span class="bd"><span class="tt">EBS 이솦(EBS SW·AI)</span>
+          <span class="ds">인공지능 수학 관련 강좌와 실습 자료를 찾을 수 있습니다. 벡터 표현 단원의 보충 학습에 쓰세요.</span></span>
+      </a>
+    </div>
+
+    <span class="vc-lab">공학 도구 실습 가이드 — 오늘 계산을 도구로 한 번 더 확인합니다</span>
+    <div class="vc-tools">
+      <div class="vc-tool">
+        <h4>📐 알지오매스 — 위치벡터 그리기</h4>
+        <ol>
+          <li>algeomath.kr 접속 → [알지오매스 시작하기] → <b>2D 저작</b>을 엽니다.</li>
+          <li>입력창에 <code>A=(3,1)</code> 을 입력해 점을 찍습니다.</li>
+          <li>다시 <code>Segment((0,0),A)</code> 를 입력하면 원점에서 A까지 선분이 그려집니다.</li>
+          <li>선분의 길이 √10 ≈ 3.16 이 표시됩니다 — 활동 ④ 캔버스에 그려진
+            <b>2차원 투영 화살표</b>의 길이와 같은 값입니다.</li>
+          <li>A의 좌표를 마우스로 끌어 옮기며 길이가 어떻게 변하는지 관찰합니다.</li>
+        </ol>
+        <a href="https://www.algeomath.kr" target="_blank" rel="noopener">https://www.algeomath.kr ↗</a>
+      </div>
+      <div class="vc-tool">
+        <h4>🧮 지오지브라 — 합 · 실수배 확인</h4>
+        <ol>
+          <li>geogebra.org/calculator 접속(로그인 없이 사용 가능).</li>
+          <li><code>u=Vector((3,1))</code>, <code>v=Vector((2,2))</code> 를 차례로 입력합니다.</li>
+          <li><code>w=u+v</code> 를 입력하면 (5, 3)이 계산되고 화살표도 함께 그려집니다.</li>
+          <li><code>z=2u</code> 를 입력해 실수배가 <b>방향은 그대로, 길이만 2배</b>가 되는 것을 확인합니다.</li>
+          <li><code>Length(u)</code> 로 크기를 구해 손계산과 맞춰 봅니다(√10 ≈ 3.16).</li>
+        </ol>
+        <a href="https://www.geogebra.org/calculator" target="_blank" rel="noopener">https://www.geogebra.org/calculator ↗</a>
+      </div>
+      <div class="vc-tool">
+        <h4>📊 스프레드시트 — 후기 5건 합·평균·크기</h4>
+        <ol>
+          <li>B2:D6 에 후기 5건의 감성 벡터를 입력합니다(행 = 후기, 열 = 성분).</li>
+          <li>합 행에 <code>=SUM(B2:B6)</code> 을 넣고 오른쪽으로 끕니다 → <b>합 벡터</b>.</li>
+          <li>평균 행에 <code>=AVERAGE(B2:B6)</code> → <b>평균 벡터</b>(합에 1/5을 곱한 것과 같습니다).</li>
+          <li>크기 열에 <code>=SQRT(B2^2+C2^2+D2^2)</code> 를 넣고 아래로 끕니다 → <b>|a|</b>.</li>
+          <li><code>=ROUND(…,2)</code> 로 소수 둘째 자리까지 반올림해 표를 완성합니다.</li>
+        </ol>
+        <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener">https://docs.google.com/spreadsheets/ ↗</a>
+      </div>
+      <div class="vc-tool">
+        <h4>🐍 구글 코랩 — 다섯 줄로 확인하기</h4>
+        <ol>
+          <li>colab.research.google.com 접속 → [새 노트] 를 만듭니다.</li>
+          <li>첫 칸에 <code>import numpy as np</code> 를 입력합니다.</li>
+          <li><code>a=np.array([3,1,2]); b=np.array([1,1,2])</code></li>
+          <li><code>print(a+b, a-b, 2*a)</code> → 합·차·실수배가 한 번에 나옵니다.</li>
+          <li><code>print(np.linalg.norm(a))</code> → 3.7416… 즉 √14 입니다. 손계산과 맞춰 보세요.</li>
+        </ol>
+        <a href="https://colab.research.google.com" target="_blank" rel="noopener">https://colab.research.google.com ↗</a>
+      </div>
+    </div>
+    <p class="vc-hint" style="margin-top:0.8rem;">
+      교육과정의 「적용 시 고려 사항」은 계산이 번거로울 때 <b>공학 도구를 이용할 수 있다</b>고 밝히고 있습니다.
+      도구는 <b>손계산을 확인하는 용도</b>로 쓰고, 결과의 뜻을 설명하는 일은 사람이 합니다.</p>
+    <p class="status" id="vc-ref-st"></p>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>10차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>오늘 웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.
+      아래 [학습지 인쇄]는 웹 활동과 <b>1:1로 대응</b>하는 지면입니다(A4 2~3쪽, 인쇄 설정에 따라 달라집니다).</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('vc-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2~3장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/text/텍스트_활동1-3_벡터와빈도수벡터.pdf"
+         download="텍스트_활동1-3_벡터와빈도수벡터.pdf">📄 벡터와 빈도수 벡터 (PDF) <span class="sz">PDF · 약 177 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/text/텍스트_활동1-3_벡터와빈도수벡터.hwpx"
+         download="텍스트_활동1-3_벡터와빈도수벡터.hwpx">📄 벡터와 빈도수 벡터 (HWPX) <span class="sz">HWPX · 약 198 KB</span></a>
+    </div>
+    <p class="vc-hint" style="margin-top:0.6rem;">
+      <b>벡터와 빈도수 벡터</b> 는 <b>8차시와 함께 쓰는 활동지</b>입니다. 앞면(벡터·성분·차원·상등)이
+      오늘 활동 ①·②의 <b>선수 학습 점검용</b>으로 딱 맞습니다. 오늘 새로 배운 연산(합·차·실수배·크기)은
+      위 [학습지 인쇄] 지면에 있습니다.<br>
+      「활동 2(유사도분석)」 활동지는 <b>11차시</b> 소관이므로 여기에 두지 않았습니다.
+      파일이 열리지 않으면 아직 학교 서버에 복사되지 않은 것입니다 — 선생님께 알려 주세요.</p>
+    <div id="vc-wslinks"></div>
+  </div>
+
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2~3장 · 8개 절) ═════ -->
+  <div class="ws-sheet" id="vc-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>10차시 학습지 — 문장을 더하고, 늘이고, 재기: 벡터의 연산과 크기</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">학습 목표 ① 같은 차원의 두 벡터의 덧셈·뺄셈과 벡터의 실수배를 성분끼리 계산하고,
+      그 결과가 텍스트 데이터에서 무엇을 뜻하는지 설명할 수 있다. [12인수02-01]<br>
+      학습 목표 ② 텍스트 데이터를 위치벡터로 나타내고 벡터의 크기 |a|를 구하여, 글의 길이와 반복이
+      벡터의 크기에 어떻게 반영되는지 설명할 수 있다. [12인수02-01] · [12인수02-03] 연계</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:56%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>A(3, 0, 2)와 B(2, 2, 2)를 이어 붙이면 감성 벡터는?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>벡터 (1, 2)와 벡터 (1, 2, 3)은 더할 수 있는가? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>같은 문장을 두 번 이어 붙이면 빈도수 벡터는 어떻게 되는가?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 ① — 감성 벡터와 합 벡터</h3>
+    <p class="note">후기 A 새로 나온 빵이 달고 맛있어요. 정말 좋네요. 다음에 또 주문할게요. /
+      후기 B 크기가 작아 실망했는데 신선하고 당도가 높네요. /
+      후기 C 상한 것이 많고 배송이 늦어서 별로예요. 실망!</p>
+    <table>
+      <tr><th style="width:14%;">후기</th><th>긍정 단어 수</th><th>부정 단어 수</th><th>중립 단어 수</th>
+        <th>감성 점수</th><th>판정</th></tr>
+      <tr><td>A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>A + B + C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">성분별 덧셈 식을 그대로 써 봅시다.</p>
+    <div class="rule sm"></div>
+
+    <h3>③ 활동 ② — 차 벡터 a − b</h3>
+    <table>
+      <tr><th style="width:20%;">단어집합</th><th>인공지능</th><th>데이터</th><th>학교</th><th>수업</th><th>미래</th></tr>
+      <tr><td>기사 a</td><td>10</td><td>5</td><td>1</td><td>1</td><td>5</td></tr>
+      <tr><td>기사 b</td><td>3</td><td>2</td><td>1</td><td>4</td><td>2</td></tr>
+      <tr><td>a − b</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">부호 막대를 손으로 그려 봅시다(가운데 세로선이 0, 오른쪽이 양수, 왼쪽이 음수). 절댓값이 큰 성분 3개에 ★, 0인 성분에 ○.</p>
+    <div class="rule"></div>
+    <p class="note">두 벡터가 같아지려면 기사 b의 수를 어떻게 고쳐야 할까요? 그때 두 종점 사이의 거리는 얼마인가요?</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 활동 ③ — 실수배 k a　(a = (3, 1, 2))</h3>
+    <table>
+      <tr><th style="width:16%;">k</th><th>첫째 성분</th><th>둘째 성분</th><th>셋째 성분</th><th>감성 점수</th><th>판정</th></tr>
+      <tr><td>0.5</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">평균 벡터 — 합 벡터 (6, 6, 5)에 1/3을 곱하면? (소수 둘째 자리까지)</p>
+    <div class="rule sm"></div>
+    <p class="note">k를 키우면 무엇이 바뀌고 무엇이 그대로인가요?</p>
+    <div class="rule sm"></div>
+
+    <h3>⑤ 활동 ④ — 위치벡터와 크기 |a|</h3>
+    <p class="note">아래 좌표평면에 원점 O를 시점으로 하는 위치벡터 OA를 그리고, 종점에 A(a₁, a₂)를 적으세요.
+      (a = (3, 1, 2)에서 첫째·둘째 성분을 축으로 고른 그림)</p>
+    <table>
+      <tr>
+        <td class="blank" style="height:46mm;"></td>
+      </tr>
+    </table>
+    <p class="note">|a| 계산 3단 — 제곱 → 합 → 근호</p>
+    <table>
+      <tr><th style="width:22%;">단계</th><th>계산</th><th style="width:26%;">값</th></tr>
+      <tr><td>① 각 성분의 제곱</td><td class="blank">3² = 　　　,　1² = 　　　,　2² = 　　　</td><td class="blank"></td></tr>
+      <tr><td>② 제곱의 합</td><td class="blank">　　　 + 　　　 + 　　　 =</td><td class="blank"></td></tr>
+      <tr><td>③ 근호 씌우기</td><td class="blank">|a| = √(　　　) =</td><td class="blank"></td></tr>
+      <tr><td>④ 2배 복사 2a</td><td class="blank">2a = (　　,　　,　　), |2a| = √(　　) =</td><td class="blank"></td></tr>
+    </table>
+    <p class="note">확인 문제 1. a = (3, 1, 2)일 때 |a|는?　/　확인 문제 2. a = (3, 0, 3, 2, 1), b = (1, 1, 0, 1, 2)일 때
+      (1) a − b (2) 두 벡터의 종점 사이의 거리는?</p>
+    <div class="rule lg"></div>
+
+    <h3>⑥ 형성평가 (5문항)</h3>
+    <table>
+      <tr><th style="width:8%;">번호</th><th>문항</th><th style="width:16%;">내 답</th></tr>
+      <tr><td>1</td><td>P = (2, 1, 4, 0), Q = (0, 1, −2, 3)일 때 P + Q 는?</td><td class="blank"></td></tr>
+      <tr><td>2</td><td>P = (1, 4, −3), Q = (−3, 1, 0), R = (5, −3, 2)일 때 P + Q + R 은?</td><td class="blank"></td></tr>
+      <tr><td>3</td><td>a = (3, 1, 2)일 때 |a|의 값은?</td><td class="blank"></td></tr>
+      <tr><td>4</td><td>a = (3, 0, 3, 2, 1), b = (1, 1, 0, 1, 2)의 종점 사이의 거리는?</td><td class="blank"></td></tr>
+      <tr><td>5</td><td>감성 벡터 (2, 5, 3)인 후기를 그대로 3번 이어 붙이면? 판정은 바뀌는가?</td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑦ 핵심 질문에 답하기</h3>
+    <p class="note">문장 두 개를 ‘합한다’는 것은 무슨 뜻일까? 그리고 문장의 ‘크기’란 무엇일까?</p>
+    <div class="rule" id="vc-sheet-ans"></div>
+
+    <h3>⑧ 프로젝트 과제 — 「내 한 주를 벡터로」</h3>
+    <table>
+      <tr><th style="width:26%;">글</th><th>긍정</th><th>부정</th><th>중립</th><th>감성 점수</th><th>크기 |a|</th></tr>
+      <tr><td class="blank">①</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">②</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">③</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">④</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">⑤</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>합 벡터</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>평균 벡터</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">크기가 가장 큰 글은 왜 컸는가, 그리고 크기가 큰 글이 더 중요한 글인가? (4~6문장)</p>
+    <div class="rule lg"></div>
+  </div>
+</div>

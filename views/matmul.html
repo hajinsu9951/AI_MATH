@@ -1,0 +1,1134 @@
+<!-- ═══════════ MATMUL (17차시: 행렬의 곱셈 — 이미지를 옮기고 뒤집다) ═══════════ -->
+<div class="view" id="v-matmul">
+  <style>
+  /* matmul 뷰 전용 스타일 (#v-matmul 스코프 한정 — 전역 누수 금지) */
+  #v-matmul .mm-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-matmul .mm-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-matmul .mm-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-matmul .mm-hero{position:relative;}
+  #v-matmul .mm-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.10;pointer-events:none;}
+  #v-matmul .mm-hero>*{position:relative;}
+  #v-matmul .mm-ask{border-left:4px solid var(--accent);}
+  #v-matmul .mm-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-matmul .mm-ask li{position:relative;padding-left:1.5rem;margin-bottom:0.55rem;font-weight:500;color:var(--fg);}
+  #v-matmul .mm-ask li::before{content:'?';position:absolute;left:0;top:0;font-family:var(--mono);font-weight:700;color:var(--accent);}
+
+  /* 조작 요소 확대(spec §15) */
+  #v-matmul .chips .chip{font-size:0.95rem;padding:0.42rem 0.95rem;}
+  #v-matmul .mm-keys .chip{font-size:1.15rem;font-weight:600;padding:0.65rem 1.25rem;}
+  #v-matmul .mm-lab{font-family:var(--mono);font-size:0.85rem;letter-spacing:0.06em;color:var(--muted);margin:0.9rem 0 0.4rem;}
+
+  /* 정오답 피드백 (spec §15) */
+  #v-matmul .mm-fb{font-family:var(--sans);font-size:1.05rem;font-weight:700;line-height:1.7;
+    border-radius:0.6rem;padding:0.65rem 0.9rem;margin-top:0.7rem;border:1px solid var(--border);background:var(--bg);}
+  #v-matmul .mm-fb:empty{display:none;}
+  #v-matmul .mm-fb.ok{color:var(--green);border-color:var(--green);background:rgba(90,122,90,0.10);}
+  #v-matmul .mm-fb.no{color:var(--red);border-color:var(--red);background:rgba(180,65,51,0.10);}
+  #v-matmul .mm-fb .x{display:block;font-weight:400;font-size:0.97rem;color:var(--body);margin-top:0.4rem;}
+
+  /* 출처 · 배지 · 안내 */
+  #v-matmul .mm-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.8rem;line-height:1.75;}
+  #v-matmul .mm-bd{display:inline-block;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.04em;
+    padding:0.16rem 0.55rem;border-radius:9999px;background:var(--fg);color:var(--bg);margin-right:0.4rem;vertical-align:middle;}
+  #v-matmul .mm-bd.warn{background:var(--red);}
+  #v-matmul .mm-bd.soft{background:var(--card-h);color:var(--fg);border:1px solid var(--border);}
+  #v-matmul .mm-note{background:var(--card-h);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0.7rem 0.9rem;font-size:0.97rem;color:var(--body);line-height:1.8;margin:0.8rem 0;}
+
+  /* 행렬 표기 (.mat) */
+  #v-matmul .mat{display:inline-block;position:relative;padding:0.2rem 0.8rem;vertical-align:middle;margin:0.2rem 0.3rem;}
+  #v-matmul .mat::before,#v-matmul .mat::after{content:'';position:absolute;top:0;bottom:0;width:0.42rem;border:2px solid var(--fg);}
+  #v-matmul .mat::before{left:0;border-right:none;}
+  #v-matmul .mat::after{right:0;border-left:none;}
+  #v-matmul .mat table{border-collapse:collapse;}
+  #v-matmul .mat td{font-family:var(--mono);font-size:0.95rem;padding:0.1rem 0.42rem;text-align:center;min-width:1.6rem;color:var(--fg);}
+  #v-matmul .mat td.rhi{background:rgba(74,107,138,0.22);}
+  #v-matmul .mat td.chi{background:rgba(180,65,51,0.18);}
+  #v-matmul .mat td.both{background:rgba(90,122,90,0.30);font-weight:700;}
+  #v-matmul .mm-scroll{overflow-x:auto;max-width:100%;}
+
+  /* 격자 */
+  #v-matmul .mm-gwrap{display:flex;flex-wrap:wrap;gap:1.2rem;align-items:flex-start;margin:0.9rem 0;}
+  #v-matmul .mm-gcol{min-width:0;}
+  #v-matmul .mg{display:grid;gap:2px;background:var(--border);border:1px solid var(--border);width:max-content;max-width:100%;}
+  #v-matmul .mg .c{width:2.4rem;height:2.4rem;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:0.78rem;font-weight:700;background:var(--bg);border:none;padding:0;cursor:pointer;position:relative;}
+  #v-matmul .mg .c.on{background:#f2efe9;color:#2a2620;}
+  #v-matmul .mg .c.off{background:#2f2b26;color:#e8e2d8;}
+  #v-matmul .mg .c.rhi{outline:3px solid var(--blue);outline-offset:-3px;z-index:2;}
+  #v-matmul .mg .c.chi{outline:3px solid var(--red);outline-offset:-3px;z-index:2;}
+  #v-matmul .mg .c.both{outline:3px solid var(--green);outline-offset:-3px;z-index:3;}
+  #v-matmul .mg .c.wrong{outline:3px solid #d8a838;outline-offset:-3px;z-index:2;}
+  #v-matmul .mg.sm .c{width:1.85rem;height:1.85rem;font-size:0.66rem;}
+  #v-matmul .mg.xs .c{width:1.35rem;height:1.35rem;font-size:0.55rem;}
+  #v-matmul .mg-cap{font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin-top:0.35rem;text-align:center;}
+  #v-matmul .mm-eq{align-self:center;font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--fg);padding:0 0.2rem;}
+
+  /* 계산식 전개 */
+  #v-matmul .mm-calc{font-family:var(--mono);font-size:0.95rem;line-height:2;color:var(--fg);
+    background:var(--fg);color:var(--bg);border-left:3px solid var(--accent);border-radius:var(--radius);
+    padding:0.9rem 1.1rem;margin:0.8rem 0;white-space:pre-line;overflow-x:auto;}
+  #v-matmul .mm-calc:empty{display:none;}
+
+  /* 관찰 표 */
+  #v-matmul .mm-obs{width:100%;border-collapse:collapse;font-size:0.95rem;margin:0.6rem 0;}
+  #v-matmul .mm-obs th,#v-matmul .mm-obs td{border:1px solid var(--border);padding:0.5rem 0.7rem;text-align:left;vertical-align:top;}
+  #v-matmul .mm-obs th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-matmul .mm-obs input[type=text]{width:100%;min-width:5rem;border:none;border-bottom:1px dashed var(--muted);
+    background:transparent;font-family:var(--mono);font-size:0.9rem;color:var(--fg);padding:0.15rem 0.2rem;}
+  #v-matmul .mm-obs label{display:inline-flex;align-items:center;gap:0.3rem;margin-right:0.9rem;font-size:0.93rem;cursor:pointer;}
+  #v-matmul .mm-obs tr.newrow td{background:rgba(90,122,90,0.12);}
+
+  /* 접이식 */
+  #v-matmul .mm-fold{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0.1rem 1.1rem;margin:0.9rem 0;}
+  #v-matmul .mm-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-matmul .mm-fold>summary::-webkit-details-marker{display:none;}
+  #v-matmul .mm-fold>summary::after{content:'▸';position:absolute;right:0.15rem;color:var(--muted);font-weight:800;}
+  #v-matmul .mm-fold[open]>summary::after{content:'▾';}
+  #v-matmul .mm-fold .bd{padding:0 0 1rem;}
+  #v-matmul .mm-fold .bd p,#v-matmul .mm-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;}
+
+  /* 참고 자료 · 공학 도구 */
+  #v-matmul .mm-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-matmul .mm-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-matmul .mm-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-matmul .mm-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-matmul .mm-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-matmul .mm-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-matmul .mm-ref .bd{padding:0.65rem 0.75rem;}
+  #v-matmul .mm-ref .tt{font-weight:600;font-size:0.95rem;line-height:1.45;display:block;}
+  #v-matmul .mm-ref .ds{font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;display:block;}
+  #v-matmul .mm-refin{flex:1 1 13rem;min-width:0;height:2.4rem;border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.7rem;font-family:var(--mono);font-size:0.78rem;background:var(--bg);color:var(--fg);}
+  #v-matmul .mm-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-matmul .mm-tool{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.9rem 1rem;}
+  #v-matmul .mm-tool .hd{display:flex;align-items:center;gap:0.45rem;margin-bottom:0.35rem;}
+  #v-matmul .mm-tool .em{font-size:1.5rem;line-height:1;}
+  #v-matmul .mm-tool .nm{font-family:var(--mono);font-size:0.74rem;letter-spacing:0.05em;background:var(--fg);color:var(--bg);
+    padding:0.14rem 0.5rem;border-radius:9999px;}
+  #v-matmul .mm-tool h4{font-size:1.0rem;font-weight:600;margin:0.2rem 0 0.4rem;line-height:1.5;}
+  #v-matmul .mm-tool ol{margin:0 0 0.5rem 1.1rem;padding:0;}
+  #v-matmul .mm-tool li{font-size:0.93rem;color:var(--body);line-height:1.75;margin-bottom:0.22rem;
+    overflow-wrap:anywhere;word-break:break-word;}
+  #v-matmul .mm-tool a{font-size:0.9rem;color:var(--blue);text-decoration:none;font-weight:600;}
+  #v-matmul .mm-tool .cau{font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.45rem;line-height:1.6;}
+
+  /* 복구 퍼즐 · 사진 */
+  #v-matmul .mm-figs{display:flex;flex-wrap:wrap;gap:1.1rem;align-items:flex-start;margin:0.9rem 0;}
+  #v-matmul .mm-fig{margin:0;text-align:center;min-width:0;}
+  #v-matmul .mm-fig canvas{image-rendering:pixelated;border:1px solid var(--border);border-radius:0.35rem;background:var(--bg);max-width:100%;height:auto;display:block;}
+  #v-matmul .mm-fig figcaption{font-family:var(--mono);font-size:0.76rem;color:var(--muted);margin-top:0.4rem;line-height:1.6;}
+  #v-matmul .mm-warnrow{font-family:var(--mono);font-size:0.85rem;color:var(--red);line-height:1.8;margin-top:0.5rem;}
+  #v-matmul .mm-warnrow:empty{display:none;}
+  #v-matmul .mm-neq{align-self:center;font-family:var(--mono);font-size:2.4rem;font-weight:700;color:var(--red);padding:0 0.4rem;}
+  #v-matmul .mm-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-matmul .mm-3line li{font-size:1.08rem;font-weight:700;color:var(--fg);line-height:1.75;}
+  #v-matmul .mm-timer{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--fg);}
+
+  @media (max-width:640px){
+    #v-matmul .mm-wm{display:none;}
+    #v-matmul .mm-step{margin:2rem 0 0.9rem;}
+    #v-matmul .mm-step .mono{white-space:normal;line-height:1.6;}
+    #v-matmul .tabs{overflow-x:auto;}
+    #v-matmul .tabs .tab{white-space:nowrap;}
+    #v-matmul .mg .c{width:1.95rem;height:1.95rem;font-size:0.66rem;}
+    #v-matmul .mg.sm .c{width:1.55rem;height:1.55rem;font-size:0.58rem;}
+    #v-matmul .mg.xs .c{width:1.15rem;height:1.15rem;font-size:0.5rem;}
+    #v-matmul .mat td{font-size:0.85rem;padding:0.08rem 0.3rem;min-width:1.3rem;}
+    #v-matmul .mm-keys .chip{font-size:1.0rem;padding:0.5rem 0.95rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="mm-hero" data-no-toggle="1">
+    <svg class="mm-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <rect x="10" y="30" width="96" height="96" fill="none" stroke="currentColor" stroke-width="3"/>
+      <path d="M22 42 h20 v72 h-20 z M46 66 h20 v48 h-20 z M70 90 h20 v24 h-20 z" fill="currentColor"/>
+      <text x="120" y="88" font-size="26" font-family="monospace" fill="currentColor">×</text>
+      <rect x="142" y="46" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <g fill="currentColor"><rect x="158" y="46" width="16" height="16"/><rect x="174" y="62" width="16" height="16"/><rect x="190" y="78" width="16" height="16"/></g>
+      <text x="216" y="88" font-size="24" font-family="monospace" fill="currentColor">=</text>
+      <rect x="238" y="30" width="96" height="96" fill="none" stroke="currentColor" stroke-width="3"/>
+      <path d="M274 42 h20 v72 h-20 z M298 66 h20 v48 h-20 z" fill="currentColor"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">17차시 · Ⅲ. 이미지 데이터 처리</p>
+    <h2>행렬의 곱셈 — 이미지를 옮기고 뒤집다</h2>
+    <p class="desc">
+      지난 시간에는 성분을 하나씩 손으로 옮겨 자리를 바꿨습니다.
+      오늘은 <b>0과 1로만 된 행렬</b>을 하나 '곱해서' 사진을 한 칸 옮기고, 좌우로 뒤집어 봅니다.
+      <b>어느 쪽에 곱하느냐</b>가 방향을 정합니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① <b>행렬의 곱셈의 정의</b>를 이해하고, 곱이 정의되는 조건을 확인하여 3 × 3 · 4 × 4 행렬의 곱을 계산할 수 있다. <b>[12인수03-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 성분이 <b>0과 1로만 이루어진 정사각행렬</b>을 곱하여 이미지를 <b>평행이동</b>하거나 <b>좌우·상하로 반전</b>시킬 수 있다. <b>[12인수03-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 행렬의 곱셈에서 <b>교환법칙이 성립하지 않음</b>을 이미지의 변화로 설명할 수 있다. <b>[12인수03-02]</b>
+    </div>
+    <div style="margin-top:0.6rem;font-size:0.95rem;">
+      <b>목표 ①</b> → 활동 ① &nbsp;/&nbsp; <b>목표 ②</b> → 활동 ②·③ &nbsp;/&nbsp; <b>목표 ③</b> → 활동 ④
+    </div>
+    <div class="mm-note" style="margin-bottom:0;">
+      <span class="mm-bd warn">범위 안내</span> 우리 교육과정은 <b>회전변환을 다루지 않습니다.</b>
+      오늘 배우는 위치 변환은 <b>평행이동</b>과 <b>좌우·상하 반전</b>뿐입니다.
+    </div>
+  </div>
+
+  <p class="mm-lab" style="text-align:left;">핵심 개념 <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips mm-keys" data-no-toggle="1">
+    <span class="chip">행렬의 곱셈 AB</span>
+    <span class="chip">곱이 정의되는 조건</span>
+    <span class="chip">평행이동 행렬</span>
+    <span class="chip">반전 행렬</span>
+    <span class="chip">AB ≠ BA</span>
+  </div>
+
+  <div class="card mm-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p>오늘 수업은 이 물음에 답하기 위한 여정입니다. STEP 3에서 다시 만나 답을 완성합니다.</p>
+    <ul>
+      <li><b>사진을 한 칸 옮기는 일이 왜 '곱셈'인가?</b></li>
+      <li>왼쪽에 곱하는 것과 오른쪽에 곱하는 것은 왜 결과가 다를까요?</li>
+      <li>섞여 버린 사진을 원래대로 되돌리는 행렬을 찾을 수 있을까요?</li>
+    </ul>
+    <p class="mm-src">근거 — 활동지 「활동6 행렬의 곱셈과 이미지 평행이동」 학습 목표 서술을 재구성</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 (6분) ═════ -->
+  <div class="mm-step"><p class="mono">STEP 1 · 도입 — 생각 열기 (6분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 곱셈으로 그림을 옮긴다</h3>
+    <p>아래 카드를 누르면 전체 화면으로 재생됩니다. 첫 번째가 오늘의 주 디딤영상(〈공통수학1〉 곱셈 복습)이고,
+      두 번째가 오늘 활동 ②·③의 예습입니다. 점선 칸의 <b>[+ 선생님 영상 추가]</b>로 카드를 더할 수 있습니다.</p>
+    <div id="mm-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>도입 실자료 — 「섞여 버린 사진」</h3>
+    <p><b>[섞기]</b>를 누르면 사진의 <b>행 세 쌍</b>이 서로 맞바뀝니다(1행↔2행, 4행↔7행, 6행↔8행).</p>
+    <div class="mm-figs">
+      <figure class="mm-fig">
+        <canvas id="mm-hook-a" width="180" height="180" aria-label="원본 사진(10 × 10 픽셀화)"></canvas>
+        <figcaption>원본</figcaption>
+      </figure>
+      <figure class="mm-fig">
+        <canvas id="mm-hook-b" width="180" height="180" aria-label="행이 섞인 사진"></canvas>
+        <figcaption id="mm-hook-cap">섞기 전</figcaption>
+      </figure>
+    </div>
+    <div class="btn-row">
+      <button class="btn pri" type="button" onclick="mmHookMix()">섞기</button>
+      <button class="btn" type="button" onclick="mmHookReset()">되돌리기</button>
+    </div>
+    <div class="mm-note">
+      <b>이 사진을 원래대로 되돌리는 방법이 있습니다. 오늘 배울 '곱셈' 하나면 됩니다.</b><br>
+      <span style="font-size:0.93rem;color:var(--muted);">이 자료는 활동 ④에서 다시 등장해 실제로 복구합니다.</span>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="mm-warm"></div>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 (34분) ═════ -->
+  <div class="mm-step"><p class="mono">STEP 2 · 전개 — 탐구 활동 4개 (+ 심화 1개) · 34분</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="mmTab(0,this)">① 곱셈의 규칙</button>
+    <button class="tab" type="button" onclick="mmTab(1,this)">② 한 칸 옮기기</button>
+    <button class="tab" type="button" onclick="mmTab(2,this)">③ 뒤집기</button>
+    <button class="tab" type="button" onclick="mmTab(3,this)">④ AB ≠ BA · 복구 퍼즐</button>
+    <button class="tab" type="button" onclick="mmTab(4,this)">⑤ 심화</button>
+  </div>
+
+  <!-- ── 탭 ① 곱셈의 규칙 (9분) ─────────────────────────────── -->
+  <div class="tpanel on" id="mm0">
+    <div class="card" data-no-toggle="1" id="mm-act1">
+      <h3>활동 ① · 곱셈의 규칙 — 가로 한 줄과 세로 한 줄의 만남 <span class="mm-bd soft">9분</span></h3>
+      <p>1 × 3 행렬 X = <span class="mat"><table><tr><td>1</td><td>0</td><td>1</td></tr></table></span> 과
+        3 × 1 행렬 W = <span class="mat"><table><tr><td>1</td></tr><tr><td>3</td></tr><tr><td>6</td></tr></table></span> 를 곱하면
+        <b>수 하나</b>가 나옵니다. 그 수를 어떻게 만들겠습니까?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA1Guess(0,this)">성분끼리 곱해 더한다</button>
+        <button class="chip" type="button" onclick="mmA1Guess(1,this)">그냥 더한다</button>
+        <button class="chip" type="button" onclick="mmA1Guess(2,this)">모르겠음</button>
+      </div>
+      <div id="mm-a1-poll"></div>
+      <div class="mm-fb" id="mm-a1-gfb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>1단계 — 1 × n 과 n × 1 의 곱</h3>
+      <p><b>[한 단계씩]</b>을 누르면 짝지어지는 성분이 동시에 강조되며 식이 한 항씩 늘어납니다.
+        슬라이더로 성분 값을 바꾸면 결과가 바로 갱신됩니다.</p>
+      <div class="mm-gwrap">
+        <div class="mm-gcol"><div class="mm-scroll" id="mm-a1-x"></div><p class="mg-cap">X (1 × 3)</p></div>
+        <div class="mm-eq">×</div>
+        <div class="mm-gcol"><div class="mm-scroll" id="mm-a1-w"></div><p class="mg-cap">W (3 × 1)</p></div>
+        <div class="mm-eq">=</div>
+        <div class="mm-gcol"><div class="mm-scroll" id="mm-a1-r"></div><p class="mg-cap" id="mm-a1-rc">결과</p></div>
+      </div>
+      <p class="mm-lab" style="text-align:left;">성분 슬라이더</p>
+      <div id="mm-a1-sliders"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="mmA1Step()">한 단계씩</button>
+        <button class="btn" type="button" onclick="mmA1StepReset()">처음부터</button>
+        <button class="btn" type="button" onclick="mmA1Swap()">순서 바꾸기 (W × X)</button>
+      </div>
+      <div class="mm-calc" id="mm-a1-calc"></div>
+      <div class="mm-fb" id="mm-a1-swfb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>2단계 — 일반 곱셈 A × B (결과의 한 칸을 눌러 보세요)</h3>
+      <p>결과 격자의 칸을 누르면 <b>A의 그 행 전체</b>와 <b>B의 그 열 전체</b>가 함께 강조되고 계산식이 펼쳐집니다.</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA1Size(2,this)">2 × 2</button>
+        <button class="chip on" type="button" onclick="mmA1Size(3,this)">3 × 3</button>
+        <button class="chip" type="button" onclick="mmA1Size(4,this)">4 × 4</button>
+      </div>
+      <div class="mm-gwrap">
+        <div class="mm-gcol"><div class="mm-scroll" id="mm-a1-A"></div><p class="mg-cap">A</p></div>
+        <div class="mm-eq">×</div>
+        <div class="mm-gcol"><div class="mm-scroll" id="mm-a1-B"></div><p class="mg-cap">B</p></div>
+        <div class="mm-eq">=</div>
+        <div class="mm-gcol"><div class="mm-scroll" id="mm-a1-C"></div><p class="mg-cap">AB — 칸을 누르세요</p></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="mmA1All()">전체 계산</button>
+        <button class="btn" type="button" onclick="mmA1Clear()">결과 지우기</button>
+        <button class="btn" type="button" onclick="mmA1Rand()">A·B 무작위로 바꾸기</button>
+      </div>
+      <div class="mm-calc" id="mm-a1-calc2"></div>
+      <p class="status">A·B 격자의 칸을 누르면 값이 0 → 1 → 2 → 0 으로 바뀝니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>꼴 판별 게임 — 곱할 수 있나? 결과는 무슨 꼴인가?</h3>
+      <p>60초 안에 6문항을 풉니다. 조건은 <b>앞 행렬의 열의 개수 = 뒤 행렬의 행의 개수</b> 하나뿐입니다.</p>
+      <div class="btn-row" style="align-items:center;">
+        <button class="btn pri" type="button" onclick="mmA1Game()">게임 시작</button>
+        <span class="mm-timer" id="mm-a1-timer">60초</span>
+        <span class="mm-timer" id="mm-a1-score">0 / 6</span>
+      </div>
+      <p class="mm-lab" style="text-align:left;" id="mm-a1-gq">[게임 시작]을 누르세요.</p>
+      <div class="chips" id="mm-a1-gopts"></div>
+      <div class="mm-fb" id="mm-a1-gfb2"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>손계산 확인 — 활동지 「활동6」 [1~2]번</h3>
+      <p>공책에 먼저 풀고 빈칸을 채운 뒤 <b>[채점]</b>을 누르세요.</p>
+      <p class="mm-lab" style="text-align:left;">(1)
+        <span class="mat"><table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table></span>
+        <span class="mat"><table><tr><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td></tr></table></span> = ?</p>
+      <div class="mm-gwrap"><div class="mm-gcol"><div class="mg sm" id="mm-a1-h1"></div></div></div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA1Hand(1)">채점</button></div>
+      <div class="mm-fb" id="mm-a1-h1fb"></div>
+
+      <p class="mm-lab" style="text-align:left;margin-top:1.2rem;">(2)
+        <span class="mat"><table><tr><td>1</td><td>0</td><td>2</td></tr><tr><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td></tr></table></span>
+        <span class="mat"><table><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td></tr></table></span> = ?</p>
+      <div class="mm-gwrap"><div class="mm-gcol"><div class="mg sm" id="mm-a1-h2"></div></div></div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA1Hand(2)">채점</button></div>
+      <div class="mm-fb" id="mm-a1-h2fb"></div>
+      <p class="mm-src">활동지 「활동6 행렬의 곱셈과 이미지 평행이동」 [1]·[2]번 문항을 웹으로 이식</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 결과의 꼴은 어디에서 오는가</h3>
+      <div class="mm-scroll">
+        <table class="mm-obs">
+          <tr><th style="width:52%;">확인할 것</th><th>기록</th></tr>
+          <tr><td>결과의 (2, 3) 성분을 만들 때 쓰인 것은 A의 몇 번째 <b>▢</b> 과 B의 몇 번째 <b>▢</b> 인가요?</td><td><input type="text" aria-label="행과 열"></td></tr>
+          <tr><td>1 × 3 과 3 × 1 을 이 순서로 곱하면 결과의 꼴은? 순서를 바꾸면?</td><td><input type="text" aria-label="꼴 변화"></td></tr>
+          <tr><td>A의 열의 개수와 B의 행의 개수가 다르면 계산기가 어떻게 반응하나요?</td><td><input type="text" aria-label="조건 불일치"></td></tr>
+          <tr><td>결과의 <b>행의 개수</b>는 무엇에서, <b>열의 개수</b>는 무엇에서 오나요?</td><td><input type="text" aria-label="꼴의 출처"></td></tr>
+        </table>
+      </div>
+      <p>행의 개수는 <b>A</b>에서, 열의 개수는 <b>B</b>에서 옵니다.</p>
+    </div>
+
+    <details class="mm-fold">
+      <summary>정리 — 곱셈은 '행과 열의 대응'이다</summary>
+      <div class="bd">
+        <p>AB의 (i, j) 성분을 만드는 것은 <b>A의 제 i 행</b>과 <b>B의 제 j 열</b> 딱 두 줄입니다. 그래서</p>
+        <ul style="margin:0.4rem 0 0 1.2rem;">
+          <li>A의 열의 개수와 B의 행의 개수가 <b>같아야</b> 짝지을 수가 맞고,</li>
+          <li>결과의 행의 개수는 <b>A</b>가, 열의 개수는 <b>B</b>가 결정합니다.</li>
+        </ul>
+        <p style="margin-top:0.6rem;"><b>1 × n</b> 과 <b>n × 1</b> 을 이 순서로 곱하면 <b>1 × 1</b>(수 하나)이 되고,
+          <b>n × 1</b> 과 <b>1 × n</b> 을 이 순서로 곱하면 <b>n × n</b> 이 됩니다.
+          순서 하나로 결과의 크기가 완전히 달라지는 것을 꼭 확인해 두세요 —
+          19차시에서 이 사실이 신경망의 층 크기를 정하는 규칙이 됩니다.</p>
+        <p class="mm-src">씨마스 교과서 Ⅲ p.115 · 씨마스 지도서 Ⅲ p.187 지도 TIP 서술을 재구성</p>
+      </div>
+    </details>
+
+    <details class="mm-fold">
+      <summary>정의 확인 — 행렬의 곱셈이란 무엇인가</summary>
+      <div class="bd">
+        <p><b>정의.</b> 두 행렬 A, B에 대하여 <b>A의 열의 개수와 B의 행의 개수가 같을 때</b>,
+          A의 <b>제 i 행의 성분</b>과 B의 <b>제 j 열의 성분</b>을 각각 <b>차례로 곱하여 더한 값</b>을
+          (i, j) 성분으로 하는 행렬을 두 행렬의 <b>곱</b>이라 하고 <b>AB</b> 로 나타냅니다.</p>
+        <div class="mm-note" style="text-align:center;font-weight:700;">
+          l × m 행렬과 m × n 행렬의 곱은 <b>l × n</b> 행렬입니다.
+        </div>
+        <p><span class="mm-bd soft">참고</span> 1 × n 행렬을 <b>행벡터</b>, n × 1 행렬을 <b>열벡터</b>라고 부르기도 합니다(고시 용어는 아닙니다).</p>
+        <p class="mm-src">씨마스 교과서 Ⅲ p.115 · 동아 교과서 Ⅲ p.95 「배웠어요! 공통수학1」 · 활동지 「활동6」 정의 박스 서술을 재구성</p>
+        <div style="margin-top:0.8rem;">
+          <figure style="margin:0;">
+            <img src="assets/textbook-local/씨마스3_p115_행렬의곱셈.jpg" alt="교과서 지면(수업용)" loading="lazy"
+                 style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:0.35rem;"
+                 onerror="var f=this.closest('figure');if(f&&f.parentNode)f.parentNode.removeChild(f);">
+            <figcaption style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">씨마스 교과서 Ⅲ p.115 (수업용)</figcaption>
+          </figure>
+        </div>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 꼴과 조건</h3>
+      <p><b>①</b> 4 × 5 와 5 × 2 의 곱은?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA1J(1,0,this)">4행 2열</button>
+        <button class="chip" type="button" onclick="mmA1J(1,1,this)">5행 5열</button>
+        <button class="chip" type="button" onclick="mmA1J(1,2,this)">2행 4열</button>
+        <button class="chip" type="button" onclick="mmA1J(1,3,this)">곱할 수 없다</button>
+      </div>
+      <div class="mm-fb" id="mm-a1-j1"></div>
+      <p style="margin-top:1rem;"><b>②</b> 곱할 수 <b>없는</b> 것은?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA1J(2,0,this)">ㄱ. 3×2 · 2×3</button>
+        <button class="chip" type="button" onclick="mmA1J(2,1,this)">ㄴ. 2×2 · 2×2</button>
+        <button class="chip" type="button" onclick="mmA1J(2,2,this)">ㄷ. 3×2 · 3×2</button>
+        <button class="chip" type="button" onclick="mmA1J(2,3,this)">ㄹ. 1×4 · 4×1</button>
+      </div>
+      <div class="mm-fb" id="mm-a1-j2"></div>
+      <p style="margin-top:1rem;"><b>③</b>
+        <span class="mat"><table><tr><td>2</td><td>1</td><td>3</td></tr></table></span>
+        <span class="mat"><table><tr><td>1</td></tr><tr><td>0</td></tr><tr><td>2</td></tr></table></span> 의 값은?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA1J(3,0,this)">5</button>
+        <button class="chip" type="button" onclick="mmA1J(3,1,this)">6</button>
+        <button class="chip" type="button" onclick="mmA1J(3,2,this)">8</button>
+        <button class="chip" type="button" onclick="mmA1J(3,3,this)">11</button>
+      </div>
+      <div class="mm-fb" id="mm-a1-j3"></div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 한 칸 옮기기 (10분) ───────────────────────────── -->
+  <div class="tpanel" id="mm1">
+    <div class="card" data-no-toggle="1" id="mm-act2">
+      <h3>활동 ② · 한 칸 옮기기 — 평행이동 <span class="mm-bd soft">10분 · 주력 위젯</span></h3>
+      <p>검은색 0, 흰색 1로 이미지를 나타낸 4 × 4 행렬 A가 있습니다.
+        이제 B = <span class="mat"><table><tr><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>0</td><td>0</td></tr></table></span>
+        를 A의 <b>오른쪽</b>에 곱합니다.</p>
+      <p><b>예측 문제.</b> AB 가 나타내는 이미지는 어떤 모양일까요? 가운데 빈 격자에 <b>예상해서 칠해</b> 보세요.</p>
+      <div class="mm-gwrap">
+        <div class="mm-gcol"><div class="mg" id="mm-a2-psrc"></div><p class="mg-cap">A</p></div>
+        <div class="mm-gcol"><div class="mg" id="mm-a2-pguess"></div><p class="mg-cap">내 예상 AB</p></div>
+        <div class="mm-gcol"><div class="mg" id="mm-a2-pans"></div><p class="mg-cap">정답 AB</p></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="mmA2PredSubmit()">예상 제출</button>
+        <button class="btn" type="button" onclick="mmA2PredReset()">다시 예상</button>
+      </div>
+      <div class="mm-fb" id="mm-a2-pfb"></div>
+      <p class="mm-src">동아 교과서 Ⅲ p.95 §5 예시를 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>A × T = R 위젯 — 프리셋을 눌러 표를 채워 가세요</h3>
+      <p>가운데 <b>변환 행렬 T</b>의 칸을 눌러 0 ↔ 1 을 직접 바꿀 수도 있습니다.
+        <b>위쪽·아래쪽 이동</b> 프리셋을 누르면 위젯이 T를 <b>A의 왼쪽</b>으로 자동으로 옮기고 수식 표시가 <b>T × A = R</b> 로 바뀝니다.</p>
+      <div class="chips" id="mm-a2-presets">
+        <button class="chip on" type="button" onclick="mmA2Preset('R',this)">오른쪽 이동</button>
+        <button class="chip" type="button" onclick="mmA2Preset('L',this)">왼쪽 이동</button>
+        <button class="chip" type="button" onclick="mmA2Preset('U',this)">위쪽 이동</button>
+        <button class="chip" type="button" onclick="mmA2Preset('D',this)">아래쪽 이동</button>
+        <button class="chip" type="button" onclick="mmA2Preset('I',this)">곱해도 그대로인 행렬 (단위행렬)</button>
+      </div>
+      <p class="status"><span class="mm-bd soft">참고</span> '단위행렬'은 고시 용어가 아니므로, 이 수업에서는 <b>곱해도 그대로인 행렬</b>이라고 부릅니다.</p>
+
+      <div class="btn-row" style="align-items:center;">
+        <span style="font-family:var(--mono);font-size:0.9rem;">곱하는 위치</span>
+        <button class="btn" type="button" id="mm-a2-swbtn" onclick="mmA2Swap()">좌우 자리 직접 바꾸기</button>
+        <span class="mm-bd" id="mm-a2-eqlab">A × T = R</span>
+      </div>
+
+      <div class="mm-gwrap" id="mm-a2-stage"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="mmA2Run()">곱셈 실행</button>
+        <button class="btn" type="button" onclick="mmA2View()">표시 전환 (숫자 / 그림 / 숫자+그림)</button>
+        <button class="btn" type="button" onclick="mmA2CSV()">결과 내려받기 (CSV)</button>
+      </div>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA2Size(3,this)">A 크기 3 × 3</button>
+        <button class="chip on" type="button" onclick="mmA2Size(4,this)">A 크기 4 × 4</button>
+        <button class="chip" type="button" onclick="mmA2Size(5,this)">A 크기 5 × 5</button>
+      </div>
+      <div class="mm-calc" id="mm-a2-calc"></div>
+      <div class="mm-fb" id="mm-a2-fb"></div>
+
+      <p class="mm-lab" style="text-align:left;margin-top:1rem;">정리 표 — 프리셋을 누를 때마다 한 행이 채워집니다</p>
+      <div class="mm-scroll">
+        <table class="mm-obs" id="mm-a2-tbl">
+          <tr><th>곱하는 행렬</th><th>곱하는 위치</th><th>이미지 결과</th><th>움직인 것은 행? 열?</th></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>손계산 확인 — 동아 교과서 Ⅲ p.96 문제 5</h3>
+      <p>A = <span class="mat"><table><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td></tr></table></span>,
+        B = <span class="mat"><table><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>0</td></tr></table></span>,
+        C = <span class="mat"><table><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td></tr></table></span></p>
+      <p class="mm-lab" style="text-align:left;">(1) AB 를 구하고 이미지를 그리시오.</p>
+      <div class="mm-gwrap"><div class="mm-gcol"><div class="mg sm" id="mm-a2-h1"></div></div></div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA2Hand(1)">채점</button></div>
+      <div class="mm-fb" id="mm-a2-h1fb"></div>
+      <p class="mm-lab" style="text-align:left;margin-top:1.2rem;">(2) CA 를 구하고 이미지를 그리시오.</p>
+      <div class="mm-gwrap"><div class="mm-gcol"><div class="mg sm" id="mm-a2-h2"></div></div></div>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA2Hand(2)">채점</button></div>
+      <div class="mm-fb" id="mm-a2-h2fb"></div>
+      <p class="mm-src">동아 교과서 Ⅲ p.96 문제 5 를 웹으로 이식</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 어느 쪽에 곱했나, 무엇이 움직였나</h3>
+      <div class="mm-scroll">
+        <table class="mm-obs">
+          <tr><th style="width:52%;">확인할 것</th><th>기록</th></tr>
+          <tr><td>A의 <b>오른쪽</b>에 곱했을 때 움직인 방향</td>
+            <td><label><input type="radio" name="mm-o1"> 좌우</label><label><input type="radio" name="mm-o1"> 상하</label></td></tr>
+          <tr><td>A의 <b>왼쪽</b>에 곱했을 때</td>
+            <td><label><input type="radio" name="mm-o2"> 좌우</label><label><input type="radio" name="mm-o2"> 상하</label></td></tr>
+          <tr><td>B의 1은 어디에 줄지어 있나요? (대각선의 위? 아래?)</td><td><input type="text" aria-label="B의 1의 위치"></td></tr>
+          <tr><td>C의 1은?</td><td><input type="text" aria-label="C의 1의 위치"></td></tr>
+          <tr><td>평행이동한 뒤 <b>사라진 부분</b>은?</td><td><input type="text" aria-label="사라진 부분"></td></tr>
+        </table>
+      </div>
+      <p><b>빈칸 채우기.</b> "A × T 인 경우 (행, 열) 중
+        <input type="text" id="mm-a2-bl1" style="width:4rem;border:none;border-bottom:1px dashed var(--muted);background:transparent;font-family:var(--mono);text-align:center;" aria-label="빈칸 1">
+        의 위치가 바뀌고, T × A 인 경우
+        <input type="text" id="mm-a2-bl2" style="width:4rem;border:none;border-bottom:1px dashed var(--muted);background:transparent;font-family:var(--mono);text-align:center;" aria-label="빈칸 2">
+        의 위치가 바뀐다."</p>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA2Blank()">빈칸 채점</button></div>
+      <div class="mm-fb" id="mm-a2-blfb"></div>
+      <p class="mm-src">활동지 「활동6」 빈칸 문항을 재구성</p>
+    </div>
+
+    <details class="mm-fold">
+      <summary>정리 — 평행이동 행렬의 모양과 곱하는 위치</summary>
+      <div class="bd">
+        <p>이미지를 한 픽셀 평행이동시킨 이미지는, <b>평행이동한 행 또는 열의 성분이 모두 0이고
+          나머지는 왼쪽 상단에서 오른쪽 하단으로 이어지는 대각선 성분이 1</b>인 행렬을 곱하여 만듭니다.</p>
+        <div class="mm-scroll">
+          <table class="mm-obs">
+            <tr><th>곱하는 위치</th><th>결과</th></tr>
+            <tr><td>A의 <b>오른쪽</b></td><td>오른쪽 또는 왼쪽으로 한 픽셀 평행이동 (<b>열</b>이 움직임)</td></tr>
+            <tr><td>A의 <b>왼쪽</b></td><td>위쪽 또는 아래쪽으로 한 픽셀 평행이동 (<b>행</b>이 움직임)</td></tr>
+          </table>
+        </div>
+        <p>왜 그럴까요? AB의 (i, j) 성분은 A의 제 i <b>행</b>과 B의 제 j <b>열</b>로 만들어집니다.
+          즉 B는 <b>열을 골라 오는 역할</b>을 합니다. 반대로 BA에서는 B가 A의 <b>행을 골라 오는 역할</b>을 합니다.</p>
+        <p class="mm-src">동아 교과서 Ⅲ p.96 정리 표 서술을 재구성</p>
+      </div>
+    </details>
+
+    <details class="mm-fold">
+      <summary>더 알아보기 — 밀려 나간 부분은 어디로 갔을까</summary>
+      <div class="bd">
+        <p>오른쪽으로 한 칸 옮기면 왼쪽 끝에 빈 줄이 생기고, 오른쪽 끝에 있던 줄은 <b>사라집니다.</b>
+          곱하는 행렬 B의 마지막 행이 전부 0인 것이 그 이유입니다.</p>
+        <p>화면 밖으로 나간 정보는 되돌릴 수 없습니다. 사진 편집 앱에서 빈 자리를 흰색·검은색으로 채우거나
+          아예 잘라내는 것을 볼 수 있는데, 그 선택도 <b>사람이 정하는 것</b>입니다.</p>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 곱하는 위치와 방향</h3>
+      <p><b>①</b> 이미지를 <b>왼쪽</b>으로 한 칸 옮기려면 어떻게 해야 할까요?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA2J(1,0,this)">A의 오른쪽에 C를 곱한다 (AC)</button>
+        <button class="chip" type="button" onclick="mmA2J(1,1,this)">A의 왼쪽에 C를 곱한다 (CA)</button>
+        <button class="chip" type="button" onclick="mmA2J(1,2,this)">A의 오른쪽에 B를 곱한다 (AB)</button>
+      </div>
+      <div class="mm-fb" id="mm-a2-j1"></div>
+      <p style="margin-top:1rem;"><b>②</b> 이미지가 <b>위쪽</b>으로 옮겨지는 것은?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA2J(2,0,this)">AB</button>
+        <button class="chip" type="button" onclick="mmA2J(2,1,this)">BA</button>
+        <button class="chip" type="button" onclick="mmA2J(2,2,this)">AC</button>
+        <button class="chip" type="button" onclick="mmA2J(2,3,this)">AD</button>
+      </div>
+      <div class="mm-fb" id="mm-a2-j2"></div>
+      <p style="margin-top:1rem;"><b>③</b> <b>곱해도 그대로인 행렬</b>을 곱하면 이미지는?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA2J(3,0,this)">변하지 않는다</button>
+        <button class="chip" type="button" onclick="mmA2J(3,1,this)">한 칸 오른쪽으로 간다</button>
+        <button class="chip" type="button" onclick="mmA2J(3,2,this)">좌우가 뒤집힌다</button>
+      </div>
+      <div class="mm-fb" id="mm-a2-j3"></div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ 뒤집기 (7분) ─────────────────────────────────── -->
+  <div class="tpanel" id="mm2">
+    <div class="card" data-no-toggle="1" id="mm-act3">
+      <h3>활동 ③ · 뒤집기 — 좌우·상하 반전 <span class="mm-bd soft">7분</span></h3>
+      <p>16차시 읽기 자료에서 <b>"90도 회전은 전치 + 좌우 반전"</b> 이라는 말을 만났습니다.
+        그때 남겨 둔 질문 — <b>좌우 반전은 어떤 연산으로 만들 수 있을까?</b></p>
+      <p>이번에는 곱하는 행렬 <b>D</b>를 <b>여러분이 직접 만들어</b> 봅니다.
+        아래 빈 격자에서 <b>1을 놓아야 할 자리</b>를 골라 보세요.
+        (힌트: 평행이동 행렬은 1이 대각선 옆에 줄지어 있었습니다. 반전이라면?)</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA3Size(3,this)">3 × 3</button>
+        <button class="chip on" type="button" onclick="mmA3Size(4,this)">4 × 4</button>
+        <button class="chip" type="button" onclick="mmA3Size(5,this)">5 × 5</button>
+      </div>
+      <div class="mm-gwrap">
+        <div class="mm-gcol"><div class="mg" id="mm-a3-D"></div><p class="mg-cap">내가 만든 D — 칸을 눌러 1을 놓으세요</p></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="mmA3Try()">내가 만든 D로 실행</button>
+        <button class="btn" type="button" onclick="mmA3Hint()">힌트 보기</button>
+        <button class="btn" type="button" onclick="mmA3Clear()">지우기</button>
+      </div>
+      <div class="mm-fb" id="mm-a3-fb"></div>
+
+      <p class="mm-lab" style="text-align:left;margin-top:1rem;">내가 놓은 1의 좌표 — i + j 는 얼마인가요?</p>
+      <div class="mm-scroll">
+        <table class="mm-obs" id="mm-a3-tbl">
+          <tr><th>n</th><th>1을 놓은 자리 (i, j)</th><th>i + j</th></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>AD 와 DA — 같은 D인데 결과가 다릅니다</h3>
+      <p>정답 D를 만든 뒤 아래 두 버튼을 눌러 보세요.</p>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="mmA3Run('AD')">AD 실행 (오른쪽에 곱)</button>
+        <button class="btn pri" type="button" onclick="mmA3Run('DA')">DA 실행 (왼쪽에 곱)</button>
+        <button class="btn" type="button" onclick="mmA3Sol()">정답 D 채우기</button>
+      </div>
+      <div class="mm-gwrap">
+        <div class="mm-gcol"><div class="mg" id="mm-a3-A"></div><p class="mg-cap">A</p></div>
+        <div class="mm-gcol"><div class="mg" id="mm-a3-R"></div><p class="mg-cap" id="mm-a3-rc">결과</p></div>
+      </div>
+      <div class="mm-calc" id="mm-a3-calc"></div>
+
+      <p class="mm-lab" style="text-align:left;margin-top:1.2rem;">전치와 비교 패널 (16차시 회수) — 글자 이미지로 보면 차이가 뚜렷합니다</p>
+      <div class="mm-figs">
+        <figure class="mm-fig"><canvas id="mm-a3-c0" width="120" height="120" aria-label="원본"></canvas><figcaption>원본 A</figcaption></figure>
+        <figure class="mm-fig"><canvas id="mm-a3-c1" width="120" height="120" aria-label="전치"></canvas><figcaption>Aᵀ (전치 · 16차시)</figcaption></figure>
+        <figure class="mm-fig"><canvas id="mm-a3-c2" width="120" height="120" aria-label="좌우 반전"></canvas><figcaption>AD (좌우 반전)</figcaption></figure>
+        <figure class="mm-fig"><canvas id="mm-a3-c3" width="120" height="120" aria-label="상하 반전"></canvas><figcaption>DA (상하 반전)</figcaption></figure>
+      </div>
+      <div class="btn-row"><button class="btn" type="button" onclick="mmA3Cmp()">글자 이미지로 세 결과 그리기</button></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 세 변환의 차이</h3>
+      <div class="mm-scroll">
+        <table class="mm-obs">
+          <tr><th>변환</th><th>위쪽 모서리는?</th><th>왼쪽 모서리는?</th><th>글자는?</th></tr>
+          <tr><td>Aᵀ (전치)</td><td><input type="text" aria-label="전치 위쪽"></td><td><input type="text" aria-label="전치 왼쪽"></td><td><input type="text" aria-label="전치 글자"></td></tr>
+          <tr><td>AD (좌우 반전)</td><td><input type="text" aria-label="AD 위쪽"></td><td><input type="text" aria-label="AD 왼쪽"></td><td><input type="text" aria-label="AD 글자"></td></tr>
+          <tr><td>DA (상하 반전)</td><td><input type="text" aria-label="DA 위쪽"></td><td><input type="text" aria-label="DA 왼쪽"></td><td><input type="text" aria-label="DA 글자"></td></tr>
+        </table>
+      </div>
+      <p>D의 1은 몇 개이고 <b>i + j</b> 의 값은 몇으로 일정한가요? n = 4 일 때
+        <input type="text" id="mm-a3-b4" style="width:3.5rem;border:none;border-bottom:1px dashed var(--muted);background:transparent;font-family:var(--mono);text-align:center;" aria-label="n=4일 때 i+j">,
+        n = 5 일 때
+        <input type="text" id="mm-a3-b5" style="width:3.5rem;border:none;border-bottom:1px dashed var(--muted);background:transparent;font-family:var(--mono);text-align:center;" aria-label="n=5일 때 i+j">.</p>
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA3Blank()">빈칸 채점</button></div>
+      <div class="mm-fb" id="mm-a3-blfb"></div>
+    </div>
+
+    <details class="mm-fold">
+      <summary>정리 — 반전 행렬과 i + j = n + 1</summary>
+      <div class="bd">
+        <p>이미지를 좌우 또는 상하로 반전시킨 이미지는, <b>왼쪽 하단에서 오른쪽 상단으로 이어지는 대각선
+          성분이 모두 1이고 나머지가 0인 행렬</b> D를 곱하여 만듭니다.
+          n × n 에서 그 자리는 <b>i + j = n + 1</b> 입니다.</p>
+        <div class="mm-scroll">
+          <table class="mm-obs">
+            <tr><th>곱</th><th>결과</th></tr>
+            <tr><td>AD (오른쪽에 곱)</td><td><b>좌우</b> 반전 (열의 순서가 뒤집힘)</td></tr>
+            <tr><td>DA (왼쪽에 곱)</td><td><b>상하</b> 반전 (행의 순서가 뒤집힘)</td></tr>
+          </table>
+        </div>
+        <p>활동 ②와 같은 규칙입니다. <b>오른쪽에 곱하면 열, 왼쪽에 곱하면 행</b>이 움직입니다.</p>
+        <p class="mm-src">동아 교과서 Ⅲ p.97 · 미래엔 교과서 Ⅲ p.98 서술을 재구성</p>
+      </div>
+    </details>
+
+    <details class="mm-fold">
+      <summary>정의 확인 — 전치와 반전은 다르다 (16차시와의 관계)</summary>
+      <div class="bd">
+        <div class="mm-scroll">
+          <table class="mm-obs">
+            <tr><th></th><th>전치 Aᵀ</th><th>좌우 반전 AD</th></tr>
+            <tr><td>무엇이 바뀌나</td><td>행과 열의 <b>역할이 맞바뀜</b></td><td>열의 <b>순서만 뒤집힘</b></td></tr>
+            <tr><td>꼴의 변화</td><td>m × n → n × m</td><td>n × n → n × n (그대로)</td></tr>
+            <tr><td>만드는 방법</td><td>성분을 (i, j) → (j, i) 로 옮김</td><td>행렬 D를 <b>곱함</b></td></tr>
+            <tr><td>대각선 무늬는?</td><td>변하지 않음</td><td>변함</td></tr>
+          </table>
+        </div>
+        <p>두 변환은 <b>결과가 다릅니다.</b> 16차시 읽기 자료의 "90도 회전"은 이 <b>두 변환을 이어서</b> 한 결과였습니다.
+          다만 <b>회전변환 자체는 우리 교육과정에서 다루지 않으므로</b>, 오늘도 조합의 결과만 확인하고 회전행렬은 쓰지 않습니다.</p>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 동아 교과서 Ⅲ p.97 문제 6</h3>
+      <p>A = <span class="mat"><table><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td></tr></table></span></p>
+      <p><b>(1)</b> AB 가 <b>좌우가 반전된</b> 이미지일 때 B는?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA3J(1,0,this)">[[0,1,0],[0,0,1],[0,0,0]]</button>
+        <button class="chip" type="button" onclick="mmA3J(1,1,this)">[[1,0,0],[0,1,0],[0,0,1]]</button>
+        <button class="chip" type="button" onclick="mmA3J(1,2,this)">[[0,0,1],[0,1,0],[1,0,0]]</button>
+        <button class="chip" type="button" onclick="mmA3J(1,3,this)">[[0,0,0],[1,0,0],[0,1,0]]</button>
+      </div>
+      <div class="mm-fb" id="mm-a3-j1"></div>
+      <p style="margin-top:1rem;"><b>(2)</b> 같은 B에 대하여 <b>BA</b> 가 나타내는 이미지는?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA3J(2,0,this)">좌우가 반전된 이미지</button>
+        <button class="chip" type="button" onclick="mmA3J(2,1,this)">상하가 반전된 이미지</button>
+        <button class="chip" type="button" onclick="mmA3J(2,2,this)">AB와 완전히 같은 이미지</button>
+      </div>
+      <div class="mm-fb" id="mm-a3-j2"></div>
+      <p class="mm-src">동아 교과서 Ⅲ p.97 문제 6 을 웹으로 이식</p>
+    </div>
+  </div>
+
+  <!-- ── 탭 ④ AB ≠ BA · 복구 퍼즐 (8분) ────────────────────── -->
+  <div class="tpanel" id="mm3">
+    <div class="card" data-no-toggle="1" id="mm-act4">
+      <h3>활동 ④ · 섞인 사진 복구 <span class="mm-bd soft">8분</span></h3>
+      <p>STEP 1에서 보았던 <b>섞여 버린 사진</b>을 지금 원래대로 되돌립니다.
+        사진 A(10 × 10 픽셀화)와 <b>변환 행렬 T</b>(10 × 10, 처음에는 전부 0)가 아래에 있습니다.</p>
+      <div class="mm-note">
+        <b>목표.</b> T를 알맞게 채워 <b>[연산 실행]</b>을 누르면 <b>원래 사진</b>이 나오게 만드세요.<br>
+        <b>힌트 0단계.</b> 사진은 <b>행 3쌍</b>이 서로 맞바뀌어 있습니다 (1행↔2행, 4행↔7행, 6행↔8행).
+      </div>
+      <p><b>먼저 판단할 것.</b> T를 A의 <b>왼쪽</b>에 곱해야 할까요, <b>오른쪽</b>에 곱해야 할까요? 그 이유는?</p>
+      <div class="chips" id="mm-a4-side">
+        <button class="chip" type="button" onclick="mmA4Side('L',this)">왼쪽에 곱한다 (T × A)</button>
+        <button class="chip" type="button" onclick="mmA4Side('R',this)">오른쪽에 곱한다 (A × T)</button>
+      </div>
+      <div class="mm-fb" id="mm-a4-sfb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1" id="mm-a4-panel" style="display:none;">
+      <h3>복구 퍼즐 — T 격자를 채우세요</h3>
+      <div class="chips">
+        <button class="chip on" type="button" onclick="mmA4Mix('row',this)">행 섞기</button>
+        <button class="chip" type="button" onclick="mmA4Mix('col',this)">열 섞기</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="mmA4Ident()">곱해도 그대로인 행렬로 시작</button>
+        <button class="btn" type="button" onclick="mmA4Zero()">0으로 초기화</button>
+        <button class="btn pri" type="button" onclick="mmA4Run()">연산 실행</button>
+        <button class="btn" type="button" id="mm-a4-autobtn" onclick="mmA4Auto()" disabled>자동 풀이 보기 (3회 실패 후)</button>
+      </div>
+      <div class="mm-gwrap">
+        <div class="mm-gcol">
+          <figure class="mm-fig"><canvas id="mm-a4-cvs" width="150" height="150" aria-label="섞인 사진"></canvas>
+            <figcaption>섞인 사진 A</figcaption></figure>
+        </div>
+        <div class="mm-gcol">
+          <div class="mg xs" id="mm-a4-T"></div>
+          <p class="mg-cap">변환 행렬 T (10 × 10) — 칸을 눌러 0 ↔ 1</p>
+        </div>
+        <div class="mm-gcol">
+          <figure class="mm-fig"><canvas id="mm-a4-cvr" width="150" height="150" aria-label="복구 결과"></canvas>
+            <figcaption id="mm-a4-rcap">결과</figcaption></figure>
+        </div>
+      </div>
+      <div class="mm-warnrow" id="mm-a4-warn"></div>
+      <div class="mm-fb" id="mm-a4-fb"></div>
+      <p class="status" id="mm-a4-st">T의 각 행에 1이 <b>정확히 하나씩</b> 있어야 합니다. 하나도 없으면 그 줄은 검게 비고, 둘이면 두 줄이 겹쳐 더해집니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>AB 와 BA 를 나란히 — 중앙의 ≠ 를 보세요</h3>
+      <p>활동 ②의 B를 그대로 써서 <b>AB</b> 와 <b>BA</b> 를 동시에 계산합니다.
+        A의 무늬를 바꾸어도 두 결과는 <b>한 번도 같아지지 않습니다.</b></p>
+      <div class="mm-gwrap">
+        <div class="mm-gcol"><div class="mg" id="mm-a4-ab"></div><p class="mg-cap">AB — 오른쪽으로</p></div>
+        <div class="mm-neq">≠</div>
+        <div class="mm-gcol"><div class="mg" id="mm-a4-ba"></div><p class="mg-cap">BA — 위쪽으로</p></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="mmA4Shuffle()">A의 무늬 바꾸기</button>
+        <button class="btn" type="button" onclick="mmA4Except()">같아지는 경우가 있을까?</button>
+      </div>
+      <div class="mm-fb" id="mm-a4-cfb"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>관찰 — 순서가 바꾸는 것</h3>
+      <div class="mm-scroll">
+        <table class="mm-obs">
+          <tr><th style="width:52%;">확인할 것</th><th>기록</th></tr>
+          <tr><td>같은 B인데 AB 와 BA 의 이미지는 각각 어느 방향으로 움직였나요?</td><td><input type="text" aria-label="방향"></td></tr>
+          <tr><td>복구 퍼즐에서 T를 <b>오른쪽</b>에 곱해 보면 어떤 결과가 나오나요? 왜?</td><td><input type="text" aria-label="오른쪽에 곱한 결과"></td></tr>
+          <tr><td>T의 한 행에 1을 두 개 놓으면 결과 사진에 무슨 일이 생기나요?</td><td><input type="text" aria-label="1이 두 개"></td></tr>
+          <tr><td>AB = BA 가 되는 경우를 하나라도 찾았나요?</td><td><input type="text" aria-label="예외"></td></tr>
+        </table>
+      </div>
+      <p><b>[생각해보기]</b> A × T 에서 T × A 로 바꾸면 결과의 성분값이 어떻게 달라지는지 한 문장으로 써 보세요.</p>
+      <input type="text" id="mm-a4-think" placeholder="예: A × T 는 A의 열을 골라 새 열을 만들고, T × A 는 A의 행을 골라 새 행을 만든다"
+             style="width:100%;max-width:34rem;height:2.4rem;border:1px solid var(--border);border-radius:var(--radius);padding:0 0.7rem;font-size:0.98rem;background:var(--bg);color:var(--fg);"
+             aria-label="생각해보기 서술">
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA4Think()">채점 기준 보기</button></div>
+      <div class="mm-fb" id="mm-a4-tfb"></div>
+      <p class="mm-src">활동지 「활동6」 [생각해보기] 를 재구성</p>
+    </div>
+
+    <details class="mm-fold">
+      <summary>정리 — 교환법칙이 성립하지 않는다는 것의 뜻</summary>
+      <div class="bd">
+        <p>수의 곱셈에서는 순서를 바꾸어도 답이 같지만 행렬의 곱셈은 그렇지 않습니다.
+          <b>일반적으로 AB ≠ BA</b> 입니다.</p>
+        <p>이미지로 보면 이유가 분명합니다. 뒤에 곱한 행렬은 <b>열</b>에, 앞에 곱한 행렬은 <b>행</b>에 작용합니다.
+          열을 옮기는 일과 행을 옮기는 일은 애초에 다른 일이므로 결과가 같을 이유가 없습니다.</p>
+        <p>다만 "일반적으로"라는 말에 주의하세요. <b>성립하지 않는 것이 규칙이고, 성립하는 것이 예외</b>입니다.</p>
+        <p class="mm-src">동아 교과서 Ⅲ p.96 여백 · 씨마스 지도서 Ⅲ p.188 서술을 재구성</p>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 3 × 3 두 행렬</h3>
+      <p><b>①</b> A, B가 모두 3 × 3 일 때 <b>반드시</b> 옳은 것은?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA4J(1,0,this)">AB = BA 이다</button>
+        <button class="chip" type="button" onclick="mmA4J(1,1,this)">AB 와 BA 는 모두 3 × 3 행렬이다</button>
+        <button class="chip" type="button" onclick="mmA4J(1,2,this)">AB 만 계산된다</button>
+        <button class="chip" type="button" onclick="mmA4J(1,3,this)">AB 의 성분은 모두 BA 보다 크다</button>
+      </div>
+      <div class="mm-fb" id="mm-a4-j1"></div>
+      <p style="margin-top:1rem;"><b>②</b> 섞인 사진을 복구하는 T의 조건을 한 줄로 써 보세요.</p>
+      <input type="text" id="mm-a4-j2in" placeholder="예: 각 행에 1이 정확히 하나씩 있고, 그 1이 원래 있어야 할 행을 가리킨다"
+             style="width:100%;max-width:34rem;height:2.4rem;border:1px solid var(--border);border-radius:var(--radius);padding:0 0.7rem;font-size:0.98rem;background:var(--bg);color:var(--fg);"
+             aria-label="T의 조건">
+      <div class="btn-row"><button class="btn pri" type="button" onclick="mmA4J2()">채점 기준 보기</button></div>
+      <div class="mm-fb" id="mm-a4-j2"></div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ⑤ 심화 ───────────────────────────────────────── -->
+  <div class="tpanel" id="mm4">
+    <div class="card" data-no-toggle="1">
+      <h3><span class="mm-bd warn">선택 심화 · 평가 대상 아님</span> 좌표로 옮기기와 크기 바꾸기</h3>
+      <div class="mm-note">
+        <b>⚠ 회전은 다루지 않습니다.</b> 이 심화의 두 행렬은 모두 <b>대각선에만 값이 있는</b> 행렬입니다.
+        대각선 밖에 값이 들어가는 변환(회전)은 교육과정 범위 밖입니다. 시간이 남을 때만 다룹니다.
+      </div>
+      <p><b>좌표를 옮기는 또 다른 방식.</b> 픽셀 하나의 좌표를 (x, y), x축 방향으로 m, y축 방향으로 n 만큼
+        평행이동한 좌표를 (x′, y′) 라 하면 다음과 같습니다.</p>
+      <div class="mm-scroll" style="text-align:center;">
+        <span class="mat"><table><tr><td>x′</td></tr><tr><td>y′</td></tr></table></span>
+        <span style="font-family:var(--mono);font-size:1.2rem;">=</span>
+        <span class="mat"><table><tr><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td></tr></table></span>
+        <span class="mat"><table><tr><td>x</td></tr><tr><td>y</td></tr></table></span>
+        <span style="font-family:var(--mono);font-size:1.2rem;">+</span>
+        <span class="mat"><table><tr><td>m</td></tr><tr><td>n</td></tr></table></span>
+      </div>
+      <p>모든 픽셀에 같은 연산을 하면 이미지 전체가 같은 정도로 이동합니다.
+        (이미지 좌표계는 왼쪽 위를 원점, 오른쪽을 x축, <b>아래 방향을 y축</b>으로 잡습니다.)</p>
+      <p><b>크기 바꾸기와 보간법.</b> x축 W배, y축 H배로 바꾸려면 대각선에 W, H 를 놓은 행렬을 곱합니다.
+        크기를 바꾸면 새로 생긴 자리의 색을 정해야 하는데, 주변 픽셀 정보로 알맞은 색을 결정하는 방법을
+        <b>보간법</b>이라 합니다.</p>
+      <p class="mm-src">동아 교과서 Ⅲ pp.99~100 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 슬라이더로 옮기고 늘여 보기</h3>
+      <div id="mm-a5-sliders"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="mmA5Interp()">보간법 끄기 / 켜기</button>
+        <button class="btn" type="button" onclick="mmA5Reset()">처음으로</button>
+      </div>
+      <div class="mm-figs">
+        <figure class="mm-fig"><canvas id="mm-a5-c0" width="150" height="150" aria-label="원본"></canvas><figcaption>원본</figcaption></figure>
+        <figure class="mm-fig"><canvas id="mm-a5-c1" width="150" height="150" aria-label="변환 결과"></canvas><figcaption id="mm-a5-cap">결과</figcaption></figure>
+      </div>
+      <p class="status" id="mm-a5-st"></p>
+      <p style="margin-top:1rem;"><b>문제(동아 문제 8 이식).</b> x′ = 0.7x + 10, y′ = 0.3y + 20 을 수행하면 크기와 위치는 어떻게 될까요?</p>
+      <div class="chips">
+        <button class="chip" type="button" onclick="mmA5J(0,this)">가로·세로 모두 0.7배로 줄고 왼쪽 위로 이동</button>
+        <button class="chip" type="button" onclick="mmA5J(1,this)">가로 0.7배·세로 0.3배로 납작해지고 오른쪽으로 10, 아래로 20 이동</button>
+        <button class="chip" type="button" onclick="mmA5J(2,this)">가로로 0.7배 늘어나고 위로 20 이동</button>
+      </div>
+      <div class="mm-fb" id="mm-a5-fb"></div>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 (8분) ═════ -->
+  <div class="mm-step"><p class="mono">STEP 3 · 정리 — 오늘의 결론 (8분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ul class="mm-3line">
+      <li>① <b>AB의 (i, j) 성분</b>은 A의 제 i 행과 B의 제 j 열을 <b>차례로 곱하여 더한 값</b>입니다.
+        A의 열의 개수와 B의 행의 개수가 같아야 곱이 정의되고, l × m · m × n → <b>l × n</b> 입니다.</li>
+      <li>② <b>0과 1로만 된 정사각행렬</b>을 곱하면 이미지를 평행이동하거나 반전시킬 수 있습니다.
+        <b>오른쪽에 곱하면 열(좌우), 왼쪽에 곱하면 행(상하)</b>이 움직입니다.</li>
+      <li>③ 행렬의 곱셈에서는 <b>일반적으로 AB ≠ BA</b> 입니다. 같은 행렬을 곱해도 순서에 따라 사진이 다른 방향으로 갑니다.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>핵심 질문에 답하기 — "사진을 한 칸 옮기는 일이 왜 '곱셈'인가?"</h3>
+    <p><b>답.</b> 곱셈이 하는 일은 <b>"어느 줄을 어디로 가져올지 골라 오는 일"</b> 이기 때문입니다.
+      0과 1로 된 행렬은 그 <b>선택표</b>이고, 곱셈은 그 표를 따라 줄을 재배치합니다.</p>
+    <p>AB의 제 j 열을 만드는 것은 B의 제 j 열입니다. 그러므로 B의 어느 자리에 1을 놓느냐가
+      "결과의 j 번째 열에는 A의 어느 열을 가져올까"를 정합니다.</p>
+    <p>1을 대각선 옆에 줄지어 놓으면 열이 한 칸씩 밀리고(평행이동), 반대 대각선에 놓으면 열의 순서가 뒤집힙니다(좌우 반전).
+      <b>곱셈이 곧 재배치의 언어</b>입니다.</p>
+    <p>이 관점은 16차시의 전치와 짝을 이룹니다. 전치는 <b>규칙 하나</b>로 자리를 바꾸었고,
+      곱셈은 <b>표를 만들어</b> 자리를 바꿉니다. 표를 쓸 수 있다는 것은
+      <b>원하는 재배치를 자유롭게 설계할 수 있다</b>는 뜻입니다.</p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="mm-quiz"></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" onclick="go('imgcls')">
+      <h3>다음 차시 · 18차시 — 손글씨 인식과 해밍 거리 분류</h3>
+      <p>지금까지는 <b>바꾸는</b> 법이었습니다. 이제 <b>알아보는</b> 법입니다. 다름을 하나의 수로 재어 분류합니다.</p>
+    </div>
+    <div class="card-link" onclick="go('transpose')">
+      <h3>돌아보기 · 16차시 — 전치행렬</h3>
+      <p>규칙 하나로 자리를 바꾸는 방법이었습니다. 오늘의 곱셈과 어떻게 다른지 다시 확인해 보세요.</p>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 · 18차시 「손글씨 인식과 해밍 거리 분류」</strong> —
+    14~17차시에서 우리는 이미지를 <b>바꾸는</b> 법을 배웠습니다. 밝기를 바꾸고, 색을 지우고, 자리를 옮기고, 뒤집었습니다.
+    다음 시간부터는 <b>알아보는</b> 법입니다. Quick, Draw! 로 문을 열고, 손글씨를 28 × 28 행렬로 직접 모은 뒤,
+    0부터 9까지의 기준 숫자와 <b>얼마나 다른지를 하나의 수</b>로 재어 분류합니다. 그리고 비뚤어진 7에서 <b>한계</b>를 만납니다.
+    <br><span style="font-size:0.95rem;">(오늘 배운 행렬의 곱셈은 <b>19차시</b>에서 다시 등장합니다. 신경망이 "이건 고양이다"라고 판단하는 마지막 단계가 바로 행렬의 곱셈입니다.)</span>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
+    <p>카드를 누르면 새 탭에서 열립니다.</p>
+    <div class="mm-refs">
+      <a class="mm-ref" href="https://tjdgus1121.github.io/activity8_matrix_pattern.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🔢</span>
+        <span class="bd"><span class="tt">행렬 곱셈 시각화 A × T = R (황성현)</span>
+          <span class="ds">입력 행렬과 변환 행렬을 직접 채우고 프리셋(오른쪽·왼쪽·위·아래 이동)으로 결과를 확인합니다. 활동 ②의 원본 도구이며 CSV로 내려받을 수 있습니다.</span></span>
+      </a>
+      <a class="mm-ref" href="https://tjdgus1121.github.io/activity7_matrix_product2.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🎨</span>
+        <span class="bd"><span class="tt">행렬 변환 시각화 — 섞인 사진 복구 (황성현)</span>
+          <span class="ds">사진을 10 × 10으로 픽셀화해 행·열을 섞고, 변환 행렬을 만들어 되돌리는 퍼즐입니다. 활동 ④의 원본 도구입니다.</span></span>
+      </a>
+      <a class="mm-ref" href="assets/worksheets/image/활동6_행렬의곱셈과평행이동.pdf" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">학습지</span>📄</span>
+        <span class="bd"><span class="tt">활동6 「행렬의 곱셈과 이미지 평행이동」</span>
+          <span class="ds">오늘 수업의 <b>주 학습지</b>입니다. 곱셈 계산 2문항, A × T vs T × A 비교, 섞인 사진 복구 절차, 심화(좌우·상하 반전)로 이루어져 있습니다.</span></span>
+      </a>
+      <a class="mm-ref" href="https://www.youtube.com/watch?v=DmOdYauHdK0" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">영상 · 심화</span><img src="https://img.youtube.com/vi/DmOdYauHdK0/hqdefault.jpg" alt="" loading="lazy"
+          onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="bd"><span class="tt">고등학교 신설 교과목 『인공지능 수학』 — 이상엽Math</span>
+          <span class="ds">과목 전체를 한 편으로 훑습니다. 3단원이 전체 어디에 놓이는지 확인할 때 좋습니다.</span></span>
+      </a>
+      <a class="mm-ref" href="assets/worksheets/image/이미지_형성평가_2026.pdf" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">학습지</span>📝</span>
+        <span class="bd"><span class="tt">이미지 단원 형성평가 2026 (교사용)</span>
+          <span class="ds">3단원 수행평가 문항입니다. PDF 약 198 KB.</span></span>
+      </a>
+    </div>
+    <div id="mm-ref-custom" class="mm-refs" style="margin-top:0.8rem;"></div>
+    <div class="btn-row" style="align-items:center;">
+      <input class="mm-refin" id="mm-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="추가할 자료 주소">
+      <input class="mm-refin" id="mm-ref-tt" type="text" placeholder="자료 제목(선택)" aria-label="추가할 자료 제목">
+      <button class="btn pri" type="button" onclick="mmRefAdd()">+ 자료 추가</button>
+    </div>
+    <p class="status" id="mm-ref-st">교사용 — 추가한 자료는 이 기기에만 저장됩니다. 패들렛 링크도 여기에 걸 수 있습니다.</p>
+
+    <h3 style="margin-top:1.6rem;">공학 도구로 직접 해 보기</h3>
+    <div class="mm-tools">
+      <div class="mm-tool">
+        <div class="hd"><span class="em">📊</span><span class="nm">스프레드시트</span></div>
+        <h4>MMULT 함수로 4 × 4 행렬 곱을 한 번에</h4>
+        <ol>
+          <li><b>B2:E5</b> 에 이미지 행렬 A(0/1)를, <b>G2:J5</b> 에 변환 행렬 B를 입력합니다.</li>
+          <li><b>L2</b> 를 클릭하고 <b>=MMULT(B2:E5, G2:J5)</b> 를 입력합니다(엑셀은 L2:O5 를 먼저 선택하고 <b>Ctrl+Shift+Enter</b>).</li>
+          <li>세 범위 모두에 <b>조건부 서식 → 색상 스케일</b>을 적용해 이미지처럼 보이게 합니다.</li>
+          <li><b>=MMULT(G2:J5, B2:E5)</b> 로 BA 도 만들어 <b>좌우로 비교</b>합니다.</li>
+          <li>B의 1 자리를 바꿔 가며 방향이 어떻게 달라지는지 기록합니다.</li>
+        </ol>
+        <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener">구글 스프레드시트 열기 ↗</a>
+        <p class="cau">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="mm-tool">
+        <div class="hd"><span class="em">📐</span><span class="nm">지오지브라</span></div>
+        <h4>곱셈 결과를 즉시 확인하고 교환법칙을 반증</h4>
+        <ol>
+          <li><b>geogebra.org/calculator</b> 에 접속합니다.</li>
+          <li><b>A={{1,0,0,0},{1,1,0,0},{1,1,1,0},{1,0,0,0}}</b> 를 입력합니다.</li>
+          <li><b>B={{0,1,0,0},{0,0,1,0},{0,0,0,1},{0,0,0,0}}</b> 를 입력합니다.</li>
+          <li><b>A*B</b> 와 <b>B*A</b> 를 각각 입력해 <b>두 결과가 다름</b>을 확인합니다.</li>
+          <li>활동 ②의 정답과 대조합니다.</li>
+        </ol>
+        <a href="https://www.geogebra.org/calculator" target="_blank" rel="noopener">예제 열기 ↗</a>
+        <p class="cau">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="mm-tool">
+        <div class="hd"><span class="em">🐍</span><span class="nm">코랩</span></div>
+        <h4>사진 전체를 변환행렬로 옮기고 뒤집기</h4>
+        <ol>
+          <li>노트북을 열고 <b>런타임 → 모두 실행</b>을 누릅니다.</li>
+          <li>사진을 회색조 배열로 읽습니다.</li>
+          <li><b>n = img.shape[0]</b> 로 크기를 확인한 뒤 <b>D = np.eye(n)[::-1]</b> 로 반전 행렬을 만듭니다.</li>
+          <li><b>img @ D</b>(좌우) 와 <b>D @ img</b>(상하) 를 각각 출력해 비교합니다.</li>
+          <li><b>np.eye(n, k=1)</b> 로 평행이동 행렬을 만들어 실험합니다.</li>
+        </ol>
+        <a href="https://colab.research.google.com/" target="_blank" rel="noopener">코랩 열기 ↗</a>
+        <p class="cau">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="mm-tool">
+        <div class="hd"><span class="em">✏️</span><span class="nm">알지오매스</span></div>
+        <h4>곱셈의 '행과 열의 만남'을 손으로 확인</h4>
+        <ol>
+          <li><b>algeomath.kr</b> 에서 <b>[알지오매스 시작]</b> 을 누릅니다.</li>
+          <li>수식·행렬 입력으로 3 × 3 행렬 두 개를 만듭니다.</li>
+          <li>곱을 계산하고, 결과의 한 성분을 골라 <b>어느 행과 어느 열에서 왔는지</b> 손으로 표시합니다.</li>
+          <li>활동 ① 계산기의 하이라이트와 대조합니다.</li>
+        </ol>
+        <a href="https://www.algeomath.kr/" target="_blank" rel="noopener">알지오매스 열기 ↗</a>
+        <p class="cau">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>한 칸씩 옮겨 만든 4컷 애니메이션</h3>
+    <p class="sub">같은 행렬을 곱했는데 왜 움직이는 방향이 다를까요?
+      직접 만든 무늬를 두 방향으로 걸어가게 해 보면 그 이유가 손으로 이해됩니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 5 × 5 격자에 자기만의 무늬(별·화살표·이름 첫 글자)를 그리고 행렬 A를 손으로 적습니다.
+        ② 오른쪽으로 한 칸 옮기는 행렬 B(5 × 5)를 만들고 <b>AB, (AB)B, ((AB)B)B</b> 를 차례로 계산해 <b>4컷 스트립</b>을 완성합니다.
+        ③ 같은 B로 <b>BA, B(BA), …</b> 를 계산해 <b>두 번째 4컷 스트립</b>을 만듭니다.
+        ④ 두 스트립을 나란히 붙이고 <b>"같은 행렬을 곱했는데 왜 움직이는 방향이 다른가"</b>를 한 문단(3~5문장)으로 설명합니다.
+        ⑤ <b>AD</b>(좌우 반전)를 한 번 적용한 컷을 하나 더 붙여 이동과 반전이 어떻게 다른지 한 줄로 씁니다.</dd>
+      <dt>제출물</dt>
+      <dd>4컷 스트립 2개(총 8컷) + 반전 1컷 + 한 문단 서술 + 손계산 과정(행렬 4개 이상)</dd>
+      <dt>평가 관점</dt>
+      <dd>0·1 정사각행렬의 곱으로 평행이동·반전을 <b>정확히 계산</b>하는가.
+        <b>곱하는 위치</b>(왼쪽/오른쪽)와 결과 방향의 관계를 자기 예시로 설명하는가.
+        <b>AB ≠ BA</b> 를 <b>자신이 만든 반례</b>로 제시하는가. <b>[12인수03-02]</b></dd>
+      <dt>확장(선택)</dt>
+      <dd>8컷을 이어 붙이면 무늬가 걸어가는 짧은 애니메이션이 됩니다.
+        활동 ②의 <b>[결과 내려받기 (CSV)]</b> 로 각 컷의 행렬을 저장해 두면 발표 자료를 만들기 쉽습니다.</dd>
+    </dl>
+  </div>
+
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>17차시 학습지 — 활동6 「행렬의 곱셈과 이미지 평행이동」</h3>
+    <p><b>활동6</b> 이 오늘의 <b>주 학습지</b>입니다.
+      구성은 "곱셈 정의 → 계산 2문항 → A × T vs T × A 비교 → 섞인 사진 복구 절차 3단 → 심화(좌우·상하 반전)" 입니다.
+      학습지의 <b>[역할 뒤집기 활용]</b> 표기는 웹 위젯의 <b>[좌우 자리 직접 바꾸기]</b> 스위치와 대응하므로
+      <b>둘을 함께 쓰세요.</b></p>
+    <div class="ws-dl">
+      <a class="ws-btn" href="assets/worksheets/image/활동6_행렬의곱셈과평행이동.pdf" download>📄 활동6 학습지 (주 학습지) <span class="sz">PDF · 약 199 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/활동6_행렬의곱셈과평행이동.hwpx" download>📝 활동6 (편집용) <span class="sz">HWPX · 약 282 KB</span></a>
+      <button class="ws-btn sec" type="button" onclick="wsPrint('mm-sheet')">🖨 웹 활동 기록지 인쇄 <span class="sz">A4 1쪽</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/image/이미지_형성평가_2026.pdf" download>📄 이미지 단원 형성평가 2026 <span class="sz">PDF · 약 198 KB</span></a>
+    </div>
+    <div id="mm-wslinks"></div>
+  </div>
+
+  <!-- ── 인쇄용 학습지 지면 (A4 1쪽) ─────────────────────── -->
+  <div class="ws-sheet" id="mm-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>17차시 웹 활동 기록지 — 행렬의 곱셈: 이미지를 옮기고 뒤집다</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+    <p class="note"><b>학습 목표</b> ① 행렬의 곱셈의 정의와 곱이 정의되는 조건을 알고 계산할 수 있다.
+      ② 0·1 정사각행렬을 곱해 이미지를 평행이동·반전시킬 수 있다.
+      ③ 교환법칙이 성립하지 않음을 이미지로 설명할 수 있다. &nbsp; <b>※ 주 학습지는 「활동6」 PDF 입니다.</b></p>
+
+    <h3>① 마중 퀴즈 기록</h3>
+    <table>
+      <tr><th style="width:56%;">질문</th><th style="width:12%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>2 × 3 행렬 A와 3 × 2 행렬 B — AB·BA 는 각각 계산되는가? 꼴은?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>AB 와 BA 가 모두 계산되면 두 결과는 항상 같은가? (O / X)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>이미지를 오른쪽으로 옮기려면 어느 쪽에 곱해야 하나?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 ② · 정리 표 (곱하는 위치와 방향)</h3>
+    <table>
+      <tr><th>곱하는 행렬</th><th>곱하는 위치</th><th>이미지 결과</th><th>움직인 것은 행? 열?</th></tr>
+      <tr><td class="blank">B</td><td class="blank">A의 오른쪽 (AB)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">C</td><td class="blank">A의 오른쪽 (AC)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">B</td><td class="blank">A의 왼쪽 (BA)</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">C</td><td class="blank">A의 왼쪽 (CA)</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">빈칸 — "A × T 인 경우 ( ______ )의 위치가 바뀌고, T × A 인 경우 ( ______ )의 위치가 바뀐다."</p>
+
+    <h3>③ 활동 ③ · 반전 행렬 D 와 i + j 표</h3>
+    <table>
+      <tr><th>n</th><th>1을 놓은 자리 (i, j)</th><th>i + j</th></tr>
+      <tr><td class="blank">3</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">4</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="blank">5</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>④ 활동 ④ · [생각해보기]</h3>
+    <p class="note">A × T 에서 T × A 로 바꾸면 결과의 성분값이 어떻게 달라지는지 한 문장으로 쓰세요.</p>
+    <div class="rule"></div>
+
+    <h3>⑤ 형성평가</h3>
+    <ol>
+      <li>[[1,0,2],[0,1,1],[1,1,0]] · [[0,1,0],[0,0,1],[1,0,0]] 의 (1, 1) 성분은?<br>
+        ① 0 &nbsp; ② 1 &nbsp; ③ 2 &nbsp; ④ 3 &nbsp; 답: ______ / 계산: ____________________</li>
+      <li>B = [[0,1,0,0],[0,0,1,0],[0,0,0,1],[0,0,0,0]] 일 때 BA 가 나타내는 이미지는?<br>
+        ① 오른쪽 한 픽셀 &nbsp; ② 왼쪽 한 픽셀 &nbsp; ③ 위쪽 한 픽셀 &nbsp; ④ 아래쪽 한 픽셀 &nbsp; 답: ______</li>
+      <li>B = [[0,1,0],[0,0,1],[0,0,0]], C = [[0,0,1],[0,1,0],[1,0,0]] 일 때 옳게 짝지은 것은?<br>
+        ① AB=좌우 반전, AC=오른쪽 평행이동 &nbsp; ② AB=오른쪽 평행이동, AC=좌우 반전 &nbsp;
+        ③ AB=위쪽 평행이동, AC=상하 반전 &nbsp; ④ AB=상하 반전, AC=왼쪽 평행이동 &nbsp; 답: ______</li>
+      <li>A = [[0,0,0],[0,1,0],[1,1,0]] 이고 AB 가 좌우가 반전된 이미지일 때 B는?<br>
+        ① [[0,1,0],[0,0,1],[0,0,0]] &nbsp; ② [[1,0,0],[0,1,0],[0,0,1]] &nbsp;
+        ③ [[0,0,1],[0,1,0],[1,0,0]] &nbsp; ④ [[0,0,0],[1,0,0],[0,1,0]] &nbsp; 답: ______</li>
+      <li>다음 중 옳지 않은 것은?<br>
+        ① 2×3 과 3×2 의 곱은 2×2 행렬이다 &nbsp; ② 곱해도 그대로인 행렬을 곱하면 이미지가 변하지 않는다 &nbsp;
+        ③ 곱셈에서는 일반적으로 교환법칙이 성립하지 않는다 &nbsp; ④ A의 오른쪽에 알맞은 행렬을 곱하면 위쪽으로 평행이동할 수 있다 &nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑥ 핵심 질문</h3>
+    <p><b>사진을 한 칸 옮기는 일이 왜 '곱셈'인가?</b></p>
+    <div class="rule lg"></div>
+  </div>
+</div>

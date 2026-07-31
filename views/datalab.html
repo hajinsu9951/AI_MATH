@@ -1,8 +1,8 @@
-<!-- ═══════════ DATALAB (29차시: 탐구 수행 — 데이터·모델링·시각화) ═══════════
+<!-- ═══════════ DATALAB (33차시: 탐구 수행 — 데이터·모델링·시각화) ═══════════
      · 파일 위치: views/datalab.html  (신규)
      · 전역 접두사 dl · 뷰 루트 id #v-datalab · 모든 스타일 규칙은 #v-datalab 하위로만 작성
      · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
-     · 재사용 규약: 손실·경사하강 계산은 24~26차시 optim 뷰의 op* 공용 함수를 우선 호출하고,
+     · 재사용 규약: 손실·경사하강 계산은 25~28차시 optim 뷰의 op* 공용 함수를 우선 호출하고,
        아직 붙지 않았을 때만 동일한 식의 dl 내부 구현으로 대체합니다(INTEGRATION.md §3 참조).
      ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-datalab">
@@ -219,10 +219,10 @@
       <rect x="142" y="44" width="14" height="14" fill="none" stroke="var(--red)" stroke-width="1.6"/>
       <rect x="180" y="44" width="12" height="12" fill="none" stroke="var(--red)" stroke-width="1.6"/>
     </svg>
-    <p class="mono" style="margin-bottom:0.4rem;">Ⅴ 단원 · 29차시 · [12인수05-02]</p>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅴ 단원 · 33차시 · [12인수05-02]</p>
     <h2>탐구 수행 — 내 데이터로 예측 모형 만들기</h2>
     <p class="desc">
-      28차시에 세운 계획서의 <b>x와 y</b>가 이제 실제 수가 되어 돌아옵니다.
+      32차시에 세운 계획서의 <b>x와 y</b>가 이제 실제 수가 되어 돌아옵니다.
       비어 있는 칸과 튀는 값을 먼저 정리하고, 산점도 → 추세선 → 손실함수 → 경사하강을
       <b>한 화면에서 이어서</b> 실행해 보고서 [D]란에 옮겨 담습니다.
     </p>
@@ -311,9 +311,9 @@
             <path d="M212 94 l-3.5 -6 h7 z"/><path d="M108 150 l-3.5 -6 h7 z"/>
           </g>
           <text x="264" y="66" font-family="monospace" font-size="9.5" fill="var(--red)" text-anchor="middle">오늘</text>
-          <text x="212" y="142" font-family="monospace" font-size="9.5" fill="var(--muted)" text-anchor="middle">30차시</text>
+          <text x="212" y="142" font-family="monospace" font-size="9.5" fill="var(--muted)" text-anchor="middle">34차시</text>
         </svg>
-        <p class="dl-cvcap">28차시에 1·2단계를 마쳤습니다. 오늘은 <b>3·4단계</b>, 다음 시간에는 5단계입니다.</p>
+        <p class="dl-cvcap">32차시에 1·2단계를 마쳤습니다. 오늘은 <b>3·4단계</b>, 다음 시간에는 5단계입니다.</p>
       </div>
       <div>
         <p>오늘 여러분이 하는 일은 딱 두 가지입니다.</p>
@@ -483,8 +483,8 @@
             <b>데이터 전처리</b>라고 합니다.</p>
           <p class="dl-fml">데이터 전처리 = <b>① 수집·확인</b>(결측값·이상치·중복 찾기) → <b>② 정제</b>(대체·조정·삭제)
 → <b>③ 변환</b>(정규화 등) → <b>④ 특성 선택</b></p>
-          <p>17차시에서 픽셀값에 <b>1/255를 곱해</b> 0~1로 맞춘 것이 ③ 변환(정규화)이고,
-            6차시에서 <b>불용어를 걸러</b> 단어집합을 만든 것이 ② 정제였습니다.
+          <p>20차시에서 픽셀값에 <b>1/255를 곱해</b> 0~1로 맞춘 것이 ③ 변환(정규화)이고,
+            7차시에서 <b>불용어를 걸러</b> 단어집합을 만든 것이 ② 정제였습니다.
             전처리는 오늘 처음 배우는 것이 아니라, 1단원부터 계속 해 온 일에 이름을 붙인 것입니다.</p>
           <ul>
             <li>결측값이나 이상치가 있으면 <b>데이터의 경향성을 파악하는 데 도움이 되지 않습니다.</b></li>
@@ -516,7 +516,7 @@
 
     <div class="card" data-no-toggle="1">
       <h3>일반화 — 내 자료로 해 보기</h3>
-      <p>28차시 계획서에 적은 데이터 출처에서 자료를 <b>10행 이상</b> 가져와 위 칸에 붙여넣고,
+      <p>32차시 계획서에 적은 데이터 출처에서 자료를 <b>10행 이상</b> 가져와 위 칸에 붙여넣고,
         결측값·이상치를 처리해 보세요. 그리고 아래에 <b>처리 기록</b>을 남깁니다.
         이 기록은 그대로 보고서 [C]란(데이터 정리)의 근거가 됩니다.</p>
       <textarea class="dl-ta dl-note" id="dl-a1-note"
@@ -531,7 +531,7 @@
     <div class="card" id="dl-act2" data-no-toggle="1">
       <h3>활동 2 · 「가장 좋은 기울기 찾기」 — y = ax 와 손실함수 L(a)</h3>
       <p>정리한 자료에 <b>원점을 지나는 직선 y = ax</b> 하나를 얹어 예측해 봅니다.
-        24차시에서 배운 그대로, 기울기 a를 바꾸면 <b>잔차(오차)</b>가 달라지고
+        25차시에서 배운 그대로, 기울기 a를 바꾸면 <b>잔차(오차)</b>가 달라지고
         <b>손실함수 L(a)</b>의 값이 함께 움직입니다.</p>
       <p class="dl-fml">L(a) = { (y₁ − ax₁)² + (y₂ − ax₂)² + ⋯ + (yₙ − axₙ)² } ÷ n   ← 오차의 제곱의 평균(MSE)</p>
       <p>슬라이더를 움직여 <b>손실함수의 값이 가장 작아지는 a</b>를 눈으로 먼저 찾아보세요.
@@ -594,13 +594,13 @@
             <b>최적인 a에서는 파랑과 빨강이 섞여 있고, 정사각형 넓이의 합이 가장 작습니다.</b></p>
           <p>여기서 중요한 것은 <b>“잔차의 합이 0”이 최적의 기준이 아니라는 점</b>입니다.
             부호가 반대인 잔차는 더할 때 서로 상쇄되기 때문에, 아주 나쁜 직선에서도 잔차의 합이 0이 될 수 있습니다.
-            그래서 <b>제곱해서 더한 뒤 평균</b>을 냅니다(24차시).</p>
+            그래서 <b>제곱해서 더한 뒤 평균</b>을 냅니다(25차시).</p>
           <p>온실가스–해수면 자료를 골랐다면 다른 것이 보입니다. 최적의 a(≒ 1.834)로 맞추어도
             <b>x가 작은 왼쪽 점들은 거의 모두 직선 위에 남습니다</b>(잔차가 +2 ~ +5cm).
             y = ax 는 반드시 <b>원점을 지나야</b> 하는데 이 자료는 x = 0 에서 y가 0이 아니기 때문입니다.
             교과서가 제시한 추세선은 <b>y = 1.08x + 9</b> 이고, 이 <b>+9</b> 가 바로 y = ax 로는 담을 수 없는 부분입니다.
-            이럴 때는 <b>y = ax + b</b> 가 필요합니다(22·23차시).</p>
-          <div class="btn-row"><button class="btn" type="button" onclick="aimGoLesson('trend','22차시')">22·23차시 · 추세선 y = ax + b 보기</button></div>
+            이럴 때는 <b>y = ax + b</b> 가 필요합니다(23·24차시).</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="aimGoLesson('trend','23차시')">23·24차시 · 추세선 y = ax + b 보기</button></div>
         </div>
       </details>
 
@@ -689,7 +689,7 @@
     <div class="card" id="dl-act3" data-no-toggle="1">
       <h3>활동 3 · 「기계에게 시켜 보기」 — 경사하강법 실행</h3>
       <p>활동 2에서는 <b>사람이</b> 슬라이더를 움직여 최적의 a를 찾았습니다.
-        인공지능은 이 일을 <b>스스로</b> 합니다. 방법은 26차시에서 배운 그대로입니다.</p>
+        인공지능은 이 일을 <b>스스로</b> 합니다. 방법은 28차시에서 배운 그대로입니다.</p>
       <p class="dl-fml">aₙ₊₁ = aₙ − k · L′(aₙ)      (k는 학습률, L′(a)는 손실함수의 미분계수)</p>
       <p>지금 자리의 <b>접선의 기울기 L′(a)</b>를 보고, 기울기가 양수면 왼쪽으로, 음수면 오른쪽으로
         <b>k만큼의 비율로</b> 한 걸음 옮기는 것을 반복합니다.</p>
@@ -785,8 +785,8 @@
           <p>이것이 <b>하이퍼파라미터</b>입니다. 데이터로 학습되는 값(a)과 달리
             <b>사람이 미리 정해 주어야 하는 값</b>(k, 반복 횟수, 초깃값)이며,
             정하는 근거를 보고서에 적어야 합니다.</p>
-          <div class="btn-row"><button class="btn" type="button" onclick="aimGoLesson('optim','24차시')">24~26차시 · 손실함수와 경사하강 다시 보기</button>
-            <button class="btn" type="button" onclick="go('gdsheet')">27차시 · 시트로 학습 루프 만들기</button></div>
+          <div class="btn-row"><button class="btn" type="button" onclick="aimGoLesson('optim','25차시')">25~28차시 · 손실함수와 경사하강 다시 보기</button>
+            <button class="btn" type="button" onclick="go('gdsheet')">29차시 · 시트로 학습 루프 만들기</button></div>
         </div>
       </details>
 
@@ -851,45 +851,45 @@
         <div class="dl-tool">
           <h4>수치·표 자료</h4>
           <p>기온과 판매량, 배출량과 해수면, 공부 시간과 점수처럼 <b>두 수 사이의 관계</b>를 묻는 탐구.</p>
-          <p><b>도구</b> — 산점도·추세선(22차시) → 과적합 점검(23차시) → 손실함수 L(a)(24차시) →
-            경사하강법(25·26차시) → 학습 루프(27차시). 확률로 예측한다면 20·21차시.</p>
+          <p><b>도구</b> — 산점도·추세선(23차시) → 과적합 점검(24차시) → 손실함수 L(a)(25차시) →
+            경사하강법(27·28차시) → 학습 루프(29차시). 확률로 예측한다면 21·22차시.</p>
           <div class="btn-row">
-            <button class="btn" type="button" onclick="aimGoLesson('trend','22차시')">22·23차시 trend</button>
-            <button class="btn" type="button" onclick="aimGoLesson('optim','24차시')">24~26차시 optim</button>
-            <button class="btn" type="button" onclick="go('gdsheet')">27차시 gdsheet</button>
-            <button class="btn" type="button" onclick="aimGoLesson('prob','20차시')">20·21차시 prob</button>
+            <button class="btn" type="button" onclick="aimGoLesson('trend','23차시')">23·24차시 trend</button>
+            <button class="btn" type="button" onclick="aimGoLesson('optim','25차시')">25~28차시 optim</button>
+            <button class="btn" type="button" onclick="go('gdsheet')">29차시 gdsheet</button>
+            <button class="btn" type="button" onclick="aimGoLesson('prob','21차시')">21·22차시 prob</button>
           </div>
         </div>
         <div class="dl-tool">
           <h4>이미지 자료</h4>
           <p>사진으로 분류하거나 세는 탐구(분리수거, 병해충 잎, 표지판, 잔반 사진 등).</p>
-          <p><b>도구</b> — 픽셀 행렬로 표현(12차시) → 이진화·해밍 거리로 분류(13차시) →
-            행렬 연산으로 변형(14차시) → 합성곱·커널(15·16차시) → 풀링(17차시) →
-            CNN 파이프라인(18차시) → 객체 탐지(19차시).</p>
+          <p><b>도구</b> — 픽셀 행렬로 표현(18차시) → 이진화·해밍 거리로 분류(18차시) →
+            행렬 연산으로 변형(14차시) → 합성곱·커널(20차시) → 풀링(20차시) →
+            CNN 파이프라인(20차시) → 객체 탐지(20차시).</p>
           <div class="btn-row">
-            <button class="btn" type="button" onclick="go('mnist')">12차시 mnist</button>
-            <button class="btn" type="button" onclick="go('hamming')">13차시 hamming</button>
-            <button class="btn" type="button" onclick="go('pipeline')">18차시 pipeline</button>
-            <button class="btn" type="button" onclick="go('detect')">19차시 detect</button>
+            <button class="btn" type="button" onclick="go('mnist')">18차시 mnist</button>
+            <button class="btn" type="button" onclick="go('hamming')">18차시 hamming</button>
+            <button class="btn" type="button" onclick="go('pipeline')">20차시 pipeline</button>
+            <button class="btn" type="button" onclick="go('detect')">20차시 detect</button>
           </div>
         </div>
         <div class="dl-tool">
           <h4>텍스트 자료</h4>
           <p>후기·설문 서술·기사·댓글처럼 <b>글</b>을 모아 무엇이 중요한지, 얼마나 비슷한지 묻는 탐구.</p>
-          <p><b>도구</b> — 전처리와 단어집합(6차시) → 벡터로 표현(7차시) → TF-IDF로 핵심어 뽑기(8차시) →
-            유클리드·코사인 유사도(9차시) → 자카드와 감성 분석(10차시) → 대시보드·추천(11차시).</p>
+          <p><b>도구</b> — 전처리와 단어집합(7차시) → 벡터로 표현(8차시) → TF-IDF로 핵심어 뽑기(9차시) →
+            유클리드·코사인 유사도(11차시) → 자카드와 감성 분석(12차시) → 대시보드·추천(13차시).</p>
           <div class="btn-row">
-            <button class="btn" type="button" onclick="aimGoLesson('text','6차시')">6·7차시 text</button>
-            <button class="btn" type="button" onclick="go('tfidf')">8차시 tfidf</button>
-            <button class="btn" type="button" onclick="go('sim')">9차시 sim</button>
-            <button class="btn" type="button" onclick="go('senti')">10차시 senti</button>
+            <button class="btn" type="button" onclick="aimGoLesson('text','7차시')">7·8차시 text</button>
+            <button class="btn" type="button" onclick="go('tfidf')">9차시 tfidf</button>
+            <button class="btn" type="button" onclick="go('sim')">11차시 sim</button>
+            <button class="btn" type="button" onclick="go('senti')">12차시 senti</button>
           </div>
         </div>
         <div class="dl-tool">
           <h4>두 가지 이상 섞였을 때</h4>
           <p>사진과 설문을 함께 모았다면 <b>둘로 나누어</b> 각각 도구를 붙이고, 마지막에 결론에서 합칩니다.</p>
-          <p>예) 급식 잔반 탐구 — <b>사진</b>은 13차시 해밍 거리로 잔반 유형을 분류하고,
-            <b>무게 표</b>는 22·24차시로 요일별 추세를 예측한 다음, 두 결과를 한 문단으로 잇습니다.</p>
+          <p>예) 급식 잔반 탐구 — <b>사진</b>은 18차시 해밍 거리로 잔반 유형을 분류하고,
+            <b>무게 표</b>는 23·25차시로 요일별 추세를 예측한 다음, 두 결과를 한 문단으로 잇습니다.</p>
           <p>도구를 <b>많이</b> 쓰는 것이 좋은 탐구가 아닙니다. <b>질문에 답하는 데 꼭 필요한 도구</b>만 고르세요.</p>
         </div>
       </div>
@@ -920,8 +920,8 @@
             <b>0에 가까운 것</b>을 페트병으로 분류했습니다.</p>
           <p><b>한계</b> 크기가 다르거나 형태가 왜곡된 이미지는 정확히 분류하지 못했습니다.
             해밍 거리는 <b>자리별 차이만</b> 보므로 전체적인 모양의 차이를 재기 어렵습니다
-            — 13차시 마지막에 직접 확인한 그 한계입니다.</p>
-          <div class="btn-row"><button class="btn" type="button" onclick="go('hamming')">13차시로 확인하기</button></div>
+            — 18차시 마지막에 직접 확인한 그 한계입니다.</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="go('hamming')">18차시로 확인하기</button></div>
           <span class="dl-src">씨마스 「인공지능 수학」 Ⅴ p.194~195 프로젝트 활동 예시 1을 요약·재구성</span>
         </div>
       </details>
@@ -934,8 +934,8 @@
             빈도가 높다는 것은 사용자가 그 품목의 분리 방법을 자주 <b>헷갈린다</b>는 뜻입니다.</p>
           <p><b>수행</b> ‘코팅된 종이컵’이 1000번, 그 뒤에 ‘종이류’가 500번 나왔다면
             다음 단어가 ‘종이류’일 확률은 500/1000 = 1/2 입니다. 챗봇은 이 <b>상대도수</b>로 다음 단어를 예측합니다
-            — 20·21차시에서 배운 그 상대도수입니다.</p>
-          <div class="btn-row"><button class="btn" type="button" onclick="go('tfidf')">8차시 빈도 분석으로</button></div>
+            — 21·22차시에서 배운 그 상대도수입니다.</p>
+          <div class="btn-row"><button class="btn" type="button" onclick="go('tfidf')">9차시 빈도 분석으로</button></div>
           <span class="dl-src">동아출판 「인공지능 수학」 Ⅴ p.166~169 인공지능 수학 탐구 예시를 요약·재구성</span>
         </div>
       </details>
@@ -958,13 +958,13 @@
       <h3>결과 옮기기 — 보고서 [D]란(탐구 수행·결과)</h3>
       <p>지금까지의 조작 결과가 아래 요약으로 정리되어 있습니다.
         <b>[[D]란에 붙여넣기]</b>를 누르면 이 내용이 프로젝트 보고서의 [D]란에 저장되어
-        30차시 <b>project</b> 뷰에서 그대로 이어서 작성할 수 있습니다.</p>
+        34차시 <b>project</b> 뷰에서 그대로 이어서 작성할 수 있습니다.</p>
       <div class="dl-dbox"><pre id="dl-dsum">활동 1~3을 진행하면 여기에 요약이 나타납니다.</pre></div>
       <div class="btn-row" style="margin-top:0.8rem;">
         <button class="btn pri" type="button" onclick="dlToD()">[D]란에 붙여넣기</button>
         <button class="btn" type="button" onclick="dlCopy()">클립보드로 복사</button>
         <button class="btn" type="button" onclick="dlSumRefresh()">요약 다시 만들기</button>
-        <button class="btn" type="button" onclick="go('project')">30차시 project 뷰로</button>
+        <button class="btn" type="button" onclick="go('project')">34차시 project 뷰로</button>
       </div>
       <p class="status" id="dl-d-st"></p>
       <p class="dl-hint">저장 위치는 이 기기의 <b>localStorage['aimath.project']</b> 안 <b>D</b> 항목입니다.
@@ -990,7 +990,7 @@
             </table>
           </div>
           <p>같은 주제에서 <b>물음이 도구를 정하고, 도구가 모아야 할 자료를 정합니다.</b>
-            그래서 28차시에 계획서를 먼저 쓴 것입니다.</p>
+            그래서 32차시에 계획서를 먼저 쓴 것입니다.</p>
         </div>
       </details>
 
@@ -1074,14 +1074,14 @@
     <div id="dl-quiz"></div>
   </div>
 
-  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 30차시 · 100초 발표·동료평가·성찰</strong><br>
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 34차시 · 100초 발표·동료평가·성찰</strong><br>
     오늘 [D]란에 담은 수와 그림이 다음 시간 <b>100초 발표</b>의 근거가 됩니다.
     타이머가 100초를 세는 동안 “무엇을 물었고, 어떤 자료를 어떻게 정리했고, 어떤 수학으로 답했고,
     그 답을 얼마나 믿을 수 있는지”를 말해야 합니다.
     청중은 루브릭 A~E로 채점하고, 팀×영역 히트맵으로 우리 반 전체의 강점과 약점이 한눈에 드러납니다.
     <span style="display:block;margin-top:0.6rem;">
-      <button class="btn pri" type="button" onclick="go('project')">30차시로 이동 →</button>
-      <button class="btn" type="button" onclick="go('decision')">돌아보기 · 28차시 탐구 계획</button>
+      <button class="btn pri" type="button" onclick="go('project')">34차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('decision')">돌아보기 · 32차시 탐구 계획</button>
     </span>
   </div>
 
@@ -1093,18 +1093,18 @@
       계산의 정확성보다 <b>자료를 정리한 근거와 도구 선택의 타당성</b>이 이 과제의 중심입니다.</p>
     <dl>
       <dt>수행 방법</dt>
-      <dd>① 28차시 계획서의 x·y에 해당하는 자료를 <b>15행 이상</b> 모읍니다. 학교에서 구할 수 있는 것
+      <dd>① 32차시 계획서의 x·y에 해당하는 자료를 <b>15행 이상</b> 모읍니다. 학교에서 구할 수 있는 것
         (급식 잔반, 도서 대출, 매점 판매, 등교 시각과 지각, 학급 온습도, 학교 앞 통행량 등)이나
         공공데이터포털·국가통계포털·기상자료개방포털에서 내려받은 자료 모두 좋습니다.
         출처(기관·자료명·받은 날짜)를 반드시 적습니다.<br>
         ② 원자료를 <b>손대지 않은 상태로 한 번 캡처</b>해 둡니다. 그다음 결측값·이상치를 처리하고
         <b>무엇을 어떻게 왜</b> 처리했는지 표로 정리합니다(처리 전 평균 / 처리 후 평균 포함).<br>
-        ③ 29차시 웹 도구(<b>datalab</b>)에 붙여 넣어 산점도를 그리고, y = ax 로
+        ③ 33차시 웹 도구(<b>datalab</b>)에 붙여 넣어 산점도를 그리고, y = ax 로
         <b>손으로 구한 최적 a</b>(= Σxy ÷ Σx²)와 화면의 값을 비교합니다.<br>
         ④ 경사하강법을 <b>서로 다른 학습률 3개</b>로 실행하여 수렴·진동·발산을 각각 만들어 보고,
         내 자료에 알맞은 학습률과 그 근거를 씁니다.<br>
         ⑤ 예측이 <b>실제와 얼마나 맞았는지</b> 확인합니다. 자료 중 2~3행을 미리 빼 두었다가
-        추세선으로 예측한 값과 견주어 오차를 계산합니다(23차시 검증 데이터의 방식).</dd>
+        추세선으로 예측한 값과 견주어 오차를 계산합니다(24차시 검증 데이터의 방식).</dd>
       <dt>제출물</dt>
       <dd>· 원자료 표와 정리 후 표(A4 1장) + <b>처리 기록 표</b>(처리 대상 / 방법 / 이유)<br>
         · 산점도·추세선 그림 1장과 손실함수 곡선 그림 1장, 각 그림 아래에 <b>읽은 사실 한 문장</b><br>
@@ -1204,7 +1204,7 @@
   <!-- ═════ 학습지 ═════ -->
   <div class="ws" data-no-toggle="1">
     <span class="lb">학습지</span>
-    <h3>29차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <h3>33차시 학습지 — 손으로 기록하며 정리하기</h3>
     <p>오늘 웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.
       아래 인쇄용 지면은 웹 활동과 <b>1:1로 대응</b>하며, 그대로 채우면 보고서 [C]·[D]란의 초안이 됩니다.</p>
     <div class="ws-dl">
@@ -1215,7 +1215,7 @@
       학습지는 ① 원자료 옮겨 적기와 결측값·이상치 표시 ② 처리 기록(방법·이유) ③ 산점도 직접 그리기
       ④ Σx²·Σxy·최적 a 손계산 ⑤ 경사하강 반복표 손계산 3행 ⑥ 학습률 3종 결말 기록
       ⑦ 도구 선택 근거와 핵심 질문 서술란으로 구성됩니다.<br>
-      <b>5단원은 프로젝트 차시</b>이므로 별도의 실물 활동지 대신 <b>보고서 양식 A~F</b>(30차시 project 뷰의 [인쇄하기])를
+      <b>5단원은 프로젝트 차시</b>이므로 별도의 실물 활동지 대신 <b>보고서 양식 A~F</b>(34차시 project 뷰의 [인쇄하기])를
       함께 배부하세요. 오늘 채운 [D]란이 그 양식의 네 번째 칸입니다.</p>
     <div id="dl-wslinks"></div>
   </div>
@@ -1223,7 +1223,7 @@
   <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
   <div class="ws-sheet" id="dl-sheet" aria-hidden="true">
     <div class="ws-h">
-      <h2>29차시 학습지 — 탐구 수행: 데이터·모델링·시각화</h2>
+      <h2>33차시 학습지 — 탐구 수행: 데이터·모델링·시각화</h2>
       <span class="ws-id">___학년 ___반 ___번 이름 __________ / 모둠 ______</span>
     </div>
     <p class="note">학습 목표 ① 수집한 데이터의 결측값·이상치를 처리하여 탐구 목적에 맞게 표현할 수 있다. [12인수05-02]<br>

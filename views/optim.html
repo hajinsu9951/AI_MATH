@@ -1,4 +1,4 @@
-<!-- ═══════════ OPTIM (24~26차시: 손실함수 · 미분계수 · 경사하강법) ═══════════
+<!-- ═══════════ OPTIM (25~28차시: 손실함수 · 미분계수 · 경사하강법) ═══════════
      · 파일 위치: views/optim.html  (신규)
      · 전역 접두사 op · 뷰 루트 id #v-optim · 모든 스타일 규칙은 #v-optim 하위로만 작성
      · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
@@ -244,27 +244,27 @@
       <circle cx="160" cy="152" r="7" fill="var(--green)"/>
       <path d="M20 160 H300" stroke="var(--border)" stroke-width="2"/>
     </svg>
-    <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 24~26차시 · [12인수04-03] [12인수04-04]</p>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 25~28차시 · [12인수04-03] [12인수04-04]</p>
     <h2>가장 좋은 직선을 찾아가는 세 걸음 — 손실함수 · 미분계수 · 경사하강법</h2>
     <p class="desc">
-      22~23차시에서는 추세선을 <b>눈으로</b> 그었습니다. 이제 "가장 좋다"를 <b>하나의 수</b>로 정의하고,
+      23~24차시에서는 추세선을 <b>눈으로</b> 그었습니다. 이제 "가장 좋다"를 <b>하나의 수</b>로 정의하고,
       그 수가 가장 작아지는 곳까지 기계가 스스로 걸어 내려가게 만듭니다.
-      24차시는 <b>목표</b>(손실함수), 25차시는 <b>나침반</b>(미분계수), 26차시는 <b>걸음걸이</b>(경사하강법)입니다.
+      25차시는 <b>목표</b>(손실함수), 27차시는 <b>나침반</b>(미분계수), 28차시는 <b>걸음걸이</b>(경사하강법)입니다.
     </p>
   </div>
 
   <div class="info" data-no-toggle="1" style="margin-top:0;">
     <strong>오늘의 학습 목표 — 세 차시를 하나의 뷰에서</strong>
     <div style="margin-top:0.5rem;">
-      ① [24차시] 오차를 <b>제곱하여 더하는 이유</b>를 설명하고, y=ax 꼴 추세선의 손실함수 L(a)를
+      ① [25차시] 오차를 <b>제곱하여 더하는 이유</b>를 설명하고, y=ax 꼴 추세선의 손실함수 L(a)를
       이차함수로 나타내어 그래프에서 최솟값을 찾을 수 있습니다. <b>[12인수04-03]</b>
     </div>
     <div style="margin-top:0.35rem;">
-      ② [25차시] 할선이 <b>접선에 가까워지는 과정</b>을 관찰하여 함수의 극한과 미분계수의 의미를 설명하고,
+      ② [27차시] 할선이 <b>접선에 가까워지는 과정</b>을 관찰하여 함수의 극한과 미분계수의 의미를 설명하고,
       미분계수의 부호로 손실함수가 줄어드는 방향을 판단할 수 있습니다. <b>[12인수04-04]</b>
     </div>
     <div style="margin-top:0.35rem;">
-      ③ [26차시] 갱신 규칙 <b>a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>)</b>에 따라 값을 반복 갱신하며,
+      ③ [28차시] 갱신 규칙 <b>a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>)</b>에 따라 값을 반복 갱신하며,
       초깃값·학습률에 따라 수렴·진동·발산이 갈리는 이유를 설명할 수 있습니다. <b>[12인수04-04]</b>
     </div>
     <div class="op-goalmap">
@@ -301,32 +301,32 @@
   <div class="card" data-no-toggle="1">
     <h3>추천 영상 — 오차에서 시작해 경사를 따라 내려가기까지</h3>
     <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
-      앞의 두 편은 24차시, 가운데 두 편은 25차시, 마지막 한 편은 26차시에 맞춘 영상입니다.</p>
+      앞의 두 편은 25차시, 가운데 두 편은 27차시, 마지막 한 편은 28차시에 맞춘 영상입니다.</p>
     <div id="op-videos"></div>
   </div>
 
   <div class="card" data-no-toggle="1">
-    <h3>마중 퀴즈 — 내 생각은? <span class="op-badge">24차시</span></h3>
+    <h3>마중 퀴즈 — 내 생각은? <span class="op-badge">25차시</span></h3>
     <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
       답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
     <div id="op-warm"></div>
     <p style="margin-top:1.1rem;"><b>세 질문의 답은 모두 오늘 수업에서 완성됩니다.</b>
       먼저 "좋은 직선"을 재는 자부터 만들어 봅시다.</p>
-    <p class="op-hint" style="margin-top:0.7rem;">※ <b>25차시</b>의 마중 퀴즈는 탭 ②(할선 → 접선) 맨 위에,
-      <b>26차시</b>의 마중 퀴즈는 탭 ④(경사하강법) 맨 위에 따로 있습니다.</p>
+    <p class="op-hint" style="margin-top:0.7rem;">※ <b>27차시</b>의 마중 퀴즈는 탭 ②(할선 → 접선) 맨 위에,
+      <b>28차시</b>의 마중 퀴즈는 탭 ④(경사하강법) 맨 위에 따로 있습니다.</p>
   </div>
 
   <!-- ═════ STEP 2 · 전개 ═════ -->
   <div class="op-step"><p class="mono">STEP 2 · 전개</p></div>
 
   <div class="tabs">
-    <button class="tab on" type="button" onclick="opTab(0,this)">① 손실함수 <span class="op-badge">24차시</span></button>
-    <button class="tab" type="button" onclick="opTab(1,this)">② 할선 → 접선 <span class="op-badge">25차시</span></button>
-    <button class="tab" type="button" onclick="opTab(2,this)">③ 안개 속 최솟값 <span class="op-badge">25차시</span></button>
-    <button class="tab" type="button" onclick="opTab(3,this)">④ 경사하강법 <span class="op-badge">26차시</span></button>
+    <button class="tab on" type="button" onclick="opTab(0,this)">① 손실함수 <span class="op-badge">25차시</span></button>
+    <button class="tab" type="button" onclick="opTab(1,this)">② 할선 → 접선 <span class="op-badge">27차시</span></button>
+    <button class="tab" type="button" onclick="opTab(2,this)">③ 안개 속 최솟값 <span class="op-badge">27차시</span></button>
+    <button class="tab" type="button" onclick="opTab(3,this)">④ 경사하강법 <span class="op-badge">28차시</span></button>
   </div>
 
-  <!-- ── 탭 ① 24차시 · 손실함수 L(a) ───────────────────────────────── -->
+  <!-- ── 탭 ① 25차시 · 손실함수 L(a) ───────────────────────────────── -->
   <div class="tpanel on" id="op0">
 
     <div class="card" id="op-act1" data-no-toggle="1">
@@ -409,7 +409,7 @@
             그 결과 f₁은 11/6 ≒ 1.83, f₂는 77/6 ≒ 12.83 으로 <b>7배 가까운 차이</b>가 드러납니다.</p>
           <p>또 제곱은 <b>큰 오차에 더 큰 벌점</b>을 줍니다. −6은 36으로, −1은 1로 계산되므로
             "많이 빗나간 점"이 값에 훨씬 강하게 반영됩니다.</p>
-          <p>절댓값을 씌워도 부호는 없앨 수 있습니다. 그런데도 제곱을 쓰는 결정적인 이유는 25·26차시에서 밝혀집니다
+          <p>절댓값을 씌워도 부호는 없앨 수 있습니다. 그런데도 제곱을 쓰는 결정적인 이유는 27·28차시에서 밝혀집니다
             — <b>제곱은 어디서나 매끄럽게 기울기를 잴 수 있기</b> 때문입니다.</p>
         </div>
       </details>
@@ -471,7 +471,7 @@
       <div class="btn-row">
         <button class="btn" type="button" onclick="opLPreset('cars')">씨마스 6점 (차량·통과 시간)</button>
         <button class="btn" type="button" onclick="opLPreset('three')">씨마스 3점 (1,1) (2,1) (2,3)</button>
-        <button class="btn" type="button" onclick="opLPreset('tea')">아이스티 10점 (27차시 예고)</button>
+        <button class="btn" type="button" onclick="opLPreset('tea')">아이스티 10점 (29차시 예고)</button>
       </div>
       <div class="op-ok" id="op-l-ok"></div>
     </div>
@@ -492,7 +492,7 @@
         <div class="bd">
           <p>절댓값 손실로 바꾸면 곡선이 <b>여러 개의 선분이 이어진 V 자 꺾은선</b>이 됩니다.
             꺾인 지점에서는 왼쪽에서 온 기울기와 오른쪽에서 온 기울기가 서로 달라 <b>접선을 하나로 정할 수 없습니다</b>.</p>
-          <p>26차시의 경사하강법은 "지금 서 있는 곳의 기울기"를 매 걸음 읽어야 합니다.
+          <p>28차시의 경사하강법은 "지금 서 있는 곳의 기울기"를 매 걸음 읽어야 합니다.
             기울기를 읽을 수 없는 점이 있는 함수는 그 걸음을 정할 수 없습니다. <b>제곱을 쓰는 진짜 이유</b>가 여기 있습니다.</p>
         </div>
       </details>
@@ -556,28 +556,28 @@
             <b>큰 오차를 절대 허용할 수 없는 문제</b>(브레이크 거리 예측 등)에서는 제곱 손실이 알맞습니다.</p>
           <p>다만 교육과정과 실제 인공지능 학습이 제곱 손실을 기본으로 쓰는 이유는 따로 있습니다.
             <b>어디서나 매끄러워 기울기를 읽을 수 있고, 그 기울기가 다시 일차식이 되어 계산이 간단</b>하기 때문입니다.
-            이 성질이 바로 25·26차시의 열쇠입니다.</p>
+            이 성질이 바로 27·28차시의 열쇠입니다.</p>
           <span class="op-src">동아출판 「인공지능 수학」 Ⅳ p.136 ‘오차의 절댓값의 합이 최소가 되는 방법을 이용할 수도 있다’ 서술을 재구성</span>
         </div>
       </details>
     </div>
 
     <div class="info" data-no-toggle="1">
-      <strong>24차시 마무리 → 다음 걸음</strong><br>
+      <strong>25차시 마무리 → 다음 걸음</strong><br>
       L(a) 의 꼭짓점은 이차함수라서 완전제곱식으로 <b>정확히</b> 구할 수 있었습니다.
       그런데 인공지능이 실제로 다루는 손실함수는 변수가 수만 개이고 이차함수보다 훨씬 복잡해, 꼭짓점을 직접 구할 수 없습니다.
       그렇다면 <b>발밑의 경사만 읽어서</b> 바닥을 찾아갈 수 있을까요?
       <span style="display:block;margin-top:0.6rem;">
-        <button class="btn pri" type="button" onclick="opSee(1,'op-act5')">② 할선 → 접선 (25차시)으로 →</button></span>
+        <button class="btn pri" type="button" onclick="opSee(1,'op-act5')">② 할선 → 접선 (27차시)으로 →</button></span>
     </div>
   </div>
 
-  <!-- ── 탭 ② 25차시 · 할선에서 접선으로 ──────────────────────────── -->
+  <!-- ── 탭 ② 27차시 · 할선에서 접선으로 ──────────────────────────── -->
   <div class="tpanel" id="op1">
 
     <div class="card" data-no-toggle="1" id="op-warm25-card">
-      <h3>25차시 마중 퀴즈 — 내 생각은? <span class="op-badge">25차시</span></h3>
-      <p style="margin-bottom:1rem;">여기서부터 <b>25차시</b>입니다. 정답을 몰라도 좋습니다.
+      <h3>27차시 마중 퀴즈 — 내 생각은? <span class="op-badge">27차시</span></h3>
+      <p style="margin-bottom:1rem;">여기서부터 <b>27차시</b>입니다. 정답을 몰라도 좋습니다.
         <b>지금의 생각</b>을 골라 보세요. 답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
       <div id="op-warm25"></div>
       <p style="margin-top:1.1rem;"><b>세 질문의 답은 오늘 탭 ②·③에서 완성됩니다.</b></p>
@@ -585,7 +585,7 @@
 
     <div class="card" id="op-act5" data-no-toggle="1">
       <h3>활동 5 · 「두 점을 지나는 직선이 한 점에서 접하는 직선이 되기까지」</h3>
-      <p>24차시의 마지막 질문은 <b>"꼭짓점을 직접 구할 수 없다면 어떻게 하나"</b> 였습니다.
+      <p>25차시의 마지막 질문은 <b>"꼭짓점을 직접 구할 수 없다면 어떻게 하나"</b> 였습니다.
         답은 <b>발밑의 경사</b>를 읽는 것입니다. 먼저 경사를 재는 방법부터 만듭니다.</p>
       <div class="math">y = f(x) = x² − 4x + 5
 P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h) − f(t) } ÷ h</div>
@@ -711,8 +711,8 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     </div>
 
     <div class="card" id="op-act7" data-no-toggle="1">
-      <h3>활동 7 · 「24차시의 손실함수에 나침반을 대 보기」</h3>
-      <p>같은 방법을 24차시에서 만든 손실함수에 그대로 적용합니다. 씨마스 6점 데이터의 손실함수는</p>
+      <h3>활동 7 · 「25차시의 손실함수에 나침반을 대 보기」</h3>
+      <p>같은 방법을 25차시에서 만든 손실함수에 그대로 적용합니다. 씨마스 6점 데이터의 손실함수는</p>
       <p class="op-fml">L(a) = (88a² − 330a + 319) ÷ 6 &nbsp;⇒&nbsp; L′(a) = (176a − 330) ÷ 6 = <b>(88a − 165) ÷ 3</b></p>
       <p>입니다. a 를 옮겨 가며 L′(a) 의 부호와 "어느 쪽으로 가야 하는가"를 읽어 보세요.</p>
       <div class="op-slide">
@@ -748,7 +748,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
           <p>L′(a) 의 <b>부호</b>는 어느 쪽으로 가야 하는지를, <b>절댓값</b>은 얼마나 급한 경사에 서 있는지를 알려 줍니다.
             바닥에서 멀면 경사가 급하고(절댓값이 큼), 가까우면 완만합니다(절댓값이 작음).</p>
           <p>그러므로 "부호의 반대쪽으로, 절댓값에 비례하는 만큼" 움직이면 바닥에 다가갈 수 있습니다.
-            이 한 문장을 식으로 옮기면 26차시의 <b>갱신식</b>이 됩니다.</p>
+            이 한 문장을 식으로 옮기면 28차시의 <b>갱신식</b>이 됩니다.</p>
         </div>
       </details>
       <details class="op-fold">
@@ -763,7 +763,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     </div>
 
     <div class="info" data-no-toggle="1">
-      <strong>25차시 이어서</strong><br>
+      <strong>27차시 이어서</strong><br>
       나침반은 손에 들었습니다. 그런데 정말 <b>발밑만 읽어서</b> 바닥을 찾을 수 있을까요?
       다음 탭에서 안개로 가려진 지형을 직접 걸어 보며 확인합니다.
       <span style="display:block;margin-top:0.6rem;">
@@ -771,7 +771,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     </div>
   </div>
 
-  <!-- ── 탭 ③ 25차시 · 안개 속 최솟값 찾기 ────────────────────────── -->
+  <!-- ── 탭 ③ 27차시 · 안개 속 최솟값 찾기 ────────────────────────── -->
   <div class="tpanel" id="op2">
 
     <div class="card" data-no-toggle="1">
@@ -835,7 +835,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
             다행히 우리가 다루는 y = ax 꼴 추세선의 손실함수는 <b>아래로 볼록한 이차함수</b>여서 골짜기가 하나뿐이고,
             극솟값과 최솟값이 일치합니다.</p>
           <p>실제 인공지능의 손실함수는 골짜기가 무수히 많습니다. 그래서 초깃값을 여러 번 바꾸어 시작해 보는 방법을 씁니다
-            — 26차시에서 <b>초깃값</b>을 직접 옮겨 확인합니다.</p>
+            — 28차시에서 <b>초깃값</b>을 직접 옮겨 확인합니다.</p>
         </div>
       </details>
     </div>
@@ -885,26 +885,26 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     </div>
 
     <div class="info" data-no-toggle="1">
-      <strong>25차시 마무리 → 26차시</strong><br>
+      <strong>27차시 마무리 → 28차시</strong><br>
       전략은 말로 완성했습니다. 이제 그 전략을 <b>수식 한 줄</b>로 적고, 기계가 스스로 반복하게 만듭니다.
       <span style="display:block;margin-top:0.6rem;">
-        <button class="btn pri" type="button" onclick="opSee(3,'op-act10')">④ 경사하강법 (26차시)으로 →</button></span>
+        <button class="btn pri" type="button" onclick="opSee(3,'op-act10')">④ 경사하강법 (28차시)으로 →</button></span>
     </div>
 
     <div class="card" data-no-toggle="1" id="op-chk25-card">
-      <h3>25차시 스스로 확인하기 — 미니 체크 3문항 <span class="op-badge">25차시</span></h3>
-      <p style="margin-bottom:0.8rem;">여기까지가 <b>25차시</b>입니다. 세 문항으로 오늘 배운 것을 바로 확인해 봅시다.
-        (24 · 25 · 26차시 <b>종합 9문항</b>은 STEP 3 에 따로 있습니다.)</p>
+      <h3>27차시 스스로 확인하기 — 미니 체크 3문항 <span class="op-badge">27차시</span></h3>
+      <p style="margin-bottom:0.8rem;">여기까지가 <b>27차시</b>입니다. 세 문항으로 오늘 배운 것을 바로 확인해 봅시다.
+        (25 · 27 · 28차시 <b>종합 9문항</b>은 STEP 3 에 따로 있습니다.)</p>
       <div id="op-chk25"></div>
     </div>
   </div>
 
-  <!-- ── 탭 ④ 26차시 · 경사하강법 ─────────────────────────────────── -->
+  <!-- ── 탭 ④ 28차시 · 경사하강법 ─────────────────────────────────── -->
   <div class="tpanel" id="op3">
 
     <div class="card" data-no-toggle="1" id="op-warm26-card">
-      <h3>26차시 마중 퀴즈 — 내 생각은? <span class="op-badge">26차시</span></h3>
-      <p style="margin-bottom:1rem;">여기서부터 <b>26차시</b>입니다. 정답을 몰라도 좋습니다.
+      <h3>28차시 마중 퀴즈 — 내 생각은? <span class="op-badge">28차시</span></h3>
+      <p style="margin-bottom:1rem;">여기서부터 <b>28차시</b>입니다. 정답을 몰라도 좋습니다.
         <b>지금의 생각</b>을 골라 보세요.</p>
       <div id="op-warm26"></div>
       <p style="margin-top:1.1rem;"><b>세 질문의 답은 오늘 활동 11·12에서 여러분이 직접 만들어 냅니다.</b></p>
@@ -912,9 +912,9 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
 
     <div class="card" id="op-act10" data-no-toggle="1">
       <h3>활동 10 · 「전략을 식 한 줄로」 — 갱신식 세우고 손으로 한 번 갱신하기</h3>
-      <p>25차시에서 얻은 두 문장을 그대로 식으로 옮깁니다.</p>
+      <p>27차시에서 얻은 두 문장을 그대로 식으로 옮깁니다.</p>
       <div class="op-scroll"><table class="op-tbl">
-        <tr><th>25차시에서 관찰한 것</th><th>식으로 옮기면</th></tr>
+        <tr><th>27차시에서 관찰한 것</th><th>식으로 옮기면</th></tr>
         <tr><td style="text-align:left;">L′(a₀) 의 <b>부호와 반대쪽</b>으로 가야 값이 줄어든다</td><td>a₁ − a₀ 의 부호 = −L′(a₀) 의 부호</td></tr>
         <tr><td style="text-align:left;">L′(a₀) 의 <b>절댓값이 클수록</b> 크게 움직여야 한다</td><td>|a₁ − a₀| 가 |L′(a₀)| 에 비례</td></tr>
         <tr class="hi"><td style="text-align:left;">두 조건을 한꺼번에 만족시키면</td>
@@ -1147,8 +1147,8 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
             <tr><td>1 − 2Ak = −1</td><td>같은 두 점을 영원히 왕복 (진동, k = 1/A)</td></tr>
             <tr class="bad"><td>|1 − 2Ak| &gt; 1</td><td>점점 멀어짐 (발산)</td></tr>
           </table></div>
-          <p class="op-hint">이 표가 곧 27차시의 답입니다. 아이스티 데이터는 A = 820 이므로 발산하지 않는 학습률의 상한이
-            1/A ≒ 0.00122 에 불과합니다. 그래서 27차시 실습에서 k = 0.0005 를 쓰고, k = 0.1 은 곧바로 폭발합니다.</p>
+          <p class="op-hint">이 표가 곧 29차시의 답입니다. 아이스티 데이터는 A = 820 이므로 발산하지 않는 학습률의 상한이
+            1/A ≒ 0.00122 에 불과합니다. 그래서 29차시 실습에서 k = 0.0005 를 쓰고, k = 0.1 은 곧바로 폭발합니다.</p>
         </div>
       </details>
     </div>
@@ -1161,7 +1161,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
           <p>학습률은 크면 빠르지만 위험하고, 작으면 안전하지만 느립니다.
             실무에서는 <b>발산하지 않는 가장 큰 값의 절반 정도</b>에서 시작해 조금씩 조정합니다.</p>
           <p>또 데이터의 크기(x 의 규모)가 커지면 A = (Σx²)/n 도 커지므로 <b>학습률을 그만큼 줄여야</b> 합니다.
-            27차시에서 기온 x 가 20~35 라는 큰 수여서 k 를 0.0005 까지 낮추는 이유가 바로 이것입니다.</p>
+            29차시에서 기온 x 가 20~35 라는 큰 수여서 k 를 0.0005 까지 낮추는 이유가 바로 이것입니다.</p>
           <span class="op-src">연수교재 합본 p.292 ‘생각해 보기 3’·p.296 ‘학습률과 반복’ 및 p.298 ④ 관찰 기록을 재구성</span>
         </div>
       </details>
@@ -1179,8 +1179,8 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     </div>
 
     <div class="card" data-no-toggle="1" id="op-chk26-card">
-      <h3>26차시 스스로 확인하기 — 미니 체크 3문항 <span class="op-badge">26차시</span></h3>
-      <p style="margin-bottom:0.8rem;">여기까지가 <b>26차시</b>입니다. 세 문항으로 오늘 배운 것을 바로 확인해 봅시다.</p>
+      <h3>28차시 스스로 확인하기 — 미니 체크 3문항 <span class="op-badge">28차시</span></h3>
+      <p style="margin-bottom:0.8rem;">여기까지가 <b>28차시</b>입니다. 세 문항으로 오늘 배운 것을 바로 확인해 봅시다.</p>
       <div id="op-chk26"></div>
     </div>
   </div>
@@ -1192,13 +1192,13 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     <h3>오늘의 핵심 3줄 — 목표 · 나침반 · 걸음걸이</h3>
     <ol style="margin:0.7rem 0 0 1.2rem;">
       <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
-        [24차시] 오차를 그냥 더하면 <b>상쇄</b>되어 비교할 수 없으므로 제곱하여 평균을 냅니다.
+        [25차시] 오차를 그냥 더하면 <b>상쇄</b>되어 비교할 수 없으므로 제곱하여 평균을 냅니다.
         그렇게 만든 <b>L(a) 는 a 에 대한 이차함수</b>이고, 그 꼭짓점이 최적 추세선의 기울기입니다.</li>
       <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.4rem;">
-        [25차시] 할선의 기울기 { f(t+h) − f(t) } ÷ h 에서 <b>h → 0</b> 의 극한이 접선의 기울기, 곧 <b>미분계수 f′(t)</b> 이며,
+        [27차시] 할선의 기울기 { f(t+h) − f(t) } ÷ h 에서 <b>h → 0</b> 의 극한이 접선의 기울기, 곧 <b>미분계수 f′(t)</b> 이며,
         그 <b>부호가 내려갈 방향</b>, <b>절댓값이 경사의 급함</b>을 알려 줍니다.</li>
       <li style="font-size:1.06rem;font-weight:600;">
-        [26차시] <b>a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>)</b> 을 반복하면 최솟값에 다가갑니다.
+        [28차시] <b>a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>)</b> 을 반복하면 최솟값에 다가갑니다.
         학습률 k 는 사람이 정하는 값이고, 너무 크면 <b>발산</b>합니다.</li>
     </ol>
   </div>
@@ -1240,20 +1240,27 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
   </div>
 
   <div class="card" data-no-toggle="1">
-    <h3>형성평가 — 24 · 25 · 26차시 종합 9문항</h3>
+    <h3>형성평가 — 25 · 27 · 28차시 종합 9문항</h3>
     <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
       마지막에 총점과 문항별 복기가 표시됩니다.</p>
     <div id="op-quiz"></div>
   </div>
 
-  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 27차시 · 종합 실습: 아이스티 판매 예측 AI</strong><br>
+  <div class="info" data-no-toggle="1"><strong>이어지는 26차시 예고 — 오차를 재는 두 개의 자</strong><br>
+    탭 ①에서 오차를 <b>제곱해</b> 더했습니다. 그런데 <b>절댓값</b>으로 더하면 어떨까요?
+    26차시에서는 두 자를 나란히 놓고, 튀는 값 하나에 두 자가 어떻게 다르게 반응하는지 확인합니다.
+    <span style="display:block;margin-top:0.5rem;color:var(--muted);font-family:var(--mono);font-size:0.8rem;">
+      26차시 뷰는 준비 중입니다. 탭 ②③(27차시)·탭 ④(28차시)로 먼저 이어집니다.</span>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 29차시 · 종합 실습: 아이스티 판매 예측 AI</strong><br>
     여름 매점의 아이스티가 얼마나 팔릴지 예측하는 AI 를 <b>직접 만들어 봅니다</b>.
-    24차시의 MSE 를 스프레드시트 수식으로 조립하고, 26차시의 갱신식을 셀에 연결해
+    25차시의 MSE 를 스프레드시트 수식으로 조립하고, 28차시의 갱신식을 셀에 연결해
     a 가 스스로 2 → 2.427 로 자라나는 과정을 표로 기록합니다.
     학습률 0.1 을 넣으면 오늘 배운 <b>발산</b>이 실제로 눈앞에서 일어납니다.
     <span style="display:block;margin-top:0.6rem;">
-      <button class="btn pri" type="button" onclick="go('gdsheet')">27차시로 이동 →</button>
-      <button class="btn" type="button" onclick="aimGoLesson('trend','22차시')">돌아보기 · 22~23차시 추세선</button>
+      <button class="btn pri" type="button" onclick="go('gdsheet')">29차시로 이동 →</button>
+      <button class="btn" type="button" onclick="aimGoLesson('trend','23차시')">돌아보기 · 23~24차시 추세선</button>
     </span>
   </div>
 
@@ -1304,7 +1311,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
       <a class="op-ref" href="https://mathlove22.github.io/gradient-descent-sim/" target="_blank" rel="noopener">
         <span class="th"><span class="bg">웹 도구</span>⛷️</span>
         <span class="bd"><span class="tt">경사하강법 시각화 (gradient-descent-sim)</span>
-          <span class="ds">연수교재가 안내하는 원본 도구입니다. 기본 데이터가 아이스티 학습지 예제와 같아 27차시와 곧바로 이어집니다.
+          <span class="ds">연수교재가 안내하는 원본 도구입니다. 기본 데이터가 아이스티 학습지 예제와 같아 29차시와 곧바로 이어집니다.
             미분 계산의 데이터별 기여도 표를 볼 수 있습니다.</span></span>
       </a>
       <a class="op-ref" href="https://www.geogebra.org/graphing" target="_blank" rel="noopener">
@@ -1335,7 +1342,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
         <span class="th"><span class="bg">개념</span>📉</span>
         <span class="bd"><span class="tt">최소제곱법 (위키백과, 한국어)</span>
           <span class="ds">우리가 완전제곱식으로 구한 최적 a 는 최소제곱법의 가장 단순한 경우입니다.
-            y = ax + b 로 확장하면 어떤 식이 되는지 확인해 보세요(27차시 심화 탭과 연결).</span></span>
+            y = ax + b 로 확장하면 어떤 식이 되는지 확인해 보세요(29차시 심화 탭과 연결).</span></span>
       </a>
       <button class="op-ref op-refadd" type="button" onclick="opRefAdd()">
         <span class="th">➕</span>
@@ -1349,27 +1356,27 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
   <!-- ═════ 학습지 ═════ -->
   <div class="ws" data-no-toggle="1">
     <span class="lb">학습지</span>
-    <h3>24 · 25 · 26차시 학습지 — 손으로 계산하며 정리하기</h3>
+    <h3>25 · 27 · 28차시 학습지 — 손으로 계산하며 정리하기</h3>
     <p>웹에서는 관찰과 조작을, 지면에서는 <b>전개와 손계산</b>을 합니다.
       특히 L(a) 의 완전제곱 전개와 경사하강법 손 갱신은 웹으로 대체할 수 없는 활동이므로 반드시 지면으로 진행합니다.</p>
     <div class="ws-dl">
-      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet24')">🖨 24차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
-      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet25')">🖨 25차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
-      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet26')">🖨 26차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet24')">🖨 25차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet25')">🖨 27차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
+      <button class="ws-btn" type="button" onclick="wsPrint('op-sheet26')">🖨 28차시 학습지 인쇄 <span class="sz">A4 1장</span></button>
       <a class="ws-btn sec" href="https://docs.google.com/spreadsheets/d/1kp677h_2PkgYUd8bLjTSt05YnddSIJ4RezhYq5q0t4U/copy"
-         target="_blank" rel="noopener">📊 구글시트 실습 자료 사본 만들기 <span class="sz">27차시 예습용</span></a>
+         target="_blank" rel="noopener">📊 구글시트 실습 자료 사본 만들기 <span class="sz">29차시 예습용</span></a>
     </div>
     <p class="op-hint" style="margin-top:0.6rem;">
-      <b>24차시</b> — 두 추세선의 오차 표, L(a) 전개와 완전제곱, 이상치 실험 기록.<br>
-      <b>25차시</b> — 할선의 기울기 표(h = 1, 0.5, 0.1, 0.01), 미분계수 부호 판정, 안개 탐침 기록.<br>
-      <b>26차시</b> — 갱신식 손계산 2회, 학습률 실험표, a 의 자취 수직선.<br>
-      4단원 실물 활동지는 27차시 <b>구글시트 실습 학습지</b>가 대표 자료입니다(27차시 뷰에서 안내).</p>
+      <b>25차시</b> — 두 추세선의 오차 표, L(a) 전개와 완전제곱, 이상치 실험 기록.<br>
+      <b>27차시</b> — 할선의 기울기 표(h = 1, 0.5, 0.1, 0.01), 미분계수 부호 판정, 안개 탐침 기록.<br>
+      <b>28차시</b> — 갱신식 손계산 2회, 학습률 실험표, a 의 자취 수직선.<br>
+      4단원 실물 활동지는 29차시 <b>구글시트 실습 학습지</b>가 대표 자료입니다(29차시 뷰에서 안내).</p>
     <div id="op-wslinks"></div>
   </div>
 
-  <!-- ═════ 인쇄 전용 지면 · 24차시 ═════ -->
+  <!-- ═════ 인쇄 전용 지면 · 25차시 ═════ -->
   <div class="ws-sheet" id="op-sheet24" aria-hidden="true">
-    <div class="ws-h"><h2>24차시 학습지 — 손실함수 L(a)로 최적 추세선 찾기</h2>
+    <div class="ws-h"><h2>25차시 학습지 — 손실함수 L(a)로 최적 추세선 찾기</h2>
       <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
     <p class="note">학습 목표 ① 오차를 제곱하여 더하는 이유를 설명하고 L(a)를 이차함수로 나타낼 수 있다. [12인수04-03]<br>
       학습 목표 ② 손실함수의 그래프에서 최솟값을 찾아 최적화된 추세선을 구할 수 있다. [12인수04-03]</p>
@@ -1416,9 +1423,9 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     <div class="rule sm"></div>
   </div>
 
-  <!-- ═════ 인쇄 전용 지면 · 25차시 ═════ -->
+  <!-- ═════ 인쇄 전용 지면 · 27차시 ═════ -->
   <div class="ws-sheet" id="op-sheet25" aria-hidden="true">
-    <div class="ws-h"><h2>25차시 학습지 — 내려갈 방향: 극한과 미분계수</h2>
+    <div class="ws-h"><h2>27차시 학습지 — 내려갈 방향: 극한과 미분계수</h2>
       <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
     <p class="note">학습 목표 ① 할선이 접선에 가까워지는 과정을 관찰하여 함수의 극한과 미분계수의 의미를 설명할 수 있다. [12인수04-04]<br>
       학습 목표 ② 미분계수의 부호를 이용하여 손실함수의 값이 줄어드는 방향을 판단할 수 있다. [12인수04-04]</p>
@@ -1442,7 +1449,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
       <tr><th>내려갈 방향 (← / → / 바닥)</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
     </table>
 
-    <h3>③ 활동 7 — 24차시 손실함수에 적용</h3>
+    <h3>③ 활동 7 — 25차시 손실함수에 적용</h3>
     <p>L(a) = (88a² − 330a + 319) ÷ 6 이므로 L′(a) = ______________</p>
     <table>
       <tr><th>a</th><th>0.6</th><th>1</th><th>15/8</th><th>3</th></tr>
@@ -1466,9 +1473,9 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
     <div class="rule sm"></div>
   </div>
 
-  <!-- ═════ 인쇄 전용 지면 · 26차시 ═════ -->
+  <!-- ═════ 인쇄 전용 지면 · 28차시 ═════ -->
   <div class="ws-sheet" id="op-sheet26" aria-hidden="true">
-    <div class="ws-h"><h2>26차시 학습지 — 경사하강법: 학습률과 수렴·발산</h2>
+    <div class="ws-h"><h2>28차시 학습지 — 경사하강법: 학습률과 수렴·발산</h2>
       <span class="ws-id">___학년 ___반 ___번 이름 __________</span></div>
     <p class="note">학습 목표 ① 갱신 규칙 aₙ₊₁ = aₙ − k·L′(aₙ) 에 따라 값을 반복 갱신하는 과정을 설명할 수 있다. [12인수04-04]<br>
       학습 목표 ② 초깃값과 학습률에 따라 수렴·진동·발산이 달라지는 현상을 관찰하고 그 이유를 설명할 수 있다. [12인수04-04]</p>

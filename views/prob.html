@@ -1,5 +1,5 @@
-<!-- ═══════════ PROB (20~21차시: 데이터에서 확률 읽기 / 조건이 있는 확률과 스팸 필터) ═══════════ -->
-<!-- 공용 접두사 pb · 20차시 pb20 · 21차시 pb21 — 모든 style 규칙은 #v-prob 하위로 스코프 -->
+<!-- ═══════════ PROB (21~22차시: 데이터에서 확률 읽기 / 조건이 있는 확률과 스팸 필터) ═══════════ -->
+<!-- 공용 접두사 pb · 21차시 pb21 · 22차시 pb21 — 모든 style 규칙은 #v-prob 하위로 스코프 -->
 <!-- 서술 규약: 조건부확률 용어·기호는 화면 어디에도 쓰지 않습니다. "~일 때의 상대도수"만 사용합니다. -->
 <div class="view" id="v-prob">
   <style>
@@ -98,7 +98,7 @@
   @media(max-width:760px){#v-prob .pb-2col{grid-template-columns:minmax(0,1fr);}}
   #v-prob .pb-2col svg{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);}
 
-  /* ───────── 20차시 · 던지기 실험실 ───────── */
+  /* ───────── 21차시 · 던지기 실험실 ───────── */
   #v-prob .pb-lab{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:1.1rem;align-items:start;}
   #v-prob .pb-lab>*{min-width:0;}
   @media(max-width:860px){#v-prob .pb-lab{grid-template-columns:minmax(0,1fr);}}
@@ -126,7 +126,7 @@
   #v-prob table.pb-tbl td.l{text-align:left;font-family:var(--sans);}
   #v-prob table.pb-tbl tr.now td{background:var(--accent);color:var(--fg);font-weight:700;}
 
-  /* 20차시 · 표본공간 격자 */
+  /* 21차시 · 표본공간 격자 */
   #v-prob .pb-ss{display:inline-grid;gap:2px;background:var(--border);border-radius:var(--radius);padding:2px;max-width:100%;}
   #v-prob .pb-ss span{display:flex;align-items:center;justify-content:center;width:2.15rem;height:2.15rem;
     background:var(--bg);font-family:var(--mono);font-size:0.74rem;color:var(--muted);transition:all 0.18s;}
@@ -134,7 +134,7 @@
   #v-prob .pb-ss span.dim{opacity:0.28;}
   @media(max-width:520px){#v-prob .pb-ss span{width:1.72rem;height:1.72rem;font-size:0.66rem;}}
 
-  /* 20차시 · 흔들림 비교 막대 */
+  /* 21차시 · 흔들림 비교 막대 */
   #v-prob .pb-wob{display:flex;flex-direction:column;gap:0.55rem;margin:0.8rem 0;}
   #v-prob .pb-wob .row{display:grid;grid-template-columns:5.2rem minmax(0,1fr);gap:0.6rem;align-items:center;}
   #v-prob .pb-wob .nm{font-family:var(--mono);font-size:0.82rem;color:var(--muted);}
@@ -143,7 +143,7 @@
   #v-prob .pb-wob .tr u{position:absolute;top:0;bottom:0;width:2px;background:var(--blue);opacity:0.55;}
   #v-prob .pb-wob .tr s{position:absolute;top:50%;transform:translateY(-50%);height:0.5rem;background:var(--accent);opacity:0.85;}
 
-  /* ───────── 21차시 · 이원분류표 ───────── */
+  /* ───────── 22차시 · 이원분류표 ───────── */
   #v-prob .pb-ct{border-collapse:separate;border-spacing:3px;font-size:0.95rem;min-width:24rem;}
   #v-prob .pb-ct th,#v-prob .pb-ct td{border:1px solid var(--border);border-radius:0.35rem;padding:0.5rem 0.7rem;
     text-align:center;font-family:var(--mono);background:var(--bg);transition:all 0.22s;line-height:1.6;}
@@ -160,7 +160,7 @@
   @keyframes pbPull{0%{transform:scale(1);}45%{transform:scale(1.18);}100%{transform:scale(1);}}
   @media(prefers-reduced-motion:reduce){#v-prob .pb-ct td.pull{animation:none;}}
 
-  /* 21차시 · 분수 조립 */
+  /* 22차시 · 분수 조립 */
   #v-prob .pb-frac{display:flex;flex-wrap:wrap;align-items:center;gap:0.9rem;background:var(--bg);
     border:1px solid var(--border);border-radius:var(--radius);padding:0.9rem 1rem;margin:0.8rem 0;}
   #v-prob .pb-frac .lab{flex:1 1 12rem;min-width:0;font-size:1rem;color:var(--body);line-height:1.75;}
@@ -176,7 +176,7 @@
   #v-prob .pb-slot.num{background:var(--fg);color:var(--bg);}
   #v-prob .pb-slot.den{background:var(--blue);color:#fff;}
 
-  /* 21차시 · 조건 칩 */
+  /* 22차시 · 조건 칩 */
   #v-prob .pb-cond{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.7rem 0 0.3rem;}
   #v-prob .pb-cchip{font-family:var(--sans);font-size:0.95rem;font-weight:600;padding:0.45rem 0.85rem;min-height:44px;
     border:1px solid var(--border);border-radius:9999px;background:var(--bg);color:var(--body);cursor:pointer;transition:all 0.2s;}
@@ -186,7 +186,7 @@
   #v-prob .pb-clab{font-family:var(--mono);font-size:0.76rem;letter-spacing:0.08em;color:var(--muted);
     align-self:center;margin-right:0.15rem;}
 
-  /* 21차시 · 크기 비교 막대 */
+  /* 22차시 · 크기 비교 막대 */
   #v-prob .pb-cmp{display:flex;flex-direction:column;gap:0.7rem;margin:0.9rem 0;}
   #v-prob .pb-cmp .row{display:grid;grid-template-columns:minmax(7rem,10.5rem) minmax(0,1fr);gap:0.7rem;align-items:center;}
   @media(max-width:560px){#v-prob .pb-cmp .row{grid-template-columns:minmax(0,1fr);gap:0.2rem;}}
@@ -205,7 +205,7 @@
   #v-prob .pb-verdict.ham{background:var(--green);color:#fff;}
   #v-prob .pb-verdict.none{background:var(--card-h);color:var(--muted);}
 
-  /* 21차시 · 스팸랩 메일 카드 */
+  /* 22차시 · 스팸랩 메일 카드 */
   #v-prob .pb-mails{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(14rem,100%),1fr));gap:0.6rem;margin:0.8rem 0;}
   #v-prob .pb-mail{background:var(--bg);border:1px solid var(--border);border-radius:0.6rem;padding:0.6rem 0.7rem;
     font-size:0.95rem;line-height:1.6;}
@@ -225,16 +225,16 @@
   @media print{#v-prob .pb-lbar,#v-prob .pb-lab,#v-prob .pb-modes{display:none;}}
   </style>
 
-  <!-- ═════ 차시 전환 (20·21차시는 한 뷰의 두 차시 진입) ═════ -->
+  <!-- ═════ 차시 전환 (21·22차시는 한 뷰의 두 차시 진입) ═════ -->
   <div class="pb-lbar" id="pb-lbar" data-no-toggle="1" role="group" aria-label="차시 선택">
     <span class="lb">Ⅳ 단원 · 차시</span>
-    <button type="button" class="pb-lchip on" id="pb-l20" onclick="pbLesson(20)">20차시 · 데이터에서 확률 읽기</button>
-    <button type="button" class="pb-lchip" id="pb-l21" onclick="pbLesson(21)">21차시 · 조건이 있는 확률과 스팸 필터</button>
+    <button type="button" class="pb-lchip on" id="pb-l20" onclick="pbLesson(20)">21차시 · 데이터에서 확률 읽기</button>
+    <button type="button" class="pb-lchip" id="pb-l21" onclick="pbLesson(21)">22차시 · 조건이 있는 확률과 스팸 필터</button>
   </div>
 
 
   <!-- ═══════════════════════════════════════════════════════════════════
-       20차시 — 데이터에서 확률 읽기 (접두사 pb20)
+       21차시 — 데이터에서 확률 읽기 (접두사 pb20)
        ═══════════════════════════════════════════════════════════════════ -->
   <section class="pb-sec on" id="pb20-root">
 
@@ -253,7 +253,7 @@
           <text x="165" y="172" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">시행 횟수 n →</text>
         </svg>
       </div>
-      <p class="mono" style="margin-bottom:0.4rem;">20차시 · Ⅳ. 예측과 최적화</p>
+      <p class="mono" style="margin-bottom:0.4rem;">21차시 · Ⅳ. 예측과 최적화</p>
       <h2>데이터에서 확률 읽기 — 던질수록 또렷해지는 값</h2>
       <p class="desc">
         동전을 열 번 던져 앞면이 일곱 번 나왔다고 앞면이 나올 가능성이 0.7이라고 말할 수 있을까요?
@@ -727,7 +727,7 @@
           <path d="M134 64 H150"/><path d="M272 64 H288"/><path d="M410 64 H426"/><path d="M548 64 H564"/>
         </g>
       </svg>
-      <p class="pb-cap">▲ 오늘의 흐름 — 마지막 칸(조건)은 21차시에서 채웁니다.</p>
+      <p class="pb-cap">▲ 오늘의 흐름 — 마지막 칸(조건)은 22차시에서 채웁니다.</p>
 
       <details class="pb-fold">
         <summary><span class="rl">자세히 보기</span>교과서 정리 수준으로 한 번 더 읽기</summary>
@@ -753,12 +753,12 @@
       <div id="pb20-quiz"></div>
     </div>
 
-    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 · 21차시 — 조건이 있는 확률과 스팸 필터</strong> —
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 · 22차시 — 조건이 있는 확률과 스팸 필터</strong> —
       오늘은 <b>전체</b>에서 상대도수를 구했습니다. 다음 시간에는 <b>표의 일부만</b> 보게 됩니다.
       "제목에 '특가'가 있는 메일 100건 중 스팸이 85건"이라면 그 상대도수는 85/100 = 0.85 —
       전체에서 구한 값보다 훨씬 또렷합니다. <b>조건을 더하면 예측이 날카로워지는 까닭</b>을 표에서 직접 확인합니다.
       <span style="display:block;margin-top:0.6rem;">
-        <button class="btn pri pb-mini" type="button" onclick="pbLesson(21)">21차시로 이동 →</button>
+        <button class="btn pri pb-mini" type="button" onclick="pbLesson(21)">22차시로 이동 →</button>
       </span>
     </div>
 
@@ -824,18 +824,18 @@
 
     <div class="ws" data-no-toggle="1">
       <span class="lb">학습지</span>
-      <h3>20차시 학습지 — 손으로 던지고 기록하며 정리하기</h3>
+      <h3>21차시 학습지 — 손으로 던지고 기록하며 정리하기</h3>
       <p>웹에서 관찰한 수렴을 손으로 다시 확인하면 기억이 오래갑니다. 인쇄용 학습지는 웹 활동과 1:1로 대응합니다.</p>
       <div class="ws-dl">
         <button class="ws-btn" type="button" onclick="wsPrint('pb20-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2쪽</span></button>
       </div>
-      <p class="pb-note">20·21차시는 배포용 실물 활동지가 별도로 없어, 웹 활동과 1:1로 대응하는
+      <p class="pb-note">21·22차시는 배포용 실물 활동지가 별도로 없어, 웹 활동과 1:1로 대응하는
         <b>인쇄용 학습지</b>를 제공합니다(이름·반 기입란, 마중 퀴즈 기록, 활동별 관찰란, 형성평가, 핵심 질문 서술란 포함).</p>
       <div id="pb20-wslinks"></div>
     </div>
 
     <div class="ws-sheet" id="pb20-sheet" aria-hidden="true">
-      <div class="ws-h"><h2>20차시 학습지 — 데이터에서 확률 읽기</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+      <div class="ws-h"><h2>21차시 학습지 — 데이터에서 확률 읽기</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
       <p class="note">학습 목표 ① 시행 횟수가 늘어남에 따라 상대도수가 일정한 값에 가까워지는 현상을 관찰하여 통계적 확률의 의미를 설명할 수 있다.
         ② 데이터를 분석하여 사건이 일어날 확률을 상대도수로 구하고 이를 예측에 이용할 수 있다. [12인수04-01]</p>
       <h3>핵심 질문</h3>
@@ -923,7 +923,7 @@
   </section>
 
   <!-- ═══════════════════════════════════════════════════════════════════
-       21차시 — 조건이 있는 확률과 스팸 필터 (접두사 pb21)
+       22차시 — 조건이 있는 확률과 스팸 필터 (접두사 pb21)
        서술 규약: 표의 범위를 좁히는 조건과 "~일 때의 상대도수"만 사용합니다.
        ═══════════════════════════════════════════════════════════════════ -->
   <section class="pb-sec" id="pb21-root">
@@ -953,7 +953,7 @@
           <text x="160" y="164" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">그 안에서 상대도수를 구한다</text>
         </svg>
       </div>
-      <p class="mono" style="margin-bottom:0.4rem;">21차시 · Ⅳ. 예측과 최적화</p>
+      <p class="mono" style="margin-bottom:0.4rem;">22차시 · Ⅳ. 예측과 최적화</p>
       <h2>조건이 있는 확률과 스팸 필터 — 표의 어느 부분을 볼까</h2>
       <p class="desc">
         메일함에 새 메일이 도착했습니다. 제목에 '특가'가 들어 있습니다. 이 메일은 스팸일까요?
@@ -1097,7 +1097,7 @@
           <div class="bd">
             <p>[철수의 운동 60일] 데이터에서 <b>기온 칩</b>을 눌러 조건을 하나 더 걸어 보세요.
               표가 더 작아지고 상대도수는 더 뾰족해집니다.</p>
-            <p>다만 범위가 너무 좁아지면 <b>분모가 작아져 신뢰도가 떨어집니다</b>(20차시 흔들림 실험).
+            <p>다만 범위가 너무 좁아지면 <b>분모가 작아져 신뢰도가 떨어집니다</b>(21차시 흔들림 실험).
               조건을 더하는 일과 데이터를 넉넉히 두는 일 사이에는 <b>맞교환</b>이 있습니다.</p>
           </div>
         </details>
@@ -1357,9 +1357,9 @@
               그런데 '안내'를 함께 고르면 어떻게 될까요? '안내'는 스팸에도 일반에도 나오므로
               <b>판정을 흐리게</b> 만듭니다. 직접 켜고 꺼 보며 확인해 보세요.</p>
             <p>필터의 성능은 <b>기준을 고르는 사람의 선택</b>에 크게 좌우됩니다.
-              8차시에서 배운 TF-IDF가 바로 "어느 단어가 구별에 쓸모 있는가"를 수로 재는 방법이었습니다.</p>
+              9차시에서 배운 TF-IDF가 바로 "어느 단어가 구별에 쓸모 있는가"를 수로 재는 방법이었습니다.</p>
             <span style="display:inline-block;margin-top:0.4rem;">
-              <button class="btn pb-mini" type="button" onclick="go('tfidf')">8차시 TF-IDF 다시 보기 →</button>
+              <button class="btn pb-mini" type="button" onclick="go('tfidf')">9차시 TF-IDF 다시 보기 →</button>
             </span>
           </div>
         </details>
@@ -1440,12 +1440,12 @@
       <div id="pb21-quiz"></div>
     </div>
 
-    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 · 22차시 — 산점도와 추세선으로 예측하기</strong> —
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 · 23차시 — 산점도와 추세선으로 예측하기</strong> —
       지금까지는 "스팸인가 일반인가"처럼 <b>몇 가지 중 하나</b>를 고르는 예측이었습니다.
       다음 시간에는 "이 아이스티는 몇 잔 팔릴까", "이 도시의 인구는 얼마가 될까"처럼
       <b>수 자체</b>를 예측합니다. 이때는 확률이 아니라 <b>추세선 y = ax + b</b>가 도구가 됩니다.
       <span style="display:block;margin-top:0.6rem;">
-        <button class="btn pri pb-mini" type="button" onclick="pbNext22(this)">22차시로 이동 →</button>
+        <button class="btn pri pb-mini" type="button" onclick="pbNext22(this)">23차시로 이동 →</button>
       </span>
     </div>
 
@@ -1514,7 +1514,7 @@
 
     <div class="ws" data-no-toggle="1">
       <span class="lb">학습지</span>
-      <h3>21차시 학습지 — 표를 손으로 좁혀 보며 정리하기</h3>
+      <h3>22차시 학습지 — 표를 손으로 좁혀 보며 정리하기</h3>
       <p>화면에서 색으로 갈린 범위를 손으로 직접 칠해 보면 분모가 무엇으로 바뀌는지 훨씬 뚜렷해집니다.</p>
       <div class="ws-dl">
         <button class="ws-btn" type="button" onclick="wsPrint('pb21-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2쪽</span></button>
@@ -1524,7 +1524,7 @@
     </div>
 
     <div class="ws-sheet" id="pb21-sheet" aria-hidden="true">
-      <div class="ws-h"><h2>21차시 학습지 — 조건이 있는 확률과 스팸 필터</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
+      <div class="ws-h"><h2>22차시 학습지 — 조건이 있는 확률과 스팸 필터</h2><span class="ws-id">2학년 ___반 ___번 이름 __________</span></div>
       <p class="note">학습 목표 ① 이원분류표에서 조건에 해당하는 범위로 제한하여 그 조건일 때의 상대도수를 구할 수 있다.
         ② 조건일 때의 상대도수의 크기를 비교하여 스팸 메일을 분류·예측하는 방법을 설명할 수 있다. [12인수04-01]</p>
       <h3>핵심 질문</h3>

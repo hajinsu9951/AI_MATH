@@ -1,4 +1,4 @@
-<!-- ═══════════ DECISION (28차시: 합리적 의사 결정 사례 분석·탐구 설계) ═══════════
+<!-- ═══════════ DECISION (32차시: 합리적 의사 결정 사례 분석·탐구 설계) ═══════════
      · 파일 위치: views/decision.html  (신규 · §4 V16)
      · 전역 접두사 dc · 뷰 루트 id #v-decision · 모든 스타일 규칙은 #v-decision 하위로만 작성
      · 로직은 core.js 끝에 덧붙이는 core-snippet.js 의 PART A 참조
@@ -206,7 +206,7 @@
       <circle cx="201" cy="106" r="9" fill="none" stroke="var(--red)" stroke-width="2.4"/>
       <path d="M197 106 l3.4 3.6 l6-7" fill="none" stroke="var(--red)" stroke-width="2.2"/>
     </svg>
-    <p class="mono" style="margin-bottom:0.4rem;">Ⅴ 단원 · 28차시 · [12인수05-01] · [12인수05-02]</p>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅴ 단원 · 32차시 · [12인수05-01] · [12인수05-02]</p>
     <h2>합리적 의사 결정 사례 해부 — AI는 어떻게 ‘결정’하는가</h2>
     <p class="desc">
       인공지능이 내린 결정은 늘 세 칸을 거쳐 나옵니다 —
@@ -232,7 +232,7 @@
     <div class="dc-goalmap">
       <button type="button" onclick="dcSee(0,'dc-act2')">├ 목표 ① → <b>활동 1</b>(의사 결정의 네 요소)·<b>활동 2</b>(사례 5건 3단 해부) →</button>
       <button type="button" onclick="dcSee(2,'dc-act3')">├ 목표 ② → <b>활동 3</b>(윤리 판정과 분포 비교)·<b>활동 4</b>(채용 편향을 수로 확인) →</button>
-      <button type="button" onclick="go('project')">└ 목표 ③ → <b>마무리 15분</b> · 30차시 뷰 「탐구 워크스페이스」의 주제 마법사 → 보고서 [A] →</button>
+      <button type="button" onclick="go('project')">└ 목표 ③ → <b>마무리 15분</b> · 34차시 뷰 「탐구 워크스페이스」의 주제 마법사 → 보고서 [A] →</button>
     </div>
   </div>
 
@@ -352,10 +352,10 @@
         <div class="dc-scroll">
           <table class="dc-tbl">
             <tr><th>사람의 결정</th><th>인공지능의 결정</th><th>이 교과서에서 배운 곳</th></tr>
-            <tr><td>목표</td><td class="l">손실함수 L(a) 정의</td><td class="l">24차시</td></tr>
-            <tr><td>정보</td><td class="l">데이터 수집·전처리</td><td class="l">12·22·29차시</td></tr>
-            <tr><td>선택</td><td class="l">경사하강법으로 최적값 탐색</td><td class="l">25·26차시</td></tr>
-            <tr><td>평가</td><td class="l">검증 데이터의 오차 비교(과적합 점검)</td><td class="l">23차시</td></tr>
+            <tr><td>목표</td><td class="l">손실함수 L(a) 정의</td><td class="l">25차시</td></tr>
+            <tr><td>정보</td><td class="l">데이터 수집·전처리</td><td class="l">18·23·33차시</td></tr>
+            <tr><td>선택</td><td class="l">경사하강법으로 최적값 탐색</td><td class="l">27·28차시</td></tr>
+            <tr><td>평가</td><td class="l">검증 데이터의 오차 비교(과적합 점검)</td><td class="l">24차시</td></tr>
           </table>
         </div>
         <span class="dc-src">씨마스 Ⅴ p.181 네 요소 + 동아 「인공지능 수학」 5단원 p.160 「합리적 의사 결정」 서술을 재구성</span>
@@ -435,11 +435,11 @@
         <div class="dc-scroll">
           <table class="dc-tbl">
             <tr><th>사례</th><th>최적화 전략의 정체</th><th>연결 차시</th></tr>
-            <tr><td class="l">도로 상황 예측</td><td class="l">상대도수로 정체 확률 계산·비교</td><td class="l">20·21차시</td></tr>
-            <tr><td class="l">자율주행</td><td class="l">경로 비용·안전 오차 최소화</td><td class="l">24·26차시</td></tr>
-            <tr><td class="l">생성 언어 모델</td><td class="l">다음 단어 확률 최대 + 손실 최소화</td><td class="l">7·21·26차시</td></tr>
-            <tr><td class="l">AI 채용 심사</td><td class="l">과거 합격자와의 유사도 최대화</td><td class="l">9·10차시</td></tr>
-            <tr><td class="l">인공지능 판사</td><td class="l">가까운 과거 사건 k개의 다수결(k-NN)</td><td class="l">9·13차시</td></tr>
+            <tr><td class="l">도로 상황 예측</td><td class="l">상대도수로 정체 확률 계산·비교</td><td class="l">21·22차시</td></tr>
+            <tr><td class="l">자율주행</td><td class="l">경로 비용·안전 오차 최소화</td><td class="l">25·28차시</td></tr>
+            <tr><td class="l">생성 언어 모델</td><td class="l">다음 단어 확률 최대 + 손실 최소화</td><td class="l">8·22·28차시</td></tr>
+            <tr><td class="l">AI 채용 심사</td><td class="l">과거 합격자와의 유사도 최대화</td><td class="l">11·12차시</td></tr>
+            <tr><td class="l">인공지능 판사</td><td class="l">가까운 과거 사건 k개의 다수결(k-NN)</td><td class="l">11·18차시</td></tr>
           </table>
         </div>
         <span class="dc-src">씨마스 Ⅴ p.183~186 사례 도해 + p.191 「더 알아보기 k-최근접 이웃」 서술을 재구성</span>
@@ -634,7 +634,7 @@
       <div class="bd">
         <p>“남성이 더 많이 합격했다”는 <b>개수</b>의 말입니다. 개수는 지원자 수에 따라 얼마든지 달라집니다.
           편향을 주장하려면 <b>비율</b>로 옮겨야 합니다.</p>
-        <p>① <b>집단별 합격률</b>(조건일 때의 상대도수) — 21차시에서 배운 “표의 어느 부분만 보는가”와 같은 계산입니다.<br>
+        <p>① <b>집단별 합격률</b>(조건일 때의 상대도수) — 22차시에서 배운 “표의 어느 부분만 보는가”와 같은 계산입니다.<br>
           ② <b>두 합격률의 비</b> — 이 값이 0.8보다 작으면 국제적으로 널리 쓰이는 관행에 따라
           ‘한쪽에 불리한 영향이 있다’고 판단합니다.</p>
         <div class="dc-fml">남성 합격률 = 120/800 = 0.15    여성 합격률 = 10/200 = 0.05
@@ -704,7 +704,7 @@
     <b>x와 y가 무엇인지</b> 적어 보세요. 확정하면 그대로 보고서 <b>[A. 탐구 주제 선정 및 문제 정의]</b>로 전송됩니다.
     <span style="display:block;margin-top:0.6rem;">
       <button class="btn pri" type="button" onclick="go('project')">탐구 워크스페이스 → 주제 마법사</button>
-      <button class="btn" type="button" onclick="go('datalab')">29차시 데이터 실험실로 →</button>
+      <button class="btn" type="button" onclick="go('datalab')">33차시 데이터 실험실로 →</button>
       <button class="btn" type="button" onclick="go('bias')">돌아보기 · 5차시 데이터 편향</button>
     </span>
   </div>
@@ -796,24 +796,24 @@
   <!-- ═════ 학습지 ═════ -->
   <div class="ws" data-no-toggle="1">
     <span class="lb">학습지</span>
-    <h3>28차시 학습지 — 손으로 해부하고 판정하기</h3>
+    <h3>32차시 학습지 — 손으로 해부하고 판정하기</h3>
     <p>웹에서 조각을 옮겨 담은 과정을 손으로 다시 정리하면 기억이 오래갑니다.
       5단원은 실물 활동지 파일 대신 <b>웹 활동과 1:1로 대응하는 인쇄용 지면</b>을 제공합니다.</p>
     <div class="ws-dl">
-      <button class="ws-btn" type="button" onclick="wsPrint('dc-sheet')">🖨 28차시 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <button class="ws-btn" type="button" onclick="wsPrint('dc-sheet')">🖨 32차시 학습지 인쇄 <span class="sz">A4 2장</span></button>
       <button class="ws-btn sec" type="button" onclick="go('project')">📋 보고서 [A] 양식은 탐구 워크스페이스에 <span class="sz">인쇄 지면 4종</span></button>
     </div>
     <p class="dc-hint" style="margin-top:0.6rem;">
       <b>인쇄 지면 구성</b> : ① 마중 퀴즈 기록 ② 활동 1 네 요소 분류표 ③ 활동 2 사례 해부표(2건)
       ④ 활동 3 판정과 근거 ⑤ 활동 4 합격률·비율 계산과 부등식 ⑥ 형성평가 5문항 ⑦ 핵심 질문 서술란.<br>
-      <b>루브릭 카드</b>는 30차시 뷰의 학습지 칸에서 따로 인쇄해 <b>프로젝트 시작 전에 미리 배부</b>합니다.</p>
+      <b>루브릭 카드</b>는 34차시 뷰의 학습지 칸에서 따로 인쇄해 <b>프로젝트 시작 전에 미리 배부</b>합니다.</p>
     <div id="dc-wslinks"></div>
   </div>
 
   <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
   <div class="ws-sheet" id="dc-sheet" aria-hidden="true">
     <div class="ws-h">
-      <h2>28차시 학습지 — 합리적 의사 결정 사례 해부</h2>
+      <h2>32차시 학습지 — 합리적 의사 결정 사례 해부</h2>
       <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
     </div>
     <p class="note">학습 목표 ① 실생활 사례를 데이터 학습→최적화→합리적 의사 결정의 3단 구조로 분해하여 분석할 수 있다. [12인수05-01]<br>

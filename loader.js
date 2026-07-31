@@ -1,7 +1,14 @@
 (async function () {
-  // 차시 순서와 일치시킵니다(§11) — 1~5차시 → 6~11차시 → 12~19차시 → 20~27차시 → 28~30차시.
-  // project(30차시)는 반드시 마지막 — 회고 탭의 「우리 팀이 쓴 수학」 지도가 앞선 뷰의 존재를 판정합니다.
-  const order = ['home','intro','mlplay','logic','perceptron','bias','text','tfidf','sim','senti','review','quickdraw','mnist','hamming','imgop','conv','filter','pool','pipeline','detect','prob','trend','optim','gdsheet','decision','datalab','project'];
+  /* 37차시 재편 — 차시 순서와 일치시킵니다.
+     1~6 intro·mlplay·logic·perceptron·bias·dataeth
+     7~13 text(7·8)·tfidf(9)·vecop(10)·sim(11)·senti(12)·review(13)
+     14~20 imgop·rgb·transpose·matmul·imgcls·cnn   (19 fclayer 준비 중)
+     21~30 prob(21·22)·trend(23·24)·optim(25·27·28)·gdsheet(29)  (26 loss2 · 30 axb 준비 중)
+     31~34 inquiry·decision·datalab·project
+     35~37 genvec·genimg·genethics (Ⅵ 선택 심화 — 준비 중)
+     project(34차시)는 반드시 마지막 — 회고 탭의 「우리 팀이 쓴 수학」 지도가
+     앞선 뷰의 존재를 판정합니다. */
+  const order = ["home","intro","mlplay","logic","perceptron","bias","dataeth","text","tfidf","vecop","sim","senti","review","imgop","rgb","transpose","matmul","imgcls","cnn","prob","trend","optim","gdsheet","inquiry","decision","datalab","project"];
   const container = document.getElementById('views');
   if (!container) return;
 

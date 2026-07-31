@@ -1,4 +1,4 @@
-<!-- ═══════════ TFIDF (8차시: 중요한 단어 찾기 — TF-IDF) ═══════════ -->
+<!-- ═══════════ TFIDF (9차시: 중요한 단어 찾기 — TF-IDF) ═══════════ -->
 <div class="view" id="v-tfidf">
   <style>
   /* tfidf 뷰 전용 스타일 — 모든 규칙을 #v-tfidf 하위로 스코프합니다(전역 누수 금지, §12). */
@@ -267,7 +267,7 @@
         <text x="248" y="136" font-size="9" fill="var(--muted)" text-anchor="middle" font-family="sans-serif">발표</text>
       </svg>
     </div>
-    <p class="mono" style="margin-bottom:0.4rem;">Ⅱ 텍스트 데이터 처리 · 8차시</p>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅱ 텍스트 데이터 처리 · 9차시</p>
     <h2>중요한 단어 찾기 — TF-IDF</h2>
     <p class="desc">
       많이 나온 단어와 중요한 단어는 다릅니다. 오늘은 '흔한 단어'의 무게를
@@ -386,7 +386,7 @@
         <div class="tf-doc"><span class="lb">후기 B</span><p>뷰가 좋고, 깨끗한 차박에 좋은 캠핑장!</p></div>
         <div class="tf-doc"><span class="lb">후기 C</span><p>캠핑장에 온수가 잘 나와요. 화장실도 깨끗하고 온수가 나와요.</p></div>
       </div>
-      <p>6차시에서 배운 방식으로 전처리를 마친 단어집합을 제시합니다.</p>
+      <p>7차시에서 배운 방식으로 전처리를 마친 단어집합을 제시합니다.</p>
       <div class="tf-uset">U = {뷰, 좋다, 사진, 깨끗하다, 캠핑장, 차박, 온수, 화장실}   (원소 8개, n = 3)</div>
       <p class="status">정렬 기준 — 고정 예제이므로 <b>교과서 지면의 등장 순서</b>를 그대로 씁니다(§0-3 #3).</p>
     </div>
@@ -479,7 +479,7 @@
 
     <div class="card" data-no-toggle="1">
       <h3>ⓐ 문제 상황 — 이 표만 보고 다섯 뉴스를 구별할 수 있을까</h3>
-      <p>오늘 아침 뉴스 다섯 건을 모았습니다. 각 뉴스에서 어떤 단어가 몇 번 나왔는지는 7차시에서 배운 방법으로
+      <p>오늘 아침 뉴스 다섯 건을 모았습니다. 각 뉴스에서 어떤 단어가 몇 번 나왔는지는 8차시에서 배운 방법으로
         이미 세어 두었습니다. 이 표만 가지고 <b>다섯 건의 뉴스가 각각 무슨 이야기인지</b> 알아낼 수 있을까요?</p>
       <p class="status">말뭉치 TF 표 (n = 5, 단어집합 원소 13개) — 뉴스 제목은 활동 ③까지 가려 둡니다.</p>
       <div id="tf-news-table"></div>
@@ -702,22 +702,22 @@
 
   <div class="card tf-chal" id="tf-chal" data-no-toggle="1"></div>
 
-  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 9차시 · 얼마나 비슷한가: 유클리드·코사인 유사도</strong>
-    오늘 우리는 문서마다 "그 문서다운 단어들"을 수로 뽑아냈습니다. 그렇다면 두 문서가 <b>얼마나 비슷한지</b>는
-    어떻게 잴 수 있을까요? 다음 시간에는 문서를 화살표(벡터)로 보고, 두 화살표 사이의 <b>거리</b>로 잴 때와
-    <b>사잇각</b>으로 잴 때 결론이 어떻게 달라지는지 확인합니다.
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 10차시 · 문장을 더하고, 늘이고, 재기</strong>
+    오늘 우리는 문서마다 "그 문서다운 단어들"을 수로 뽑아냈습니다. 그 수의 나열이 곧 <b>벡터</b>입니다.
+    다음 시간에는 그 벡터를 <b>더하고</b>(여론 합치기), <b>빼고</b>(어디서 갈리는가), <b>실수배</b>하고,
+    마지막으로 화살표의 <b>크기</b>를 직접 재어 봅니다. 11차시의 유사도는 그 크기 위에서 세워집니다.
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem;margin:1.2rem 0;">
-    <div class="card-link" role="link" tabindex="0" onclick="go('sim')"
-         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('sim');}">
-      <h3>다음 차시 · 9차시 — 얼마나 비슷한가</h3>
-      <p>오늘 만든 TF-IDF 벡터가 그대로 재료가 됩니다. 거리로 잴까요, 방향으로 잴까요?</p>
+    <div class="card-link" role="link" tabindex="0" onclick="go('vecop')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('vecop');}">
+      <h3>다음 차시 · 10차시 — 벡터의 연산과 크기</h3>
+      <p>오늘 만든 TF-IDF 벡터가 그대로 재료가 됩니다. 더하고, 늘이고, 크기를 재어 봅니다.</p>
     </div>
-    <div class="card-link" role="link" tabindex="0" onclick="aimGoLesson('text','6차시')"
-         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();aimGoLesson('text','6차시');}">
-      <h3>돌아보기 · 7차시 — 텍스트를 벡터로</h3>
-      <p>오늘의 TF는 7차시에서 만든 빈도수 벡터의 성분과 같습니다. 단어집합과 벡터를 다시 확인해 보세요.</p>
+    <div class="card-link" role="link" tabindex="0" onclick="aimGoLesson('text','7차시')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();aimGoLesson('text','7차시');}">
+      <h3>돌아보기 · 8차시 — 텍스트를 벡터로</h3>
+      <p>오늘의 TF는 8차시에서 만든 빈도수 벡터의 성분과 같습니다. 단어집합과 벡터를 다시 확인해 보세요.</p>
     </div>
   </div>
 
@@ -775,7 +775,7 @@
   <!-- ═════ 학습지 ═════ -->
   <div class="ws" data-no-toggle="1">
     <span class="lb">학습지</span>
-    <h3>8차시 학습지 — 손으로 채우며 4단 계단 오르기</h3>
+    <h3>9차시 학습지 — 손으로 채우며 4단 계단 오르기</h3>
     <p>웹에서 조작한 4단 표를 손으로 한 번 더 채우면 계산 순서가 몸에 남습니다.
       <b>활동 1-4</b>가 활동 ①의 지면판이고, <b>활동 1</b>은 프로젝트 과제와 1:1로 대응합니다.</p>
     <div class="ws-dl">
@@ -793,9 +793,9 @@
       활동 1은 빅카인즈 기사 선택 → 표 작성 → 짝과 교환해 제목 맞히기로 이어지며 뒷면에 벡터 개념 복습이 있습니다.</p>
 
     <details class="tf-fold">
-      <summary>7차시 복습이 필요한 학생에게 — 활동 1-3(벡터와 빈도수 벡터)</summary>
+      <summary>8차시 복습이 필요한 학생에게 — 활동 1-3(벡터와 빈도수 벡터)</summary>
       <p>TF 표를 채우기 전에 단어집합과 빈도수 벡터를 다시 확인하고 싶은 학생에게 권합니다.
-        <b>7차시에 배부한 것과 같은 파일</b>이므로 이미 가지고 있다면 새로 내려받지 않아도 됩니다.</p>
+        <b>8차시에 배부한 것과 같은 파일</b>이므로 이미 가지고 있다면 새로 내려받지 않아도 됩니다.</p>
       <div class="ws-dl">
         <a class="ws-btn sec" href="assets/worksheets/text/활동 1(TF-IDF)3.pdf" target="_blank" rel="noopener">
           📄 활동 1-3(벡터와 빈도수 벡터) <span class="sz">PDF · 약 177 KB</span></a>
@@ -810,7 +810,7 @@
   <!-- ═════ 인쇄 전용 학습지 지면 (A4 2장) ═════ -->
   <div class="ws-sheet" id="tf-sheet" aria-hidden="true">
     <div class="ws-h">
-      <h2>「인공지능 수학」 8차시 — 중요한 단어 찾기: TF-IDF</h2>
+      <h2>「인공지능 수학」 9차시 — 중요한 단어 찾기: TF-IDF</h2>
       <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
     </div>
 

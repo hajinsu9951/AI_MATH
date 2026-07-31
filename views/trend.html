@@ -1,15 +1,15 @@
-<!-- ═══════════ TREND (22~23차시: 산점도·추세선 / 곡선·과적합) ═══════════
+<!-- ═══════════ TREND (23~24차시: 산점도·추세선 / 곡선·과적합) ═══════════
      · 파일 위치: views/trend.html  (신규 뷰 — 4단원 V13)
      · 전역 접두사 tr (차시별 세부는 tr22 · tr23) · 뷰 루트 id #v-trend
-     · 22차시 [12인수04-02] 산점도와 추세선으로 예측하기
-     · 23차시 [12인수04-02] 어떤 추세선이 좋은가 — 곡선과 과적합
+     · 23차시 [12인수04-02] 산점도와 추세선으로 예측하기
+     · 24차시 [12인수04-02] 어떤 추세선이 좋은가 — 곡선과 과적합
      · 로직은 core.js 끝에 덧붙이는 core-snippet.js 참조
      ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-trend">
   <style>
   /* trend 뷰 전용 스타일 (#v-trend 스코프 한정 — 전역 누수 금지) */
 
-  /* ── 차시 선택 바 (한 뷰가 22·23차시를 담당) ── */
+  /* ── 차시 선택 바 (한 뷰가 23·24차시를 담당) ── */
   #v-trend .tr-lbar{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;background:var(--card);
     border:1px solid var(--border);border-radius:9999px;padding:0.4rem 0.5rem;margin:0 0 1.4rem;}
   #v-trend .tr-lbar .lb{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.14em;color:var(--muted);padding:0 0.5rem;}
@@ -190,21 +190,21 @@
   <!-- ═════ 차시 선택 ═════ -->
   <div class="tr-lbar" id="tr-lbar" data-no-toggle="1" role="group" aria-label="차시 선택">
     <span class="lb">Ⅳ 단원 · 차시</span>
-    <button type="button" class="tr-lchip on" id="tr-l22" onclick="trLesson(22)">22차시 · 산점도와 추세선</button>
-    <button type="button" class="tr-lchip" id="tr-l23" onclick="trLesson(23)">23차시 · 곡선과 과적합</button>
+    <button type="button" class="tr-lchip on" id="tr-l22" onclick="trLesson(22)">23차시 · 산점도와 추세선</button>
+    <button type="button" class="tr-lchip" id="tr-l23" onclick="trLesson(23)">24차시 · 곡선과 과적합</button>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════
-       22차시 · 산점도와 추세선으로 예측하기
+       23차시 · 산점도와 추세선으로 예측하기
        ══════════════════════════════════════════════════════════════════════ -->
   <div class="tr-sec on" id="tr22-root">
 
     <!-- ═════ 표제부 ═════ -->
     <div class="tr-hero">
-      <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 22차시 · [12인수04-02]</p>
+      <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 23차시 · [12인수04-02]</p>
       <h2>산점도와 추세선으로 예측하기 — 흩어진 점에서 내일을 읽다</h2>
       <p class="desc">
-        20·21차시에서는 <b>범주형</b> 자료를 확률로 예측했습니다. 이제 기온·주가·출산율처럼
+        21·22차시에서는 <b>범주형</b> 자료를 확률로 예측했습니다. 이제 기온·주가·출산율처럼
         <b>연속형</b> 수치 자료를 다룹니다. 점들 사이에 직선 하나를 그으면, 아직 관측하지 않은 값까지 말할 수 있습니다.
       </p>
     </div>
@@ -516,7 +516,7 @@
             <p>그래서 오차를 그냥 더하면 <b>서로 상쇄되어 0에 가까워집니다.</b>
               방금 표에서도 −0.2 + 0.6 + (−0.6) + 0.2 = <b>0</b>이었습니다.</p>
             <p>“전체적으로 얼마나 벗어났는가”를 하나의 수로 재려면 <b>절댓값</b>을 씌우거나 <b>제곱</b>을 해야 합니다.
-              이 이야기는 24차시 <b>손실함수</b>에서 이어집니다.</p>
+              이 이야기는 25차시 <b>손실함수</b>에서 이어집니다.</p>
           </div>
         </div>
         <div id="tr22-tb3"></div>
@@ -544,7 +544,7 @@
             <p>미래엔 교과서는 수확량과 매출액 자료에서 추세선 B(fB(x) = 1.1x)와 C(fC(x) = 0.9x)를 비교합니다.
               64 kg·88 kg에서는 B가, 67·83·98 kg에서는 C가 오차의 크기가 더 작습니다.</p>
             <p>그래서 <b>오차의 제곱의 평균</b>을 구해 견줍니다. B는 205.764, C는 179.524로 C가 더 작아
-              C를 더 적합한 추세선으로 판단합니다. 이 값이 곧 24차시의 <b>손실함수</b>입니다.</p>
+              C를 더 적합한 추세선으로 판단합니다. 이 값이 곧 25차시의 <b>손실함수</b>입니다.</p>
             <span class="tr-src">출처 — 미래엔 「인공지능 수학」 p.132~133 생각 열기와 오차의 제곱의 평균(추세선 B 205.764, C 179.524) 서술을 재구성</span>
           </div>
         </details>
@@ -686,13 +686,13 @@
       <div id="tr22-quiz"></div>
     </div>
 
-    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 23차시 · 어떤 추세선이 좋은가: 곡선과 과적합</strong><br>
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 24차시 · 어떤 추세선이 좋은가: 곡선과 과적합</strong><br>
       오늘은 직선 하나로 경향성을 읽었습니다. 그런데 <b>모든 점을 정확히 지나는 곡선</b>을 찾으면 더 좋은 예측 모델이 될까요?
       다음 차시에는 직선부터 9차 곡선까지 모델을 갈아 끼우며 <b>훈련 오차는 0인데 검증 오차는 폭발하는</b> 장면을 직접 만들고,
       “함께 변한다”와 “원인이 된다”가 왜 다른지 따져 봅니다.
       <span style="display:block;margin-top:0.6rem;">
-        <button class="btn pri" type="button" onclick="trLesson(23)">23차시로 이동 →</button>
-        <button class="btn" type="button" onclick="trPrev21(this)">돌아보기 · 21차시 조건과 상대도수</button>
+        <button class="btn pri" type="button" onclick="trLesson(23)">24차시로 이동 →</button>
+        <button class="btn" type="button" onclick="trPrev21(this)">돌아보기 · 22차시 조건과 상대도수</button>
       </span>
     </div>
 
@@ -760,7 +760,7 @@
     <!-- ═════ 학습지 ═════ -->
     <div class="ws" data-no-toggle="1">
       <span class="lb">학습지</span>
-      <h3>22차시 학습지 — 손으로 긋고, 손으로 계산하기</h3>
+      <h3>23차시 학습지 — 손으로 긋고, 손으로 계산하기</h3>
       <p>웹에서는 직선을 끌었지만, 지면에서는 <b>모눈 위에 직접 긋고 오차를 계산</b>합니다.
         아래 인쇄용 지면은 오늘의 활동 1·2·3과 <b>1:1로 대응</b>합니다.</p>
       <div class="ws-dl">
@@ -774,7 +774,7 @@
     <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
     <div class="ws-sheet" id="tr22-sheet" aria-hidden="true">
       <div class="ws-h">
-        <h2>22차시 학습지 — 산점도와 추세선으로 예측하기</h2>
+        <h2>23차시 학습지 — 산점도와 추세선으로 예측하기</h2>
         <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
       </div>
       <p class="note">학습 목표 ① 공학 도구를 사용하여 데이터의 경향성을 산점도와 추세선 y = ax + b로 나타낼 수 있다. [12인수04-02]<br>
@@ -851,16 +851,16 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════
-       23차시 · 어떤 추세선이 좋은가 — 곡선과 과적합
+       24차시 · 어떤 추세선이 좋은가 — 곡선과 과적합
        ══════════════════════════════════════════════════════════════════════ -->
   <div class="tr-sec" id="tr23-root">
 
     <!-- ═════ 표제부 ═════ -->
     <div class="tr-hero">
-      <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 23차시 · [12인수04-02]</p>
+      <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 24차시 · [12인수04-02]</p>
       <h2>어떤 추세선이 좋은가 — 너무 완벽해서 문제인 곡선</h2>
       <p class="desc">
-        22차시에서는 직선 하나로 경향성을 읽었습니다. 그런데 <b>모든 점을 정확히 지나는 곡선</b>을 찾으면
+        23차시에서는 직선 하나로 경향성을 읽었습니다. 그런데 <b>모든 점을 정확히 지나는 곡선</b>을 찾으면
         더 좋은 예측 모델이 될까요? 오늘은 직선부터 9차 곡선까지 갈아 끼우며 그 답을 직접 만들어 봅니다.
       </p>
     </div>
@@ -1194,12 +1194,12 @@
           <div class="bd">
             <p>인공지능을 만들 때는 가진 데이터를 <b>훈련용</b>과 <b>검증(테스트)용</b>으로 나눕니다.
               훈련용으로 학습하고, <b>한 번도 보여 주지 않은</b> 검증용으로 성능을 잽니다.</p>
-            <p>13차시에서 다룬 MNIST도 그렇습니다. 얀 르쿤은 훈련용 6만 개와 테스트용 1만 개를 표준으로 정해,
+            <p>18차시에서 다룬 MNIST도 그렇습니다. 얀 르쿤은 훈련용 6만 개와 테스트용 1만 개를 표준으로 정해,
               전 세계 연구자가 <b>같은 기준선</b> 위에서 알고리즘을 검증할 수 있게 했습니다.</p>
             <p>“훈련 정확도 99.9 %”라는 말만으로는 아무것도 알 수 없습니다.
               반드시 <b>처음 보는 데이터에서의 성능</b>을 물어야 합니다.</p>
             <p style="margin-top:0.4rem;">
-              <button class="btn" type="button" onclick="go('mnist')">돌아보기 · 12차시 MNIST 데이터셋</button>
+              <button class="btn" type="button" onclick="go('mnist')">돌아보기 · 18차시 MNIST 데이터셋</button>
               <button class="btn" type="button" onclick="go('bias')">돌아보기 · 5차시 정확도 95 %의 함정</button>
             </p>
             <span class="tr-src">출처 — KERIS 연수교재 「더 알아보기 3-4. MNIST 데이터 세트」(훈련용 6만 개·테스트용 1만 개 표준화) 서술을 재구성</span>
@@ -1352,18 +1352,18 @@
 
     <div class="card" data-no-toggle="1">
       <h3>형성평가 — 스스로 확인하기</h3>
-      <p style="margin-bottom:0.8rem;">22·23차시 내용을 함께 확인합니다. 답을 고르면 바로 정답과 해설이 나타나고,
+      <p style="margin-bottom:0.8rem;">23·24차시 내용을 함께 확인합니다. 답을 고르면 바로 정답과 해설이 나타나고,
         마지막에 총점과 문항별 복기가 표시됩니다.</p>
       <div id="tr23-quiz"></div>
     </div>
 
-    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 24차시 · 손실함수 L(a)로 최적 추세선 찾기</strong><br>
+    <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 25차시 · 손실함수 L(a)로 최적 추세선 찾기</strong><br>
       오늘까지 우리는 “좋은 추세선”을 <b>눈</b>과 <b>표</b>로 판단했습니다. 다음 차시에는 이것을 <b>하나의 함수</b>로 만듭니다.
       오차를 제곱해 평균한 값 <b>L(a)</b>는 기울기 a에 대한 <b>이차함수</b>가 되고,
       그 포물선의 <b>최솟값</b>을 찾는 것이 곧 “가장 좋은 직선”을 찾는 일이 됩니다.
       <span style="display:block;margin-top:0.6rem;">
-        <button class="btn pri" type="button" onclick="trNext24(this)">24차시로 이동 →</button>
-        <button class="btn" type="button" onclick="trLesson(22)">돌아보기 · 22차시 예측값과 오차</button>
+        <button class="btn pri" type="button" onclick="trNext24(this)">25차시로 이동 →</button>
+        <button class="btn" type="button" onclick="trLesson(22)">돌아보기 · 23차시 예측값과 오차</button>
       </span>
     </div>
 
@@ -1433,7 +1433,7 @@
     <!-- ═════ 학습지 ═════ -->
     <div class="ws" data-no-toggle="1">
       <span class="lb">학습지</span>
-      <h3>23차시 학습지 — 오차 두 개를 손으로 비교하기</h3>
+      <h3>24차시 학습지 — 오차 두 개를 손으로 비교하기</h3>
       <p>웹에서는 모델 칩을 눌러 오차를 읽었지만, 지면에서는 <b>훈련 오차와 검증 오차를 직접 계산</b>합니다.
         아래 인쇄용 지면은 오늘의 활동 1·2·3과 <b>1:1로 대응</b>합니다.</p>
       <div class="ws-dl">
@@ -1447,7 +1447,7 @@
     <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
     <div class="ws-sheet" id="tr23-sheet" aria-hidden="true">
       <div class="ws-h">
-        <h2>23차시 학습지 — 곡선과 과적합, 그리고 상관과 인과</h2>
+        <h2>24차시 학습지 — 곡선과 과적합, 그리고 상관과 인과</h2>
         <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
       </div>
       <p class="note">학습 목표 ① 여러 함수 모델의 추세선을 비교하여 최적화된 추세선의 필요성을 설명할 수 있다. [12인수04-02]<br>

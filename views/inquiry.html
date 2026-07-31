@@ -1,0 +1,982 @@
+<!-- ═══════════ INQUIRY (31차시: 탐구의 다섯 걸음과 윤리의 경계선) ═══════════ -->
+<div class="view" id="v-inquiry">
+  <style>
+  /* inquiry 뷰 전용 스타일 (#v-inquiry 스코프 한정 — 전역 누수 금지) */
+  #v-inquiry .iq-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-inquiry .iq-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-inquiry .iq-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-inquiry .iq-hero{position:relative;}
+  #v-inquiry .iq-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;color:var(--fg);}
+  #v-inquiry .iq-hero>*{position:relative;}
+  #v-inquiry .vw-mark{display:none;}
+  #v-inquiry .iq-ask{border-left:4px solid var(--accent);}
+  #v-inquiry .iq-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-inquiry .iq-ask li{position:relative;padding-left:1.5rem;margin-bottom:0.55rem;font-weight:500;color:var(--fg);}
+  #v-inquiry .iq-ask li::before{content:'?';position:absolute;left:0;top:0;font-family:var(--mono);font-weight:700;color:var(--accent);}
+  #v-inquiry .iq-ask li:last-child{margin-bottom:0;}
+  #v-inquiry .iq-goal-go{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.9rem;}
+
+  /* 조작 요소 확대(spec §15) */
+  #v-inquiry .iq-mini{font-size:0.85rem;letter-spacing:0.06em;color:var(--muted);font-family:var(--mono);}
+  #v-inquiry .iq-src{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.7rem;line-height:1.7;}
+  #v-inquiry .iq-illu{display:block;width:100%;max-width:40rem;height:auto;margin:0.9rem auto 0.35rem;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);}
+  #v-inquiry .iq-illu text{font-family:var(--mono);}
+  #v-inquiry .iq-cap{font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.7;margin-bottom:0.4rem;}
+
+  /* 표 공통 — 컨테이너 내부 가로 스크롤 */
+  #v-inquiry .iq-tw{overflow-x:auto;margin:0.7rem 0;max-width:100%;}
+  #v-inquiry .iq-tw table{border-collapse:collapse;font-size:0.92rem;min-width:24rem;width:100%;}
+  #v-inquiry .iq-tw th,#v-inquiry .iq-tw td{border:1px solid var(--border);padding:0.45rem 0.6rem;text-align:left;line-height:1.65;vertical-align:top;}
+  #v-inquiry .iq-tw th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-inquiry .iq-tw td.c,#v-inquiry .iq-tw th.c{text-align:center;}
+  #v-inquiry .iq-tw td.v{font-family:var(--mono);font-weight:700;text-align:center;white-space:nowrap;}
+
+  /* 피드백 박스(spec §15) */
+  #v-inquiry .iq-fb{font-family:var(--sans);font-size:1.02rem;font-weight:700;line-height:1.75;
+    background:var(--bg);border:1px solid var(--border);border-radius:0.6rem;padding:0.7rem 0.9rem;margin-top:0.7rem;}
+  #v-inquiry .iq-fb:empty{display:none;}
+  #v-inquiry .iq-fb.ok{border-color:var(--green);color:var(--green);}
+  #v-inquiry .iq-fb.no{border-color:var(--red);color:var(--red);}
+  #v-inquiry .iq-fb.mid{border-color:var(--blue);color:var(--blue);}
+  #v-inquiry .iq-fb .x{display:block;font-weight:500;color:var(--body);font-size:0.96rem;margin-top:0.35rem;}
+
+  /* ── 탭① 5단계 배치 미니 활동 ── */
+  #v-inquiry .iq-pcards{display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.9rem 0 0.4rem;}
+  #v-inquiry .iq-pcard{font-size:0.98rem;font-weight:600;padding:0.6rem 1rem;min-height:44px;
+    border:1px solid var(--border);border-radius:0.7rem;background:var(--bg);color:var(--fg);cursor:pointer;transition:all 0.18s;}
+  #v-inquiry .iq-pcard:hover{background:var(--card-h);border-color:var(--muted);}
+  #v-inquiry .iq-pcard.sel{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-inquiry .iq-pcard.used{opacity:0.32;cursor:default;}
+  #v-inquiry .iq-slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.2rem,1fr));gap:0.55rem;margin:0.8rem 0 0.3rem;}
+  #v-inquiry .iq-slot{min-height:5rem;border:2px dashed var(--border);border-radius:0.7rem;background:var(--bg);
+    padding:0.5rem;text-align:center;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:0.2rem;}
+  #v-inquiry .iq-slot:hover{border-color:var(--muted);}
+  #v-inquiry .iq-slot .n{font-family:var(--mono);font-size:0.72rem;color:var(--muted);}
+  #v-inquiry .iq-slot .t{font-size:0.95rem;font-weight:600;color:var(--fg);line-height:1.4;word-break:keep-all;}
+  #v-inquiry .iq-slot.full{border-style:solid;background:var(--card-h);}
+  #v-inquiry .iq-slot.ok{border-color:var(--green);}
+  #v-inquiry .iq-slot.bad{border-color:var(--red);}
+
+  /* ── 탭① 원형 진행 링 ── */
+  #v-inquiry .iq-ringwrap{display:flex;gap:1.3rem;flex-wrap:wrap;align-items:flex-start;margin-top:0.9rem;}
+  #v-inquiry .iq-ringbox{flex:0 1 21rem;min-width:0;max-width:100%;}
+  #v-inquiry #iq-ring{display:block;width:100%;max-width:21rem;height:auto;margin:0 auto;}
+  #v-inquiry #iq-ring .seg{cursor:pointer;transition:opacity 0.2s;}
+  #v-inquiry #iq-ring .seg:hover{opacity:0.82;}
+  #v-inquiry #iq-ring text{font-family:var(--mono);}
+  #v-inquiry .iq-ringcol{display:none;flex-direction:column;gap:0.45rem;margin-top:0.6rem;}
+  #v-inquiry .iq-ringcol button{width:100%;text-align:left;font-size:0.98rem;font-weight:600;min-height:44px;
+    border:1px solid var(--border);border-radius:0.6rem;background:var(--bg);color:var(--fg);padding:0.55rem 0.9rem;cursor:pointer;}
+  #v-inquiry .iq-ringcol button.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-inquiry .iq-stage{flex:1 1 18rem;min-width:0;background:var(--bg);border:1px solid var(--border);
+    border-left:4px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:0.9rem 1rem;}
+  #v-inquiry .iq-stage h4{font-size:1.05rem;margin-bottom:0.4rem;color:var(--fg);}
+  #v-inquiry .iq-stage p{font-size:0.98rem;color:var(--body);line-height:1.8;margin-bottom:0.5rem;}
+  #v-inquiry .iq-stage .lbl{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;color:var(--muted);display:block;margin-top:0.6rem;}
+  #v-inquiry .iq-badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.04em;
+    background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.16rem 0.6rem;margin:0.25rem 0.3rem 0 0;}
+  #v-inquiry .iq-badge.g{background:var(--green);}
+  #v-inquiry .iq-badge.b{background:var(--blue);}
+  #v-inquiry .iq-badge.r{background:var(--red);}
+  #v-inquiry .iq-badge.o{background:transparent;color:var(--fg);border:1px solid var(--border);}
+
+  /* ── 예시 오버레이 ── */
+  #v-inquiry .iq-ovbtns{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.8rem;}
+  .iq-ov{position:fixed;inset:0;z-index:9999;background:rgba(26,23,20,0.86);overflow-y:auto;padding:2.6rem 0.9rem 2rem;}
+  .iq-ov .bx{max-width:52rem;margin:0 auto;background:var(--bg);border-radius:var(--radius);padding:1.3rem 1.2rem 1.6rem;}
+  .iq-ov h3{font-size:1.15rem;margin-bottom:0.6rem;color:var(--fg);}
+  .iq-ov p,.iq-ov td,.iq-ov th{font-size:0.95rem;color:var(--body);line-height:1.8;}
+  .iq-ov .tw{overflow-x:auto;max-width:100%;}
+  .iq-ov .tw table{border-collapse:collapse;width:100%;min-width:22rem;}
+  .iq-ov th,.iq-ov td{border:1px solid var(--border);padding:0.45rem 0.6rem;text-align:left;vertical-align:top;}
+  .iq-ov th{background:var(--card-h);white-space:nowrap;font-weight:600;}
+  .iq-ov .x{position:fixed;right:0.9rem;top:0.8rem;width:2.6rem;height:2.6rem;border-radius:9999px;border:none;
+    background:var(--bg);color:var(--fg);font-size:1.1rem;cursor:pointer;z-index:2;}
+  .iq-ov .rw{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.9rem;}
+  .iq-ov .src{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.8rem;line-height:1.7;}
+
+  /* ── 탭② 가상 자료 배너 ── */
+  #v-inquiry .iq-banner{position:sticky;top:3.4rem;z-index:20;background:var(--fg);color:var(--bg);
+    border-radius:var(--radius);padding:0.6rem 0.9rem;font-size:0.9rem;line-height:1.65;margin-bottom:0.9rem;}
+  #v-inquiry .iq-banner b{color:var(--bg);}
+
+  /* ── 탭② 세 서랍 ── */
+  #v-inquiry .iq-draw{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0.7rem;margin:0.9rem 0;}
+  #v-inquiry .iq-dr{background:var(--bg);border:1px solid var(--border);border-left:5px solid var(--accent);
+    border-radius:0 0.55rem 0.55rem 0;padding:0.75rem 0.85rem;}
+  #v-inquiry .iq-dr.a{border-left-color:var(--green);}
+  #v-inquiry .iq-dr.b{border-left-color:var(--blue);}
+  #v-inquiry .iq-dr.c{border-left-color:var(--red);}
+  #v-inquiry .iq-dr b{display:block;font-size:1.0rem;color:var(--fg);margin-bottom:0.25rem;}
+  #v-inquiry .iq-dr .d{font-size:0.92rem;color:var(--body);line-height:1.7;}
+  #v-inquiry .iq-dr .m{font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.6;margin-top:0.4rem;display:block;}
+  #v-inquiry .iq-case{background:var(--bg);border:1px solid var(--border);border-radius:0.6rem;padding:0.8rem 0.9rem;margin-bottom:0.7rem;}
+  #v-inquiry .iq-case .q{font-size:1.0rem;font-weight:600;color:var(--fg);line-height:1.6;}
+  #v-inquiry .iq-case .s{font-family:var(--mono);font-size:0.7rem;color:var(--muted);display:block;margin-top:0.25rem;}
+  #v-inquiry .iq-case .row{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.6rem;align-items:center;}
+  #v-inquiry .iq-abc{font-family:var(--mono);font-size:0.95rem;font-weight:700;min-width:3.2rem;min-height:44px;
+    border:1px solid var(--border);border-radius:0.55rem;background:var(--card);color:var(--fg);cursor:pointer;padding:0.4rem 0.7rem;}
+  #v-inquiry .iq-abc:hover{background:var(--card-h);}
+  #v-inquiry .iq-abc.pick{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-inquiry .iq-abc.ok{background:var(--green);color:#fff;border-color:var(--green);}
+  #v-inquiry .iq-abc.mid{background:var(--blue);color:#fff;border-color:var(--blue);}
+  #v-inquiry .iq-abc.no{background:var(--red);color:#fff;border-color:var(--red);}
+  #v-inquiry .iq-res{background:var(--card-h);border:1px solid var(--border);border-radius:0.6rem;padding:0.8rem 0.95rem;margin-top:0.6rem;}
+  #v-inquiry .iq-res:empty{display:none;}
+  #v-inquiry .iq-res .cnt{font-family:var(--mono);font-size:1.05rem;font-weight:700;color:var(--fg);}
+
+  /* ── 탭② 활동② 칩 ── */
+  #v-inquiry .iq-mchips{display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.8rem 0 0.3rem;}
+  #v-inquiry .iq-mchip{font-size:0.95rem;line-height:1.5;text-align:left;padding:0.55rem 0.9rem;min-height:44px;
+    border:1px solid var(--border);border-radius:0.7rem;background:var(--bg);color:var(--fg);cursor:pointer;max-width:100%;word-break:keep-all;}
+  #v-inquiry .iq-mchip:hover{background:var(--card-h);}
+  #v-inquiry .iq-mchip.on{background:var(--green);color:#fff;border-color:var(--green);}
+  #v-inquiry .iq-mchip.trap{background:var(--red);color:#fff;border-color:var(--red);}
+
+  /* ── 탭② 상충 실험 ── */
+  #v-inquiry .iq-modes{display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.7rem 0;}
+  #v-inquiry .iq-mode{font-size:0.95rem;font-weight:600;min-height:44px;padding:0.5rem 0.95rem;
+    border:1px solid var(--border);border-radius:9999px;background:var(--bg);color:var(--fg);cursor:pointer;}
+  #v-inquiry .iq-mode.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-inquiry .iq-sld{display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;margin:0.8rem 0 0.4rem;}
+  #v-inquiry .iq-sld input[type=range]{flex:1 1 12rem;min-width:8rem;accent-color:var(--fg);height:2rem;}
+  #v-inquiry .iq-sld .v{font-family:var(--mono);font-size:1.05rem;font-weight:700;min-width:4.2rem;text-align:right;}
+  #v-inquiry .iq-bars{margin-top:0.7rem;}
+  #v-inquiry .iq-bar{display:flex;align-items:center;gap:0.5rem;margin:0.5rem 0;}
+  #v-inquiry .iq-bar .nm{font-family:var(--mono);font-size:0.72rem;line-height:1.35;width:7.2rem;flex-shrink:0;color:var(--body);}
+  #v-inquiry .iq-bar .tk{flex:1;min-width:3rem;height:1.3rem;background:var(--bg);border:1px solid var(--border);border-radius:9999px;overflow:hidden;}
+  #v-inquiry .iq-bar .fl{display:block;height:100%;width:0;border-radius:9999px;transition:width 0.3s cubic-bezier(0.22,1,0.36,1);}
+  #v-inquiry .iq-bar .fl.gap{background:repeating-linear-gradient(135deg,var(--red) 0 6px,rgba(180,65,51,0.55) 6px 12px);}
+  #v-inquiry .iq-bar .fl.acc{background:var(--blue);}
+  #v-inquiry .iq-bar .vl{font-family:var(--mono);font-size:0.86rem;font-weight:700;width:4.4rem;text-align:right;flex-shrink:0;}
+  #v-inquiry .iq-notes{display:grid;grid-template-columns:1fr;gap:0.6rem;margin-top:0.9rem;}
+  #v-inquiry .iq-note label{display:block;font-size:0.95rem;font-weight:600;color:var(--fg);margin-bottom:0.3rem;line-height:1.6;}
+  #v-inquiry .iq-note textarea{width:100%;min-height:3.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.5rem 0.7rem;font-family:var(--sans);font-size:0.95rem;background:var(--bg);color:var(--fg);resize:vertical;}
+
+  /* ── 탭③ SDGs · 도구 칩 ── */
+  #v-inquiry .iq-sdgs{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.5rem 0 0.2rem;}
+  #v-inquiry .iq-sdg{font-size:0.86rem;font-weight:600;line-height:1.4;min-height:38px;padding:0.4rem 0.7rem;
+    border:1px solid var(--border);border-left:4px solid var(--muted);border-radius:0 0.5rem 0.5rem 0;
+    background:var(--bg);color:var(--fg);cursor:pointer;word-break:keep-all;}
+  #v-inquiry .iq-sdg.g1{border-left-color:var(--red);}
+  #v-inquiry .iq-sdg.g2{border-left-color:var(--blue);}
+  #v-inquiry .iq-sdg.g3{border-left-color:var(--green);}
+  #v-inquiry .iq-sdg.g4{border-left-color:var(--accent);}
+  #v-inquiry .iq-sdg.on{background:var(--fg);color:var(--bg);}
+  #v-inquiry .iq-sdg .eco{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.04em;
+    background:var(--green);color:#fff;border-radius:9999px;padding:0.05rem 0.35rem;margin-left:0.3rem;}
+  #v-inquiry .iq-grouplb{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;color:var(--muted);margin:0.7rem 0 0.1rem;}
+  #v-inquiry .iq-tools{display:flex;flex-wrap:wrap;gap:0.45rem;margin:0.5rem 0;}
+  #v-inquiry .iq-tool{font-size:0.92rem;font-weight:600;min-height:40px;padding:0.45rem 0.85rem;
+    border:1px solid var(--border);border-radius:9999px;background:var(--bg);color:var(--fg);cursor:pointer;}
+  #v-inquiry .iq-tool.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+  #v-inquiry .iq-topic{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--green);
+    border-radius:0 var(--radius) var(--radius) 0;padding:0.9rem 1rem;margin-top:0.8rem;}
+  #v-inquiry .iq-topic h4{font-size:1.05rem;color:var(--fg);margin-bottom:0.4rem;line-height:1.5;}
+  #v-inquiry .iq-topic p{font-size:0.96rem;color:var(--body);line-height:1.8;margin-bottom:0.4rem;}
+  #v-inquiry .iq-topic .k{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--muted);display:block;margin-top:0.55rem;}
+  #v-inquiry .iq-topic .rw{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.35rem;}
+
+  /* ── 탭③ 계획서 [A] 폼 ── */
+  #v-inquiry .iq-form{display:flex;flex-direction:column;gap:0.75rem;margin-top:0.8rem;}
+  #v-inquiry .iq-fld label{display:block;font-size:0.98rem;font-weight:600;color:var(--fg);margin-bottom:0.25rem;}
+  #v-inquiry .iq-fld .gd{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-bottom:0.3rem;}
+  #v-inquiry .iq-fld input,#v-inquiry .iq-fld textarea{width:100%;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:0.98rem;background:var(--bg);color:var(--fg);}
+  #v-inquiry .iq-fld textarea{min-height:3.2rem;resize:vertical;}
+  #v-inquiry .iq-xy{display:flex;gap:0.6rem;flex-wrap:wrap;}
+  #v-inquiry .iq-xy>div{flex:1 1 11rem;min-width:0;}
+  #v-inquiry .iq-lights{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0.5rem;margin-top:0.9rem;}
+  #v-inquiry .iq-light{display:flex;gap:0.5rem;align-items:flex-start;background:var(--bg);border:1px solid var(--border);
+    border-radius:0.55rem;padding:0.55rem 0.7rem;font-size:0.92rem;line-height:1.6;color:var(--body);}
+  #v-inquiry .iq-light .dot{width:0.85rem;height:0.85rem;border-radius:9999px;flex-shrink:0;margin-top:0.35rem;background:var(--muted);}
+  #v-inquiry .iq-light.ok .dot{background:var(--green);}
+  #v-inquiry .iq-light.warn .dot{background:#c8901f;}
+  #v-inquiry .iq-light.no .dot{background:var(--red);}
+  #v-inquiry .iq-privacy{font-size:0.9rem;line-height:1.7;color:var(--body);background:var(--card-h);
+    border:1px dashed var(--border);border-radius:0.55rem;padding:0.6rem 0.8rem;margin-top:0.7rem;}
+
+  /* ── 정리 카드 ── */
+  #v-inquiry .iq-3line{list-style:none;margin:0.7rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.45rem;}
+  #v-inquiry .iq-3line li{font-size:1.06rem;font-weight:700;color:var(--fg);line-height:1.75;}
+  #v-inquiry .iq-fold{border-top:1px dashed var(--border);margin-top:1rem;padding-top:0.2rem;}
+  #v-inquiry .iq-fold>summary{cursor:pointer;list-style:none;font-weight:600;font-size:0.98rem;color:var(--fg);
+    padding:0.65rem 0;position:relative;padding-right:1.4rem;min-height:44px;display:flex;align-items:center;}
+  #v-inquiry .iq-fold>summary::-webkit-details-marker{display:none;}
+  #v-inquiry .iq-fold>summary::after{content:'▸';position:absolute;right:0.2rem;color:var(--muted);font-weight:800;}
+  #v-inquiry .iq-fold[open]>summary::after{content:'▾';}
+  #v-inquiry .iq-fold .bd p{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.75rem;}
+
+  /* ── 참고 자료 카드 ── */
+  #v-inquiry .iq-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-inquiry .iq-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;}
+  #v-inquiry .iq-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-inquiry .iq-ref .th{position:relative;aspect-ratio:16/9;background:var(--card-h);display:flex;align-items:center;justify-content:center;font-size:2.3rem;overflow:hidden;}
+  #v-inquiry .iq-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-inquiry .iq-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-inquiry .iq-ref .bd{padding:0.65rem 0.75rem;}
+  #v-inquiry .iq-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-inquiry .iq-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+  #v-inquiry .iq-refwrap{position:relative;min-width:0;}
+  #v-inquiry .iq-refwrap .rm{position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);color:#fff;
+    border-radius:9999px;width:1.7rem;height:1.7rem;cursor:pointer;font-size:0.95rem;line-height:1;z-index:2;}
+  #v-inquiry .iq-refwrap .rm:hover{background:var(--red);}
+  #v-inquiry .iq-refin{flex:1 1 13rem;min-width:0;height:2.4rem;border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.7rem;font-family:var(--mono);font-size:0.78rem;background:var(--bg);color:var(--fg);}
+  #v-inquiry .iq-warnbar{font-size:0.9rem;line-height:1.7;color:var(--body);background:var(--card-h);
+    border:1px dashed var(--border);border-radius:0.55rem;padding:0.6rem 0.8rem;margin-top:0.8rem;}
+
+  /* ── 공학 도구 가이드 ── */
+  #v-inquiry .iq-tguide{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-inquiry .iq-tg{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 0.95rem;}
+  #v-inquiry .iq-tg b{display:block;font-size:1.0rem;color:var(--fg);margin-bottom:0.3rem;}
+  #v-inquiry .iq-tg ol{margin:0.35rem 0 0.55rem 1.15rem;}
+  #v-inquiry .iq-tg li{font-size:0.92rem;color:var(--body);line-height:1.75;}
+
+  /* ── 반응형 ── */
+  @media (max-width:640px){
+    #v-inquiry .iq-wm{display:none;}
+    #v-inquiry #iq-ring{display:none;}
+    #v-inquiry .iq-ringcol{display:flex;}
+    #v-inquiry .iq-ringbox{flex:1 1 100%;}
+    #v-inquiry .iq-banner{top:3rem;font-size:0.86rem;}
+    #v-inquiry .iq-bar .nm{width:5.6rem;font-size:0.66rem;}
+  }
+  /* 375px 대응 — 스프레드시트 함수 문자열이 지면을 밀지 않게 합니다(37차시 통합 QA). */
+  #v-inquiry .iq-tg li{overflow-wrap:anywhere;word-break:break-word;}
+  </style>
+
+  <div class="iq-hero">
+    <svg class="iq-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <circle cx="86" cy="90" r="54" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="14 9"/>
+      <circle cx="86" cy="36" r="9" fill="currentColor"/><circle cx="137" cy="73" r="9" fill="currentColor"/>
+      <circle cx="118" cy="133" r="9" fill="currentColor"/><circle cx="54" cy="133" r="9" fill="currentColor"/>
+      <circle cx="35" cy="73" r="9" fill="currentColor"/>
+      <rect x="186" y="32" width="112" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+      <rect x="186" y="74" width="112" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+      <rect x="186" y="116" width="112" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+      <rect x="228" y="44" width="28" height="8" rx="4" fill="currentColor"/>
+      <rect x="228" y="86" width="28" height="8" rx="4" fill="currentColor"/>
+      <rect x="228" y="128" width="28" height="8" rx="4" fill="currentColor"/>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">31차시 · Ⅴ. 인공지능과 수학 탐구</p>
+    <h2>31차시 — 탐구의 다섯 걸음과 윤리의 경계선</h2>
+    <p class="desc">
+      이제 배운 도구를 들고 우리 자신의 문제로 갑니다. 그 전에 두 가지를 챙깁니다.
+      하나는 탐구가 어떤 <b>다섯 걸음</b>으로 이루어지는지, 다른 하나는 "AI가 잘못했다"는 말 가운데
+      <b>수학으로 고칠 수 있는 것은 어디까지인가</b> 하는 물음입니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 인공지능 수학 탐구의 <b>다섯 단계</b>를 순서대로 설명하고, 각 단계에서 만들어야 하는 산출물을
+      보고서 항목 <b>A~F</b>와 연결할 수 있다. <b>[12인수05-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 인공지능이 <b>비합리적·비윤리적 결정</b>을 내린 사례를 찾아, 그 문제를 <b>수학적으로 해결할 수 있는 부분과
+      그럴 수 없는 부분</b>을 구분하여 근거를 들어 설명할 수 있다. <b>[12인수05-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 자신의 관심·진로 또는 <b>지속가능발전목표(SDGs)</b>와 연계된 탐구 주제를 선정하고,
+      <b>변수 x·y와 데이터 출처</b>를 포함한 계획서 [A]를 작성할 수 있다. <b>[12인수05-02]</b>
+    </div>
+    <div class="iq-goal-go">
+      <button class="btn" type="button" onclick="iqSee(0,'iq-ring-h')">목표 ① → 탭① 다섯 걸음</button>
+      <button class="btn" type="button" onclick="iqSee(1,'iq-cases-h')">목표 ② → 탭② 세 서랍</button>
+      <button class="btn" type="button" onclick="iqSee(2,'iq-form-h')">목표 ③ → 탭③ 계획서 [A]</button>
+    </div>
+    <p class="iq-src">오늘 만든 계획서 [A]는 <b>다음 차시에 그대로 이어서</b> 씁니다.</p>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념 <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips iq-keys" data-no-toggle="1">
+    <span class="chip">합리적 의사 결정</span>
+    <span class="chip">인공지능 수학 탐구 5단계</span>
+    <span class="chip">데이터 편향과 공정성</span>
+    <span class="chip">상충하는 두 목표</span>
+    <span class="chip">지속가능발전목표(SDGs)</span>
+  </div>
+
+  <div class="card iq-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <p>오늘 수업은 이 물음에 답하기 위한 여정입니다. STEP 3에서 다시 만나 답을 완성합니다.</p>
+    <ul>
+      <li>AI의 잘못된 결정 가운데, <b>수학으로 고칠 수 있는 것은 어디까지</b>인가?</li>
+      <li>좋은 탐구 주제와 <b>검색으로 끝나는 주제</b>는 무엇이 다를까?</li>
+    </ul>
+    <p class="iq-src">근거 — 씨마스 교과서 Ⅴ p.187 "수학적으로 해결할 수 있는 경우 또는 수학적으로 해결하기 힘든 경우의 이유를 생각해 본다" · 연수교재 합본 p.312 "단순 검색 주제는 반려" 서술을 재구성</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 ═════ -->
+  <div class="iq-step"><p class="mono">STEP 1 · 도입 — 경계선 앞에 서기</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — "AI가 잘못했다"는 말이 실제로 뜻하는 것</h3>
+    <p>카드를 누르면 전체 화면으로 재생됩니다. 다섯 편 모두 오늘 <b>탭②의 사례 카드</b>로 다시 나옵니다.
+      보면서 <b>"이건 수학으로 고칠 수 있을까?"</b>를 계속 생각해 두세요.
+      선생님께서 다른 영상을 쓰실 때에는 마지막 칸의 <b>[+ 선생님 영상 추가]</b>를 이용하시면 됩니다.</p>
+    <div id="iq-videos"></div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>도입 자료 — 세 개의 서랍</h3>
+    <svg class="iq-illu" viewBox="0 0 480 250" role="img" aria-label="수학으로 고칠 수 있는 문제, 사람이 선택하는 문제, 수학 밖의 문제를 나누는 세 개의 서랍 그림">
+      <rect width="480" height="250" fill="var(--bg)"/>
+      <rect x="18" y="14" width="444" height="66" rx="7" fill="var(--card)" stroke="var(--green)" stroke-width="2.5"/>
+      <rect x="212" y="40" width="42" height="9" rx="4.5" fill="var(--green)"/>
+      <text x="34" y="38" font-size="15" font-weight="700" fill="var(--fg)">A · 수학으로 진단하고 고칠 수 있다</text>
+      <text x="34" y="62" font-size="12.5" fill="var(--muted)">예 — "특정 인종의 오인식률이 높다"</text>
+      <rect x="18" y="92" width="444" height="66" rx="7" fill="var(--card)" stroke="var(--blue)" stroke-width="2.5"/>
+      <rect x="212" y="118" width="42" height="9" rx="4.5" fill="var(--blue)"/>
+      <text x="34" y="116" font-size="15" font-weight="700" fill="var(--fg)">B · 수학은 선택지를 계산해 준다. 고르는 것은 사람</text>
+      <text x="34" y="140" font-size="12.5" fill="var(--muted)">예 — "정확도와 공정성 중 무엇을 우선할까"</text>
+      <rect x="18" y="170" width="444" height="66" rx="7" fill="var(--card)" stroke="var(--red)" stroke-width="2.5"/>
+      <rect x="212" y="196" width="42" height="9" rx="4.5" fill="var(--red)"/>
+      <text x="34" y="194" font-size="15" font-weight="700" fill="var(--fg)">C · 수학의 바깥 — 책임·동의·권리·제도</text>
+      <text x="34" y="218" font-size="12.5" fill="var(--muted)">예 — "자율주행 사고의 책임은 누구에게 있는가"</text>
+    </svg>
+    <p class="iq-cap">오늘 우리는 사례 여덟 장을 이 세 서랍에 나누어 넣습니다. <b>분류 자체가 탐구입니다.</b></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="iq-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답이 오늘 세 탭의 순서와 같습니다</b> —
+      무엇이 합리적인가(탭②), 어떻게 걷는가(탭①), 무엇을 고를 것인가(탭③).</p>
+  </div>
+
+  <div class="card">
+    <h3>미리 보는 평가 기준 — 무엇을 해야 좋은 점수를 받나</h3>
+    <p>연수교재 원고는 프로젝트를 시작하기 전에 <b>루브릭을 미리 배부하고</b> 무엇이 좋은 결과인지 설명하라고 지시합니다.
+      아래는 5단원 프로젝트 전체에 적용되는 평가 영역입니다.</p>
+    <div class="iq-tw">
+      <table>
+        <tr><th style="width:34%;">영역</th><th>우수(4점)의 조건 요약</th></tr>
+        <tr><td><b>A</b> 주제 선정 및 문제 정의</td><td>실생활 문제와 SDGs가 <b>긴밀하게</b> 연계되고 탐구 목표가 구체적·명확함</td></tr>
+        <tr><td><b>B</b> 자료 수집 및 전처리</td><td><b>신뢰할 수 있는 출처</b> + 결측값·이상치 처리 과정을 <b>상세히 기록</b></td></tr>
+        <tr><td><b>C</b> 수학적 원리 및 모델 설계</td><td>활용한 수학 개념을 정확히 기술하고 <b>손실함수·모델 수식을 올바르게 설계</b></td></tr>
+        <tr><td><b>D</b> 탐구 수행 및 결과 도출</td><td>적절한 공학 도구 + <b>시각화</b> + 최적의 결과 도출</td></tr>
+        <tr><td><b>E</b> 결과 해석 및 성찰</td><td>타당성을 객관적으로 검토하고 <b>데이터 편향성·윤리적 한계</b>에 대한 깊이 있는 성찰과 후속 계획</td></tr>
+      </table>
+    </div>
+    <p>눈여겨볼 점이 있습니다. <b>E 영역의 만점 조건에 '윤리적 한계에 대한 깊이 있는 성찰'이 들어 있습니다.</b>
+      오늘 탭②가 바로 그 준비입니다.</p>
+    <p class="iq-src">출처 — 연수교재 합본 p.323 평가 루브릭 A~E(4·3·2점)와 p.312 오리엔테이션 지시 서술을 재구성. 원문 표는 학습지에서 인쇄해 배부합니다.</p>
+  </div>
+
+
+  <!-- ═════ STEP 2 · 전개 ═════ -->
+  <div class="iq-step"><p class="mono">STEP 2 · 전개 — 탐구 활동</p></div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="iqTab(0,this)">① 탐구의 다섯 걸음</button>
+    <button class="tab" type="button" onclick="iqTab(1,this)">② 수학으로 풀리는 윤리, 풀리지 않는 윤리</button>
+    <button class="tab" type="button" onclick="iqTab(2,this)">③ 우리 팀 주제 만들기</button>
+  </div>
+
+  <!-- ───── 탭 ① ───── -->
+  <div class="tpanel on" id="iq0">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      탐구가 어떤 다섯 걸음으로 이루어지는지 순서를 세우고, 각 걸음이 <b>보고서 A~F 중 어느 칸</b>을 채우는지 연결합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 도구는 많은데, 어떤 순서로 걸을까</h3>
+      <p>여러분은 이제 도구를 많이 가지고 있습니다. 집합·벡터·유사도(2단원), 행렬·해밍 거리·합성곱(3단원),
+        확률·추세선·손실함수·경사하강법(4단원).</p>
+      <p>그런데 도구가 많다는 것이 곧 탐구를 잘한다는 뜻은 아닙니다. <b>어떤 순서로 걸어야 할까요?</b></p>
+      <p>아래 여섯 장의 카드를 <b>순서대로</b> 배치해 보세요. <b>한 장은 함정</b>입니다.
+        카드를 누른 뒤 놓고 싶은 칸을 누르면 들어갑니다. 칸을 다시 누르면 빠집니다.</p>
+      <div class="iq-pcards" id="iq-pcards"></div>
+      <div class="iq-slots" id="iq-slots"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" id="iq-place-chk" onclick="iqPlaceCheck()">배치 확인</button>
+        <button class="btn" type="button" onclick="iqPlaceReset()">다시 배치</button>
+      </div>
+      <div class="iq-fb" id="iq-place-fb" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1" id="iq-ring-h">
+      <h3>조작 — 원형 진행 링: 한 걸음을 누르면 산출물이 보입니다</h3>
+      <p>링의 칸을 누르면 그 단계에서 <b>무엇을 하고, 무엇을 만들어 내는지</b>가 오른쪽에 열립니다.
+        각 단계에는 담당 <b>역할 배지</b>도 함께 붙습니다.</p>
+      <div class="iq-ringwrap">
+        <div class="iq-ringbox">
+          <svg id="iq-ring" viewBox="0 0 260 260" role="img" aria-label="탐구 5단계를 나타낸 원형 진행 링"></svg>
+          <div class="iq-ringcol" id="iq-ringcol"></div>
+        </div>
+        <div class="iq-stage" id="iq-stage" role="region" aria-live="polite"></div>
+      </div>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.188 「인공지능 수학 탐구 과정 5단계」 도해와 연수교재 합본 pp.313~317 보고서 A~F 양식·역할 4종 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>단계 1 · 관찰 — 실제 탐구는 어떻게 진행되었나</h3>
+      <p>씨마스 교과서에 실린 두 편의 완성된 탐구를 <b>다섯 걸음으로 나누어</b> 볼 수 있습니다.
+        오버레이 안에서 각 걸음에 실제로 무엇을 했는지 확인해 보세요.</p>
+      <div class="iq-ovbtns">
+        <button class="btn pri" type="button" onclick="iqEx('pet')">예시 1 · 페트병 분리수거 열기</button>
+        <button class="btn pri" type="button" onclick="iqEx('emb')">예시 2 · ChatGPT의 원리 열기</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 좋은 탐구의 공통점 세 가지</h3>
+      <p>두 예시를 나란히 놓으면 공통점이 셋 보입니다.</p>
+      <p>① <b>수학 탐구 주제가 따로 적혀 있습니다.</b> "페트병 분리수거"만이 아니라
+        "<b>해밍 거리를 이용한 분류</b>"까지 적었습니다. 이것이 검색 정리와 수학 탐구를 가르는 결정적인 차이입니다.</p>
+      <p>② <b>한계를 분명히 적었습니다.</b> 두 예시 모두 마지막에 "무엇이 안 되었는지"를 구체적으로 씁니다.
+        실패를 적는 것은 감점이 아니라 <b>만점 조건</b>입니다(루브릭 E 영역).</p>
+      <p>③ <b>다음 계획이 있습니다.</b> 탐구는 끝나는 것이 아니라 다음 질문을 남깁니다.</p>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ pp.194~197 예시 1·2와 합본 p.323 루브릭 E 영역 서술을 재구성</p>
+    </div>
+
+    <div class="card">
+      <h3>단계 3 · 정의 확인 — 인공지능 수학 탐구란 무엇인가</h3>
+      <p><b>인공지능 수학 탐구</b>: 실생활 문제를 발견해 수학적으로 정의하고, 자료 수집·전처리·분석·모델링·평가를 거쳐
+        해결하는 탐구 활동. 주로 다섯 단계로 나누어 수행합니다.</p>
+      <div class="math">① 탐구 주제 선정 → ② 자료 수집 및 분석 → ③ 탐구 수행 → ④ 탐구 결과 정리 → ⑤ 평가 및 고찰</div>
+      <p>단계 순서는 주제와 방법에 따라 다소 달라질 수 있으나, <b>주제 선정이 자료 수집보다 앞선다</b>는 점과
+        <b>평가·고찰로 마무리한다</b>는 점은 바뀌지 않습니다.</p>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.188 · 연수교재 합본 p.309 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ───── 탭 ② ───── -->
+  <div class="tpanel" id="iq1">
+    <div class="iq-banner" role="note">
+      🔖 이 탭의 수치 시뮬레이션(활동 ③)은 <b>수업용으로 만든 가상 자료</b>입니다.
+      실제 기업의 채용 자료가 아니며, 상충 관계를 관찰하기 위한 예시입니다.
+      사례 카드에 실린 사건은 <b>실제 보도가 있는 것만</b> 실었고 출처를 밝혔습니다.
+    </div>
+
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      사례 여덟 장을 세 서랍으로 갈라 <b>수학의 경계선</b>을 긋고, 두 목표가 상충하는 장면을 수로 확인합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 교과서가 던진 한 줄</h3>
+      <p>씨마스 교과서 Ⅴ의 탐구 활동은 이렇게 시작합니다. 사례 예시 한 줄과 문제 예시 한 줄입니다.</p>
+      <div class="math">사례: "남성이 여성보다 더 많은 채용 제안을 받았다."
+문제: "공정한 인공지능 채용 시스템을 구성할 때 이용할 수 있는 수학적 해결책은 무엇인가?"</div>
+      <p>도입 영상에서 본 그 사건입니다. 이제 여러분이 답할 차례입니다.
+        그런데 답하기 전에 한 가지를 먼저 정해야 합니다. <b>이 문제는 수학으로 풀 수 있는 문제인가?</b></p>
+      <p>씨마스 교과서는 이 물음을 활동의 한 단계로 아예 못 박아 두었습니다 —
+        "수학적으로 해결할 수 있는 경우 또는 <b>수학적으로 해결하기 힘든 경우의 이유</b>를 생각해 본다."</p>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ pp.186~187 「인공지능 윤리에 관한 수학적 탐색」 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1" id="iq-cases-h">
+      <h3>활동 ① — 사례 여덟 장을 세 서랍에 나누어 넣기</h3>
+      <div class="iq-draw">
+        <div class="iq-dr a"><b>A · 수학으로 진단하고 고칠 수 있다</b>
+          <span class="d">문제의 원인이 <b>자료·지표·알고리즘</b>에 있는 경우</span>
+          <span class="m">수학이 하는 일 — 격차를 측정하고, 자료를 재구성하고, 기준을 조정한다</span></div>
+        <div class="iq-dr b"><b>B · 수학이 선택지를 계산해 준다. 고르는 것은 사람</b>
+          <span class="d">두 개의 좋은 목표가 <b>상충</b>하거나, '무엇을 공정이라 부를지'가 걸린 경우</span>
+          <span class="m">수학이 하는 일 — 상충 곡선을 계산해 보여 준다. 어디서 멈출지는 정하지 않는다</span></div>
+        <div class="iq-dr c"><b>C · 수학의 바깥 — 책임·동의·권리·제도</b>
+          <span class="d">누가 책임지는가, 동의를 받았는가, 허용해도 되는가</span>
+          <span class="m">수학이 하는 일 — 사실을 정리해 줄 뿐, 판단의 근거를 제공하지 못한다</span></div>
+      </div>
+      <p>카드마다 <b>가장 알맞은 서랍</b> 하나와 <b>함께 걸쳐 있는 서랍</b>이 있습니다.
+        정답 서랍을 고르면 초록, 걸친 서랍을 고르면 파랑(부분 정답)으로 표시됩니다.
+        <b>왜 이 카드가 두 서랍에 걸쳐 있는지</b>를 생각해 보는 것이 오늘의 핵심입니다.</p>
+      <div id="iq-cases"></div>
+      <div class="iq-res" id="iq-drawer-res" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>활동 ② — 수학이 실제로 할 수 있는 일 목록 만들기</h3>
+      <p>서랍 A로 분류한 카드들을 떠올리며, <b>수학이 구체적으로 무엇을 할 수 있는지</b> 칩으로 골라 목록을 만드세요.
+        여러 개를 고를 수 있고, <b>고르면 안 되는 칩도 섞여 있습니다.</b></p>
+      <div class="iq-mchips" id="iq-mchips"></div>
+      <div class="iq-fb" id="iq-mchip-fb" role="status" aria-live="polite"></div>
+      <div class="btn-row"><button class="btn" type="button" onclick="iqChipReset()">목록 비우기</button></div>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>활동 ③ — 상충 실험: 「격차 25%p의 값은 얼마인가」</h3>
+      <p><b>자료(수업용 가상 자료)</b>: 지원자 200명. 남 120명·여 80명.
+        실제로 직무에서 우수한 비율은 <b>두 집단 모두 50%</b>라고 가정합니다.
+        그런데 과거 합격 자료로 학습한 모델은 남성 쪽에 더 높은 점수를 주는 경향이 있습니다.</p>
+
+      <p class="iq-mini">조작 1 — 뽑는 방식 고르기</p>
+      <div class="iq-modes" id="iq-modes"></div>
+
+      <div class="iq-sld">
+        <label for="iq-thr" style="font-size:0.95rem;font-weight:600;">합격 기준선</label>
+        <input type="range" id="iq-thr" min="50" max="90" step="1" value="70" aria-label="합격 기준선 점수">
+        <span class="v" id="iq-thrv">70점</span>
+      </div>
+      <p class="iq-mini" id="iq-thr-note">기준선을 움직이면 두 막대가 <b>서로 반대 방향</b>으로 갑니다. (방식 A·C에서만 움직입니다)</p>
+
+      <div class="iq-bars">
+        <div class="iq-bar"><span class="nm">합격률 격차 ▨</span><span class="tk"><span class="fl gap" id="iq-bar-gap"></span></span><span class="vl" id="iq-val-gap">—</span></div>
+        <div class="iq-bar"><span class="nm">전체 정확도 ■</span><span class="tk"><span class="fl acc" id="iq-bar-acc"></span></span><span class="vl" id="iq-val-acc">—</span></div>
+      </div>
+      <p class="iq-mini">격차 막대는 <b>사선 무늬(▨)</b>, 정확도 막대는 <b>단색(■)</b>입니다. 색만으로 구분하지 않습니다.</p>
+
+      <div class="iq-tw"><table id="iq-tbl"></table></div>
+
+      <div class="iq-notes">
+        <div class="iq-note"><label for="iq-n1">① 격차를 25%p → 0%p로 만들려면 정확도를 얼마나 내놓아야 하나요?</label>
+          <textarea id="iq-n1" placeholder="예) 82.0% → 78.0% 이므로 ___%p"></textarea></div>
+        <div class="iq-note"><label for="iq-n2">② 성별 항목을 지우기만 한 방식 C는 왜 격차가 완전히 사라지지 않았을까요?</label>
+          <textarea id="iq-n2" placeholder="자유롭게 적어 보세요."></textarea></div>
+        <div class="iq-note"><label for="iq-n3">③ 여러분이라면 A·B·C 중 무엇을 고르겠습니까? 그 이유는?</label>
+          <textarea id="iq-n3" placeholder="선택과 근거를 함께 적습니다."></textarea></div>
+      </div>
+      <p class="status" id="iq-note-st">기록은 이 기기에만 저장됩니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>단계 1 · 관찰 — 방식 C가 실패한 이유</h3>
+      <p>성별 열을 지웠는데도 격차가 <b>17.9%p</b> 남았습니다. 왜일까요?
+        성별과 관련된 정보가 <b>다른 열 속에 숨어 있기</b> 때문입니다.</p>
+      <p>예를 들어 특정 동아리 경력, 특정 자격증, 지원 직군의 분포 같은 것이 성별과 강하게 관련되어 있으면,
+        모델은 성별 열이 없어도 <b>간접적으로</b> 성별을 알아냅니다. 이런 변수를 <b>대리 변수</b>라고 합니다.</p>
+      <p>그러므로 "민감한 항목을 빼면 공정해진다"는 생각은 <b>수학적으로 틀렸습니다.</b>
+        대신 우리가 해야 하는 일은 ① 결과를 <b>집단별로 나누어 재는 것</b>,
+        ② 어떤 변수가 대리 변수인지 <b>유사도·상관관계로 확인하는 것</b>입니다.
+        11차시의 유사도가 여기서 도구로 쓰입니다 —
+        <a href="#sim" onclick="iqGo(['sim'],'11차시 유사도');return false;">11차시 유사도 다시 보기 →</a></p>
+    </div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 경계선은 어디인가</h3>
+      <p>오늘 우리가 세운 경계선을 한 문장으로 정리하면 이렇습니다.</p>
+      <div class="math">수학은 "얼마나 불공정한가"를 재고,
+"무엇을 얼마나 내놓아야 공정해지는가"를 계산해 준다.
+그러나 "무엇을 공정이라 부를 것인가"와
+"그 대가를 치를 것인가"는 사람이 정한다.</div>
+      <p>씨마스 교과서가 사용자에게 네 가지를 확인하라고 한 이유가 여기 있습니다 —
+        결과가 <b>공정하게</b> 적용되는가, <b>균형 있게</b> 적용되는가, <b>누가 책임지는가</b>,
+        <b>근거와 신뢰성</b>이 충분한가. <b>앞의 둘은 수학으로 확인할 수 있고, 뒤의 둘은 사람과 제도가 답해야 합니다.</b></p>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.186 · 연수교재 합본(오세준 집필분) "Accuracy 최대화 vs Fairness gap 최소화 — 두 목표는 상충" 서술을 재구성</p>
+    </div>
+
+    <div class="card">
+      <h3>단계 3 · 정의 확인 — 비합리적 의사 결정 · 공정성 점검 4문항 · 상충</h3>
+      <p><b>비합리적 의사 결정</b>: 인공지능이 잘못된 정보가 섞인 자료를 학습했거나,
+        특정 집단의 자료가 지나치게 큰 비중을 차지하는 자료를 학습해 예상치 못한 결정을 내리는 것.</p>
+      <p><b>공정성 점검 4문항</b>: ① 결과가 모든 이에게 공정하게 적용되는가 ② 다양한 측면을 고려해 균형 있게 적용되는가
+        ③ 결과를 누가 책임지는가 ④ 결정의 근거가 충분하고 신뢰성이 높은가.</p>
+      <p><b>상충</b>: 두 개의 목표가 동시에 최적이 될 수 없는 관계.
+        수학은 상충의 정도를 수로 보여 주지만 <b>선택하지는 않습니다.</b></p>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.186 서술을 재구성</p>
+    </div>
+  </div>
+
+
+  <!-- ───── 탭 ③ ───── -->
+  <div class="tpanel" id="iq2">
+    <div class="info" data-no-toggle="1"><strong>탐구 목표</strong> —
+      SDGs 목표와 수학 도구를 교차해 <b>주제 후보</b>를 만들고, 계획서 [A]를 초안까지 완성합니다.
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>문제 상황 — 주제부터 짜내지 마세요</h3>
+      <p>이제 우리 문제를 고릅니다. 씨마스 교과서의 Tip이 유용합니다 —
+        <b>"주제 선정이 어려운 경우 SDGs에서 영역을 정해 관련 데이터를 탐색한 후 데이터를 중심으로 주제를 선정해 보자."</b></p>
+      <p>즉 주제부터 짜내지 말고, <b>자료가 있는 곳에서 출발</b>하는 것이 현실적입니다.</p>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.190 Tip 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>조작 — 교차 선택 주제 생성기</h3>
+      <p><b>SDGs 목표 하나</b>와 <b>수학 도구 하나</b>를 고르면 주제 카드가 만들어집니다.
+        카드에는 예시 주제·수학 탐구 주제·데이터 출처·다시 볼 뷰가 함께 들어 있습니다.</p>
+      <div id="iq-sdgwrap"></div>
+      <p class="iq-grouplb">수학 도구 (8종)</p>
+      <div class="iq-tools" id="iq-tools"></div>
+      <div id="iq-topic"></div>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.189 SDGs 17목표와 인간·번영·환경·평화 4영역 · 연수교재 합본 pp.317~319 주제 예시와 데이터 출처 서술을 재구성</p>
+    </div>
+
+    <div class="card" data-no-toggle="1" id="iq-form-h">
+      <h3>조작 — 계획서 [A] 작성과 자동 점검</h3>
+      <p class="iq-privacy">🔒 <b>팀 코드는 학번·이름이 아니라 임의의 문자열</b>로 정하세요(예: <span class="mono" style="text-transform:none;letter-spacing:0;">bada-7</span>).
+        이 폼에는 이름 칸을 두지 않습니다. 이름은 인쇄 학습지에만 손으로 적습니다.
+        또 사례나 예시로 <b>특정 개인이나 우리 반 친구를 지목하지 않습니다.</b></p>
+      <div class="iq-form">
+        <div class="iq-fld"><label>A-0. 팀 코드 · 팀원 4명의 역할</label>
+          <span class="gd">데이터 수집가 / 수학 모델러 / 기술 구현자 / 비평 및 분석가 — <b>역할만</b> 적습니다(이름 금지).</span>
+          <div class="iq-xy">
+            <div><label for="iq-a0" style="font-size:0.9rem;">팀 코드 (임의 문자열)</label>
+              <input type="text" id="iq-a0" placeholder="예) bada-7"></div>
+            <div><label for="iq-a0r" style="font-size:0.9rem;">역할 배정 메모</label>
+              <input type="text" id="iq-a0r" placeholder="예) 수집 1 · 모델러 1 · 구현 1 · 분석 1"></div>
+          </div></div>
+        <div class="iq-fld"><label for="iq-a1">A-1. 탐구 주제</label>
+          <span class="gd">예) 기온 데이터를 활용한 교내 매점 음료 수요 예측</span>
+          <textarea id="iq-a1" placeholder="한 줄로 적어 보세요."></textarea></div>
+        <div class="iq-fld"><label for="iq-a1m">A-1&#39;. 수학 탐구 주제 <span class="mono" style="text-transform:none;letter-spacing:0;">(가장 중요)</span></label>
+          <span class="gd">예) 손실함수 L(a)의 최소화와 경사하강법 — <b>반드시 도구 이름을 쓰세요.</b></span>
+          <textarea id="iq-a1m" placeholder="'무엇을 조사한다'가 아니라 '어떤 수학으로 무엇을 한다'를 적습니다."></textarea></div>
+        <div class="iq-fld"><label for="iq-a2">A-2. 선정 이유 및 필요성</label>
+          <span class="gd">해결하고 싶은 실생활 문제와 그것이 왜 중요한지(SDGs 연계 권장)</span>
+          <textarea id="iq-a2"></textarea></div>
+        <div class="iq-fld"><label for="iq-a3">A-3. 탐구 목표</label>
+          <span class="gd">인공지능과 수학을 통해 도출하고자 하는 최종 결론</span>
+          <textarea id="iq-a3"></textarea></div>
+        <div class="iq-fld"><label>A-4. 변수 정의</label>
+          <span class="gd">여기가 비면 다음 단계로 갈 수 없습니다.</span>
+          <div class="iq-xy">
+            <div><label for="iq-ax" style="font-size:0.9rem;">x = (입력)</label><input type="text" id="iq-ax" placeholder="예) 그날의 최고 기온(℃)"></div>
+            <div><label for="iq-ay" style="font-size:0.9rem;">y = (출력)</label><input type="text" id="iq-ay" placeholder="예) 음료 판매량(개)"></div>
+          </div></div>
+        <div class="iq-fld"><label for="iq-a5">A-5. 데이터 출처</label>
+          <span class="gd">신뢰할 수 있는 출처 주소 또는 수집 계획(어디서·어떻게·몇 개)</span>
+          <textarea id="iq-a5" placeholder="예) 기상자료개방포털 일별 기온 60일 + 매점 판매 일지 직접 수집 60일"></textarea></div>
+      </div>
+
+      <p class="iq-mini" style="margin-top:1rem;">자동 점검 — 주제 선정 4기준</p>
+      <div class="iq-lights" id="iq-lights"></div>
+
+      <div class="btn-row" style="margin-top:0.9rem;">
+        <button class="btn pri" type="button" id="iq-send" onclick="iqSend()" disabled>계획서 [A]로 전송</button>
+        <button class="btn" type="button" onclick="iqSave()">임시 저장</button>
+        <button class="btn" type="button" onclick="iqEx('form')">예시 보기</button>
+        <button class="btn" type="button" onclick="iqGo(['project'],'34차시 보고서')">내 계획서 확인</button>
+      </div>
+      <div class="iq-fb" id="iq-form-fb" role="status" aria-live="polite"></div>
+      <p class="iq-src">출처 — 연수교재 합본 pp.312~316 보고서 [A] 양식과 p.324 주제 적합성 4기준 서술을 재구성</p>
+    </div>
+
+    <div class="card">
+      <h3>단계 2 · 정리 — 반려되는 주제의 세 가지 얼굴</h3>
+      <p>① <b>검색으로 끝나는 주제</b> — "인공지능의 역사", "딥러닝이란 무엇인가". 자료를 모아 정리할 뿐 계산할 것이 없습니다.</p>
+      <p>② <b>자료를 구할 수 없는 주제</b> — "전 세계 사람들의 하루 감정 변화". 3차시 안에 수치화할 방법이 없습니다.</p>
+      <p>③ <b>수학 탐구 주제가 없는 주제</b> — "우리 학교 급식 만족도 조사". 설문을 돌리는 것으로 끝나면 통계 요약이지
+        인공지능 수학 탐구가 아닙니다. <b>"만족도 벡터의 코사인 유사도로 학년별 취향을 묶는다"</b>까지 적으면 살아납니다.</p>
+      <p>세 경우 모두 <b>살릴 방법이 있습니다.</b> 주제를 버리지 말고 '수학 탐구 주제' 한 줄을 붙여 보세요.</p>
+      <p class="iq-src">출처 — 연수교재 합본 p.312(교사 역할 "단순 검색 주제는 반려") · 씨마스 교과서 Ⅴ p.190 서술을 재구성</p>
+    </div>
+
+    <div class="card">
+      <h3>단계 3 · 정의 확인 — 좋은 탐구 주제의 네 기준</h3>
+      <p><b>탐구 주제 선정</b>: 주어진 시간과 난이도를 고려해, 배운 수학 개념·원리를 적용할 수 있고 자료를 수치화할 수 있는 문제를
+        고르는 일. 씨마스 교과서는 "도달할 수 있는 목표와 수준이 아니면 탐구 과정에서 <b>방향성을 잃을 수 있다</b>"고 못 박습니다.</p>
+      <div class="math">① 주어진 시간에 해결 가능한가
+② 배운 수학 개념·원리를 활용할 수 있는가
+③ 필요한 자료를 충분히 모아 수치화할 수 있는가
+④ 인공지능 속 수학 원리를 탐구하는 것이 목표에 들어 있는가</div>
+      <p><b>수학 탐구 주제</b>: 탐구 주제와 별도로 적는 한 줄. "무엇을 다루는가"가 아니라 <b>"어떤 수학으로 무엇을 하는가"</b>를 밝힙니다.
+        예) 탐구 주제 "페트병 분리수거" → 수학 탐구 주제 "이미지의 표현과 <b>해밍 거리</b>를 이용한 분류 방법".</p>
+      <p class="iq-src">출처 — 씨마스 교과서 Ⅴ pp.190·194 · 연수교재 합본 p.324 문항03 서술을 재구성</p>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 ═════ -->
+  <div class="iq-step"><p class="mono">STEP 3 · 정리 — 배움 다지기</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ul class="iq-3line">
+      <li>① 인공지능 수학 탐구는 <b>주제 선정 → 자료 수집·분석 → 탐구 수행 → 결과 정리 → 평가·고찰</b>
+        다섯 걸음으로 걷고, 각 걸음의 산출물이 보고서 <b>A~F</b>가 된다.</li>
+      <li>② 인공지능의 잘못은 대개 <b>자료의 치우침</b>에서 온다. 치우침을 <b>재고 고치는 일은 수학</b>이지만,
+        <b>무엇을 공정이라 부를지는 사람</b>이 정한다.</li>
+      <li>③ 민감한 항목을 지우는 것만으로 공정해지지 않는다(<b>대리 변수</b>).
+        결과를 <b>집단별로 나누어 재는 것</b>이 출발점이다.</li>
+    </ul>
+  </div>
+
+  <div class="card iq-ask" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>"AI의 잘못된 결정 가운데, 수학으로 고칠 수 있는 것은 어디까지인가?"</b></p>
+    <p style="font-size:1.06rem;font-weight:700;color:var(--fg);">→ 측정과 진단, 그리고 선택지의 계산까지입니다.
+      어느 선택지를 고를지, 누가 책임질지는 수학의 바깥입니다.</p>
+    <details class="iq-fold"><summary>자세히 보기 — 가장 많은 카드가 B에 모인 이유</summary>
+      <div class="bd">
+        <p>오늘 사례 8장을 나눠 보니 가장 많은 카드가 <b>B 서랍</b>에 모였습니다. 이것이 인공지능 윤리 문제의 실제 모습입니다.
+          "수학이면 다 된다"도 "수학은 아무 상관없다"도 둘 다 틀렸습니다.</p>
+        <p>수학은 <b>격차 25%p의 값이 정확도 4%p</b>라는 것까지 정확히 계산해 줍니다.
+          그 계산이 없으면 토론은 인상 비평에 머무릅니다. 그러나 계산이 끝난 뒤에도
+          <b>"4%p를 내놓을 것인가"</b>라는 질문은 남고, 그 질문에 답하는 것은 시민의 일입니다.</p>
+        <p>그래서 이 과목의 마지막 단원이 '탐구'인 것은 우연이 아닙니다.
+          재는 법을 배운 사람이 재기를 멈추지 않는 것, 그리고 잰 뒤에 판단을 남에게 미루지 않는 것 —
+          그것이 이어지는 3차시 프로젝트가 진짜로 연습하는 능력입니다.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:1rem;">다섯 문항을 한 문항씩 풉니다. 답을 고르면 정답과 해설이 바로 나오고,
+      마지막에 총점과 복기 목록이 열립니다.</p>
+    <div id="iq-quiz"></div>
+  </div>
+
+  <div class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem;margin:1.2rem 0;">
+    <div class="card-link" onclick="iqGo(['decision'],'32차시 의사 결정')">
+      <h3>다음 차시 · 32차시 — 합리적 의사 결정 사례 분석</h3>
+      <p>사례 다섯 건을 데이터 학습 → 최적화 전략 → 합리적 의사 결정 3단으로 해부하고, 오늘의 계획서 [A]를 팀과 완성합니다.</p>
+    </div>
+    <div class="card-link" onclick="iqGo(['bias'],'5차시 편향')">
+      <h3>돌아보기 · 5차시 — 빅데이터와 편향</h3>
+      <p>격차를 수로 재고 부등식으로 추가 수집량을 구했던 시간. 오늘의 "집단별로 나누어 재기"가 거기서 출발했습니다.</p>
+    </div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고</strong> —
+    오늘 우리는 사례를 세 서랍으로 갈랐습니다. 다음 시간에는 사례 다섯 건을 더 깊이 들어가
+    <b>데이터 학습 → 최적화 전략 → 합리적 의사 결정</b> 세 단으로 해부합니다.
+    그리고 오늘 만든 <b>계획서 [A]</b>를 팀과 함께 완성합니다.
+    오늘 <b>[계획서 [A]로 전송]</b>을 눌러 두었다면 다음 시간에 그 내용이 그대로 열립니다.
+    <b>팀 코드를 기억해 두세요 — <span id="iq-teamcode" class="mono" style="text-transform:none;letter-spacing:0;">(아직 정하지 않음)</span></b>
+  </div>
+
+
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 ① — 사례와 윤리</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. 오늘 탭②에서 다룬 사례의 원자료입니다.</p>
+    <div class="iq-refs">
+      <a class="iq-ref" href="https://www.youtube.com/watch?v=dqTWgyWgGtk" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">영상</span><img src="https://img.youtube.com/vi/dqTWgyWgGtk/hqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="bd"><span class="tt">'AI 채용'은 남성을 선호해?</span><span class="ds">성차별 논란 끝에 자체 폐기된 채용 인공지능 보도(JTBC News). 씨마스 p.186 사례 예시에 해당합니다.</span></span></a>
+      <a class="iq-ref" href="https://www.youtube.com/watch?v=LksanwqE73Y" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">영상</span><img src="https://img.youtube.com/vi/LksanwqE73Y/hqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="bd"><span class="tt">알고리즘 채용의 블랙박스</span><span class="ds">이력서 편향이 어떻게 생기고 무엇으로 막을 수 있는지(베드 사이언스). 방식 C 논의로 직결됩니다.</span></span></a>
+      <a class="iq-ref" href="https://www.youtube.com/watch?v=Kyr3MXt_p8A" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">영상</span><img src="https://img.youtube.com/vi/Kyr3MXt_p8A/hqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="bd"><span class="tt">[팩트체크] 자율주행차 사고, 책임은 누가?</span><span class="ds">세 번째 서랍(수학 밖)의 대표 사례(JTBC News). 씨마스 p.184 생각해 보기와 이어집니다.</span></span></a>
+      <a class="iq-ref" href="https://www.youtube.com/watch?v=xms3OOi6uHM" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">영상</span><img src="https://img.youtube.com/vi/xms3OOi6uHM/hqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="bd"><span class="tt">트롤리 딜레마, 당신의 선택은?</span><span class="ds">계산으로 답이 정해지지 않는 결정의 원형(EBS 교양 「세상의 모든 법칙」).</span></span></a>
+      <a class="iq-ref" href="https://www.youtube.com/watch?v=i-ybvGDJ-Ng" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">영상</span><img src="https://img.youtube.com/vi/i-ybvGDJ-Ng/hqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>
+        <span class="bd"><span class="tt">의사는 남자, 간호사는 여자?</span><span class="ds">번역기의 성 편향과 인종 차별 사례(tvN STORY). 사례 카드 7의 근거 자료입니다.</span></span></a>
+      <a class="iq-ref" href="https://www.moralmachine.net/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span>🚦</span>
+        <span class="bd"><span class="tt">모럴 머신 (MIT)</span><span class="ds">자율주행 상황에서 선택을 반복하며 자신의 판단 성향을 확인하는 실험. <b>개인정보를 입력하지 말고 체험만</b> 하세요.</span></span></a>
+      <a class="iq-ref" href="#bias" onclick="iqGo(['bias'],'5차시 편향');return false;">
+        <span class="th"><span class="bg">내부 뷰</span>⚖️</span>
+        <span class="bd"><span class="tt">5차시 · 빅데이터와 편향 다시 보기</span><span class="ds">격차를 수로 재고 부등식으로 필요한 추가 수집량을 구했던 시간.</span></span></a>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 ② — 탐구 주제와 데이터 출처</h3>
+    <p>탭③에서 주제를 고를 때 바로 쓰는 창구들입니다. 자료를 내려받을 때는 <b>출처와 이용 조건을 함께 기록</b>해 두세요(보고서 B칸에 씁니다).</p>
+    <div class="iq-refs">
+      <a class="iq-ref" href="https://askmath.kosac.re.kr/board.do?menuPos=15&amp;act=detail&amp;idx=12510&amp;board_code=601LT980" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">자료</span>📚</span>
+        <span class="bd"><span class="tt">인공지능 속 수학 원리 탐구 활동</span><span class="ds">주제 선정에 참고할 탐구 활동 모음(AskMath · KERIS 연수 패들렛 지정 자료).</span></span></a>
+      <a class="iq-ref" href="https://gemini.google.com/share/5cc4e5c7faf0" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">자료</span>💡</span>
+        <span class="bd"><span class="tt">「기지개 팡팡」 탐구 아이디어</span><span class="ds">탐구 아이디어 예시 모음(KERIS 연수 패들렛 지정 자료).</span></span></a>
+      <a class="iq-ref" href="https://hajinsu9951.github.io/2026-AI-MATH-PROJECT/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">사례 갤러리</span>🖼</span>
+        <span class="bd"><span class="tt">2026 우리 동네 데이터 분석 AI 모델 아카이브</span><span class="ds">실제 학생 프로젝트 산출물. <b>주제의 크기가 어느 정도여야 하는지</b> 감을 잡는 데 가장 좋습니다. (대전대신고 하진수 개발)</span></span></a>
+      <a class="iq-ref" href="https://dshskr.notion.site/2797f8928da38083a440f78f070bc40c" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">수업 설계</span>🧭</span>
+        <span class="bd"><span class="tt">ABCDE 첨단 산업 프로젝트</span><span class="ds">문제 이해 → 정의 → 프로토타입 → 검증 → 비즈니스 모델의 5단계 설계서. (대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실)</span></span></a>
+      <a class="iq-ref" href="https://dshskr.notion.site/3227f8928da38143acccd346415e3921" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">주제 목록</span>🗂</span>
+        <span class="bd"><span class="tt">순서도와 컴퓨팅 사고 · 주제 100선</span><span class="ds">알고리즘 주제 100개를 「주제 / 활용 원리 / 입력→출력」으로 정리. 주제가 안 떠오를 때 훑어보세요. (대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실)</span></span></a>
+      <a class="iq-ref" href="https://www.index.go.kr/unity/potal/sdg/SDGMain.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">SDGs</span>🌏</span>
+        <span class="bd"><span class="tt">지속가능발전포털</span><span class="ds">17목표의 국내 지표를 수치로 볼 수 있습니다. 씨마스 교과서 p.189가 안내하는 공식 창구.</span></span></a>
+      <a class="iq-ref" href="https://www.data.go.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>📊</span>
+        <span class="bd"><span class="tt">공공데이터포털</span><span class="ds">쓰레기 배출, 교통 약자 현황 등 사회 문제 자료의 핵심 창구.</span></span></a>
+      <a class="iq-ref" href="https://data.kma.go.kr/cmmn/main.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>🌡</span>
+        <span class="bd"><span class="tt">기상자료개방포털</span><span class="ds">연도별 평균 기온, 여름 일수 — 기후 주제의 1순위 출처. <b>생태전환</b></span></span></a>
+      <a class="iq-ref" href="https://kosis.kr/index/index.do" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>📈</span>
+        <span class="bd"><span class="tt">국가통계포털 KOSIS</span><span class="ds">국가 승인 통계. 추세선 분석용 시계열 자료가 풍부합니다.</span></span></a>
+      <a class="iq-ref" href="https://www.bigkinds.or.kr/" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">데이터</span>📰</span>
+        <span class="bd"><span class="tt">빅카인즈</span><span class="ds">뉴스 빅데이터. 텍스트 마이닝·연관어 분석 주제에 씁니다.</span></span></a>
+      <a class="iq-ref" href="https://teachablemachine.withgoogle.com" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">도구</span>🧪</span>
+        <span class="bd"><span class="tt">티처블 머신</span><span class="ds">이미지·소리 분류 모델을 코딩 없이 만듭니다. 씨마스 예시 1(페트병 분류)의 병행 도구.</span></span></a>
+    </div>
+    <div id="iq-ref-custom" class="iq-refs" style="margin-top:0.8rem;"></div>
+    <div class="btn-row" style="align-items:center;">
+      <input class="iq-refin" id="iq-ref-url" type="url" placeholder="https://... (자료 주소)" aria-label="추가할 자료 주소">
+      <input class="iq-refin" id="iq-ref-tt" type="text" placeholder="자료 제목(선택)" aria-label="추가할 자료 제목">
+      <button class="btn pri" type="button" onclick="iqRefAdd()">+ 자료 추가</button>
+    </div>
+    <div class="status" id="iq-ref-st">교사용 — 추가한 자료는 이 기기에만 저장됩니다. 패들렛 링크도 여기에 걸 수 있습니다.</div>
+    <div class="iq-warnbar">🔐 <b>외부 링크 안내</b> — 외부 사이트에서는 <b>개인정보를 입력하지 않습니다.</b>
+      회원 가입이 필요한 서비스는 선생님 안내에 따라 이용하고, 모럴 머신 같은 실험 사이트는 <b>체험만</b> 하고
+      개인 성향 결과를 제출물에 쓰지 않습니다.</div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>공학 도구 가이드 — 오늘 활동을 도구로 다시 해 보기</h3>
+    <p>탭②의 200명 자료와 탭③의 주제를 아래 네 도구로 직접 다뤄 볼 수 있습니다.</p>
+    <div class="iq-tguide">
+      <div class="iq-tg"><b>📊 스프레드시트 — 집단별로 나누어 재기</b>
+        <ol>
+          <li>A열 성별(m/f), B열 점수, C열 실제 우수(1/0)로 200행을 만듭니다(학습지의 표 그대로).</li>
+          <li><span class="mono" style="text-transform:none;letter-spacing:0;">=COUNTIFS(A:A,"m",B:B,"&gt;="&amp;$F$1)</span> 로 남성 합격 수를 셉니다.</li>
+          <li>같은 식의 "m"을 "f"로 바꿔 여성 합격 수를 셉니다.</li>
+          <li>합격률 = 합격 수 ÷ 집단 인원. 두 값의 차가 <b>격차</b>입니다.</li>
+          <li>F1의 기준선을 50→90으로 바꾸며 격차와 정확도를 표로 기록합니다.</li>
+        </ol>
+        <a class="btn" href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener">스프레드시트 열기 ↗</a></div>
+      <div class="iq-tg"><b>📐 지오지브라 — 두 곡선이 만나지 않는 장면</b>
+        <ol>
+          <li><a href="https://www.geogebra.org/classic" target="_blank" rel="noopener">지오지브라 클래식</a>을 열고 스프레드시트 뷰를 켭니다.</li>
+          <li>기준선 t와 그때의 격차·정확도를 두 열에 옮겨 적습니다.</li>
+          <li>두 열을 각각 선택해 <b>점 목록 만들기</b> → 산점도 2개.</li>
+          <li>슬라이더 t를 만들어 두 점이 <b>반대로</b> 움직이는 것을 확인합니다.</li>
+        </ol>
+        <a class="btn" href="https://www.geogebra.org/classic" target="_blank" rel="noopener">지오지브라 열기 ↗</a></div>
+      <div class="iq-tg"><b>🧮 알지오매스 — 주제 자료의 경향 보기</b>
+        <ol>
+          <li><a href="https://www.algeomath.kr/" target="_blank" rel="noopener">알지오매스</a>에서 [수학 도구] → [표]를 엽니다.</li>
+          <li>탭③에서 고른 자료(예: 연도–평균 기온)를 두 열로 붙여 넣습니다.</li>
+          <li>[그래프] → 산점도로 나타냅니다.</li>
+          <li>추세선을 얹어 기울기의 뜻을 문장으로 적습니다(보고서 D칸 재료).</li>
+        </ol>
+        <a class="btn" href="https://www.algeomath.kr/" target="_blank" rel="noopener">알지오매스 열기 ↗</a></div>
+      <div class="iq-tg"><b>🐍 코랩 — 공정성 지표를 코드로</b>
+        <ol>
+          <li><a href="https://colab.research.google.com/" target="_blank" rel="noopener">코랩</a>에서 새 노트를 만듭니다.</li>
+          <li>학습지의 200행을 CSV로 만들어 업로드합니다.</li>
+          <li><span class="mono" style="text-transform:none;letter-spacing:0;">df.groupby('gender')</span> 로 집단별 합격률을 구합니다.</li>
+          <li>기준선을 for 문으로 50~90까지 바꿔 격차·정확도 표를 만듭니다.</li>
+          <li>결과를 그래프로 그려 화면의 두 막대와 비교합니다.</li>
+        </ol>
+        <a class="btn" href="https://colab.research.google.com/" target="_blank" rel="noopener">코랩 열기 ↗</a></div>
+    </div>
+    <p class="iq-src">도구 활용 안내는 연수교재 합본 pp.318~319의 공학 도구 목록을 이 차시에 맞게 재구성한 것입니다.</p>
+  </div>
+
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>우리 팀 윤리 사례 한 장</h3>
+    <p class="sub">씨마스 교과서 탐구 활동의 1단계를 그대로 수행합니다 — <b>개인별로 인공지능 윤리와 관련된 사례를 하나 조사</b>해 오고,
+      다음 시간에 모둠에서 공유해 <b>모둠이 다룰 사례 하나</b>를 고릅니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 실제 보도·논문·공식 발표가 있는 사례를 <b>하나</b> 고릅니다(출처 주소 필수). 소문이나 확인되지 않은 이야기는 쓰지 않습니다.<br>
+        ② 사례 카드를 <b>한 장</b>으로 정리합니다 — 무슨 일이 있었나(3문장) / 원인은 무엇이라고 보도되었나 /
+        <b>오늘의 세 서랍 중 어디에 넣을 것인가와 그 이유</b>.<br>
+        ③ 그 사례에 대해 <b>수학적으로 확인해 볼 수 있는 것</b>을 한 가지 적습니다
+        (예: "집단별 오인식률을 비교해 본다", "학습 자료의 집단 비율을 조사한다").<br>
+        ④ 마지막에 <b>질문 한 줄</b>을 만듭니다. 씨마스 교과서의 문제 예시처럼
+        "○○을 구성할 때 이용할 수 있는 수학적 해결책은 무엇인가" 꼴이면 좋습니다.</dd>
+      <dt>제출물</dt>
+      <dd>A4 반 장 또는 패들렛 카드 1장 — 사례 요약 3문장 · 출처 주소 · 서랍 분류와 이유 ·
+        수학적으로 확인할 것 1개 · 질문 1줄</dd>
+      <dt>평가 관점</dt>
+      <dd>인공지능의 비합리적 의사 결정 사례를 찾아 윤리성을 판단하고, 수학적으로 해결할 수 있는 부분을 구분해
+        근거를 제시했는가. <b>[12인수05-01]</b></dd>
+      <dt>유의</dt>
+      <dd>사례로 <b>특정 개인을 지목하거나 학급 친구를 예로 들지 않습니다.</b> 기업·기관 사례 또는 공개 보도된 사건만 다룹니다.</dd>
+    </dl>
+  </div>
+
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>31차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>오늘 웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.
+      아래 버튼으로 학습지를 인쇄해 활동과 함께 채워 보세요.
+      실물 파일이 열리지 않으면 아직 학교 서버에 복사되지 않은 것입니다. 선생님께 알려 주세요.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('iq-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/unit5/탐구보고서_A-F.pdf" target="_blank" rel="noopener">📄 탐구 보고서 양식 A~F <span class="sz">PDF · A4 4쪽</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/unit5/루브릭_A-E.pdf" target="_blank" rel="noopener">📋 평가 루브릭 카드 <span class="sz">PDF · A4 1쪽</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/unit5/SDGs_17목표.pdf" target="_blank" rel="noopener">🌏 SDGs 17목표 한눈표 <span class="sz">PDF · A4 1쪽</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/unit5/데이터출처_14곳.pdf" target="_blank" rel="noopener">🔗 데이터 출처 리플릿 <span class="sz">PDF · A4 2쪽</span></a>
+      <a class="ws-btn sec" href="https://docs.google.com/document/d/1Nsb2AfLPpJam8Rg2R9UmhR24ZXkvajfxO_0hJdfTyMI/copy" target="_blank" rel="noopener">📝 구글 문서 보고서 사본 <span class="sz">외부 링크 · 로그인 필요</span></a>
+    </div>
+    <div id="iq-wslinks"></div>
+  </div>
+
+  <div class="ws-sheet" id="iq-sheet" aria-hidden="true">
+    <div class="ws-h"><h2>31차시 학습지 — 탐구의 다섯 걸음과 윤리의 경계선</h2><span class="ws-id">2학년 ___반 ___번 이름 __________ 팀 코드 ________</span></div>
+
+    <h3>① 마중 퀴즈 기록 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:52%;">질문</th><th style="width:12%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>인공지능의 결론을 비판 없이 받아들여도 될까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>탐구의 다섯 단계는 어떤 순서일까?</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>"인공지능의 역사를 조사한다"는 왜 반려될까?</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 탭① · 다섯 걸음과 산출물</h3>
+    <p class="note">빈칸을 채우고, 각 걸음이 보고서의 어느 칸을 채우는지 적으세요.</p>
+    <table>
+      <tr><th style="width:8%;">단계</th><th style="width:30%;">이름</th><th>무엇을 만들어 내나(산출물)</th><th style="width:12%;">보고서 칸</th></tr>
+      <tr><td class="c">①</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="c">②</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="c">③</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="c">④</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="c">⑤</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>③ 탭② · 사례 여덟 장을 세 서랍으로</h3>
+    <p class="note">A = 수학으로 고침 / B = 수학은 선택지까지, 고르는 것은 사람 / C = 수학 밖(책임·동의·제도)</p>
+    <table>
+      <tr><th style="width:62%;">사례</th><th style="width:12%;">내 분류</th><th>그렇게 본 이유</th></tr>
+      <tr><td>1. 채용 AI가 여성 지원자를 낮게 평가했다</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>2. 얼굴 인식이 특정 인종에서 오인식률이 높다</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>3. 신용평가 점수가 사는 지역과 강하게 관련된다</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>4. 자율주행차 사고의 책임은 누구에게 있는가</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>5. 생성형 AI가 사실과 다른 정보를 그럴듯하게 만든다</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>6. 인공지능 판사가 형량을 정한다</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>7. 번역기가 '간호사'를 she로, '의사'를 he로 옮긴다</td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>8. 학교가 AI 대입 예측 점수를 진로 상담에 쓴다</td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">가장 판단이 어려웠던 카드와 그 이유</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 탭② · 상충 실험 기록 (수업용 가상 자료 200명)</h3>
+    <table>
+      <tr><th>방식</th><th>남 합격률</th><th>여 합격률</th><th>합격률 격차</th><th>전체 정확도</th></tr>
+      <tr><td>A 단일 기준선(70점)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>B 집단별 기준선(남 75·여 65)</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>C 성별 항목만 삭제</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">격차 25%p의 값은 정확도 ______%p 이다.</p>
+    <p class="note">민감한 항목을 지우기만 해서는 왜 공정해지지 않는가? (3줄)</p>
+    <div class="rule sm"></div>
+
+    <h3>⑤ 우리 팀 계획서 [A] 초안 — 손으로 먼저 쓰기</h3>
+    <table>
+      <tr><th style="width:26%;">팀원과 역할</th><td class="blank">데이터 수집가 ____ / 수학 모델러 ____ / 기술 구현자 ____ / 비평 및 분석가 ____</td></tr>
+      <tr><th>탐구 주제</th><td class="blank"></td></tr>
+      <tr><th>수학 탐구 주제</th><td class="blank">(어떤 수학으로 무엇을 하는지 — 여기가 비면 반려됩니다)</td></tr>
+      <tr><th>선정 이유 및 필요성</th><td class="blank"></td></tr>
+      <tr><th>탐구 목표</th><td class="blank"></td></tr>
+      <tr><th>변수 정의</th><td class="blank">x = ______________ (입력) &nbsp; / &nbsp; y = ______________ (출력)</td></tr>
+      <tr><th>데이터 출처 2곳 이상</th><td class="blank">(예상 자료 개수도 함께)</td></tr>
+    </table>
+    <p class="note">자기 점검 4문항 — 각 항목에 O/X</p>
+    <table>
+      <tr><th>① 시간 안에 해결 가능한가</th><th>② 배운 수학을 쓰는가</th><th>③ 수치화할 수 있는가</th><th>④ 원리 탐구가 목표에 있는가</th></tr>
+      <tr><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>⑥ 형성평가</h3>
+    <ol>
+      <li>인공지능 수학 탐구의 다섯 단계를 올바른 순서대로 나열한 것은? &nbsp; 답: ______</li>
+      <li>탐구 주제 선정 시 고려 사항으로 옳은 것을 모두 고른 것은?(ㄱ~ㄹ) &nbsp; 답: ______</li>
+      <li>인공지능이 비합리적 결정을 내리는 원인과 대응으로 가장 적절한 것은? &nbsp; 답: ______</li>
+      <li>격차 25.0%p·정확도 82.0% 와 격차 0.0%p·정확도 78.0% 표에서 읽어 낼 결론은? &nbsp; 답: ______</li>
+      <li>SDGs와 연계한 탐구 활동으로 적절하지 <b>않은</b> 것은? &nbsp; 답: ______</li>
+    </ol>
+
+    <h3>⑦ 핵심 질문</h3>
+    <p><b>AI의 잘못된 결정 가운데, 수학으로 고칠 수 있는 것은 어디까지인가?</b></p>
+    <div class="rule lg"></div>
+  </div>
+</div>

@@ -2641,7 +2641,7 @@ const IT_TLG=[
     +'탐색의 정점이었으며, “기계가 사람을 이길 수 있다”는 사실을 대중에게 처음 각인시킨 사건입니다.'},
   {y:2012,t:'AlexNet',
    d:'합성곱 신경망이 이미지넷 대회에서 오류율을 크게 낮추며 우승해 딥러닝 시대를 열었습니다. '
-    +'행렬 연산을 한꺼번에 처리하는 GPU가 이를 가능하게 했습니다. (15~18차시 합성곱과 이어집니다.)'},
+    +'행렬 연산을 한꺼번에 처리하는 GPU가 이를 가능하게 했습니다. (20차시 합성곱과 이어집니다.)'},
   {y:2016,t:'알파고',
    d:'알파고가 이세돌 9단과의 대국에서 4승 1패를 거두었습니다. 바둑은 경우의 수가 너무 많아 탐색만으로는 풀 수 없었는데, '
     +'확률로 유망한 수를 좁히고 보상으로 스스로 강해지는 강화학습을 결합해 이를 넘어섰습니다. (2차시 강화학습과 이어집니다.)'},
@@ -5261,7 +5261,7 @@ const ML_CHIP_DEFS={
     '[계산 과정 펼치기]를 열면 점마다 세 중심까지의 거리를 모두 계산해 가장 작은 값을 고르는 과정이 수로 보입니다.</p>'+
     '<div class="btn-row" style="margin-top:0.7rem;">'+
       '<button class="btn" onclick="mlJump(1,\'ml-act-km\')">STEP 2 활동 ②로 이동</button>'+
-      '<button class="btn" onclick="go(\'hamming\')">13차시 · 또 다른 거리(해밍 거리)</button>'+
+      '<button class="btn" onclick="go(\'hamming\')">18차시 · 또 다른 거리(해밍 거리)</button>'+
     '</div>',
 
   '평균':
@@ -5882,7 +5882,7 @@ const PCX_DEFS = {
   + '<br><span class="btn" style="cursor:pointer;display:inline-block;margin-top:0.5rem;" onclick="pcxJump(0,\'pc-result-card\')">활동 ① 계산 과정 보기 →</span>'
   + '<br><br><span style="font-size:0.78rem;color:var(--muted);">근거 — 동아출판 『인공지능 수학』 1단원 13쪽의 가중합·임곗값 서술을 재구성하였습니다.</span>'
   + '<br><br><b>이어지는 차시</b> — 2차시에서 배운 ‘학습’은 이 가중치를 데이터에 맞추어 고쳐 나가는 일이고, '
-  + '16차시 손실함수와 경사하강법에서 그 조정 방법을 수학으로 다룹니다. '
+  + '20차시 손실함수와 경사하강법에서 그 조정 방법을 수학으로 다룹니다. '
   + '<span class="btn" style="cursor:pointer;display:inline-block;margin-top:0.4rem;" onclick="go(\'mlplay\')">2차시 학습 방식 →</span>',
 
   '활성화함수':
@@ -5900,7 +5900,7 @@ const PCX_DEFS = {
   + '<br><span class="btn" style="cursor:pointer;display:inline-block;margin-top:0.5rem;" onclick="pcxJump(0,\'pc-graph\')">활동 ① 그래프에서 확인 →</span>'
   + '<br><br><span style="font-size:0.78rem;color:var(--muted);">근거 — 동아출판 『인공지능 수학』 1단원 13쪽의 활성화함수 서술을 재구성하였습니다.</span>'
   + '<br><br><b>이어지는 차시</b> — 계단함수는 미분이 불가능해 학습에 제약이 있습니다. '
-  + '왜 미분 가능성이 중요한지는 16차시 손실함수·최적화에서 이어집니다.',
+  + '왜 미분 가능성이 중요한지는 20차시 손실함수·최적화에서 이어집니다.',
 
   '결정경계':
     '<strong>결정경계</strong> — 퍼셉트론이 출력을 1로 내는 영역과 0으로 내는 영역을 가르는 경계입니다. '
@@ -5934,7 +5934,7 @@ const PCX_DEFS = {
   + '<br><span class="btn" style="cursor:pointer;display:inline-block;margin-top:0.5rem;" onclick="pcxJump(1,\'pcx-hidden\')">활동 ② 순전파 따라가기 →</span>'
   + '<br><br><span style="font-size:0.78rem;color:var(--muted);">근거 — 동아출판 『인공지능 수학』 1단원 15·23쪽 및 씨마스 『인공지능 수학』 Ⅰ단원 24쪽의 다층퍼셉트론·순전파 서술을 재구성하였습니다.</span>'
   + '<br><br><b>이어지는 차시</b> — 1969년의 한계를 넘은 1986년 오류 역전파 이후 인공신경망은 딥러닝으로 이어졌고, '
-  + '15~18차시의 합성곱 신경망도 이 다층 구조 위에 서 있습니다. '
+  + '20차시의 합성곱 신경망도 이 다층 구조 위에 서 있습니다. '
   + '<span class="btn" style="cursor:pointer;display:inline-block;margin-top:0.4rem;" onclick="go(\'intro\')">1차시 역사 타임라인 →</span>'
 };
 
@@ -6075,7 +6075,7 @@ const BIAS_DEFS = {
     '<div class="btn-row"><button class="btn" onclick="bsSee(2,\'bs-lad\')">탭 ③ 5V·단위 활동으로 이동</button></div>' +
     '<p class="bs-src">이어짐 — 1차시에서 AI를 <b>함수 f</b>로 본 뒤, 그 f를 만드는 재료가 바로 빅데이터입니다. ' +
     '<a href="#intro" onclick="go(\'intro\');return false;">1차시 보기</a> · ' +
-    '<a href="#text" onclick="go(\'text\');return false;">6차시 텍스트 데이터로 이어가기</a></p>',
+    '<a href="#text" onclick="go(\'text\');return false;">7차시 텍스트 데이터로 이어가기</a></p>',
 
   '데이터 단위':
     '<p>데이터의 크기는 <b>바이트(B)</b>를 기준으로 <b>1000배(10³)</b>마다 이름이 바뀝니다. ' +
@@ -6088,7 +6088,7 @@ const BIAS_DEFS = {
     '<b>환산 사다리</b>가 B에서 TB까지 한 칸씩 올라갑니다. 한 칸이 곧 1000배입니다.</p>' +
     '<p class="bs-src">근거 — 씨마스 『인공지능 수학』 Ⅰ단원 35~36쪽의 데이터 측정 단위 서술을 재구성하였습니다.</p>' +
     '<div class="btn-row"><button class="btn" onclick="bsSee(2,\'bs-tot\')">환산 사다리로 이동</button></div>' +
-    '<p class="bs-src">이어짐 — 12차시에서 이미지를 <b>28×28 행렬</b>로 다룰 때, 사진 한 장의 용량이 어디서 오는지 다시 만나게 됩니다.</p>',
+    '<p class="bs-src">이어짐 — 18차시에서 이미지를 <b>28×28 행렬</b>로 다룰 때, 사진 한 장의 용량이 어디서 오는지 다시 만나게 됩니다.</p>',
 
   '집단별':
     '<p><b>전체 정확도</b>는 시험에 쓴 전체 개수 가운데 맞힌 비율이고, <b>집단별 정확도</b>는 특정 집단 안에서만 ' +
@@ -6270,92 +6270,133 @@ function bsRefDel(i){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   30차시 카탈로그 · 차시 목록 드롭다운 · 홈 카드 · 표제부 워터마크
+   37차시 카탈로그 · 차시 목록 드롭다운 · 홈 카드 · 표제부 워터마크
      AIM_LESSONS  차시 매니페스트(단일 진실 공급원) — nav 드롭다운과 홈 카드가 함께 씁니다.
      AIM_ART      차시별 16:9 인라인 SVG 일러스트(홈 썸네일 + 뷰 표제부 워터마크로 재사용)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 단원(Ⅰ~Ⅴ) — r: 차시 범위 표기 */
+/* 단원(Ⅰ~Ⅵ) — r: 차시 범위 표기 · x: 선택 심화(평가 제외) 단원 */
 const AIM_UNITS=[
-  {u:'Ⅰ', name:'인공지능과 빅데이터',   r:'1~5차시'},
-  {u:'Ⅱ', name:'텍스트 데이터 처리',    r:'6~11차시'},
-  {u:'Ⅲ', name:'이미지 데이터 처리',    r:'12~19차시'},
-  {u:'Ⅳ', name:'예측과 최적화',         r:'20~27차시'},
-  {u:'Ⅴ', name:'인공지능과 수학 탐구',  r:'28~30차시'},
+  {u:'Ⅰ', name:'인공지능과 빅데이터',   r:'1~6차시'},
+  {u:'Ⅱ', name:'텍스트 데이터 처리',    r:'7~13차시'},
+  {u:'Ⅲ', name:'이미지 데이터 처리',    r:'14~20차시'},
+  {u:'Ⅳ', name:'예측과 최적화',         r:'21~30차시'},
+  {u:'Ⅴ', name:'인공지능과 수학 탐구',  r:'31~34차시'},
+  {u:'Ⅵ', name:'생성형 AI와 수학',      r:'35~37차시 · 선택 심화', x:1},
 ];
 
-/* n: 차시 라벨 · t: 제목 · v: 뷰 슬러그(없으면 준비 중) · a: SVG 아트 키 · d: 홈 카드 설명 */
+/* n: 차시 라벨 · t: 제목 · v: 뷰 슬러그(null 이면 준비 중) · a: SVG 아트 키 · d: 홈 카드 설명 */
 const AIM_LESSONS=[
-  {u:0,n:'1차시',      t:'인공지능의 개념과 역사',        v:'intro',      a:'intro',
+  {u:0,n:'1차시',t:'인공지능의 개념과 역사', v:'intro', a:'intro',
    d:'튜링 테스트 판별 게임, 규칙기반 vs 학습기반 체험, AI 역사 타임라인으로 "인공지능 = 함수 찾기"라는 관점을 세웁니다.'},
-  {u:0,n:'2차시',      t:'AI의 학습 방식 — 지도·비지도·강화', v:'mlplay', a:'mlplay',
+  {u:0,n:'2차시',t:'AI의 학습 방식 — 지도·비지도·강화', v:'mlplay', a:'mlplay',
    d:'k-means 스텝 시뮬레이터와 밴딧 보상 게임으로 세 가지 학습 방식을 거리·평균·상대도수라는 수학 언어로 체험합니다.'},
-  {u:0,n:'3차시',      t:'규칙으로 생각하는 AI',          v:'logic',      a:'logic',
+  {u:0,n:'3차시',t:'규칙으로 생각하는 AI', v:'logic', a:'logic',
    d:'진리표 실험실, 전문가 시스템, 순서도 트레이서로 규칙만으로 생각하는 기계가 어디까지 갈 수 있는지 확인합니다.'},
-  {u:0,n:'4차시',      t:'퍼셉트론과 XOR의 벽 넘기',      v:'perceptron', a:'perceptron',
+  {u:0,n:'4차시',t:'퍼셉트론과 XOR의 벽 넘기', v:'perceptron', a:'perceptron',
    d:'가중치 슬라이더로 AND·OR를 직접 만들고, XOR 앞에서 단층 퍼셉트론이 무너지는 것을 확인한 뒤 은닉층으로 그 벽을 넘습니다.'},
-  {u:0,n:'5차시',      t:'빅데이터와 편향 — 정확도 95%의 함정', v:'bias', a:'bias',
+  {u:0,n:'5차시',t:'빅데이터와 편향 — 정확도 95%의 함정', v:'bias', a:'bias',
    d:'데이터 구성을 직접 바꿔 가며 "정확도 95%의 함정"을 만들어 보고, 혼동행렬과 데이터 단위로 편향을 수치로 읽어 냅니다.'},
-
-  {u:1,n:'6차시',      t:'텍스트를 집합으로 — 전처리와 단어집합', v:'text', a:'text',
+  {u:0,n:'6차시',t:'데이터의 얼굴과 AI 윤리 기준', v:'dataeth', a:'dataeth',
+   d:'학교 데이터 24장을 정형·비정형으로, 다시 연속형·이산형·순서형·명목형으로 분류해 "형태가 계산을 정한다"를 확인하고, 차별 사례 5건을 수집·분석 5단계 위에 놓아 편향이 들어온 지점을 지목한 뒤 우리 반 AI 윤리 점검표를 만듭니다.'},
+  {u:1,n:'7차시',t:'텍스트를 집합으로 — 전처리와 단어집합', v:'text', a:'text',
    d:'문장을 어절로 자르고 불용어를 걸러 중복 없는 단어집합 {…}을 만듭니다. 5단계 전처리 파이프라인과 3집합 벤다이어그램으로 합집합 U(단어 사전)까지 완성합니다.'},
-  {u:1,n:'7차시',      t:'텍스트를 벡터로 — 포함관계·원-핫·빈도수', v:'text', a:'text',
+  {u:1,n:'8차시',t:'텍스트를 벡터로 — 포함관계·원-핫·빈도수', v:'text', a:'text',
    d:'단어집합을 눈금이 매겨진 자로 삼아 문장을 수의 나열로 바꿉니다. 포함관계 27칸·빈도수 24칸 표를 자동 채점으로 직접 채우고, 0의 비율로 희소 표현을 확인합니다.'},
-  {u:1,n:'8차시',      t:'중요한 단어 찾기 — TF-IDF', v:'tfidf', a:'tfidf',
+  {u:1,n:'9차시',t:'중요한 단어 찾기 — TF-IDF', v:'tfidf', a:'tfidf',
    d:'TF→DF→IDF→TF-IDF 4단 계단을 손으로 채우고, 두 워드클라우드를 나란히 놓아 흔한 단어의 무게가 덜어지는 장면을 확인합니다.'},
-  {u:1,n:'9차시',      t:'얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까', v:'sim', a:'sim',
+  {u:1,n:'10차시',t:'문장을 더하고, 늘이고, 재기 — 벡터의 연산과 크기', v:'vecop', a:'vecop',
+   d:'후기 세 건의 감성 벡터를 더해 전체 여론을 만들고, 두 기사의 차 벡터로 "어디서 갈리는가"를 읽습니다. k 슬라이더로 실수배가 방향을 바꾸지 않음을 확인한 뒤, 원점에서 화살표를 그려 |a| = √14 를 손으로 계산합니다.'},
+  {u:1,n:'11차시',t:'얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까', v:'sim', a:'sim',
    d:'같은 데이터인데 거리로 재면 B, 방향으로 재면 C가 1위가 됩니다. 두 유사도를 캔버스에서 직접 계산하고, 순위가 뒤집히는 순간을 직접 만들어 봅니다.'},
-  {u:1,n:'10차시',     t:'집합으로 마음 읽기 — 자카드 유사도와 감성 분석', v:'senti', a:'senti',
+  {u:1,n:'12차시',t:'집합으로 마음 읽기 — 자카드 유사도와 감성 분석', v:'senti', a:'senti',
    d:'문장을 다시 집합으로 보고, 감성 사전 P·N과의 겹침을 자카드 유사도로 재어 마음을 하나의 수로 읽습니다. 기준선 k를 움직이며 판정이 뒤집히는 순간을 확인합니다.'},
-  {u:1,n:'11차시',     t:'실생활 프로젝트 — 리뷰 분석과 추천', v:'review', a:'review',
+  {u:1,n:'13차시',t:'실생활 프로젝트 — 리뷰 분석과 추천', v:'review', a:'review',
    d:'별점이 4.6에서 2.2로 떨어진 분식집의 리뷰 100건에서 원인을 찾습니다. 감성 판정이 하나도 나오지 않는 순간 n(A) ≥ k·n(P) 라는 부등식을 세우고, TF-IDF로 흔한 칭찬 뒤에 숨은 단어 하나를 끌어올린 뒤, 별점 행렬로 추천까지 만들어 봅니다.'},
-
-  {u:2,n:'12차시 도입', t:'Quick Draw — 낙서로 만나는 이미지 인식', v:'quickdraw', a:'quickdraw',
-   d:'제한 시간 안에 그린 낙서를 AI가 확률로 맞힙니다. 12차시 본수업(mnist)의 도입 10분 체험이며, 관찰 메모는 활동 3에서 다시 씁니다.'},
-  {u:2,n:'12차시',     t:'이미지는 행렬이다 — 컴퓨터의 눈에 비친 손글씨', v:'mnist', a:'mnist',
-   d:'그림을 0과 1의 이진행렬로 옮겨 적고, 해상도를 4×4에서 28×28까지 바꾸며 회색조 0~255와 저장 용량을 관찰합니다. 손글씨를 28×28로 수집·라벨링해 나만의 데이터셋을 만들고 flatten으로 784개의 수까지 펼쳐 봅니다.'},
-  {u:2,n:'13차시',     t:'이진화·XOR·해밍 거리 — 다름을 하나의 수로 재기', v:'hamming', a:'hamming',
-   d:'아홉 단계 탐구로 XOR·대칭차집합·해밍 거리를 쌓아 올린 뒤, 내가 그린 숫자를 참조 0~9와 견주어 최근접 분류합니다. 마지막에는 그림을 한 칸만 밀어 분류가 무너지는 장면을 직접 만들어 합성곱의 필요를 확인합니다.'},
-  {u:2,n:'14차시',     t:'행렬 연산으로 이미지 변형하기', v:'imgop',     a:'imgop',
-   d:'사진의 밝기 슬라이더 뒤에 숨은 kA + tJ 를 직접 조립하고, 수직선 위 내분점을 끌어 두 사진이 aA + (1-a)B 로 섞이는 장면을 봅니다. 마지막에는 전치행렬 Aᵀ 로 칸의 자리를 바꾸어 사진의 방향을 뒤집습니다.'},
-  {u:2,n:'15차시',     t:'합성곱의 원리 — 자리별 곱을 모두 더하면', v:'conv',   a:'conv',
-   d:'섞인 사진을 되돌리는 퍼즐로 아다마르 곱 ⊙ 과 행렬의 곱셈 × 을 갈라 보고, 커널을 한 칸씩 옮기며 특징 맵을 손으로 계산합니다.'},
-  {u:2,n:'16차시',     t:'커널 필터 실험실 — 아홉 개의 수가 만드는 인상', v:'filter', a:'filter',
-   d:'커널 아홉 개의 수를 직접 바꾸어 흐림·선명·경계 검출을 만들고, 정규화 계수(1/9 등)가 왜 필요한지 성분의 합으로 설명합니다.'},
-  {u:2,n:'17차시',     t:'풀링과 정규화',                 v:'pool',       a:'pool',
-   d:'네 칸을 한 칸으로 줄이는 맥스 풀링을 예측→실행으로 확인하고, 특징을 한 칸씩 옮겨 보며 “구역 안의 이동은 결과를 바꾸지 않는다”는 이동 불변성을 직접 만들어 봅니다. 정규화 (1/255)X 가 행렬의 실수배임을 3×3 손계산으로 확인합니다.'},
-  {u:2,n:'18차시',     t:'CNN 파이프라인 종합',           v:'pipeline',   a:'pipeline',
-   d:'여섯 단계의 순서를 먼저 세운 뒤 내 사진을 실제 모델에 통과시켜 특징 맵의 변화를 관찰합니다. 마지막에는 점수를 확률로 바꾸는 소프트맥스를 조작하며 “왜 합이 1인가”에 답합니다.'},
-  {u:2,n:'19차시',     t:'객체 탐지와 실생활 응용',       v:'detect',     a:'detect',
-   d:'3단원 마무리 차시입니다. 분류와 탐지를 가르고, 바운딩 박스 (x, y, w, h)와 겹침 비율을 계산하고, 신뢰도 기준선을 옮겨 놓침·오탐의 맞교환을 확인합니다. 형성평가는 12~19차시 종합 10문항입니다.'},
-
-  {u:3,n:'20차시',     t:'데이터에서 확률 읽기 — 던질수록 또렷해지는 값', v:'prob', a:'prob20',
+  {u:2,n:'14차시',t:'이미지는 행렬이다 — 표현과 변환', v:'imgop', a:'imgop',
+   d:'사진을 확대하면 나타나는 수의 표가 곧 행렬입니다. 그림을 0·1의 이진행렬로 옮겨 적고, 회색조 0~255와 해상도를 재어 본 뒤, A + tJ · kA · 255J − A · αA + (1−α)B 로 사진을 직접 바꿔 봅니다.'},
+  {u:2,n:'15차시',t:'컬러 이미지와 세 개의 행렬', v:'rgb', a:'rgb',
+   d:'사진 한 장을 R·G·B 세 행렬로 분해하고 다시 하나로 되돌립니다. 픽셀을 눌러 (r, g, b)를 끝까지 추적하고, 평균법과 가중치 식으로 회색조를 만들어 비교합니다.'},
+  {u:2,n:'16차시',t:'전치행렬로 사진의 구도를 바꾸다', v:'transpose', a:'transpose',
+   d:'값은 그대로 두고 자리만 바꿉니다. 성분 하나가 (i, j)에서 (j, i)로 날아가는 궤적을 눈으로 따라가고, 세로 사진을 전치해 가로 사진으로 바꾸며 "전치는 회전이 아니다"를 스스로 판단합니다.'},
+  {u:2,n:'17차시',t:'행렬의 곱셈 — 이미지를 옮기고 뒤집다', v:'matmul', a:'matmul',
+   d:'0과 1로만 된 행렬을 하나 곱해 사진을 한 칸 옮기고 좌우로 뒤집습니다. 어느 쪽에 곱하느냐가 방향을 정한다는 규칙을 표로 채워 가며 발견하고, 섞여 버린 사진을 변환 행렬로 되돌립니다.'},
+  {u:2,n:'18차시',t:'손글씨 인식과 해밍 거리 분류', v:'imgcls', a:'imgcls',
+   d:'내 손글씨를 28×28로 모아 라벨을 붙이고 784개의 수로 펼칩니다. 이진화한 두 그림에서 다른 자리의 개수를 세어 거리를 재고, 참조 숫자 0~9 가운데 가장 가까운 것으로 분류한 뒤, 그림을 한 칸만 밀어 분류가 무너지는 장면을 직접 만들어 봅니다.'},
+  {u:2,n:'19차시',t:'완전연결층 — 신경망을 행렬의 곱으로', v:null, a:null,
+   d:'4차시의 퍼셉트론을 여러 층으로 쌓고, 층 하나가 하는 일이 결국 행렬의 곱 한 번임을 확인합니다. (뷰 준비 중)'},
+  {u:2,n:'20차시',t:'CNN 종합 — 합성곱에서 객체 탐지까지', v:'cnn', a:'cnn',
+   d:'작은 창을 한 칸씩 옮겨 특징을 뽑고(⊛), 아홉 개의 수로 사진의 인상을 바꾸고, 네 칸을 한 칸으로 줄이고, 사진 한 장을 여섯 단계에 통과시킨 뒤, 마지막으로 "무엇이 어디에 있는가"를 바운딩 박스와 신뢰도로 답합니다. 다섯 탭 가운데 ①③④가 최소 코스입니다.'},
+  {u:3,n:'21차시',t:'데이터에서 확률 읽기 — 던질수록 또렷해지는 값', v:'prob', a:'prob20',
    d:'동전을 수천 번 던져 흔들리던 비율이 한 값에 달라붙는 장면을 직접 만들고, 세어서 구한 확률과 견주어 봅니다. 윷가락·진단 검사 데이터로 상대도수를 손으로 구하고, 전체 도수가 클수록 왜 믿을 만해지는지 흔들림 실험으로 확인합니다.'},
-  {u:3,n:'21차시',     t:'조건이 있는 확률과 스팸 필터 — 표의 어느 부분을 볼까', v:'prob', a:'prob21',
+  {u:3,n:'22차시',t:'조건이 있는 확률과 스팸 필터 — 표의 어느 부분을 볼까', v:'prob', a:'prob21',
    d:'이원분류표에서 조건 칩을 눌러 볼 범위를 좁히고, 분모와 분자가 표에서 뽑혀 나와 분수로 조립되는 과정을 봅니다. 메일 12건으로 나만의 스팸 필터를 만들어 상대도수를 곱해 크기를 비교합니다.'},
-  {u:3,n:'22차시',     t:'산점도와 추세선으로 예측하기', v:'trend', a:'trend',
+  {u:3,n:'23차시',t:'산점도와 추세선으로 예측하기', v:'trend', a:'trend',
    d:'주가·출산율·수면 시간 자료의 점을 직접 끌어 산점도를 만들고, 직선의 양 끝을 올리내리며 내 추세선을 긋습니다.'},
-  {u:3,n:'23차시',     t:'어떤 추세선이 좋은가 — 곡선과 과적합', v:'trend', a:'trend',
+  {u:3,n:'24차시',t:'어떤 추세선이 좋은가 — 곡선과 과적합', v:'trend', a:'trend',
    d:'직선부터 9차 곡선까지 모델을 갈아 끼우며 훈련 오차가 0이 되는 장면을 만들고, 검증 데이터를 공개해 오차가 폭발하는 순간을 확인합니다.'},
-  {u:3,n:'24차시',     t:'손실함수 L(a)로 최적 추세선 찾기', v:'optim', a:'optim',
+  {u:3,n:'25차시',t:'손실함수 L(a)로 최적 추세선 찾기', v:'optim', a:'optim',
    d:'오차를 그냥 더하면 상쇄되어 비교할 수 없습니다. 제곱해 만든 L(a) 의 포물선 위에서 잔차 정사각형이 가장 작아지는 순간을 찾고, 완전제곱식으로 최적 기울기 15/8 을 정확히 구합니다.'},
-  {u:3,n:'25차시',     t:'내려갈 방향 — 극한과 미분계수', v:'optim', a:'optim',
+  {u:3,n:'26차시',t:'오차를 재는 두 개의 자', v:null, a:null,
+   d:'오차의 절댓값을 더한 자와 제곱해 더한 자를 나란히 놓고, 튀는 값 하나에 두 자가 어떻게 다르게 반응하는지 확인합니다. (뷰 준비 중)'},
+  {u:3,n:'27차시',t:'내려갈 방향 — 극한과 미분계수', v:'optim', a:'optim',
    d:'h 를 줄이며 할선이 접선이 되는 순간을 보고, 미분계수의 부호로 내려갈 방향을 읽습니다. 안개에 가려진 손실함수를 탐침만으로 걸어 내려가 경사하강법의 전략을 스스로 발견합니다.'},
-  {u:3,n:'26차시',     t:'경사하강법 — 학습률과 수렴·발산', v:'optim', a:'optim',
+  {u:3,n:'28차시',t:'경사하강법 — 학습률과 수렴·발산', v:'optim', a:'optim',
    d:'aₙ₊₁ = aₙ − k·L′(aₙ) 을 한 걸음씩 눌러 접선·부호·이동 세 단계를 확인하고, 학습률만 바꾸어 수렴·지그재그·진동·발산이 갈리는 이유를 |1 − 2Ak| 한 줄로 정리합니다.'},
-  {u:3,n:'27차시',     t:'종합 실습 — 아이스티 판매 예측 AI', v:'gdsheet', a:'gdsheet',
+  {u:3,n:'29차시',t:'종합 실습 — 아이스티 판매 예측 AI', v:'gdsheet', a:'gdsheet',
    d:'기온과 판매량 10일치로 예측 AI 를 만듭니다. 수식을 드롭다운으로 조립해 MSE 를 완성하고, 갱신식을 셀에 연결해 a 가 2 에서 2.427 로 자라나는 과정을 표와 곡선으로 기록합니다.'},
-
-  {u:4,n:'28차시',     t:'합리적 의사 결정 사례 분석·탐구 설계', v:'decision', a:'decision',
-   d:'수학여행 장소 고르기에서 결정의 네 요소를 갈라낸 뒤, 교과서 사례 5건을 데이터 학습 → 최적화 전략 → 합리적 의사 결정 3단 슬롯에 담습니다. 마지막에 “이 결정은 합리적인가?”를 0~100으로 판정해 교사 제시 예시 분포와 겹쳐 보고, “남성이 더 많은 합격 제안을 받았다”는 한 문장을 합격률·비율·부등식으로 옮깁니다.'},
-  {u:4,n:'29차시',     t:'탐구 수행 — 데이터·모델링·시각화', v:'datalab', a:'datalab',
+  {u:3,n:'30차시',t:'AI는 무엇을 \'배우\'는가 — 절편까지', v:null, a:null,
+   d:'기울기 a 만 움직이던 경사하강법을 y = ax + b 로 넓혀, 기울기와 절편이 함께 갱신되는 과정을 봅니다. \'학습\'이란 결국 가중치가 바뀌는 일임을 확인합니다. (뷰 준비 중)'},
+  {u:4,n:'31차시',t:'탐구의 다섯 걸음과 윤리의 경계선', v:'inquiry', a:'inquiry',
+   d:'프로젝트에 들어가기 전 탐구의 뼈대를 세웁니다. 5단계를 배치해 순서를 잡고, 사례 여덟 장을 세 서랍으로 갈라 "수학으로 고칠 수 있는 것은 어디까지인가"의 경계선을 그은 뒤, SDGs와 도구를 교차해 우리 팀 계획서 [A]를 만듭니다.'},
+  {u:4,n:'32차시',t:'합리적 의사 결정 사례 분석·탐구 설계', v:'decision', a:'decision',
+   d:'수학여행 장소 고르기에서 결정의 네 요소를 갈라낸 뒤, 교과서 사례 5건을 데이터 학습 → 최적화 전략 → 합리적 의사 결정 3단 슬롯에 담습니다. 마지막에 "이 결정은 합리적인가?"를 0~100으로 판정해 교사 제시 예시 분포와 겹쳐 보고, "남성이 더 많은 합격 제안을 받았다"는 한 문장을 합격률·비율·부등식으로 옮깁니다.'},
+  {u:4,n:'33차시',t:'탐구 수행 — 데이터·모델링·시각화', v:'datalab', a:'datalab',
    d:'비어 있는 칸과 튀는 값을 먼저 정리한 뒤, 산점도 → 추세선 y=ax → 손실함수 → 경사하강법을 한 화면에서 이어서 실행합니다. 자료 유형에 맞는 도구를 골라 결과를 보고서 [D]란으로 옮깁니다.'},
-  {u:4,n:'30차시',     t:'100초 발표·동료평가·성찰', v:'project', a:'project',
-   d:'주제 마법사에서 x와 y를 확정하고, 합본 양식 그대로의 보고서 A~F를 자동 저장·인쇄·JSON으로 주고받습니다. 100초 원형 타이머로 발표하고 루브릭 A~E(4·3·2점)를 팀별로 순차 입력해 히트맵·레이더로 집계한 뒤, “우리 팀이 쓴 수학” 지도와 Fact 자기평가로 마무리합니다.'},
+  {u:4,n:'34차시',t:'100초 발표·동료평가·성찰', v:'project', a:'project',
+   d:'주제 마법사에서 x와 y를 확정하고, 합본 양식 그대로의 보고서 A~F를 자동 저장·인쇄·JSON으로 주고받습니다. 100초 원형 타이머로 발표하고 루브릭 A~E(4·3·2점)를 팀별로 순차 입력해 히트맵·레이더로 집계한 뒤, "우리 팀이 쓴 수학" 지도와 Fact 자기평가로 마무리합니다.'},
+  {u:5,n:'35차시',t:'언어를 벡터로, 다음 말을 확률로', v:null, a:null,
+   d:'[선택 심화] 단어를 화살표로 옮겨 의미의 차이를 재고, 다음에 올 말을 확률로 고릅니다. 10·11차시 벡터와 21차시 확률, 17차시 행렬의 곱이 한자리에 모입니다. (뷰 준비 중)'},
+  {u:5,n:'36차시',t:'잡음에서 그림으로', v:null, a:null,
+   d:'[선택 심화] 흐릿한 잡음이 그림이 되어 가는 과정을 단계별로 관찰하고, 14~17차시의 픽셀 행렬 연산이 어디에 쓰였는지 되짚습니다. (뷰 준비 중)'},
+  {u:5,n:'37차시',t:'확률 기계의 한계 — 환각·저작권·편향', v:null, a:null,
+   d:'[선택 심화] 그럴듯한 거짓말이 왜 나오는지 확률로 설명하고, 저작권·편향·프롬프트의 문제를 5단원 탐구 주제로 잇습니다. (뷰 준비 중)'},
 ];
 
 /* ── 차시별 16:9 인라인 SVG 일러스트 (베이지 팔레트 · 외부 이미지 없음) ── */
 const AIM_ART={
+  /* 20차시 — 사진 격자 위를 지나는 커널 → 특징 맵 → 축소 → 확률 막대 → 바운딩 박스 */
+  cnn:`<svg viewBox="0 0 320 180" role="img" aria-label="사진 격자 위를 3곱하기3 커널이 지나가 특징 맵을 만들고, 풀링으로 작아지고, 확률 막대로 이름이 붙고, 마지막에 바운딩 박스가 그려지는 그림">
+    <rect width="320" height="180" fill="var(--bg)"/>
+    <g stroke="var(--border)" stroke-width="1">
+      <rect x="14" y="30" width="72" height="72" fill="var(--card)"/>
+      <path d="M14 48h72M14 66h72M14 84h72M32 30v72M50 30v72M68 30v72"/>
+    </g>
+    <rect x="32" y="48" width="36" height="36" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+    <text x="50" y="118" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">3×3 커널</text>
+    <path d="M92 66h16" stroke="var(--fg)" stroke-width="1.8"/><path d="M104 61l6 5-6 5" fill="none" stroke="var(--fg)" stroke-width="1.8"/>
+    <g stroke="var(--border)" stroke-width="1">
+      <rect x="114" y="42" width="48" height="48" fill="var(--accent)"/><path d="M114 58h48M114 74h48M130 42v48M146 42v48"/>
+    </g>
+    <text x="138" y="118" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">특징 맵</text>
+    <path d="M168 66h14" stroke="var(--fg)" stroke-width="1.8"/><path d="M178 61l6 5-6 5" fill="none" stroke="var(--fg)" stroke-width="1.8"/>
+    <g stroke="var(--border)" stroke-width="1">
+      <rect x="188" y="54" width="24" height="24" fill="var(--card)"/><path d="M188 66h24M200 54v24"/>
+    </g>
+    <text x="200" y="118" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">풀링</text>
+    <g fill="var(--fg)">
+      <rect x="222" y="44" width="56" height="9" rx="4"/>
+      <rect x="222" y="59" width="30" height="9" rx="4" opacity="0.45"/>
+      <rect x="222" y="74" width="14" height="9" rx="4" opacity="0.3"/>
+    </g>
+    <text x="250" y="118" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">확률</text>
+    <rect x="222" y="128" width="84" height="40" fill="var(--card)" stroke="var(--border)"/>
+    <rect x="238" y="136" width="34" height="26" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+    <text x="255" y="132" font-size="9" fill="var(--red)" font-family="monospace" text-anchor="middle">0.97</text>
+    <text x="110" y="152" font-size="11" fill="var(--fg)" font-family="monospace" text-anchor="middle">뽑고, 줄이고,</text>
+    <text x="110" y="168" font-size="11" fill="var(--fg)" font-family="monospace" text-anchor="middle">이름 붙이고, 찾는다</text>
+  </svg>`,
+
   /* 1차시 — 붐과 겨울 타임라인 곡선 */
   intro:`<svg viewBox="0 0 320 180" role="img" aria-label="인공지능 붐과 겨울을 나타낸 관심도 곡선">
     <rect width="320" height="180" fill="var(--bg)"/>
@@ -6457,7 +6498,7 @@ const AIM_ART={
     <text x="224" y="168" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">전체 · 다수 · 소수 집단</text>
   </svg>`,
 
-  /* 6~7차시 — 단어를 벡터로 */
+  /* 7~8차시 — 단어를 벡터로 */
   text:`<svg viewBox="0 0 320 180" role="img" aria-label="문장의 단어가 0과 1로 이루어진 벡터로 바뀌는 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <rect x="18" y="44" width="104" height="34" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
@@ -6477,7 +6518,7 @@ const AIM_ART={
     <text x="160" y="166" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">단어집합 → 원-핫 벡터</text>
   </svg>`,
 
-  /* 8차시 — 많이 나온 순서 구름 → 중요한 순서 구름 */
+  /* 9차시 — 많이 나온 순서 구름 → 중요한 순서 구름 */
   tfidf:`<svg viewBox="0 0 320 180" role="img" aria-label="많이 나온 순서의 단어 구름과 중요한 순서의 단어 구름">
     <rect width="320" height="180" fill="var(--bg)"/>
     <rect x="12" y="24" width="122" height="132" rx="8" fill="var(--card)" stroke="var(--border)"/>
@@ -6494,7 +6535,7 @@ const AIM_ART={
     <text x="160" y="70" font-size="13" fill="var(--red)" text-anchor="middle">?</text>
   </svg>`,
 
-  /* 9차시 — 거리(점선)와 각(호)을 한 그림에 겹친 도해 */
+  /* 11차시 — 거리(점선)와 각(호)을 한 그림에 겹친 도해 */
   sim:`<svg viewBox="0 0 320 180" role="img" aria-label="원점에서 뻗은 두 화살표, 끝점을 잇는 점선(거리)과 사이의 호(각)">
     <rect width="320" height="180" fill="var(--bg)"/>
     <path d="M32 150 H300" stroke="var(--border)" stroke-width="1.5"/>
@@ -6513,7 +6554,7 @@ const AIM_ART={
     <text x="160" y="172" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--muted)">거리로 잴까, 방향으로 잴까</text>
   </svg>`,
 
-  /* 10차시 — 겹친 두 원과 분수 막대 */
+  /* 12차시 — 겹친 두 원과 분수 막대 */
   senti:`<svg viewBox="0 0 320 180" role="img" aria-label="두 원이 겹친 벤다이어그램과 분수 막대">
     <rect width="320" height="180" fill="var(--bg)"/>
     <circle cx="128" cy="90" r="58" fill="var(--blue)" opacity="0.30"/>
@@ -6528,7 +6569,7 @@ const AIM_ART={
     <text x="244" y="34" font-size="12" fill="var(--red)" font-family="monospace">N</text>
   </svg>`,
 
-  /* 11차시 — 떨어지는 별점 꺾은선과 그 아래 막대(대시보드) */
+  /* 13차시 — 떨어지는 별점 꺾은선과 그 아래 막대(대시보드) */
   review:`<svg viewBox="0 0 320 180" role="img" aria-label="후반이 아래로 꺾이는 꺾은선과 그 아래 막대그래프">
     <rect width="320" height="180" fill="var(--bg)"/>
     <path d="M28 152 H298" stroke="var(--border)" stroke-width="1.5"/>
@@ -6547,7 +6588,7 @@ const AIM_ART={
     <text x="262" y="116" font-size="11" fill="var(--red)" font-family="monospace" text-anchor="middle">2.2</text>
   </svg>`,
 
-  /* 12차시 도입 — Quick Draw */
+  /* 18차시 도입 — Quick Draw */
   quickdraw:`<svg viewBox="0 0 320 180" role="img" aria-label="손그림 낙서를 인공지능이 알아맞히는 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <rect x="20" y="26" width="150" height="128" rx="10" fill="#fff" stroke="var(--border)" stroke-width="2"/>
@@ -6564,7 +6605,7 @@ const AIM_ART={
     <text x="160" y="170" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">낙서 → 확률로 답하기</text>
   </svg>`,
 
-  /* 12차시 — 픽셀 격자 숫자 */
+  /* 18차시 — 픽셀 격자 숫자 */
   mnist:`<svg viewBox="0 0 320 180" role="img" aria-label="손글씨 숫자가 밝기 값을 가진 픽셀 격자로 표현된 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <g transform="translate(30,24)">
@@ -6589,7 +6630,7 @@ const AIM_ART={
     <text x="160" y="168" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">이미지 = 밝기 값의 행렬</text>
   </svg>`,
 
-  /* 13차시 — 두 비트열의 XOR */
+  /* 18차시 — 두 비트열의 XOR */
   hamming:`<svg viewBox="0 0 320 180" role="img" aria-label="두 비트열을 XOR 연산해 다른 자리를 세는 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <g font-family="monospace" font-size="17" text-anchor="middle">
@@ -6631,7 +6672,7 @@ const AIM_ART={
     <text x="262" y="162" font-size="11" font-family="monospace" text-anchor="middle" fill="var(--muted)">B</text>
   </svg>`,
 
-  /* 15차시 — 3×3 커널 스캔 */
+  /* 20차시 — 3×3 커널 스캔 */
   conv:`<svg viewBox="0 0 320 180" role="img" aria-label="3x3 커널이 이미지 위를 이동하며 특징 맵을 만드는 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <g transform="translate(24,30)">
@@ -6660,7 +6701,7 @@ const AIM_ART={
     <text x="238" y="146" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">특징 맵</text>
   </svg>`,
 
-  /* 16차시 — 필터 전/후 분할 */
+  /* 20차시 — 필터 전/후 분할 */
   filter:`<svg viewBox="0 0 320 180" role="img" aria-label="필터 적용 전과 후의 이미지를 반으로 나누어 비교한 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <clipPath id="aimFL"><rect x="30" y="26" width="128" height="118"/></clipPath>
@@ -6681,7 +6722,7 @@ const AIM_ART={
     <text x="226" y="164" font-size="11" fill="var(--muted)" font-family="monospace" text-anchor="middle">윤곽선 커널</text>
   </svg>`,
 
-  /* 17차시 — 풀링 축소 격자 */
+  /* 20차시 — 풀링 축소 격자 */
   pool:`<svg viewBox="0 0 320 180" role="img" aria-label="4x4 격자에서 최댓값만 남겨 2x2로 줄이는 맥스 풀링 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <g transform="translate(24,30)" font-family="monospace" font-size="14" text-anchor="middle">
@@ -6720,7 +6761,7 @@ const AIM_ART={
     <text x="245" y="146" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">2×2 맥스 풀링</text>
   </svg>`,
 
-  /* 18차시 — 단계 파이프라인 */
+  /* 20차시 — 단계 파이프라인 */
   pipeline:`<svg viewBox="0 0 320 180" role="img" aria-label="입력에서 합성곱, 활성화, 풀링을 거쳐 분류에 이르는 파이프라인 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <g font-family="monospace" font-size="10.5" text-anchor="middle">
@@ -6745,7 +6786,7 @@ const AIM_ART={
     <text x="160" y="150" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">합이 1인 확률로 답한다</text>
   </svg>`,
 
-  /* 19차시 — 바운딩 박스 */
+  /* 20차시 — 바운딩 박스 */
   detect:`<svg viewBox="0 0 320 180" role="img" aria-label="사진 속 물체를 바운딩 박스와 신뢰도로 표시한 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <rect x="26" y="22" width="268" height="132" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
@@ -6766,7 +6807,7 @@ const AIM_ART={
     <text x="160" y="172" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">어디에 · 무엇이 · 얼마나 확실한가</text>
   </svg>`,
 
-  /* 28차시 — 데이터 학습 → 최적화 → 의사 결정 3단 + 판정 저울 */
+  /* 32차시 — 데이터 학습 → 최적화 → 의사 결정 3단 + 판정 저울 */
   decision:`<svg viewBox="0 0 320 180" role="img" aria-label="데이터 학습, 최적화 전략, 합리적 의사 결정 세 칸이 화살표로 이어지고 그 아래 판정 저울이 놓인 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <g>
@@ -6792,7 +6833,7 @@ const AIM_ART={
     </g>
   </svg>`,
 
-  /* 29차시 — 산점도·추세선·잔차 제곱 */
+  /* 33차시 — 산점도·추세선·잔차 제곱 */
   datalab:`<svg viewBox="0 0 320 180" role="img" aria-label="산점도 위에 그어진 추세선과 잔차의 제곱을 나타낸 정사각형">
     <rect width="320" height="180" fill="var(--bg)"/>
     <path d="M32 150 H300" stroke="var(--border)" stroke-width="1.5"/>
@@ -6815,7 +6856,7 @@ const AIM_ART={
     </g>
   </svg>`,
 
-  /* 30차시 — 보고서 A~F 진행률 링 + 100초 타이머 + 발표 */
+  /* 34차시 — 보고서 A~F 진행률 링 + 100초 타이머 + 발표 */
   project:`<svg viewBox="0 0 320 180" role="img" aria-label="보고서 A부터 F까지의 진행률 원과 100초 타이머, 그리고 루브릭 채점표를 나타낸 그림">
     <rect width="320" height="180" fill="var(--bg)"/>
     <circle cx="66" cy="90" r="42" fill="none" stroke="var(--border)" stroke-width="11"/>
@@ -6964,7 +7005,7 @@ function aimBuildHome(){
         html+='<div class="hm-no" aria-disabled="true">'+
                 '<div class="hm-th">'+AIM_ART.soon+'</div>'+
                 '<div class="hm-body"><h3>'+cmnEsc(l.n)+' · '+cmnEsc(l.t)+'</h3>'+
-                '<p>아직 열리지 않은 차시입니다. 30차시 전체 흐름 안에서 이 차시가 어디에 놓이는지 확인해 두세요.</p>'+
+                '<p>아직 열리지 않은 차시입니다. 37차시 전체 흐름 안에서 이 차시가 어디에 놓이는지 확인해 두세요.</p>'+
                 '<span class="badge">준비 중</span></div></div>';
       }
     });
@@ -7491,7 +7532,7 @@ const IT_LIFE=[
   {k:'생체', em:'🔓', t:'얼굴·지문 잠금 해제',
    io:'입력 = 얼굴·지문 사진 · 출력 = 본인 여부(참/거짓)',
    d:'카메라와 센서가 읽어 들인 사진을 수백 개의 수(특징)로 바꾸고, 저장해 둔 내 특징과 얼마나 가까운지를 '
-     +'거리로 재어 판단합니다. 13차시의 해밍 거리와 같은 발상입니다.',
+     +'거리로 재어 판단합니다. 18차시의 해밍 거리와 같은 발상입니다.',
    vid:'9CXI4nxj7jU', vt:'아이폰이 얼굴로 잠금 해제하는 원리', vs:'닷페이스',
    q:'얼굴 인식 원리'},
   {k:'음성', em:'🔊', t:'인공지능 스피커',
@@ -7503,7 +7544,7 @@ const IT_LIFE=[
   {k:'추천', em:'🎬', t:'영상 추천',
    io:'입력 = 내가 본 영상 기록 · 출력 = 다음에 볼 영상 목록',
    d:'나와 비슷한 기록을 가진 사람들이 좋아한 영상을 찾아 순서를 매깁니다. '
-     +'"비슷하다"를 재는 자가 곧 유사도이며, 11차시에서 이 계산을 직접 해 봅니다.',
+     +'"비슷하다"를 재는 자가 곧 유사도이며, 13차시에서 이 계산을 직접 해 봅니다.',
    vid:'1gSOrChJ9xY', vt:'유튜브 알고리즘의 원리 (Feat. 머신 러닝)', vs:'LG디스플레이 디플',
    q:'유튜브 추천 알고리즘 원리'},
 ];
@@ -7580,9 +7621,9 @@ function itLifeRender(){
 
 /* ══════════ 2단원 text 뷰 코드 (unit2_build/text/core-snippet.js) ══════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   2단원 6~7차시 · text 뷰 (views/text.html)
-     6차시 「텍스트를 집합으로」 접두사 tp / TP_
-     7차시 「텍스트를 벡터로」  접두사 tv / TV_
+   2단원 7~8차시 · text 뷰 (views/text.html)
+     7차시 「텍스트를 집합으로」 접두사 tp / TP_
+     8차시 「텍스트를 벡터로」  접두사 tv / TV_
      두 차시 공용                접두사 tx / TX_
    ───────────────────────────────────────────────────────────────────────────
    · core.js 맨 끝(startRouter IIFE 뒤)에 통째로 붙입니다.
@@ -7591,7 +7632,7 @@ function itLifeRender(){
      initToggles·aimRefExtrasAll)는 호출만 하고 수정하지 않습니다.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ───────── 공용 텍스트 처리 엔진 (6·7·8·10차시가 함께 씁니다 — 중복 구현 금지) ───────── */
+/* ───────── 공용 텍스트 처리 엔진 (7·8·9·12차시가 함께 씁니다 — 중복 구현 금지) ───────── */
 
 /* 문장 부호 제거 후 공백 분리 (패들렛 text_set.html / text_vector.html tokenize 계승) */
 function tokenize(text){
@@ -7676,7 +7717,7 @@ function txScrollTo(el){
   catch (e) { el.scrollIntoView(); }
 }
 
-/* 6·7차시 공통 localStorage 키 (설계서 §0-3 #11·#12) */
+/* 7·8차시 공통 localStorage 키 (설계서 §0-3 #11·#12) */
 var TX_CORPUS_KEY = 'aimath.corpus.mysent';
 var TX_CLASS_KEY  = 'aimath.classroom.url';
 var TX_LESSON_KEY = 'aimath.text.lesson';
@@ -7690,7 +7731,7 @@ function txClassSync(){
   return a || b || '';
 }
 
-/* 말뭉치(우리 반 문장) 읽기·쓰기 — 6차시 활동 ①, 7차시 도입이 같은 키를 씁니다. */
+/* 말뭉치(우리 반 문장) 읽기·쓰기 — 7차시 활동 ①, 8차시 도입이 같은 키를 씁니다. */
 function txCorpusLoad(){
   var a = txJson(TX_CORPUS_KEY);
   return a.filter(function (it) { return it && typeof it.t === 'string' && it.t.trim(); });
@@ -7720,15 +7761,15 @@ function txLesson(n){
   txSet(TX_LESSON_KEY, String(txLessonCur));
   var cur = txEl('nav-cur');
   if (cur && (typeof aimNavOwns !== 'function' || aimNavOwns('v-text'))) cur.textContent = on7
-    ? '7차시 · 텍스트를 벡터로 — 포함관계·원-핫·빈도수'
-    : '6차시 · 텍스트를 집합으로 — 전처리와 단어집합';
+    ? '8차시 · 텍스트를 벡터로 — 포함관계·원-핫·빈도수'
+    : '7차시 · 텍스트를 집합으로 — 전처리와 단어집합';
   var view = txEl('v-text');
   if (view && typeof initToggles === 'function') { try { initToggles(view); } catch (e) {} }
   if (on7) { try { tvInit(); } catch (e) {} } else { try { tpInit(); } catch (e) {} }
 }
 
 /* 설계서 §0-3 #1 의 확정 탭 순서를 그대로 유지하는 호환 진입점
-   ttab(0)=[전처리](6차시) · ttab(1)=[포함관계] · ttab(2)=[원-핫] · ttab(3)=[빈도수] · ttab(4)=[희소vs밀집] */
+   ttab(0)=[전처리](7차시) · ttab(1)=[포함관계] · ttab(2)=[원-핫] · ttab(3)=[빈도수] · ttab(4)=[희소vs밀집] */
 function ttab(n, el){
   var i = parseInt(n, 10); if (isNaN(i)) i = 0;
   if (i <= 0) { txLesson(6); tpTab(1); }
@@ -7743,7 +7784,7 @@ function txOpen(anchor){
   if (Object.prototype.hasOwnProperty.call(TX_ANCHOR, k)) ttab(TX_ANCHOR[k]);
 }
 
-/* ───────── 6차시 데이터 ───────── */
+/* ───────── 7차시 데이터 ───────── */
 
 /* 기본 사전형 규칙 사전 — 교사가 이 상수 한 곳만 고쳐 늘릴 수 있습니다(설계서 §8-2). */
 var TP_LEMMA = {
@@ -7815,7 +7856,7 @@ var TP_WARM = [
     opts: ['① 3번 — 나온 횟수만큼 적는다', '② 1번 — 한 번만 적는다', '③ 0번 — 자주 나오면 오히려 뺀다'], answer: 1,
     explain: '집합은 <b>같은 원소를 중복해서 나열하지 않는</b> 성질이 있습니다. 그래서 <code>A = {수학, 탐구, 사고, 열쇠, 성장}</code> 처럼 ' +
       '\'수학\'은 딱 한 번만 적습니다. 이 성질이 편리하기도 하지만 아쉽기도 합니다. <b>"몇 번 나왔는지"를 잃어버리기 때문</b>입니다. ' +
-      '그 아쉬움을 푸는 것이 7차시의 빈도수 벡터입니다. ' +
+      '그 아쉬움을 푸는 것이 8차시의 빈도수 벡터입니다. ' +
       '<br>· ①을 골랐다면 — 나온 순서와 횟수를 그대로 적은 것은 <b>어절을 분리한 결과</b>이지 집합이 아닙니다. 집합으로 묶는 순간 중복이 사라집니다. ' +
       '<br>· ③을 골랐다면 — 자주 나온다고 빼지는 않습니다. 다만 <b>모든 문서에 다 나오는 단어</b>라면 불용어로 정할 수는 있습니다(질문 3에서 확인). ' +
       '(씨마스 교과서 Ⅱ p.48~49 서술을 재구성)' },
@@ -7874,10 +7915,10 @@ var TP_CHIPS = {
     '<b>중복된 칩이 스르르 겹쳐져 하나로 합쳐지는</b> 장면을 직접 보게 됩니다. ' +
     '그때 "왜 \'수학\'이 세 개가 아니라 하나만 남지?"라는 물음의 답이 바로 이 성질입니다.</p>' +
     '<p><b>앞뒤 차시 연결.</b> 1차시에서 인공지능을 "입력을 출력으로 잇는 함수"로 보았다면, 지금은 그 입력 자리에 들어갈 ' +
-    '<b>문장을 수학적 대상(집합)으로 바꾸는 중</b>입니다. 다음 7차시에서는 이 집합을 벡터로 바꿉니다.</p>' +
+    '<b>문장을 수학적 대상(집합)으로 바꾸는 중</b>입니다. 다음 8차시에서는 이 집합을 벡터로 바꿉니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tpTab(1)">활동 ②로 이동 →</button>' +
     '<button class="btn tx-mini" type="button" onclick="go(\'intro\')">1차시 · 인공지능의 개념 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'incl\')">7차시 · 벡터로 →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'incl\')">8차시 · 벡터로 →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.48 · 동아 교과서 Ⅱ p.47 · 미래엔 「인공지능 수학」 Ⅱ 서술을 재구성</p>',
 
   '불용어':
@@ -7891,7 +7932,7 @@ var TP_CHIPS = {
     '칩 하나를 켜고 끌 때마다 아래의 단어집합과 원소 개수가 즉시 달라지는 것을 보면서, ' +
     '"<b>불용어를 어떻게 정하느냐가 곧 분석 결과를 정하는 일</b>"임을 확인하게 됩니다.</p>' +
     '<p><b>앞뒤 차시 연결.</b> 5차시에서 데이터의 치우침이 결과를 뒤흔드는 것을 보았듯, 불용어 선택도 사람이 내리는 판단입니다. ' +
-    '8차시 TF-IDF는 이 판단을 <b>수치로 자동화</b>하는 방법입니다.</p>' +
+    '9차시 TF-IDF는 이 판단을 <b>수치로 자동화</b>하는 방법입니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tpTab(1)">활동 ②로 이동 →</button>' +
     '<button class="btn tx-mini" type="button" onclick="go(\'bias\')">5차시 · 데이터 편향 →</button></div>' +
     '<p class="tx-src">출처: 동아 교과서 Ⅱ p.47 · 미래엔 「인공지능 수학」 Ⅱ 참고란 · 천재 「인공지능 수학」 지도서 Ⅱ 서술을 재구성</p>',
@@ -7905,10 +7946,10 @@ var TP_CHIPS = {
     '문서 A "수학 탐구는 수학 사고의 열쇠이며, 수학은 성장의 열쇠이다." → <code>A = {수학, 탐구, 사고, 열쇠, 성장}</code> (원소 5개)</p>' +
     '<p><b>이번 차시에서는.</b> 활동 ①에서 여러분이 상황 사진을 보고 직접 만든 문장이 활동 ②를 지나면 여러분만의 단어집합이 됩니다. ' +
     '그리고 활동 ③에서 모둠원의 단어집합을 겹쳐 보며 "같은 사진을 보고도 서로 다른 단어를 골랐구나"를 벤다이어그램으로 확인합니다.</p>' +
-    '<p><b>앞뒤 차시 연결.</b> 단어집합은 2단원 전체의 출발점입니다. 7차시의 원-핫·빈도수 벡터, 8차시 TF-IDF, ' +
-    '10차시 자카드 유사도가 모두 이 집합 위에서 계산됩니다.</p>' +
+    '<p><b>앞뒤 차시 연결.</b> 단어집합은 2단원 전체의 출발점입니다. 8차시의 원-핫·빈도수 벡터, 9차시 TF-IDF, ' +
+    '12차시 자카드 유사도가 모두 이 집합 위에서 계산됩니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tpTab(2)">활동 ③으로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'incl\')">7차시 · 벡터로 →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'incl\')">8차시 · 벡터로 →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.48 · 동아 교과서 Ⅱ p.48 서술을 재구성</p>',
 
   '합집합(전체집합 U)':
@@ -7922,10 +7963,10 @@ var TP_CHIPS = {
     '<p><b>이번 차시에서는.</b> 활동 ③에서 모둠의 문장 3개를 겹쳐 <code>U</code>를 만들고, 세 원이 겹치는 벤다이어그램 위에서 ' +
     '어떤 단어가 공통이고 어떤 단어가 나만의 단어인지 눈으로 확인합니다. 그 다음 <code>U</code>를 가나다순으로 정렬해 ' +
     '<b>우리 반 단어 사전</b>을 완성합니다.</p>' +
-    '<p><b>앞뒤 차시 연결.</b> 7차시에서 벡터의 <b>차원</b>이 되는 것이 바로 <code>n(U)</code>입니다. ' +
-    '10차시의 자카드 유사도는 <code>n(A∩B) ÷ n(A∪B)</code> 로 정의되므로, 오늘 만든 합집합이 그대로 분모가 됩니다.</p>' +
+    '<p><b>앞뒤 차시 연결.</b> 8차시에서 벡터의 <b>차원</b>이 되는 것이 바로 <code>n(U)</code>입니다. ' +
+    '12차시의 자카드 유사도는 <code>n(A∩B) ÷ n(A∪B)</code> 로 정의되므로, 오늘 만든 합집합이 그대로 분모가 됩니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tpTab(2)">활동 ③으로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'incl\')">7차시 · 벡터로 →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'incl\')">8차시 · 벡터로 →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.48 · 미래엔 「인공지능 수학」 Ⅱ · 씨마스 「인공지능 수학」 지도서 Ⅱ 서술을 재구성</p>',
 
   '정수 인코딩 [참고]':
@@ -7933,18 +7974,18 @@ var TP_CHIPS = {
     '보통 전체집합 <code>U</code>를 가나다순으로 정렬한 뒤 1번부터 차례로 번호를 붙입니다. ' +
     '이렇게 하면 컴퓨터는 \'수학\'이라는 글자 대신 <code>4</code>라는 수를 다룰 수 있습니다.</p>' +
     '<p class="tv-banner">⚠️ 주의 — 이 번호는 크기가 아닙니다. \'인공지능(6)\'이 \'수학(4)\'보다 1.5배 중요하다는 뜻이 결코 아닙니다. ' +
-    '번호는 <b>이름표</b>일 뿐이고, 단어의 중요도나 의미는 전혀 담고 있지 않습니다. 이 한계 때문에 7차시에서 벡터가 등장합니다.</p>' +
+    '번호는 <b>이름표</b>일 뿐이고, 단어의 중요도나 의미는 전혀 담고 있지 않습니다. 이 한계 때문에 8차시에서 벡터가 등장합니다.</p>' +
     '<p><b>예시.</b> <code>U = {기반, 사고, 성장, 수학, 열쇠, 인공지능, 탐구}</code> → 기반 1, 사고 2, 성장 3, 수학 4, 열쇠 5, 인공지능 6, 탐구 7. ' +
     '문서 A "수학 탐구는 …" 는 <code>4, 7, 2, 5, 3</code> 같은 번호의 나열로 바뀝니다.</p>' +
     '<p><b>이번 차시에서는.</b> 활동 ②의 마지막 5단계에서 인코딩 표가 만들어지는 것을 보고, ' +
     '곧바로 이어지는 "번호가 크면 더 중요한가?" 판정 문제에서 스스로 반례를 만들어 봅니다.</p>' +
     '<p><b>앞뒤 차시 연결.</b> 정수 인코딩은 2022 개정 교육과정의 성취기준에 직접 등장하지 않는 <b>참고 개념</b>이라 지필·형성평가 대상이 아닙니다. ' +
-    '다만 7차시 원-핫 벡터에서 "몇 번째 자리에 1을 놓을지"를 정하는 데 그대로 쓰이므로 한 번은 짚고 갑니다.</p>' +
+    '다만 8차시 원-핫 벡터에서 "몇 번째 자리에 1을 놓을지"를 정하는 데 그대로 쓰이므로 한 번은 짚고 갑니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tpTab(1)">활동 ②로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'onehot\')">7차시 · 원-핫 벡터 →</button></div>' +
-    '<p class="tx-src">출처: 연수교재 합본 p.58 Tip · 강의 PPT(5-6차시) 슬라이드 6·12 서술을 재구성</p>'
+    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'onehot\')">8차시 · 원-핫 벡터 →</button></div>' +
+    '<p class="tx-src">출처: 연수교재 합본 p.58 Tip · 강의 PPT(5-7차시) 슬라이드 6·12 서술을 재구성</p>'
 };
-/* ───────── 6차시 상태 ───────── */
+/* ───────── 7차시 상태 ───────── */
 
 var tpInited = false;
 var tpShot = 0;                 /* 고른 상황 사진(1~5) */
@@ -7963,7 +8004,7 @@ var tpVSets = { A: [], B: [], C: [] };
 var tpVPreset = 'note';
 var tpVHi = '';                 /* 벤다이어그램에서 강조 중인 단어 */
 
-/* ───────── 6차시 · 탭 ───────── */
+/* ───────── 7차시 · 탭 ───────── */
 
 function tpTab(n, el){
   var i = parseInt(n, 10) || 0, tabs = document.querySelectorAll('#tp-tabs .tab'), k;
@@ -7978,7 +8019,7 @@ function tpTab(n, el){
   if (host && el) txScrollTo(host);
 }
 
-/* ───────── 6차시 · 활동 ① 상황 사진 · 우리 반 말뭉치 ───────── */
+/* ───────── 7차시 · 활동 ① 상황 사진 · 우리 반 말뭉치 ───────── */
 
 function tpShotsRender(){
   var box = txEl('tp-shots');
@@ -8027,7 +8068,7 @@ function tpSentSave(){
   ta.value = '';
   tpSentCount();
   txFb('tp-sent-fb', true, '저장했습니다. 아래 「우리 반 말뭉치」에 쌓였습니다.',
-    '이 문장은 7차시 활동 ①·③과 9차시에서도 그대로 불러 씁니다.');
+    '이 문장은 8차시 활동 ①·③과 11차시에서도 그대로 불러 씁니다.');
   tpCorpRender();
 }
 
@@ -8098,7 +8139,7 @@ function tpCorpRender(){
   }
 }
 
-/* ───────── 6차시 · 활동 ② 순서 예측 ───────── */
+/* ───────── 7차시 · 활동 ② 순서 예측 ───────── */
 
 function tpOrdShuffle(){
   var a = TP_ORDER_ANS.slice(), i, j, t;
@@ -8162,7 +8203,7 @@ function tpOrdCheck(){
   }
 }
 
-/* ───────── 6차시 · 활동 ② 전처리 엔진 ───────── */
+/* ───────── 7차시 · 활동 ② 전처리 엔진 ───────── */
 
 /* 어절 하나를 (사전형 + 떨어져 나온 조사) 조각으로 나눕니다.
    불용어 제거를 끄면 원본 앱과 같이 어절을 그대로 둡니다(사전형 변환만 적용). */
@@ -8217,7 +8258,7 @@ function tpCompute(){
   return { docs: docs, U: U, Uko: Uko, order: label, useStop: useStop, stops: stops };
 }
 
-/* ───────── 6차시 · 활동 ② 화면 ───────── */
+/* ───────── 7차시 · 활동 ② 화면 ───────── */
 
 function tpPresetsRender(){
   var box = txEl('tp-presets');
@@ -8522,7 +8563,7 @@ function tpJudge(i){
     txFb('tp-judge-fb', true, '맞습니다 — 번호는 중요도와 무관합니다.',
       '정수 인코딩은 단어에 <b>이름표</b>를 붙이는 일입니다. 가나다순으로 붙였으므로 \'인공지능\'이 6번인 것은 순전히 자음·모음 순서 때문입니다. ' +
       '실제로 문서 A에서 가장 많이 쓰인 단어는 3번 등장한 <b>\'수학\'(4번)</b> 입니다. 번호는 그 사실을 전혀 담지 못합니다. ' +
-      '— 이 한계를 넘기 위해 7차시에서 벡터가 등장합니다.');
+      '— 이 한계를 넘기 위해 8차시에서 벡터가 등장합니다.');
   } else {
     txFb('tp-judge-fb', false, '다시 생각해 봅시다. 정답은 "번호는 중요도와 무관하다"입니다.',
       '번호는 가나다 순서로 붙인 이름표일 뿐이어서, 6번이 4번보다 1.5배 중요하다는 뜻이 아닙니다. ' +
@@ -8530,7 +8571,7 @@ function tpJudge(i){
   }
 }
 
-/* ───────── 6차시 · 활동 ③ 합집합 사전 ───────── */
+/* ───────── 7차시 · 활동 ③ 합집합 사전 ───────── */
 
 var TP_VPRESETS = [
   { k: 'pipe', n: '활동 ② 결과 가져오기', src: 'pipe' },
@@ -8776,7 +8817,7 @@ function tpGradeCheck(){
   if (ok === tot) {
     txFb('tp-grade-fb', true, '네 칸 모두 맞았습니다.',
       'n(A)+n(B)+n(C) = ' + (A + B + C) + ' 이고 n(U) = ' + all.length + ' 이므로, 겹쳐서 한 번만 센 횟수는 ' +
-      (A + B + C - all.length) + ' 입니다. 이 아이디어가 10차시 자카드 유사도로 이어집니다.');
+      (A + B + C - all.length) + ' 입니다. 이 아이디어가 12차시 자카드 유사도로 이어집니다.');
     var f = txEl('tp-final');
     if (f) f.innerHTML = '완성된 사전 — U = { ' +
       txEsc(all.slice().sort(function (a, b) { return a.localeCompare(b, 'ko'); }).join(', ')) + ' }';
@@ -8786,7 +8827,7 @@ function tpGradeCheck(){
   }
 }
 
-/* ───────── 6차시 초기화 ───────── */
+/* ───────── 7차시 초기화 ───────── */
 
 function tpInit(){
   if (tpInited) return;
@@ -8812,7 +8853,7 @@ function tpInit(){
   if (typeof wsLinks === 'function') wsLinks('tp-wslinks', 'text6');
 }
 
-/* ───────── 7차시 데이터 ───────── */
+/* ───────── 8차시 데이터 ───────── */
 
 var TV_VIDEOS = [
   { id: '3m2oeuIbhSQ', t: '3-1. 원 핫 벡터 (5:15)', s: 'mathT야나수 〈인공지능 수학〉 · 주 디딤영상' },
@@ -8828,7 +8869,7 @@ var TV_INCL_DOCS = [
 ];
 var TV_INCL_U = ['노트북', '디자인', '좋다', '가볍다', '만족', '화면', '크다', '배송', '빠르다'];
 
-/* 활동 ② — 원-핫 (6차시에서 만든 U) */
+/* 활동 ② — 원-핫 (7차시에서 만든 U) */
 var TV_OH_U = ['기반', '사고', '성장', '수학', '열쇠', '인공지능', '탐구'];
 var TV_OH_MISSION = ['수학', '열쇠', '인공지능'];
 
@@ -8865,10 +8906,10 @@ var TV_CORPUS20 = [
 ];
 
 var TV_WARM = [
-  { q: '6차시에서 만든 U = {노트북, 디자인, 좋다, 가볍다, 만족, 화면, 크다, 배송, 빠르다} 를 \'자\'로 삼아 후기 A(= {노트북, 디자인, 좋다}) 하나를 수의 나열로 적는다면, 수는 모두 몇 개가 필요할까요?',
+  { q: '7차시에서 만든 U = {노트북, 디자인, 좋다, 가볍다, 만족, 화면, 크다, 배송, 빠르다} 를 \'자\'로 삼아 후기 A(= {노트북, 디자인, 좋다}) 하나를 수의 나열로 적는다면, 수는 모두 몇 개가 필요할까요?',
     opts: ['① 3개 — 후기 A에 남은 단어의 개수만큼', '② 9개 — U의 원소 개수만큼', '③ 1개 — 문서마다 하나씩', '④ 정할 수 없다'],
     answer: 1,
-    explain: '6차시 마지막에 "오늘 만든 <code>n(U)</code>가 다음 시간에는 <b>벡터의 차원</b>이 된다"고 예고했습니다. ' +
+    explain: '7차시 마지막에 "오늘 만든 <code>n(U)</code>가 다음 시간에는 <b>벡터의 차원</b>이 된다"고 예고했습니다. ' +
       'U의 <b>자리마다</b> 그 단어가 있는지 없는지를 적어야 하므로, 후기 A에 없는 \'가볍다·만족·화면…\' 자리에도 <b>0을 적습니다.</b> ' +
       '①처럼 3개만 적으면 어느 자리가 어떤 단어인지 알 수 없어 다른 후기와 나란히 놓을 수 없습니다. ' +
       '그리고 이렇게 생긴 <b>0으로 채워진 자리</b>가 오늘 활동 ④의 \'희소 벡터\' 이야기로 이어집니다.' },
@@ -8920,7 +8961,7 @@ var TV_QUIZ = [
     explain: '포함관계 여부 벡터는 \'있다·없다\'만 보므로 P도 Q도 (1, 1)이 되어 <b>반복을 구분하지 못합니다.</b> ' +
       '반면 빈도수 벡터로는 P = (2, 1), Q = (1, 1)로 서로 달라지므로 ②·③은 틀리고, ④는 P와 Q를 바꿔 쓴 오답입니다. ' +
       '같은 두 문서라도 <b>어떤 표현을 고르느냐에 따라 \'같다\'와 \'다르다\'가 뒤집힙니다.</b> ' +
-      '그래서 성취기준은 "목적에 맞게 표현"할 것을 요구합니다. 9차시에서는 이 차이가 유사도 값에 어떻게 나타나는지 확인합니다.' }
+      '그래서 성취기준은 "목적에 맞게 표현"할 것을 요구합니다. 11차시에서는 이 차이가 유사도 값에 어떻게 나타나는지 확인합니다.' }
 ];
 
 var TV_CHIPS = {
@@ -8933,10 +8974,10 @@ var TV_CHIPS = {
     '여기서 벡터는 \'크기와 방향을 갖는 양\'이 아니라 <b>데이터를 순서쌍으로 늘어놓은 것</b>으로 이해합니다.</p>' +
     '<p><b>③ 이번 차시 연결.</b> 오늘 만드는 모든 벡터의 차원은 <b>전체집합 U의 원소 개수</b>와 같습니다. ' +
     '활동 ①에서 단어 9개짜리 U로 9차원 벡터를, 활동 ②에서 단어 7개짜리 U로 7차원 벡터를 직접 만들어 봅니다.</p>' +
-    '<p><b>④ 차시 연결.</b> ← 6차시 「텍스트를 집합으로」에서 U를 만들었습니다 / → 9차시 「유사도」에서 이 벡터들의 거리와 방향을 잽니다.</p>' +
+    '<p><b>④ 차시 연결.</b> ← 7차시 「텍스트를 집합으로」에서 U를 만들었습니다 / → 11차시 「유사도」에서 이 벡터들의 거리와 방향을 잽니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tvGoAct(1)">활동 ①로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'pre\')">6차시 · 집합으로 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'sim\')">9차시 · 유사도 →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'pre\')">7차시 · 집합으로 →</button>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'sim\')">11차시 · 유사도 →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.49 · 동아 교과서 Ⅱ p.49 서술을 재구성</p>',
 
   '포함관계 여부 벡터':
@@ -8949,9 +8990,9 @@ var TV_CHIPS = {
     '\'수학\'이 두 번 쓰였지만 성분은 1입니다.</p>' +
     '<p><b>③ 이번 차시 연결.</b> 활동 ①에서 후기 세 개의 표를 직접 채워 세 벡터를 만들고, 문서를 하나 더 추가해 ' +
     '<b>다른 문장인데 같은 벡터가 되는 경우</b>를 찾아봅니다.</p>' +
-    '<p><b>④ 차시 연결.</b> ← 6차시의 합집합 U 만들기 / → 10차시 자카드 유사도에서 \'있다·없다\'만으로도 유사도를 잴 수 있음을 확인합니다.</p>' +
+    '<p><b>④ 차시 연결.</b> ← 7차시의 합집합 U 만들기 / → 12차시 자카드 유사도에서 \'있다·없다\'만으로도 유사도를 잴 수 있음을 확인합니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tvGoAct(1)">활동 ①로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'pre\')">6차시 · 집합으로 →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'pre\')">7차시 · 집합으로 →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.50 · 동아 교과서 Ⅱ p.50 · 미래엔 「인공지능 수학」 Ⅱ 서술을 재구성</p>',
 
   '원-핫 벡터':
@@ -8963,10 +9004,10 @@ var TV_CHIPS = {
     '<p><b>③ 이번 차시 연결.</b> 활동 ②에서 7칸 격자의 스위치를 눌러 원-핫 벡터를 만듭니다. ' +
     '이때 <b>1을 두 개 켜면 원-핫이 아니라는 피드백</b>이 뜹니다. 또 두 원-핫 벡터가 겹치는 자리가 하나도 없다는 점에서, ' +
     '원-핫만으로는 \'늑대\'와 \'개\'가 비슷하다는 사실을 나타낼 수 없음을 확인합니다.</p>' +
-    '<p><b>④ 차시 연결.</b> ← 6차시 정수 인코딩(단어에 번호 붙이기)이 원-핫의 \'몇 번째 자리\'가 됩니다 / ' +
+    '<p><b>④ 차시 연결.</b> ← 7차시 정수 인코딩(단어에 번호 붙이기)이 원-핫의 \'몇 번째 자리\'가 됩니다 / ' +
     '→ 4단원 퍼셉트론·분류에서 범주를 입력값으로 넣을 때 다시 만납니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tvGoAct(2)">활동 ②로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'pre\')">6차시 · 정수 인코딩 →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'text\',\'pre\')">7차시 · 정수 인코딩 →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.50 \'지식 Plus 원-핫 벡터\' · 동아 교과서 Ⅱ p.51 · 미래엔 「인공지능 수학」 Ⅱ · 천재 「인공지능 수학」 지도서 Ⅱ 서술을 재구성</p>',
 
   '빈도수 벡터(단어가방 모형)':
@@ -8980,9 +9021,9 @@ var TV_CHIPS = {
     '<p><b>③ 이번 차시 연결.</b> 활동 ③에서 24칸짜리 빈도수 표를 직접 채우면 <b>칸마다 즉시 채점</b>됩니다. ' +
     '표를 다 채우면 세 벡터가 자동으로 조립되고, 성분이 가장 큰 단어에 \'주제어\' 배지가 붙습니다.</p>' +
     '<p><b>④ 차시 연결.</b> ← 활동 ①의 포함관계 벡터로는 반복을 구분할 수 없었습니다 / ' +
-    '→ 8차시 TF-IDF에서 이 빈도수(TF)에 \'흔한 단어를 깎는\' IDF를 곱합니다.</p>' +
+    '→ 9차시 TF-IDF에서 이 빈도수(TF)에 \'흔한 단어를 깎는\' IDF를 곱합니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tvGoAct(3)">활동 ③으로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'tfidf\')">8차시 · TF-IDF →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'tfidf\')">9차시 · TF-IDF →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.51~52 \'단어별 빈도수 벡터를 나타내는 과정\' · 동아 교과서 Ⅱ p.54~55 · 미래엔 「인공지능 수학」 Ⅱ 서술을 재구성</p>',
 
   '희소 벡터와 밀집 벡터':
@@ -8996,14 +9037,14 @@ var TV_CHIPS = {
     '<span class="tx-badge warn">선택 심화</span></p>' +
     '<p><b>③ 이번 차시 연결.</b> 활동 ④에서 우리가 만든 표의 <b>0의 비율을 직접 계산</b>하고, 문서 수를 늘려 가며 ' +
     '0의 비율이 어떻게 변하는지 관찰합니다. 밀집 벡터는 맛보기로만 다루며 <b>평가 대상이 아닙니다.</b></p>' +
-    '<p><b>④ 차시 연결.</b> → 8차시 TF-IDF는 희소 표현을 유지한 채 성분의 \'무게\'를 바꾸는 방법입니다 / ' +
-    '→ 9차시에서 희소 벡터끼리의 거리와 각을 잽니다.</p>' +
+    '<p><b>④ 차시 연결.</b> → 9차시 TF-IDF는 희소 표현을 유지한 채 성분의 \'무게\'를 바꾸는 방법입니다 / ' +
+    '→ 11차시에서 희소 벡터끼리의 거리와 각을 잽니다.</p>' +
     '<div class="btn-row"><button class="btn tx-mini" type="button" onclick="tvGoAct(4)">활동 ④로 이동 →</button>' +
-    '<button class="btn tx-mini" type="button" onclick="go(\'tfidf\')">8차시 · TF-IDF →</button></div>' +
+    '<button class="btn tx-mini" type="button" onclick="go(\'tfidf\')">9차시 · TF-IDF →</button></div>' +
     '<p class="tx-src">출처: 씨마스 교과서 Ⅱ p.53 \'원-핫 벡터나 빈도수 벡터의 두 가지 문제점\'·\'AI 스토리 단어 임베딩\' · ' +
-    '천재 「인공지능 수학」 지도서 Ⅱ · 연수교재 합본 5-6차시 원고 서술을 재구성</p>'
+    '천재 「인공지능 수학」 지도서 Ⅱ · 연수교재 합본 5-7차시 원고 서술을 재구성</p>'
 };
-/* ───────── 7차시 상태 ───────── */
+/* ───────── 8차시 상태 ───────── */
 
 var tvInited = false;
 var tvU = TV_INCL_U.slice();
@@ -9045,7 +9086,7 @@ function tvGoAct(n){
   txScrollTo(txEl('tv-tabs'));
 }
 
-/* ───────── 7차시 · 도입 실자료 ───────── */
+/* ───────── 8차시 · 도입 실자료 ───────── */
 
 function tvSituRender(){
   var box = txEl('tv-situ-btns'), fig = txEl('tv-situ');
@@ -9082,15 +9123,15 @@ function tvSentSave(){
 
 function tvSentLoad(){
   var a = txCorpusLoad().slice(-3);
-  if (!a.length) { txFb('tv-sent-fb', false, '저장된 문장이 없습니다.', '6차시 활동 ①에서 문장을 먼저 모아 주세요.'); return; }
+  if (!a.length) { txFb('tv-sent-fb', false, '저장된 문장이 없습니다.', '7차시 활동 ①에서 문장을 먼저 모아 주세요.'); return; }
   ['tv-s1', 'tv-s2', 'tv-s3'].forEach(function (id, i) {
     var el = txEl(id);
     if (el && a[i]) el.value = a[i].t;
   });
-  txFb('tv-sent-fb', true, '6차시에서 모은 문장을 불러왔습니다.', '같은 키(<code>aimath.corpus.mysent</code>)를 씁니다.');
+  txFb('tv-sent-fb', true, '7차시에서 모은 문장을 불러왔습니다.', '같은 키(<code>aimath.corpus.mysent</code>)를 씁니다.');
 }
 
-/* ───────── 7차시 · 활동 ① 포함관계 여부 벡터 ───────── */
+/* ───────── 8차시 · 활동 ① 포함관계 여부 벡터 ───────── */
 
 function tvInclReset(){
   tvU = TV_INCL_U.slice();
@@ -9261,7 +9302,7 @@ function tvMissionCheck(){
   }
 }
 
-/* ───────── 7차시 · 활동 ② 원-핫 벡터 ───────── */
+/* ───────── 8차시 · 활동 ② 원-핫 벡터 ───────── */
 
 function tvOhRender(){
   var grid = txEl('tv-oh-grid'), vec = txEl('tv-oh-vec'), goal = txEl('tv-oh-goal');
@@ -9353,7 +9394,7 @@ function tvOhMode(){
     if (i === 0) th.textContent = tvOhWordMode ? '단어' : '문서';
   });
 }
-/* ───────── 7차시 · 활동 ③ 빈도수 벡터 (자동 채점) ───────── */
+/* ───────── 8차시 · 활동 ③ 빈도수 벡터 (자동 채점) ───────── */
 
 function tvTfMax(row){
   var m = Math.max.apply(null, row), out = [];
@@ -9517,7 +9558,7 @@ function tvTfProg(which){
       '<span class="tag">전체 주제어 ' + txEsc(smx.join(' · ')) + '</span></p>';
     if (isMain) txFb('tv-tf-fb', true, '표를 모두 채웠습니다.',
       '합계 벡터는 각 문서 벡터의 <b>성분끼리의 합</b>과 같습니다. ' +
-      '세 후기 모두에 나온 \'캠핑장\'은 성분이 크지만 <b>어느 후기의 특징도 알려 주지 못합니다</b> — 8차시로 이어지는 물음입니다.');
+      '세 후기 모두에 나온 \'캠핑장\'은 성분이 크지만 <b>어느 후기의 특징도 알려 주지 못합니다</b> — 9차시로 이어지는 물음입니다.');
   }
   box.innerHTML = out;
 }
@@ -9539,7 +9580,7 @@ function tvTfReset(){
 function tvTfMine(){
   var arr = txCorpusLoad().slice(-3);
   if (arr.length < 2) {
-    txFb('tv-tf-fb', false, '우리 반 문장이 2개 이상 필요합니다.', 'STEP 1의 「같은 장면, 다른 문장」이나 6차시 활동 ①에서 문장을 모아 주세요.');
+    txFb('tv-tf-fb', false, '우리 반 문장이 2개 이상 필요합니다.', 'STEP 1의 「같은 장면, 다른 문장」이나 7차시 활동 ①에서 문장을 모아 주세요.');
     return;
   }
   var stops = TP_STOP_BASE;
@@ -9573,7 +9614,7 @@ function tvTfBack(){
   txFb('tv-tf-fb', null, '');
 }
 
-/* ───────── 7차시 · 활동 ④ 희소 vs 밀집 ───────── */
+/* ───────── 8차시 · 활동 ④ 희소 vs 밀집 ───────── */
 
 function tvZeroCount(mat){
   var z = 0, n = 0;
@@ -9718,7 +9759,7 @@ function tvEmbCards(){
   }).join('');
 }
 
-/* ───────── 7차시 초기화 ───────── */
+/* ───────── 8차시 초기화 ───────── */
 
 function tvInit(){
   if (tvInited) return;
@@ -9745,7 +9786,7 @@ function tvInit(){
   tvRefsRender();
 }
 
-/* 7차시 참고 자료 — 학급 자료함(공통 키) + 교사 추가 슬롯 1칸 */
+/* 8차시 참고 자료 — 학급 자료함(공통 키) + 교사 추가 슬롯 1칸 */
 function tvRefsRender(){
   var box = txEl('tv-refx');
   if (!box) return;
@@ -9755,7 +9796,7 @@ function tvRefsRender(){
   h += '<a class="tx-ref" ' + (url ? 'href="' + txEsc(url) + '" target="_blank" rel="noopener"' : 'href="#" onclick="return false;"') + '>' +
     '<span class="th"><span class="bg">학급</span>🗂️</span><span class="bd"><span class="tt">학급 공유 자료함</span>' +
     '<span class="ds">' + (url ? '우리 반이 모은 한 줄 평과 벡터 표를 함께 보는 자료함입니다.'
-                              : '아직 주소가 없습니다. 아래 [학급 자료함 주소 설정]에서 등록하세요. (6~10차시 공통)') +
+                              : '아직 주소가 없습니다. 아래 [학급 자료함 주소 설정]에서 등록하세요. (7~12차시 공통)') +
     '</span></span></a>';
   arr.forEach(function (it, i) {
     h += '<a class="tx-ref" href="' + txEsc(it.u) + '" target="_blank" rel="noopener">' +
@@ -9823,16 +9864,16 @@ function tvRefsRender(){
     window.go = go2;
   }
 
-  /* 2) 홈 카드·차시 목록에서 6/7차시를 눌렀을 때 해당 차시로 들어가게 합니다.
-        (매니페스트를 6차시·7차시 두 줄로 나누어 등록한 경우 라벨로 구분) */
+  /* 2) 홈 카드·차시 목록에서 6/8차시를 눌렀을 때 해당 차시로 들어가게 합니다.
+        (매니페스트를 7차시·8차시 두 줄로 나누어 등록한 경우 라벨로 구분) */
   var sniff = function (e) {
     var el = e.target && e.target.closest && e.target.closest('[data-v],[data-go]');
     if (!el) return;
     var v = el.getAttribute('data-v') || el.getAttribute('data-go');
     if (v !== 'text') return;
     var t = (el.textContent || '');
-    if (t.indexOf('7차시') >= 0) txPending = 7;
-    else if (t.indexOf('6차시') >= 0) txPending = 6;
+    if (t.indexOf('8차시') >= 0) txPending = 7;
+    else if (t.indexOf('7차시') >= 0) txPending = 6;
   };
   document.addEventListener('click', sniff, true);
 
@@ -9867,9 +9908,9 @@ function txInit(){
 
 /* ══════════ 2단원 tfidf 뷰 코드 (unit2_build/tfidf/core-snippet.js) ══════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   TFIDF (8차시: 중요한 단어 찾기 — TF-IDF) — 전역 접두사 tf
+   TFIDF (9차시: 중요한 단어 찾기 — TF-IDF) — 전역 접두사 tf
    ---------------------------------------------------------------------------
-   · core.js 의 「BIAS(5차시) 블록」과 「30차시 카탈로그」 사이(= AIM_LESSONS 정의 앞)에
+   · core.js 의 「BIAS(5차시) 블록」과 「37차시 카탈로그」 사이(= AIM_LESSONS 정의 앞)에
      이 블록을 통째로 붙여 넣습니다.
    · 공통 컴포넌트(videoDeck·warmStepper·quizStepper·chipDefs·wsPrint·wsLinks·
      aimRefExtrasAll)는 재사용만 하며 수정하지 않습니다.
@@ -9942,7 +9983,7 @@ const TF_WARM = [
     explain:'\'추천\'은 네 후기 전부에 나오기 때문에, \'추천\'이라는 단어를 보고서는 지금 읽는 것이 A인지 D인지 알 수 없습니다. 반대로 \'위생적\'은 A에만, \'맛\'은 B와 D에만 나오므로 후기를 구별하는 데 훨씬 쓸모가 있습니다. <b>여러 문서에 두루 나오는 단어일수록 구별하는 힘이 약하다</b> — 이것이 오늘 배울 IDF의 출발점입니다.'
   },
   {
-    q:'7차시에서 만든 빈도수 벡터(단어가방 모형)만으로 문서의 주제어를 찾기 어려운 이유로 가장 알맞은 것은?',
+    q:'8차시에서 만든 빈도수 벡터(단어가방 모형)만으로 문서의 주제어를 찾기 어려운 이유로 가장 알맞은 것은?',
     opts:['① 빈도수 벡터는 단어의 순서를 담지 못하기 때문이다',
           '② 빈도수 벡터는 문서마다 길이가 다르기 때문이다',
           '③ 어느 문서에나 나오는 흔한 단어도 빈도수가 높게 나오기 때문이다',
@@ -10014,15 +10055,15 @@ const TF_DEFS = {
   '단어 빈도수 TF':
     '<p><b>정의.</b> 단어 빈도수(TF, Term Frequency)는 <b>한 문서 안에서 어떤 단어가 등장한 횟수</b>입니다. ' +
     '기호로는 <span class="mi">TF(d, t)</span>와 같이 쓰며, 문서 d에서 단어 t가 몇 번 나왔는지를 나타냅니다. ' +
-    '7차시에서 만든 빈도수 벡터의 각 성분이 바로 이 TF 값입니다.</p>' +
+    '8차시에서 만든 빈도수 벡터의 각 성분이 바로 이 TF 값입니다.</p>' +
     '<p><b>예시.</b> 후기 A 「뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요.」에서 \'사진\'은 두 번 나왔으므로 ' +
     'TF는 2이고, \'뷰\'는 한 번 나왔으므로 TF는 1입니다. 후기 A에 없는 \'온수\'의 TF는 0입니다.</p>' +
     '<p><b>이번 차시와의 연결.</b> <b>활동 ① 1단</b>에서 여러분이 직접 채우는 첫 번째 표가 TF 표입니다. ' +
     '이때 "TF가 가장 큰 단어가 정말 그 문서의 주제어인가?"를 확인해 보면, 세 후기 모두에서 \'캠핑장\'과 \'깨끗하다\'가 ' +
     '빠지지 않고 등장한다는 사실을 발견하게 됩니다. 이 발견이 오늘 IDF가 필요한 이유가 됩니다.</p>' +
     '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="tfSee(0,\'tf-st1\')">활동 ① 1단으로 이동</button></div>' +
-    '<p><b>이어지는 차시.</b> <a href="#text" onclick="go(\'text\');return false;">7차시 · 텍스트를 벡터로</a> 에서 만든 빈도수 벡터가 곧 TF입니다 → ' +
-    '<a href="#sim" onclick="go(\'sim\');return false;">9차시 · 얼마나 비슷한가</a> 에서는 오늘 만든 TF-IDF 벡터로 문서 사이의 유사도를 잽니다.</p>' +
+    '<p><b>이어지는 차시.</b> <a href="#text" onclick="go(\'text\');return false;">8차시 · 텍스트를 벡터로</a> 에서 만든 빈도수 벡터가 곧 TF입니다 → ' +
+    '<a href="#sim" onclick="go(\'sim\');return false;">11차시 · 얼마나 비슷한가</a> 에서는 오늘 만든 TF-IDF 벡터로 문서 사이의 유사도를 잽니다.</p>' +
     '<p class="tf-src">씨마스 「인공지능 수학」 Ⅱ. 텍스트 데이터 처리 p.58, 동아출판 「인공지능 수학」 Ⅱ p.57 서술을 재구성</p>',
 
   '문서 빈도수 DF':
@@ -10038,7 +10079,7 @@ const TF_DEFS = {
     '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="tfSee(0,\'tf-st2\')">활동 ① 2단으로 이동</button></div>' +
     '<p><b>참고.</b> 어떤 단어의 TF 값을 모든 문서에 대해 더한 값은 그 단어의 DF 값보다 크거나 같습니다. ' +
     '한 문서에 두 번 이상 나올 수 있기 때문입니다.</p>' +
-    '<p><b>이어지는 차시.</b> <a href="#text" onclick="go(\'text\');return false;">6차시 · 텍스트를 집합으로</a> 에서 만든 단어집합의 원소 하나하나가 DF를 계산하는 단위입니다.</p>' +
+    '<p><b>이어지는 차시.</b> <a href="#text" onclick="go(\'text\');return false;">7차시 · 텍스트를 집합으로</a> 에서 만든 단어집합의 원소 하나하나가 DF를 계산하는 단위입니다.</p>' +
     '<p class="tf-src">씨마스 「인공지능 수학」 Ⅱ p.58 및 p.60 \'지식 Plus\' 서술을 재구성</p>',
 
   '역문서 빈도수 IDF':
@@ -10071,7 +10112,7 @@ const TF_DEFS = {
     '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="tfSee(0,\'tf-st4\')">활동 ① 4단으로 이동</button></div>' +
     '<p><b>기준값에 관하여.</b> TF-IDF가 "크다·작다"를 가르는 절대적인 기준값은 없습니다. ' +
     '분석 목적에 따라 문서 안에서 상대적인 기준을 정해야 합니다. 활동 ②의 기준값 슬라이더가 이 점을 체험하도록 만든 장치입니다.</p>' +
-    '<p><b>이어지는 차시.</b> <span class="tf-soon">11차시 · 리뷰 분석과 추천</span> 에서 리뷰 100건에 오늘의 계산을 그대로 적용합니다.</p>' +
+    '<p><b>이어지는 차시.</b> <span class="tf-soon">13차시 · 리뷰 분석과 추천</span> 에서 리뷰 100건에 오늘의 계산을 그대로 적용합니다.</p>' +
     '<p class="tf-src">씨마스 「인공지능 수학」 Ⅱ p.59 및 p.59 \'정보 Plus(TF-IDF 기준값)\', 미래엔 Ⅱ p.59~60, 동아출판 Ⅱ p.58 서술을 재구성</p>',
 
   '[선택 심화] 로그로 정의하는 IDF':
@@ -11013,12 +11054,12 @@ function tfNewsTable(){
   else boot();
 })();
 
-/* ●●● ANCHOR-TFIDF ●●● (8차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-TFIDF ●●● (9차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
 /* ══════════ 2단원 sim 뷰 코드 (unit2_build/sim/core-snippet.js) ══════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   9차시 · 얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까 (뷰 슬러그 sim / 접두사 sm)
+   11차시 · 얼마나 비슷한가 — 거리로 잴까, 방향으로 잴까 (뷰 슬러그 sim / 접두사 sm)
    ───────────────────────────────────────────────────────────────────────────
    · 이 블록은 core.js 의 끝(5차시 bias 블록 뒤, AIM_LESSONS 카탈로그 앞이 아니라
      파일 맨 끝)에 그대로 이어 붙입니다.  → INTEGRATION.md §2 참고
@@ -11155,8 +11196,8 @@ const SM_DEFS = {
     '<div class="btn-row"><button class="btn" type="button" onclick="smGo(\'sm-act2\')">활동 2로 이동</button></div>' +
     '<p class="sm-src">이어짐 — 2차시 k-means에서 쓴 "두 점 사이의 거리"가 n차원으로 확장된 것입니다. ' +
     '<a href="#mlplay" onclick="go(\'mlplay\');return false;">2차시 보기</a> · ' +
-    '13차시에서는 같은 \'거리\' 발상을 이미지의 이진 행렬에 적용합니다. ' +
-    '<a href="#hamming" onclick="go(\'hamming\');return false;">13차시 보기</a></p>' +
+    '18차시에서는 같은 \'거리\' 발상을 이미지의 이진 행렬에 적용합니다. ' +
+    '<a href="#hamming" onclick="go(\'hamming\');return false;">18차시 보기</a></p>' +
     '<p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.73, 동아출판 「인공지능 수학」 Ⅱ 단원 p.68 서술을 재구성</p>',
 
   '코사인 유사도':
@@ -11174,7 +11215,7 @@ const SM_DEFS = {
     '각의 크기와 코사인 값이 함께 표시됩니다. 각을 좁혔다 넓히면서 값이 1과 0 사이를 오가는 것을 확인합니다.</p>' +
     '<div class="btn-row"><button class="btn" type="button" onclick="smGo(\'sm-act3\')">활동 3으로 이동</button></div>' +
     '<p class="sm-src">이어짐 — 중학교 삼각비에서 배운 코사인(이웃한 변 ÷ 빗변)이 여기서 다시 쓰입니다. ' +
-    '11차시 추천 시스템에서는 이 값을 표(유사도 행렬)로 정리해 웹툰을 추천합니다.</p>' +
+    '13차시 추천 시스템에서는 이 값을 표(유사도 행렬)로 정리해 웹툰을 추천합니다.</p>' +
     '<p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.75, 동아출판 「인공지능 수학」 Ⅱ 단원 p.69 서술을 재구성</p>',
 
   'L2 정규화':
@@ -11187,10 +11228,10 @@ const SM_DEFS = {
     'A와 C가 포개집니다. 그 순간 거리로 잰 순위가 방향으로 잰 순위와 같아집니다 — ' +
     '"정규화는 거리로 재도 코사인처럼 판단하게 만든다"는 것을 눈으로 증명하는 장면입니다.</p>' +
     '<div class="btn-row"><button class="btn" type="button" onclick="smGo(\'sm-act4\',1)">활동 4로 이동</button></div>' +
-    '<p class="sm-src">이어짐 — 8차시 TF-IDF에서 문서 길이가 긴 문서가 유리해지는 문제를 다룬 것과 같은 고민입니다. ' +
-    '<a href="#tfidf" onclick="go(\'tfidf\');return false;">8차시 보기</a> · ' +
-    '17차시 이미지 정규화(X ÷ 255)도 "값의 범위를 맞춘다"는 같은 발상입니다. ' +
-    '<a href="#pool" onclick="go(\'pool\');return false;">17차시 보기</a></p>',
+    '<p class="sm-src">이어짐 — 9차시 TF-IDF에서 문서 길이가 긴 문서가 유리해지는 문제를 다룬 것과 같은 고민입니다. ' +
+    '<a href="#tfidf" onclick="go(\'tfidf\');return false;">9차시 보기</a> · ' +
+    '20차시 이미지 정규화(X ÷ 255)도 "값의 범위를 맞춘다"는 같은 발상입니다. ' +
+    '<a href="#pool" onclick="go(\'pool\');return false;">20차시 보기</a></p>',
 
   '벡터의 크기':
     '<p>벡터 a=(a₁, a₂, …, aₙ)의 크기 |a|는 원점에서 그 벡터의 끝점까지의 거리이며 ' +
@@ -11202,10 +11243,10 @@ const SM_DEFS = {
     '<b>방향은 그대로인데 크기만 커진 벡터</b>가 만들어집니다. ' +
     '이때 거리로 재는 유사도만 값이 크게 흔들리는 것을 확인하게 됩니다.</p>' +
     '<div class="btn-row"><button class="btn" type="button" onclick="smGo(\'sm-act4\',2)">활동 4로 이동</button></div>' +
-    '<p class="sm-src">이어짐 — 7차시에서 만든 원-핫 벡터·빈도수 벡터의 성분이 그대로 크기 계산에 들어갑니다. ' +
-    '<a href="#text" onclick="go(\'text\');return false;">7차시 보기</a> · ' +
-    '13차시 해밍 거리에서는 이진 벡터의 \'다른 자리 개수\'로 거리를 세는 또 다른 방식을 만납니다. ' +
-    '<a href="#hamming" onclick="go(\'hamming\');return false;">13차시 보기</a></p>' +
+    '<p class="sm-src">이어짐 — 8차시에서 만든 원-핫 벡터·빈도수 벡터의 성분이 그대로 크기 계산에 들어갑니다. ' +
+    '<a href="#text" onclick="go(\'text\');return false;">8차시 보기</a> · ' +
+    '18차시 해밍 거리에서는 이진 벡터의 \'다른 자리 개수\'로 거리를 세는 또 다른 방식을 만납니다. ' +
+    '<a href="#hamming" onclick="go(\'hamming\');return false;">18차시 보기</a></p>' +
     '<p class="sm-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 서술을 재구성</p>',
 
   '유사도':
@@ -11218,14 +11259,14 @@ const SM_DEFS = {
     '<p><b>이번 차시 연결</b> — 활동 1에서 여러분은 "무엇을 기준으로 비슷하다고 할지"를 <b>직접 정해 보고</b>, ' +
     '공통 단어의 개수만으로는 판단이 어려운 문장을 만나게 됩니다. 그 막힘이 오늘 배울 두 가지 유사도의 출발점입니다.</p>' +
     '<div class="btn-row"><button class="btn" type="button" onclick="smGo(\'sm-act1\')">활동 1로 이동</button></div>' +
-    '<p class="sm-src">이어짐 — 8차시 「중요한 단어 찾기: TF-IDF」에서 만든 가중치 벡터가 오늘 비교의 재료가 됩니다. ' +
-    '<a href="#tfidf" onclick="go(\'tfidf\');return false;">8차시 보기</a> · ' +
-    '10차시 「집합으로 마음 읽기」에서는 벡터가 아니라 <b>집합</b>으로 유사도를 재는 자카드 유사도를 배웁니다. ' +
-    '<a href="#senti" onclick="go(\'senti\');return false;">10차시 보기</a></p>',
+    '<p class="sm-src">이어짐 — 9차시 「중요한 단어 찾기: TF-IDF」에서 만든 가중치 벡터가 오늘 비교의 재료가 됩니다. ' +
+    '<a href="#tfidf" onclick="go(\'tfidf\');return false;">9차시 보기</a> · ' +
+    '12차시 「집합으로 마음 읽기」에서는 벡터가 아니라 <b>집합</b>으로 유사도를 재는 자카드 유사도를 배웁니다. ' +
+    '<a href="#senti" onclick="go(\'senti\');return false;">12차시 보기</a></p>',
 };
 
 
-/* ═══════ 5. 계산 유틸 (core.js 공용 — 11차시 review 가 그대로 재사용) ═══════ */
+/* ═══════ 5. 계산 유틸 (core.js 공용 — 13차시 review 가 그대로 재사용) ═══════ */
 
 /* 벡터의 크기 √(Σvᵢ²) */
 function smNorm2(v){
@@ -11292,7 +11333,7 @@ const SM_DATA0 = {A:[6,2,2], B:[5,2,3], C:[3,1,1]};
 const SM_KEY_DATA = 'aimath.sim.data';
 const SM_KEY_ANS  = 'aimath.sim.answer';
 const SM_KEY_QUIZ = 'aimath.sim.quiz';
-const SM_KEY_CORPUS = 'aimath.corpus.mysent';   /* 6·7·9차시 공통 말뭉치 키 (§0-3 #12) */
+const SM_KEY_CORPUS = 'aimath.corpus.mysent';   /* 7·8·11차시 공통 말뭉치 키 (§0-3 #12) */
 
 let smData  = {A:SM_DATA0.A.slice(), B:SM_DATA0.B.slice(), C:SM_DATA0.C.slice()};
 let smMode  = 'dist';        /* 'dist' | 'cos' — 활동 2 캔버스의 모드 */
@@ -11854,7 +11895,7 @@ const SM_EX5 = [
   '피 난다! 선생님 불러올게, 잠깐만 기다려.',
 ];
 
-/* 6차시가 core.js에 올리는 공용 텍스트 엔진을 우선 사용하고, 없을 때만 최소 폴백을 씁니다. */
+/* 7차시가 core.js에 올리는 공용 텍스트 엔진을 우선 사용하고, 없을 때만 최소 폴백을 씁니다. */
 const SM_STOP = ['은','는','이','가','을','를','의','에','와','과','도','로','으로','에서','까지','부터','이다','이며'];
 
 function smTokens(text){
@@ -11864,8 +11905,8 @@ function smTokens(text){
     t=String(text||'').replace(/[.,!?;:'"()\[\]{}·…~“”‘’]/g,' ').split(/\s+/).filter(w=>w.length>0);
   }
   return t.map(w=>{
-    /* 6차시와 같은 순서로 처리합니다 — 원형 사전(TP_LEMMA) 먼저, 없을 때만 조사 떼기.
-       (이 줄이 없으면 같은 문장이 6차시에서는 '깨끗하다', 9차시에서는 '깨끗한'/'깨끗하고'
+    /* 7차시와 같은 순서로 처리합니다 — 원형 사전(TP_LEMMA) 먼저, 없을 때만 조사 떼기.
+       (이 줄이 없으면 같은 문장이 7차시에서는 '깨끗하다', 11차시에서는 '깨끗한'/'깨끗하고'
         로 갈라져 두 차시의 단어집합이 어긋납니다 — 2단원 통합 시 수정) */
     if(typeof TP_LEMMA==='object' && TP_LEMMA && TP_LEMMA[w]) return TP_LEMMA[w];
     let r=null;
@@ -11887,7 +11928,7 @@ function smTokens(text){
   }).filter(w=>w.length>0 && SM_STOP.indexOf(w)<0);
 }
 
-/* 6차시 공용 buildUniverse/countFrequency 는 «낱말 배열의 배열» 을 받습니다.
+/* 7차시 공용 buildUniverse/countFrequency 는 «낱말 배열의 배열» 을 받습니다.
    문장 문자열을 그대로 넘기면 문자열을 한 글자씩 순회해 자모 단위 U 가 만들어지므로,
    반드시 smTokens() 로 먼저 낱말로 쪼갠 뒤 넘깁니다(2단원 통합 시 수정). */
 function smUniverse(docs){
@@ -11955,7 +11996,7 @@ function smVecRender(){
       '" aria-label="문장 '+(i+1)+' '+esc(smA1U[j])+' 빈도수"></td>').join('')+'</tr>';
   });
   html+='</tbody></table></div>'+
-    '<p class="sm-src">열 = 단어집합의 원소, 행 = 문장. 숫자 칸은 직접 고칠 수 있습니다(7차시와 같은 방식·같은 용어).</p>';
+    '<p class="sm-src">열 = 단어집합의 원소, 행 = 문장. 숫자 칸은 직접 고칠 수 있습니다(8차시와 같은 방식·같은 용어).</p>';
   box.innerHTML=html;
   box.querySelectorAll('input').forEach(inp=>{
     inp.addEventListener('input',()=>{
@@ -12394,20 +12435,20 @@ function smNormAnim(on){
 
 /* ══════════ 2단원 senti 뷰 코드 (unit2_build/senti/core-snippet.js) ══════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   SENTI (10차시: 집합으로 마음 읽기 — 자카드 유사도와 감성 분석) — 접두사 st
+   SENTI (12차시: 집합으로 마음 읽기 — 자카드 유사도와 감성 분석) — 접두사 st
    ---------------------------------------------------------------------------
    · 이 블록은 core.js 맨 끝(1단원 블록 뒤)에 그대로 덧붙입니다.
    · 뷰(views/senti.html)가 없어도 core.js가 죽지 않도록 초기화는 IIFE + null 가드.
    · 공통 컴포넌트(videoDeck·warmStepper·quizStepper·chipDefs·wsPrint·wsLinks)는
      호출만 하고 수정하지 않습니다.
-   · 집합 계산 유틸 stJ / stScore / stVerdict / stRound2 는 11차시 review 가 재사용합니다.
+   · 집합 계산 유틸 stJ / stScore / stVerdict / stRound2 는 13차시 review 가 재사용합니다.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 0. 저장 키 (부록 F) ─────────────────────────────────────────────────── */
-const ST_K_DICT  = 'aimath.senti.dict';        /* 감성 사전 P·N — 11차시 review 공유(이름 변경 금지) */
+const ST_K_DICT  = 'aimath.senti.dict';        /* 감성 사전 P·N — 13차시 review 공유(이름 변경 금지) */
 const ST_K_THR   = 'aimath.senti.k';           /* 마지막으로 정한 임계값 */
 const ST_K_CLASS = 'aimath.senti.classdict';   /* 학급 사전 기여 누적 */
-const ST_K_ROOM  = 'aimath.classroom.url';     /* 학급 공유 자료함(6~10차시 공통 키) */
+const ST_K_ROOM  = 'aimath.classroom.url';     /* 학급 공유 자료함(7~12차시 공통 키) */
 const ST_K_ROOM_CORE = 'aimath.shared.folder'; /* core.js aimRefExtras 가 쓰는 키 — 값만 미러링 */
 
 /* ── 1. 소도구 ───────────────────────────────────────────────────────────── */
@@ -12443,7 +12484,7 @@ function stNum(x){
   return (v < 0 ? '−' : '') + Math.abs(v).toFixed(2);
 }
 
-/* ── 2. 토크나이저 (6차시 text 뷰 로직 재사용 + 어미 정규화) ─────────────── */
+/* ── 2. 토크나이저 (7차시 text 뷰 로직 재사용 + 어미 정규화) ─────────────── */
 /* 조사 목록 — 뒤에서부터 긴 것 우선으로 떼어 냅니다. */
 const ST_STOP = ['으로','에서','까지','부터','에게','한테','이다','이며',
                  '은','는','이','가','을','를','의','에','도','와','과','로'];
@@ -12566,7 +12607,7 @@ function stSet(tokens){
   return out;
 }
 
-/* ── 3. 집합 계산 엔진 (11차시 review 재사용) ────────────────────────────── */
+/* ── 3. 집합 계산 엔진 (13차시 review 재사용) ────────────────────────────── */
 function stInter(A,B){
   const s = {}; (B||[]).forEach(function(x){ s[x] = 1; });
   return (A||[]).filter(function(x){ return s[x] === 1; });
@@ -12687,9 +12728,9 @@ const ST_DEFS = {
     + '<p><b>이번 차시 연결.</b> STEP 2 <b>활동 1</b>에서 "나는 오늘 맛있는 사과를 먹었다"류의 후기 세 개를 직접 단어집합으로 바꾸어, 분모(합집합)와 분자(교집합)를 손으로 세어 보았습니다. '
     + '그때 A와 B의 값이 2/3로 가장 컸던 이유가 바로 이 정의에 있습니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="stSee(0,\'st-act1\')">활동 1로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 6차시에서 만든 <b>단어집합</b>이 여기서 그대로 A, B가 됩니다 → '
-    + '<a href="#text" onclick="go(\'text\');return false;">6차시 보기</a> / 9차시의 유클리드·코사인은 <b>벡터</b>로 재는 방법이었습니다 → '
-    + '<a href="#sim" onclick="go(\'sim\');return false;">9차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 7차시에서 만든 <b>단어집합</b>이 여기서 그대로 A, B가 됩니다 → '
+    + '<a href="#text" onclick="go(\'text\');return false;">7차시 보기</a> / 11차시의 유클리드·코사인은 <b>벡터</b>로 재는 방법이었습니다 → '
+    + '<a href="#sim" onclick="go(\'sim\');return false;">11차시 보기</a></p>'
     + '<p class="st-src">씨마스 「인공지능 수학」 Ⅱ. 텍스트 데이터 처리 p.70 서술을 재구성 / 동아출판 「인공지능 수학」 Ⅱ 단원 p.71 서술을 재구성</p>',
 
   '원소 개수':
@@ -12700,8 +12741,8 @@ const ST_DEFS = {
     + '<p><b>이번 차시 연결.</b> <b>활동 1</b>의 벤다이어그램에서 왼쪽만·겹침·오른쪽만 세 영역의 개수를 각각 세어 보았습니다. '
     + '분모는 세 영역 전체, 분자는 가운데 영역이었지요. 화면의 수식 카드도 이 두 줄로 자동 갱신됩니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="stSee(0,\'st-act1\')">활동 1로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 6차시 단어집합 만들기에서 합집합을 처음 다루었습니다 → '
-    + '<a href="#text" onclick="go(\'text\');return false;">6차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 7차시 단어집합 만들기에서 합집합을 처음 다루었습니다 → '
+    + '<a href="#text" onclick="go(\'text\');return false;">7차시 보기</a></p>'
     + '<p class="st-src">씨마스 「인공지능 수학」 Ⅱ p.70 ‘배웠어요 — 원소의 개수’ 및 ‘지식 Plus — 집합의 관계와 자카드 유사도’ 서술을 재구성</p>',
 
   '감성 사전':
@@ -12714,9 +12755,9 @@ const ST_DEFS = {
     + '<p><b>이번 차시 연결.</b> <b>활동 2</b>에서 P·N 칩을 직접 넣고 빼며 사전을 만들었고, <b>활동 4</b>에서는 사전에서 단어 하나를 지우자 같은 문장의 판정이 뒤집히는 것을 보았습니다. '
     + '사전은 ‘주어진 것’이 아니라 <b>사람이 설계하는 것</b>임이 이 차시의 핵심 메시지입니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="stSee(1,\'st-act2\')">활동 2로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 8차시 TF-IDF가 "어떤 단어가 중요한가"를 다뤘다면 사전은 "어떤 단어가 어떤 감정인가"를 다룹니다 → '
-    + '<a href="#tfidf" onclick="go(\'tfidf\');return false;">8차시 보기</a> / 여기서 만든 사전은 11차시 리뷰 대시보드에 그대로 실립니다 → '
-    + '<a href="#review" onclick="go(\'review\');return false;">11차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 9차시 TF-IDF가 "어떤 단어가 중요한가"를 다뤘다면 사전은 "어떤 단어가 어떤 감정인가"를 다룹니다 → '
+    + '<a href="#tfidf" onclick="go(\'tfidf\');return false;">9차시 보기</a> / 여기서 만든 사전은 13차시 리뷰 대시보드에 그대로 실립니다 → '
+    + '<a href="#review" onclick="go(\'review\');return false;">13차시 보기</a></p>'
     + '<p class="st-src">씨마스 「인공지능 수학」 Ⅱ p.68 및 지도서 Ⅱ ‘KNU 한국어 감성 사전’ 안내 서술을 재구성 / 동아출판 「인공지능 수학」 Ⅱ p.64 감성 사전 표를 재구성</p>',
 
   '감성 점수':
@@ -12728,8 +12769,8 @@ const ST_DEFS = {
     + '<p>이므로 감성 점수는 0.42 − 0.13 = 0.29 입니다.</p>'
     + '<p><b>이번 차시 연결.</b> <b>활동 2</b>의 수평 게이지가 바로 이 값을 가리키는 바늘입니다. 파란 원(P)과 빨간 원(N) 중 어느 쪽 겹침이 더 큰지가 바늘의 방향을 결정했습니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="stSee(1,\'st-act2\')">활동 2로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 9차시 코사인 유사도도 0~1 값이었지만 ‘차’가 아니라 ‘순위’로 썼습니다 → '
-    + '<a href="#sim" onclick="go(\'sim\');return false;">9차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 11차시 코사인 유사도도 0~1 값이었지만 ‘차’가 아니라 ‘순위’로 썼습니다 → '
+    + '<a href="#sim" onclick="go(\'sim\');return false;">11차시 보기</a></p>'
     + '<p class="st-src">씨마스 「인공지능 수학」 Ⅱ p.71 서술과 계산 예를 재구성 / 연수교재 합본 p.94·96~97(07. 유사도 측정, 최화식) 서술을 재구성</p>',
 
   '임계값':
@@ -12745,8 +12786,8 @@ const ST_DEFS = {
     + '<b>활동 4</b>에서는 상담 챗봇 상황에서 k = 0.25로는 위험 신호를 ‘중립’으로 흘려보낸다는 사실을 확인했습니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="stSee(2,\'st-act3\')">활동 3으로 이동</button></div>'
     + '<p><b>이전·다음 차시.</b> 5차시 데이터 편향에서 ‘정확도 95%의 함정’을 다룰 때에도 기준을 어디에 두느냐가 결론을 바꿨습니다 → '
-    + '<a href="#bias" onclick="go(\'bias\');return false;">5차시 보기</a> / 11차시에서는 이 기준으로 리뷰 100건을 한꺼번에 분류합니다 → '
-    + '<a href="#review" onclick="go(\'review\');return false;">11차시 보기</a></p>'
+    + '<a href="#bias" onclick="go(\'bias\');return false;">5차시 보기</a> / 13차시에서는 이 기준으로 리뷰 100건을 한꺼번에 분류합니다 → '
+    + '<a href="#review" onclick="go(\'review\');return false;">13차시 보기</a></p>'
     + '<p class="st-src">씨마스 「인공지능 수학」 Ⅱ p.71 판정 기준 표를 재구성 / 동아출판 「인공지능 수학」 Ⅱ p.73 서술을 재구성</p>'
 };
 
@@ -13810,7 +13851,7 @@ function stRoomRender(){
     : '<button type="button" class="st-ref st-refadd st-roomedit">'
       + '<span class="th">🗂</span>'
       + '<span class="bd"><span class="tt">학급 공유 자료함 설정</span>'
-      + '<span class="ds">선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 6~10차시 모든 차시에 함께 나타납니다.</span></span></button>';
+      + '<span class="ds">선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 7~12차시 모든 차시에 함께 나타납니다.</span></span></button>';
   const btn = box.querySelector('.st-roomedit');
   if(btn) btn.addEventListener('click', function(){
     const f = stEl('st-room-form');
@@ -13935,19 +13976,19 @@ function stResizeAll(){
   else boot();
 })();
 
-/* ●●● ANCHOR-SENTI ●●● (10차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-SENTI ●●● (12차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
    2단원 통합 — 준비 중 차시 안내 (통합 담당 추가)
-     6→7→8→9→10→11 예고 체인에서 아직 뷰가 없는 차시(11차시 review 등)를 누르면
+     6→7→8→9→10→11 예고 체인에서 아직 뷰가 없는 차시(13차시 review 등)를 누르면
      원래 go()가 조용히 return 하여 단추가 죽은 것처럼 보였습니다.
      go()를 감싸 "준비 중" 안내를 1회 띄우고 그대로 return 합니다.
      (원본 go()는 window.go.__orig 로 계속 보존됩니다.)
    ═══════════════════════════════════════════════════════════════════════════ */
 (function aimSoonNotice(){
   /* 아직 뷰가 없는 슬러그 → 차시 라벨. AIM_LESSONS에 v:가 생기면 이 표는 자동으로 무시됩니다.
-     11차시 review 는 구현이 끝나 views/review.html 이 실리므로 이 표에서 뺐습니다
+     13차시 review 는 구현이 끝나 views/review.html 이 실리므로 이 표에서 뺐습니다
      (뷰가 있으면 아래 가드가 그대로 통과시킵니다). */
   const AIM_SOON_VIEWS = {};
 
@@ -13987,25 +14028,25 @@ function stResizeAll(){
 })();
 
 
-/* ══════════ 2단원 review 뷰 코드 (11차시) ══════════ */
+/* ══════════ 2단원 review 뷰 코드 (13차시) ══════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   REVIEW (11차시: 실생활 프로젝트 — 리뷰 분석과 추천) — 접두사 rv
+   REVIEW (13차시: 실생활 프로젝트 — 리뷰 분석과 추천) — 접두사 rv
    ---------------------------------------------------------------------------
-   · 이 블록은 core.js 맨 끝(10차시 senti 블록 뒤)에 그대로 덧붙입니다.
+   · 이 블록은 core.js 맨 끝(12차시 senti 블록 뒤)에 그대로 덧붙입니다.
    · 뷰(views/review.html)가 없어도 core.js가 죽지 않도록 초기화는 IIFE + null 가드.
-   · 새 수학을 도입하지 않습니다. 6~10차시 엔진을 그대로 호출합니다.
-       6차시 text  : (표제어 후처리 rvLemma 는 tokenize 뒤에 붙는 이 차시 전용 후처리)
-       8차시 tfidf : IDF = n ÷ DF 규약을 rvTfidf 가 문서 배열용으로 감쌉니다
-       9차시 sim   : smNorm2 · smDist · smCos
-      10차시 senti : stSet · stInter · stJ · stScore · stVerdict · stRound2
+   · 새 수학을 도입하지 않습니다. 7~12차시 엔진을 그대로 호출합니다.
+       7차시 text  : (표제어 후처리 rvLemma 는 tokenize 뒤에 붙는 이 차시 전용 후처리)
+       9차시 tfidf : IDF = n ÷ DF 규약을 rvTfidf 가 문서 배열용으로 감쌉니다
+       11차시 sim   : smNorm2 · smDist · smCos
+      12차시 senti : stSet · stInter · stJ · stScore · stVerdict · stRound2
    · 공통 컴포넌트(videoDeck·warmStepper·quizStepper·chipDefs·wsPrint·wsLinks)는
      호출만 하고 수정하지 않습니다.
-   · localStorage['aimath.senti.dict'] 는 **읽기 전용**입니다(10차시 자료 훼손 방지).
-     11차시에서 넓힌 사전은 aimath.review.dict 에 따로 저장합니다.
+   · localStorage['aimath.senti.dict'] 는 **읽기 전용**입니다(12차시 자료 훼손 방지).
+     13차시에서 넓힌 사전은 aimath.review.dict 에 따로 저장합니다.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 0. 저장 키 ──────────────────────────────────────────────────────────── */
-const RV_K_SENTI = 'aimath.senti.dict';        /* 10차시 사전 — 읽기만 합니다 */
+const RV_K_SENTI = 'aimath.senti.dict';        /* 12차시 사전 — 읽기만 합니다 */
 const RV_K_DICT  = 'aimath.review.dict';
 const RV_K_K     = 'aimath.review.k';
 const RV_K_DATA  = 'aimath.review.data';
@@ -14016,7 +14057,7 @@ const RV_K_REC   = 'aimath.review.rec';
 const RV_K_MAT   = 'aimath.review.matrix';
 const RV_K_DEB   = 'aimath.review.debate';
 const RV_K_ANS   = 'aimath.review.answer';
-const RV_K_ROOM  = 'aimath.classroom.url';     /* 6~11차시 공통 키 */
+const RV_K_ROOM  = 'aimath.classroom.url';     /* 7~13차시 공통 키 */
 const RV_K_ROOM_CORE = 'aimath.shared.folder'; /* core.js aimRefExtras 키 — 값만 미러링 */
 
 /* ── 1. 소도구 ───────────────────────────────────────────────────────────── */
@@ -14092,7 +14133,7 @@ function rvPrep(cv){
 
 /* ── 2. 표제어 정규화 (부록 B-1) ─────────────────────────────────────────── */
 /* 위에서부터 순서대로 적용하고, 이미 잡힌 글자 구간은 뒤 패턴이 다시 쓰지 못하도록 가립니다.
-   6차시 tokenize() 를 고치지 않고 그 뒤에 붙는 이 차시 전용 후처리입니다. */
+   7차시 tokenize() 를 고치지 않고 그 뒤에 붙는 이 차시 전용 후처리입니다. */
 const RV_LEMMA = [
   ['불친절','불친절'], ['불편','불편하다'], ['맛없|맛 없','맛없다'], ['지저분|더러','지저분하다'],
   ['빈약','빈약하다'], ['최악','최악'], ['최고','최고'], ['별로','별로다'], ['실망','실망하다'],
@@ -14243,7 +14284,7 @@ const RV_REVIEWS = [
 
 const RV_STOP_DOMAIN = ['마라탕','떡볶이','국물','재료','매장','채소','사장님','직원','튀김'];
 
-/* 10차시에서 그대로 승계한 기본 감성 사전 (씨마스 Ⅱ p.70) */
+/* 12차시에서 그대로 승계한 기본 감성 사전 (씨마스 Ⅱ p.70) */
 const RV_DICT_BASE = {
   P:['청결하다','편하다','좋다','친절','빠르다','맛있다','많다','알차다','최고','넓다'],
   N:['불결하다','불편하다','별로다','불친절','느리다','맛없다','적다','빈약하다','최악','좁다']
@@ -14265,11 +14306,11 @@ const RV_WEBTOON = {
 
 /* STEP 1 재시청 영상 3건(§0-2 #17 — 새 자료가 아니라 복습용) */
 const RV_VIDEOS = [
-  {id:'2YEGyVmyGxc', t:'↺ 다시 보기 · 10차시 — 10. 감성 분석 (8:09)',
+  {id:'2YEGyVmyGxc', t:'↺ 다시 보기 · 12차시 — 10. 감성 분석 (8:09)',
    s:'mathT야나수 〈인공지능 수학〉 · 오늘 대시보드 왼쪽 두 패널이 이 영상의 내용입니다.'},
-  {id:'meEchvkdB1U', t:'↺ 다시 보기 · 8차시 — [딥러닝 자연어처리] TF-IDF (5:09)',
+  {id:'meEchvkdB1U', t:'↺ 다시 보기 · 9차시 — [딥러닝 자연어처리] TF-IDF (5:09)',
    s:'Minsuk Heo 허민석 · 오늘 “숨은 단어”를 끌어올리는 도구입니다. 계산 절차가 흐릿하면 5분만 다시 보세요.'},
-  {id:'liNDuZDW5d4', t:'↺ 다시 보기 · 9차시 — 12. 유사도 분석을 이용한 텍스트 분석 (8:20)',
+  {id:'liNDuZDW5d4', t:'↺ 다시 보기 · 11차시 — 12. 유사도 분석을 이용한 텍스트 분석 (8:20)',
    s:'mathT야나수 · 오늘 탭 ②의 추천이 이 영상의 마지막 장면과 같은 계산입니다.'}
 ];
 
@@ -14281,7 +14322,7 @@ const RV_WARM = [
          '③ 횟수가 많을수록 IDF도 커지므로 중요하다',
          '④ 리뷰의 개수가 많으면 판단할 수 없다'],
    answer:1,
-   explain:'8차시에서 배운 그대로입니다. 다섯 달 모두에 나온 단어는 DF가 5로 가장 커서 IDF = 5 ÷ 5 = 1로 가장 작아집니다. ' +
+   explain:'9차시에서 배운 그대로입니다. 다섯 달 모두에 나온 단어는 DF가 5로 가장 커서 IDF = 5 ÷ 5 = 1로 가장 작아집니다. ' +
      '“맛있다”처럼 언제나 나오는 말은 <b>어느 달의 특징도 알려 주지 못합니다.</b> ' +
      '③은 IDF가 DF의 역수임을 거꾸로 알고 있는 경우입니다. 오늘은 이 원리로 100건 속에 한 번도 눈에 띄지 않던 단어를 끌어올립니다.'},
   {q:'감성 사전이 긍정 단어 10개, 부정 단어 10개입니다. 어떤 리뷰에서 감성 단어가 2개 잡혔고 둘 다 긍정 단어였습니다. 이때 J(P, A)의 값은?',
@@ -14289,7 +14330,7 @@ const RV_WARM = [
    answer:1,
    explain:'A = {긍정어1, 긍정어2}는 P에 모두 들어 있으므로 P∩A의 원소는 2개, P∪A의 원소는 n(P) + n(A) − n(P∩A) = 10 + 2 − 2 = 10개입니다. ' +
      '따라서 J(P, A) = 2 ÷ 10 = 0.20입니다. <b>여기서 중요한 것은 이 값이 이 리뷰가 받을 수 있는 최댓값이라는 점입니다.</b> ' +
-     '10차시의 기준값 k = 0.25와 견주어 보면 어떤 일이 벌어질까요? 오늘 활동 2에서 확인합니다.'},
+     '12차시의 기준값 k = 0.25와 견주어 보면 어떤 일이 벌어질까요? 오늘 활동 2에서 확인합니다.'},
   {q:'어떤 추천 서비스가 내가 좋아한 것과 비슷한 것만 계속 추천합니다. 다음 중 이 상황을 가장 잘 설명한 것은?',
    opts:['① 추천이 정확하므로 아무 문제가 없다','② 계산에 오류가 있어 생긴 일이다',
          '③ 잘 맞는 추천이 반복되면서 접하는 정보의 폭이 좁아진 것이다',
@@ -14344,11 +14385,11 @@ const RV_DEFS = {
     '<b>어느 달에 꺾였는지</b>가 보이고, 그 달의 리뷰만 따로 모아 TF-IDF를 구하면 <b>왜 꺾였는지</b>가 보입니다.</p>' +
     '<p><b>이번 차시 연결.</b> 탭 ①의 네 활동이 각각 위 ①~④에 해당합니다. ' +
     '<button class="btn" type="button" onclick="rvSee(0,\'rv-act1\')">활동 1로 이동</button> ' +
-    '<button class="btn" type="button" onclick="rvGo(\'text\',\'freq\')">7차시 빈도수 벡터</button></p>' +
+    '<button class="btn" type="button" onclick="rvGo(\'text\',\'freq\')">8차시 빈도수 벡터</button></p>' +
     '<span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.66 「리뷰 분석 서비스로 기업 가치 향상」 서술을 재구성</span>',
   '시기별 문서와 TF-IDF':
     '<h4>시기별 문서와 TF-IDF</h4>' +
-    '<p><b>정의.</b> 8차시에서 TF-IDF는 <b>여러 문서</b>가 있어야 구할 수 있었습니다(DF = 그 단어가 나온 문서의 개수). ' +
+    '<p><b>정의.</b> 9차시에서 TF-IDF는 <b>여러 문서</b>가 있어야 구할 수 있었습니다(DF = 그 단어가 나온 문서의 개수). ' +
     '리뷰 100건은 문서가 100개인 셈이지만 한 건이 너무 짧아 그대로는 쓸모가 적습니다. 그래서 <b>같은 달의 리뷰 20건을 하나로 묶어 한 문서로</b> 봅니다. ' +
     '그러면 문서가 5개(1월~5월)인 자료가 되고, 각 달마다 <b>“그 달다운 단어”</b>를 뽑을 수 있습니다.</p>' +
     '<div class="rv-scroll"><table class="rv-tbl">' +
@@ -14362,11 +14403,11 @@ const RV_DEFS = {
     '반면 ‘셀프바’는 4·5월에만 나오므로 IDF가 2.5로 커져 TF-IDF가 22.5가 됩니다. ' +
     '<b>횟수는 ‘맛있다’가 훨씬 많은데도</b>(전체 36회 vs 15회) 5월 문서의 특징어로는 ‘셀프바’가 뽑히는 것입니다.</p>' +
     '<p><button class="btn" type="button" onclick="rvSee(0,\'rv-act3\')">활동 3으로 이동</button> ' +
-    '<button class="btn" type="button" onclick="rvGo(\'tfidf\')">8차시 TF-IDF</button></p>' +
-    '<span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.60~62(빈도수 벡터·주제어 추출) 및 8차시 IDF = n ÷ DF 규약을 재구성</span>',
+    '<button class="btn" type="button" onclick="rvGo(\'tfidf\')">9차시 TF-IDF</button></p>' +
+    '<span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.60~62(빈도수 벡터·주제어 추출) 및 9차시 IDF = n ÷ DF 규약을 재구성</span>',
   '판정 가능 조건':
     '<h4>판정 가능 조건 n(A) ≥ k·n(P)</h4>' +
-    '<p><b>정의.</b> 10차시에서 감성 점수는 J(P, A) − J(N, A) 였고, 긍정 판정은 이 값이 <b>k 이상</b>일 때였습니다. ' +
+    '<p><b>정의.</b> 12차시에서 감성 점수는 J(P, A) − J(N, A) 였고, 긍정 판정은 이 값이 <b>k 이상</b>일 때였습니다. ' +
     '그런데 자카드 유사도에는 <b>넘을 수 없는 천장</b>이 있습니다. 분자 n(P∩A)는 아무리 커도 n(A)를 넘을 수 없으므로</p>' +
     '<div class="rv-fml">J(P, A) = n(P∩A) ÷ { n(P) + n(A) − n(P∩A) } ≤ n(A) ÷ n(P)</div>' +
     '<p>입니다(등호는 A의 원소가 모두 P에 들어 있을 때). 따라서 감성 점수도 n(A) ÷ n(P)를 넘지 못하고, ' +
@@ -14375,7 +14416,7 @@ const RV_DEFS = {
     '우리 리뷰는 대부분 2개이므로 <b>아무리 칭찬 일색이어도 긍정이 될 수 없습니다.</b><br>' +
     '<b>예시 2.</b> 같은 사전에서 k를 0.10으로 낮추면 n(A) ≥ 1, 감성 단어 1개만 있어도 판정이 가능해집니다.</p>' +
     '<p><button class="btn" type="button" onclick="rvSee(0,\'rv-act2\')">활동 2로 이동</button> ' +
-    '<button class="btn" type="button" onclick="rvGo(\'senti\')">10차시 임계값 k</button></p>' +
+    '<button class="btn" type="button" onclick="rvGo(\'senti\')">12차시 임계값 k</button></p>' +
     '<span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.70~71 판정 기준 표를 근거로 부등식 형태로 재구성(집필진 확장)</span>',
   '유사도 행렬':
     '<h4>유사도 행렬(대칭)</h4>' +
@@ -14386,8 +14427,8 @@ const RV_DEFS = {
     '그래서 실제로 계산할 값은 4명이면 6개(= 4×3÷2)뿐입니다.</li></ul>' +
     '<p><b>예시.</b> 네 사람의 별점 벡터로 만든 4×4 표에서 지호 행·서연 열의 값 0.97은 서연 행·지호 열에도 그대로 나타납니다.</p>' +
     '<p><button class="btn" type="button" onclick="rvSee(1,\'rv-act5\')">활동 5로 이동</button> ' +
-    '<button class="btn" type="button" onclick="rvGo(\'sim\')">9차시 유사도</button> ' +
-    '<button class="btn" type="button" onclick="rvGo(\'hamming\')">13차시 해밍 거리</button></p>' +
+    '<button class="btn" type="button" onclick="rvGo(\'sim\')">11차시 유사도</button> ' +
+    '<button class="btn" type="button" onclick="rvGo(\'hamming\')">18차시 해밍 거리</button></p>' +
     '<span class="rv-src">씨마스 「인공지능 수학」 Ⅱ p.81 발전 문제 05(세 사람의 선호도 벡터 사이 유사도 비교)를 표 형태로 확장·재구성</span>',
   '추천의 근거와 필터 버블':
     '<h4>추천의 근거와 필터 버블 <span class="rv-badge">참고</span></h4>' +
@@ -14406,7 +14447,7 @@ const RV_DEFS = {
 let rvData    = [];            /* 분석 대상 리뷰 */
 let rvDict    = {P:[], N:[]};  /* 현재 감성 사전 */
 let rvDictSrc = '기본';         /* '우리 반' | '기본' */
-let rvDictSkip = null;         /* 10차시 사전이 이 자료에 맞지 않아 물러난 경우 {hit, total} */
+let rvDictSkip = null;         /* 12차시 사전이 이 자료에 맞지 않아 물러난 경우 {hit, total} */
 let rvKv      = 0.25;
 let rvRows    = [];            /* 분석 결과 */
 let rvDone    = false;         /* [분석하기]를 눌렀는가 */
@@ -14447,10 +14488,10 @@ function rvVocab(){
   rvVocabCache = {src: src, v: v};
   return v;
 }
-/* 10차시 사전을 읽어 옵니다(쓰지 않습니다).
-   ① 10차시 stDictSave() 는 {p, n} 처럼 소문자 키로 저장하므로 대·소문자 양쪽을 받습니다
-      (aimath.senti.dict 는 10차시 소유 키 — 이름도 내용도 여기서 고치지 않습니다).
-   ② 10차시는 학생이 손대지 않아도 자기 기본 사전(상담 문장용: 괜찮다·힘들다 …)을 이 키에 적어 둡니다.
+/* 12차시 사전을 읽어 옵니다(쓰지 않습니다).
+   ① 12차시 stDictSave() 는 {p, n} 처럼 소문자 키로 저장하므로 대·소문자 양쪽을 받습니다
+      (aimath.senti.dict 는 12차시 소유 키 — 이름도 내용도 여기서 고치지 않습니다).
+   ② 12차시는 학생이 손대지 않아도 자기 기본 사전(상담 문장용: 괜찮다·힘들다 …)을 이 키에 적어 둡니다.
       그 사전으로 분식집 리뷰를 재면 20개 중 2개만 걸려 100건이 통째로 중립이 되고,
       활동 2의 「긍 5 · 중 95 · 부 0」 장면(§9-1)이 무너집니다.
       그래서 저장된 사전은 「이 자료의 낱말을 실제로 잡을 수 있을 때만」 씁니다 —
@@ -14572,7 +14613,7 @@ function rvBucket(){
   });
   return {keys:keys, docs:docs};
 }
-/* TF · DF · IDF(= n ÷ DF) · TF-IDF — 8차시 규약을 문서 배열용으로 감싼 것 */
+/* TF · DF · IDF(= n ÷ DF) · TF-IDF — 9차시 규약을 문서 배열용으로 감싼 것 */
 function rvTfidf(bucket){
   const keys = bucket.keys, docs = bucket.docs, n = keys.length || 1;
   const DF = {}, total = {};
@@ -14611,13 +14652,13 @@ function rvBadges(){
   box.innerHTML =
     '<span class="rv-badge">분석한 리뷰 <b>' + rvData.length + '건</b></span>' +
     '<span class="rv-badge">현재 사전: <b>P ' + rvDict.P.length + '개 / N ' + rvDict.N.length + '개</b>' +
-      (wide ? ' (넓힌 사전)' : ' (10차시)') + '</span>' +
+      (wide ? ' (넓힌 사전)' : ' (12차시)') + '</span>' +
     '<span class="rv-badge">' + (rvDictSrc === '우리 반'
-      ? '10차시에서 만든 <b>우리 반 사전</b>'
+      ? '12차시에서 만든 <b>우리 반 사전</b>'
       : (rvDictSkip
-        ? '<b>씨마스 p.70 음식점 사전</b>(10차시에 저장된 사전은 이 자료의 낱말을 ' +
+        ? '<b>씨마스 p.70 음식점 사전</b>(12차시에 저장된 사전은 이 자료의 낱말을 ' +
           rvDictSkip.total + '개 중 <b>' + rvDictSkip.hit + '개</b>밖에 잡지 못해 쓰지 않았습니다)'
-        : '<b>10차시 기본 사전</b>(저장된 사전이 없습니다)')) + '</span>' +
+        : '<b>12차시 기본 사전</b>(저장된 사전이 없습니다)')) + '</span>' +
     '<span class="rv-badge"><b>k = ' + rvKv.toFixed(2) + '</b></span>' +
     /* 지난 시간에 [대시보드 고정]으로 정해 둔 k 가 있으면 알려 줍니다.
        화면은 §0-2 #19 에 따라 늘 0.25 에서 다시 시작하므로, 그 값을 잃지 않았음을 밝혀 둡니다. */
@@ -15061,7 +15102,7 @@ function rvDictRender(){
       box.appendChild(b);
     });
   }
-  /* 10차시에서 만든 우리 반 사전에는 기본·추천 목록에 없는 낱말이 있을 수 있습니다.
+  /* 12차시에서 만든 우리 반 사전에는 기본·추천 목록에 없는 낱말이 있을 수 있습니다.
      그 낱말도 칩으로 보여 주어야 화면의 개수와 실제 사전이 어긋나지 않습니다. */
   function withOurs(all, on){
     const extra = on.filter(function(w){ return all.indexOf(w) < 0; });
@@ -15086,19 +15127,19 @@ function rvDictChip(side, w){
   }
   const st = rvEl('rv-dict-st');
   if(st) st.textContent = '사전을 고쳤습니다 — P ' + rvDict.P.length + '개 / N ' + rvDict.N.length + '개. ' +
-    '(10차시의 aimath.senti.dict 는 그대로 두고, 11차시 사전만 따로 저장합니다.)';
+    '(12차시의 aimath.senti.dict 는 그대로 두고, 13차시 사전만 따로 저장합니다.)';
   rvRefresh();
 }
 function rvDictWide(on){
   rvDict = on ? {P: rvDictWideP(), N: rvDictWideN()} : rvDictClone(RV_DICT_BASE);
   if(!on){
-    /* 10차시에서 만든 우리 반 사전이 있으면 그것으로 되돌립니다. */
+    /* 12차시에서 만든 우리 반 사전이 있으면 그것으로 되돌립니다. */
     rvLoadDict();
   }
   const st = rvEl('rv-dict-st');
   if(st) st.textContent = on
     ? '사전을 P 18개 / N 18개로 넓혔습니다. 중립이 어떻게 되었는지 도넛을 보세요.'
-    : '10차시 사전(P ' + rvDict.P.length + ' / N ' + rvDict.N.length + ')으로 되돌렸습니다.';
+    : '12차시 사전(P ' + rvDict.P.length + ' / N ' + rvDict.N.length + ')으로 되돌렸습니다.';
   rvRefresh();
 }
 function rvKSet(v){
@@ -15140,7 +15181,7 @@ function rvFix(){
   const c = rvCount();
   if(st) st.textContent = '이 설정(P ' + rvDict.P.length + ' / N ' + rvDict.N.length + ' · k = ' + rvKv.toFixed(2) +
     ')으로 대시보드를 고정했습니다 — 긍 ' + c.긍정 + ' · 중 ' + c.중립 + ' · 부 ' + c.부정 +
-    '. 10차시 감성 사전(aimath.senti.dict)은 건드리지 않았습니다.';
+    '. 12차시 감성 사전(aimath.senti.dict)은 건드리지 않았습니다.';
   rvA2Month();
 }
 function rvA2Month(){
@@ -15563,7 +15604,7 @@ function rvExp(key){
     ? '실험 A — 하윤의 「연습생 도시락」을 1점으로 바꾸었습니다. [추천!]을 다시 눌러 보세요.'
     : (key === 'B')
       ? '실험 B — 하윤의 별점이 정확히 2배가 되어 ‘후한 채점자’가 되었습니다. 공통으로 본 세 작품이 (2,2,1) → (4,4,2)로 커졌지요. ' +
-        '유클리드 유사도는 3.61 → 1.41로 크게 줄지만 코사인 유사도는 0.98 그대로입니다(9차시 L2 정규화의 재확인).'
+        '유클리드 유사도는 3.61 → 1.41로 크게 줄지만 코사인 유사도는 0.98 그대로입니다(11차시 L2 정규화의 재확인).'
       : '별점 행렬을 원래대로 되돌렸습니다.';
 }
 function rvRecommend(quiet){
@@ -15785,7 +15826,7 @@ function rvDebateSave(){
 }
 function rvDebateExport(){
   const o = {
-    lesson:'11차시 · 리뷰 분석과 추천 — 모둠 토의',
+    lesson:'13차시 · 리뷰 분석과 추천 — 모둠 토의',
     debate:{
       q1:(rvEl('rv-deb1')||{}).value || '',
       q2:(rvEl('rv-deb2')||{}).value || '',
@@ -15798,11 +15839,11 @@ function rvDebateExport(){
     const blob = new Blob([JSON.stringify(o, null, 2)], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = '11차시_모둠의견.json';
+    a.download = '13차시_모둠의견.json';
     document.body.appendChild(a); a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
     const st = rvEl('rv-deb-st');
-    if(st) st.textContent = '11차시_모둠의견.json 파일로 내려받았습니다. 학급 자료함에 올려 주세요.';
+    if(st) st.textContent = '13차시_모둠의견.json 파일로 내려받았습니다. 학급 자료함에 올려 주세요.';
   }catch(e){
     const st = rvEl('rv-deb-st');
     if(st) st.textContent = '내보내기에 실패했습니다. 화면의 내용을 직접 복사해 주세요.';
@@ -15847,7 +15888,7 @@ function rvReset(){
   rvKv = 0.25;
   rvKSet(0.25);
   const st = rvEl('rv-fix-st');
-  if(st) st.textContent = '10차시 값(P ' + rvDict.P.length + ' / N ' + rvDict.N.length + ' · k = 0.25)으로 되돌렸습니다.';
+  if(st) st.textContent = '12차시 값(P ' + rvDict.P.length + ' / N ' + rvDict.N.length + ' · k = 0.25)으로 되돌렸습니다.';
 }
 function rvAnalyzeRun(){
   rvDone = true;
@@ -15939,7 +15980,7 @@ function rvLoadInputs(){
       if(inp) inp.value = rvStopList.join(', ');
     }
   }catch(e){}
-  /* k 는 복원하지 않습니다 — §0-2 #19: 페이지를 처음 열면 반드시 10차시 값 k = 0.25 로 시작해야
+  /* k 는 복원하지 않습니다 — §0-2 #19: 페이지를 처음 열면 반드시 12차시 값 k = 0.25 로 시작해야
      활동 2의 「100건 중 95건이 중립」 장면이 성립합니다. 지난 시간에 정한 k는 aimath.review.k 에
      그대로 남아 있고, [학습지 인쇄]가 그 값을 지면에 채우며, 배지로도 알려 줍니다(rvBadges). */
 }
@@ -15964,7 +16005,7 @@ function rvRoomRender(){
       '<button class="btn" type="button" style="margin-top:0.4rem;" onclick="rvRoomForm(1)">주소 변경</button>'
     : '<button class="rv-vdlink" type="button" style="cursor:pointer;text-align:left;" onclick="rvRoomForm(1)">' +
       '<span class="th">🗂</span><span class="meta"><b>학급 공유 자료함 설정</b>' +
-      '<span>학급 · 선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 6~11차시 모든 차시에 함께 나타납니다.</span></span></button>';
+      '<span>학급 · 선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 7~13차시 모든 차시에 함께 나타납니다.</span></span></button>';
 }
 function rvRoomSave(){
   const i = rvEl('rv-room-u');
@@ -16049,7 +16090,7 @@ function rvPrint(fill){
     if(typeof chipDefs    === 'function'){ try{ chipDefs('#v-review .rv-keys', RV_DEFS); }catch(e){ console.error('rv chipDefs', e); } }
     if(typeof wsLinks     === 'function'){ try{ wsLinks('rv-wslinks','review'); }catch(e){ console.error('rv wsLinks', e); } }
 
-    /* 상태 복원 — 초기 상태는 반드시 10차시 값(P10/N10, k = 0.25)입니다(§0-2 #19). */
+    /* 상태 복원 — 초기 상태는 반드시 12차시 값(P10/N10, k = 0.25)입니다(§0-2 #19). */
     rvLoadDict();
     rvLoadData();
     rvMatLoad();
@@ -16084,12 +16125,12 @@ function rvPrint(fill){
   else boot();
 })();
 
-/* ●●● ANCHOR-REVIEW ●●● (11차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-REVIEW ●●● (13차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   12·13차시 (mnist · hamming) 표준 템플릿 개편 — core.js 의 **맨 끝**에 그대로
-   이어 붙입니다(11차시 ●●● ANCHOR-REVIEW ●●● 아래, 또는 L14 ANCHOR-IMGOP 아래).
+   18차시 (mnist · hamming) 표준 템플릿 개편 — core.js 의 **맨 끝**에 그대로
+   이어 붙입니다(13차시 ●●● ANCHOR-REVIEW ●●● 아래, 또는 L14 ANCHOR-IMGOP 아래).
 
    · 기존 core.js 코드는 한 줄도 고치지 않습니다.
      - mnist  기존 위젯 : mnInit / mnLoad / mnSave / mnRaster28 / mnUpdatePreview /
@@ -16101,7 +16142,7 @@ function rvPrint(fill){
        → DOM id  hd-box · hd-res · ubmp · rbtn · refpreview · ovpreview · hbars ·
                  hbest · hoverlap · hdg-*  전부 새 view.html 에 유지
        (core.js 는 로드 즉시 rHD() 를 호출하므로 #hd-box·#hd-res 는 반드시 존재해야 합니다.)
-   · 신규 전역은 전부 mnx(12차시) · hbx(13차시) 접두사만 씁니다.
+   · 신규 전역은 전부 mnx(18차시) · hbx(18차시) 접두사만 씁니다.
      (기존 뷰 확장 규약: 기존 접두사 유지 + 신규는 x접미 → mnist→mnx, hamming→hbx)
    · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint /
      wsLinks / cmnGet / cmnSet / cmnEsc)는 **호출만** 하고 수정하지 않습니다.
@@ -16110,7 +16151,7 @@ function rvPrint(fill){
 
 
 /* ███████████████████████████████████████████████████████████████████████████
-   PART A · 12차시 MNIST — 이미지는 행렬이다               (전역 접두사 mnx / MNX_)
+   PART A · 18차시 MNIST — 이미지는 행렬이다               (전역 접두사 mnx / MNX_)
    ███████████████████████████████████████████████████████████████████████████ */
 
 /* ── A0. 작은 도구 ──────────────────────────────────────────────────────── */
@@ -16171,7 +16212,7 @@ function mnxSee(tab, anchorId){
 }
 
 /* ── A2. 공통 컴포넌트에 넘길 데이터 ───────────────────────────────────── */
-/* 영상: 30차시 영상 조사표의 12차시 1·2순위(썸네일 200 · oEmbed 200 확인분)만 씁니다. */
+/* 영상: 34차시 영상 조사표의 18차시 1·2순위(썸네일 200 · oEmbed 200 확인분)만 씁니다. */
 const MNX_VIDEOS=[
   {id:'euoTfx3tToc', t:'7. 이미지 자료의 표현 (5:47)', s:'mathT야나수 · 픽셀과 행렬 표현을 교재 흐름 그대로'},
   {id:'AlV6TrvMIEc', t:'0과 1로 그림 표현하기 — 픽셀·해상도·RGB', s:'Background Knowledge · 이진 표현부터 색까지'},
@@ -16225,7 +16266,7 @@ const MNX_DEFS={
     '<p><b>이 차시와의 연결</b> — STEP 2 활동 2에서 같은 손글씨의 해상도를 4×4 → 28×28로 바꾸어 보면, '+
     '픽셀이 적을수록 획이 먼저 뭉개진다는 것을 눈으로 확인할 수 있습니다.</p>'+
     '<div class="btn-row"><button class="btn" type="button" onclick="mnxSee(1,\'mnx-act2\')">활동 2로 이동 →</button>'+
-    '<button class="btn" type="button" onclick="go(\'filter\')">이어보기 · 16차시 필터 실험실</button></div>'+
+    '<button class="btn" type="button" onclick="go(\'filter\')">이어보기 · 20차시 필터 실험실</button></div>'+
     '<span class="mnx-src">씨마스 「인공지능 수학」 Ⅲ단원 p.88 픽셀·해상도 정의 상자, 미래엔 p.86·p.88 서술을 재구성</span>',
 
   '이진행렬':
@@ -16235,9 +16276,9 @@ const MNX_DEFS={
     '<p><b>예시</b> — ① 모니터의 한 칸에 전기 신호가 없으면 0, 있으면 1로 약속합니다. '+
     '② 체스판 그림은 0과 1이 번갈아 나오는 규칙적인 행렬이 됩니다.</p>'+
     '<p><b>이 차시와의 연결</b> — STEP 2 활동 1에서 세 그림을 직접 0과 1로 옮겨 적어 보았습니다. '+
-    '그 표가 곧 이진행렬이며, 13차시의 해밍 거리는 <b>두 이진행렬에서 값이 다른 자리의 개수</b>로 정의됩니다.</p>'+
+    '그 표가 곧 이진행렬이며, 18차시의 해밍 거리는 <b>두 이진행렬에서 값이 다른 자리의 개수</b>로 정의됩니다.</p>'+
     '<div class="btn-row"><button class="btn" type="button" onclick="mnxSee(0,\'mnx-act1\')">활동 1로 이동 →</button>'+
-    '<button class="btn" type="button" onclick="go(\'hamming\')">이어보기 · 13차시 해밍 거리</button></div>'+
+    '<button class="btn" type="button" onclick="go(\'hamming\')">이어보기 · 18차시 해밍 거리</button></div>'+
     '<span class="mnx-src">씨마스 Ⅲ단원 p.88, 동아출판 Ⅲ단원 p.103 “검은색을 0, 흰색을 1” 표기를 재구성</span>',
 
   '회색조':
@@ -16259,9 +16300,9 @@ const MNX_DEFS={
     '<p><b>예시</b> — ① 회색조로 저장하면 한 장에 784바이트(약 0.77KB)가 필요합니다. '+
     '② 70 000장을 모두 저장하면 약 54.9MB가 됩니다.</p>'+
     '<p><b>이 차시와의 연결</b> — 활동 3에서 캔버스에 쓴 글씨가 28×28로 줄어들어 미리보기에 나타납니다. '+
-    '13차시에서는 이 784개의 수를 0과 1로 단순화(이진화)한 뒤 서로 견주게 됩니다.</p>'+
+    '18차시에서는 이 784개의 수를 0과 1로 단순화(이진화)한 뒤 서로 견주게 됩니다.</p>'+
     '<div class="btn-row"><button class="btn" type="button" onclick="mnxSee(2,\'mnx-act3\')">활동 3으로 이동 →</button>'+
-    '<button class="btn" type="button" onclick="go(\'hamming\')">이어보기 · 13차시</button></div>'+
+    '<button class="btn" type="button" onclick="go(\'hamming\')">이어보기 · 18차시</button></div>'+
     '<span class="mnx-src">MNIST 규격(28×28, 학습 60 000 · 평가 10 000)과 씨마스 Ⅲ단원 p.112 손글씨 행렬 예시를 재구성</span>',
 
   'flatten':
@@ -16286,7 +16327,7 @@ const MNX_A1=[
   {t:'그림 ② 체스판', n:5, g:[0,1,0,1,0, 1,0,1,0,1, 0,1,0,1,0, 1,0,1,0,1, 0,1,0,1,0],
    note:'교과서의 8×8 체스판 예시를 5×5로 줄인 것입니다. 0과 1이 번갈아 나옵니다.'},
   {t:'그림 ③ 숫자 7', n:5, g:[1,1,1,1,1, 0,0,0,0,1, 0,0,0,1,0, 0,0,1,0,0, 0,0,1,0,0],
-   note:'흰 획으로 쓴 숫자 7입니다. 13차시에서 이 모양을 다시 만납니다.'},
+   note:'흰 획으로 쓴 숫자 7입니다. 18차시에서 이 모양을 다시 만납니다.'},
 ];
 let mnxA1i=0;
 let mnxA1Ans=[];
@@ -16894,11 +16935,11 @@ function mnxAnsLoad(){
   else boot();
 })();
 
-/* ●●● ANCHOR-MNIST ●●● (12차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-MNIST ●●● (18차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
 /* ███████████████████████████████████████████████████████████████████████████
-   PART B · 13차시 HAMMING — 이진화 · XOR · 해밍 거리      (전역 접두사 hbx / HBX_)
+   PART B · 18차시 HAMMING — 이진화 · XOR · 해밍 거리      (전역 접두사 hbx / HBX_)
    ███████████████████████████████████████████████████████████████████████████ */
 
 /* ── B0. 작은 도구 ──────────────────────────────────────────────────────── */
@@ -16946,7 +16987,7 @@ function hbxSee(tab, anchorId){
 }
 
 /* ── B1. 공통 컴포넌트에 넘길 데이터 ───────────────────────────────────── */
-/* 영상: 30차시 영상 조사표의 13차시 1·2순위(썸네일 200 · oEmbed 200 확인분)만 씁니다. */
+/* 영상: 34차시 영상 조사표의 18차시 1·2순위(썸네일 200 · oEmbed 200 확인분)만 씁니다. */
 const HBX_VIDEOS=[
   {id:'Va7hqtsr-gc', t:'13. 해밍거리를 활용한 이미지 분류 (4:45)', s:'mathT야나수 · 흑백 0/1 이진화 → 해밍 거리 분류까지 한 번에'},
   {id:'hIPWH9mH3sU', t:'해밍 거리(Hamming Distance)', s:'도리의 디지털라이프 · 정의와 계산 절차를 짧게 정리'},
@@ -16987,7 +17028,7 @@ const HBX_QUIZ=[
   {q:'같은 숫자 4를 오른쪽으로 한 칸만 옮겨 썼더니 인공지능이 9라고 답했습니다. 그 까닭은?',
    opts:['해밍 거리는 <b>같은 자리끼리만</b> 견주므로 그림이 밀리면 거의 모든 자리가 어긋난다','해밍 거리는 밝기 값을 쓰지 않기 때문이다','참조 이미지의 개수가 10개뿐이기 때문이다'],
    answer:0,
-   explain:'해밍 거리는 제 i 행 제 j 열을 제 i 행 제 j 열과만 견줍니다. 그래서 그림이 통째로 한 칸 밀리면 획이 있던 자리와 없던 자리가 모두 뒤바뀌어 거리가 크게 늘어납니다. 실제로 6×6 격자에서 숫자 4를 오른쪽으로 한 칸 밀면 자기 자신과의 거리가 <b>17</b>, 숫자 9와의 거리가 <b>12</b>가 되어 9로 분류됩니다. 이 한계를 넘기 위해 <b>모양의 특징</b>을 찾는 합성곱(15차시)이 필요합니다. [12인수03-03]'},
+   explain:'해밍 거리는 제 i 행 제 j 열을 제 i 행 제 j 열과만 견줍니다. 그래서 그림이 통째로 한 칸 밀리면 획이 있던 자리와 없던 자리가 모두 뒤바뀌어 거리가 크게 늘어납니다. 실제로 6×6 격자에서 숫자 4를 오른쪽으로 한 칸 밀면 자기 자신과의 거리가 <b>17</b>, 숫자 9와의 거리가 <b>12</b>가 되어 9로 분류됩니다. 이 한계를 넘기 위해 <b>모양의 특징</b>을 찾는 합성곱(20차시)이 필요합니다. [12인수03-03]'},
 ];
 
 const HBX_DEFS={
@@ -17001,7 +17042,7 @@ const HBX_DEFS={
     '<p><b>이 차시와의 연결</b> — STEP 2 활동 1의 <b>탐구 9</b> 에서 3×3 명도 행렬을 t = 128 로 직접 이진화해 보았습니다. '+
     '이진화를 거쳐야 비로소 “같다/다르다”를 셀 수 있습니다.</p>'+
     '<div class="btn-row"><button class="btn" type="button" onclick="hbxSee(0,\'hbx-act1\')">활동 1로 이동 →</button>'+
-    '<button class="btn" type="button" onclick="go(\'mnist\')">돌아보기 · 12차시 회색조 0~255</button></div>'+
+    '<button class="btn" type="button" onclick="go(\'mnist\')">돌아보기 · 18차시 회색조 0~255</button></div>'+
     '<span class="hbx-src">동아출판 「인공지능 수학」 Ⅲ단원 p.86 흑백·회색조 서술과 씨마스 Ⅲ단원 p.88 “0은 검은색, 1은 흰색” 표기를 재구성</span>',
 
   '배타적 논리합':
@@ -17025,7 +17066,7 @@ const HBX_DEFS={
     '<p><b>이 차시와의 연결</b> — 활동 1의 <b>탐구 3·4</b> 에서 벤 다이어그램을 직접 색칠하고, '+
     '옳지 않은 수식을 골라내며 이 관계를 확인했습니다.</p>'+
     '<div class="btn-row"><button class="btn" type="button" onclick="hbxSee(0,\'hbx-act1\')">활동 1로 이동 →</button>'+
-    '<button class="btn" type="button" onclick="go(\'senti\')">돌아보기 · 10차시 집합과 자카드 유사도</button></div>'+
+    '<button class="btn" type="button" onclick="go(\'senti\')">돌아보기 · 12차시 집합과 자카드 유사도</button></div>'+
     '<span class="hbx-src">씨마스 「인공지능 수학」 Ⅱ단원 집합 연산 서술과 Ⅲ단원 p.110~111 해밍 거리 정의를 연결해 재구성</span>',
 
   '해밍 거리':
@@ -17038,7 +17079,7 @@ const HBX_DEFS={
     '<p><b>이 차시와의 연결</b> — 활동 2의 [활동지 예제] 버튼으로 위 세 값을 직접 확인했고, '+
     '활동 3에서는 내가 그린 숫자와 참조 0~9의 거리를 손으로 계산해 채점했습니다.</p>'+
     '<div class="btn-row"><button class="btn" type="button" onclick="hbxSee(2,\'hbx-act3\')">활동 3으로 이동 →</button>'+
-    '<button class="btn" type="button" onclick="go(\'sim\')">돌아보기 · 9차시 거리와 유사도</button></div>'+
+    '<button class="btn" type="button" onclick="go(\'sim\')">돌아보기 · 11차시 거리와 유사도</button></div>'+
     '<span class="hbx-src">씨마스 「인공지능 수학」 Ⅲ단원 p.110(두 문자열)·p.111(두 행렬 H(A,B)), 동아출판 Ⅲ단원 p.103~104, 미래엔 p.105 서술을 재구성</span>',
 
   '최근접 분류':
@@ -17048,9 +17089,9 @@ const HBX_DEFS={
     '<p><b>한계</b> — 같은 자리끼리만 비교하므로 평행이동·확대·축소·회전에 매우 약합니다. '+
     '6×6 격자에서 숫자 4를 오른쪽으로 한 칸만 밀면 자기 자신과의 거리가 <b>17</b>, 숫자 9와의 거리가 <b>12</b> 가 되어 <b>9로 오분류</b>됩니다.</p>'+
     '<p><b>이 차시와의 연결</b> — 활동 4에서 슬라이더로 그림을 밀며 이 붕괴를 직접 만들어 보았습니다. '+
-    '이 한계가 곧 15차시 <b>합성곱</b>과 18차시 <b>CNN</b> 이 필요한 이유입니다.</p>'+
+    '이 한계가 곧 20차시 <b>합성곱</b>과 20차시 <b>CNN</b> 이 필요한 이유입니다.</p>'+
     '<div class="btn-row"><button class="btn" type="button" onclick="hbxSee(3,\'hbx-act4\')">활동 4로 이동 →</button>'+
-    '<button class="btn" type="button" onclick="go(\'conv\')">이어보기 · 15차시 합성곱</button></div>'+
+    '<button class="btn" type="button" onclick="go(\'conv\')">이어보기 · 20차시 합성곱</button></div>'+
     '<span class="hbx-src">씨마스 「인공지능 수학」 Ⅲ단원 p.112 손글씨 분류 활동과 교사 제작 활동지 「활동7」 2쪽 ‘해밍거리의 장점·단점’ 서술을 재구성</span>',
 };
 
@@ -17349,40 +17390,72 @@ function hbxAnsLoad(){
   else boot();
 })();
 
-/* ●●● ANCHOR-HAMMING ●●● (13차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-HAMMING ●●● (18차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   IMGOP — 14차시 「행렬 연산으로 이미지 변형하기」  (전역 접두사 io / IO_)
+   IMGOP — 14차시 「이미지는 행렬이다 — 표현과 변환」   (전역 접두사 io / IO_)
    ---------------------------------------------------------------------------
-   · 이 블록은 core.js 의 **파일 맨 끝**(현재 마지막 ●●● ANCHOR-… ●●● 주석 아래)에
-     그대로 이어 붙입니다. 기존 코드는 한 줄도 고치지 않습니다.
+   ★ 설치 위치 (중요) ★
+     이 블록은 core.js 의 **기존 IMGOP 블록을 통째로 대체**합니다.
+       삭제 범위 : "IMGOP — 14차시 「행렬 연산으로 이미지 변형하기」" 헤더 주석 시작 줄
+                   ~ "●●● ANCHOR-IMGOP ●●●" 주석 줄 바로 윗줄
+       삽입 위치 : 삭제한 자리 그대로 (ANCHOR-IMGOP 주석은 남겨 둡니다)
+     ※ 덧붙이기(append)로 설치하면 IO_ART · IO_VIDEOS · ioA1 등 const/let 이
+       **중복 선언되어 SyntaxError** 가 나므로 반드시 "교체"해야 합니다.
+
+   · 다른 차시 코드는 한 줄도 고치지 않습니다. mnist 블록(mnx 접두사)·hamming 블록(hbx 접두사)은
+     그대로 두며, 이 파일은 mnx · hbx 식별자를 새로 선언하지 않습니다(중복 선언 사고 차단).
    · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsLinks /
-     wsPrint / cmnGet / cmnSet / cmnEsc)는 **재사용만** 합니다.
+     wsPrint / aimRefExtras / cmnGet / cmnSet / cmnEsc)는 **재사용만** 합니다.
    · 뷰 마크업은 views/imgop.html, 매니페스트 등록은 INTEGRATION.md 참조.
    · 표본 사진은 외부 파일 없이 전부 canvas 로 생성합니다(오프라인 안전).
+
+   3단원 재편(37차시안) 반영
+     - mnist 탭 ①(이진행렬) → 활동 ①  : 신규 io 네임 ioBin*
+     - mnist 탭 ②(회색조·해상도) → 활동 ② : 신규 io 네임 ioRes*
+     - imgop 구 탭 ①(밝기 랩) → 활동 ③ : ioA1* **보존** + 11×11 값 패널 신설
+     - imgop 구 탭 ②(반전)·탭 ③(합성) → 활동 ④ : ioA4*(신설) + ioA3*(보존)
+     - 구 탭 ②의 RGB 채널·회색조(평균·휘도)  → 15차시 rgb 로 이관(코드 제거)
+     - 구 탭 ④(전치행렬 ioA5*)               → 16차시 transpose 로 이관(코드 제거)
+     - 구 탭 ⑤(손으로 확인)                  → 각 활동의 판정 문제로 분산
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. 데이터 ──────────────────────────────────────────────────────────── */
 
-/* 홈 카드 썸네일 · 표제부 워터마크로 함께 쓰는 16:9 인라인 SVG */
-const IO_ART = `<svg viewBox="0 0 320 180" role="img" aria-label="두 이미지가 수직선 위 내분점의 비로 섞이는 그림">
-    <rect width="320" height="180" fill="var(--bg)"/>
-    <rect x="20" y="24" width="78" height="78" rx="6" fill="var(--blue)" opacity="0.55"/>
-    <rect x="222" y="24" width="78" height="78" rx="6" fill="var(--red)" opacity="0.55"/>
-    <rect x="112" y="24" width="96" height="78" rx="6" fill="var(--accent)"/>
-    <text x="160" y="70" font-size="15" font-family="monospace" text-anchor="middle" fill="var(--fg)">aA+(1-a)B</text>
-    <path d="M28 138 H292" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="58" cy="138" r="6" fill="var(--blue)"/>
-    <circle cx="262" cy="138" r="6" fill="var(--red)"/>
-    <circle cx="160" cy="138" r="8.5" fill="var(--fg)"/>
-    <text x="58" y="162" font-size="11" font-family="monospace" text-anchor="middle" fill="var(--muted)">A</text>
-    <text x="160" y="162" font-size="11" font-family="monospace" text-anchor="middle" fill="var(--muted)">P</text>
-    <text x="262" y="162" font-size="11" font-family="monospace" text-anchor="middle" fill="var(--muted)">B</text>
-  </svg>`;
+/* 홈 카드 썸네일 · 표제부 워터마크로 함께 쓰는 16:9 인라인 SVG
+   (왼쪽 픽셀 격자 → +50 → 밝아진 격자, 캡션 "수를 바꾸면 사진이 바뀐다") */
+const IO_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="픽셀 격자에 50을 더해 사진이 밝아지는 그림">' +
+  '<rect width="320" height="180" fill="var(--bg)"/>' +
+  '<g stroke="var(--border)" stroke-width="1">' +
+  '<rect x="18" y="34" width="18" height="18" fill="#111"/><rect x="36" y="34" width="18" height="18" fill="#3a3a3a"/>' +
+  '<rect x="54" y="34" width="18" height="18" fill="#8a8a8a"/><rect x="72" y="34" width="18" height="18" fill="#d0d0d0"/>' +
+  '<rect x="18" y="52" width="18" height="18" fill="#3a3a3a"/><rect x="36" y="52" width="18" height="18" fill="#8a8a8a"/>' +
+  '<rect x="54" y="52" width="18" height="18" fill="#d0d0d0"/><rect x="72" y="52" width="18" height="18" fill="#fff"/>' +
+  '<rect x="18" y="70" width="18" height="18" fill="#8a8a8a"/><rect x="36" y="70" width="18" height="18" fill="#d0d0d0"/>' +
+  '<rect x="54" y="70" width="18" height="18" fill="#fff"/><rect x="72" y="70" width="18" height="18" fill="#fff"/>' +
+  '<rect x="18" y="88" width="18" height="18" fill="#d0d0d0"/><rect x="36" y="88" width="18" height="18" fill="#fff"/>' +
+  '<rect x="54" y="88" width="18" height="18" fill="#fff"/><rect x="72" y="88" width="18" height="18" fill="#fff"/>' +
+  '</g>' +
+  '<text x="160" y="62" font-size="17" font-family="monospace" text-anchor="middle" fill="var(--fg)">+ 50</text>' +
+  '<path d="M120 76 H196" stroke="var(--fg)" stroke-width="2.6"/>' +
+  '<path d="M188 69 L196 76 L188 83" fill="none" stroke="var(--fg)" stroke-width="2.6"/>' +
+  '<g stroke="var(--border)" stroke-width="1">' +
+  '<rect x="228" y="34" width="18" height="18" fill="#3c3c3c"/><rect x="246" y="34" width="18" height="18" fill="#6c6c6c"/>' +
+  '<rect x="264" y="34" width="18" height="18" fill="#bcbcbc"/><rect x="282" y="34" width="18" height="18" fill="#fff"/>' +
+  '<rect x="228" y="52" width="18" height="18" fill="#6c6c6c"/><rect x="246" y="52" width="18" height="18" fill="#bcbcbc"/>' +
+  '<rect x="264" y="52" width="18" height="18" fill="#fff"/><rect x="282" y="52" width="18" height="18" fill="#fff"/>' +
+  '<rect x="228" y="70" width="18" height="18" fill="#bcbcbc"/><rect x="246" y="70" width="18" height="18" fill="#fff"/>' +
+  '<rect x="264" y="70" width="18" height="18" fill="#fff"/><rect x="282" y="70" width="18" height="18" fill="#fff"/>' +
+  '<rect x="228" y="88" width="18" height="18" fill="#fff"/><rect x="246" y="88" width="18" height="18" fill="#fff"/>' +
+  '<rect x="264" y="88" width="18" height="18" fill="#fff"/><rect x="282" y="88" width="18" height="18" fill="#fff"/>' +
+  '</g>' +
+  '<text x="160" y="140" font-size="14" font-family="monospace" text-anchor="middle" fill="var(--muted)">수를 바꾸면 사진이 바뀐다</text>' +
+  '<text x="160" y="164" font-size="15" font-family="monospace" text-anchor="middle" fill="var(--fg)">B = A + tJ</text>' +
+  '</svg>';
 
 /* ── 1-1. 매니페스트 안전망 ──────────────────────────────────────────────
-   정식 설치는 INTEGRATION.md §2 대로 AIM_LESSONS·AIM_ART 를 직접 고치는 것입니다.
+   정식 설치는 INTEGRATION.md §1 대로 AIM_LESSONS·AIM_ART 를 직접 고치는 것입니다.
    그 편집을 빠뜨린 채 배포되어도 nav·홈 카드가 비지 않도록 여기서 한 번 더
    확인해 보강합니다(이미 반영돼 있으면 아무 일도 하지 않습니다).            */
 (function ioManifestGuard(){
@@ -17392,12 +17465,13 @@ const IO_ART = `<svg viewBox="0 0 320 180" role="img" aria-label="두 이미지�
     for(let i = 0; i < AIM_LESSONS.length; i++){
       if(AIM_LESSONS[i] && AIM_LESSONS[i].n === '14차시'){ row = AIM_LESSONS[i]; break; }
     }
-    if(!row || row.v === 'imgop') return;               /* 이미 반영됨 → 그대로 둡니다 */
+    if(!row) return;
     row.v = 'imgop';
     row.a = 'imgop';
-    row.d = '사진의 밝기 슬라이더 뒤에 숨은 kA + tJ 를 직접 조립하고, 수직선 위 내분점을 끌어 두 사진이 αA + (1−α)B 로 섞이는 장면을 봅니다.';
-    if(typeof AIM_ART !== 'undefined' && AIM_ART && !AIM_ART.imgop) AIM_ART.imgop = IO_ART;
-    /* 이 시점에는 nav·홈 카드가 이미 그려진 뒤일 수 있으므로 필요할 때만 다시 그립니다. */
+    row.t = '이미지는 행렬이다 — 표현과 변환';
+    row.d = '사진을 확대하면 나타나는 수의 표가 곧 행렬입니다. 그림을 0·1로 옮겨 적고, 회색조 0~255로 넓힌 뒤, ' +
+            'A + tJ · kA · 255J − A · αA + (1−α)B 로 사진을 직접 바꿔 봅니다.';
+    if(typeof AIM_ART !== 'undefined' && AIM_ART) AIM_ART.imgop = IO_ART;
     const redraw = function(){
       if(!document.getElementById('v-imgop')) return;
       if(!document.querySelector('#hm-lessons [data-go="imgop"]')){
@@ -17405,152 +17479,154 @@ const IO_ART = `<svg viewBox="0 0 320 180" role="img" aria-label="두 이미지�
         try{ if(typeof aimBuildMarks === 'function') aimBuildMarks(); }catch(e){}
         try{ if(typeof aimRefExtrasAll === 'function') aimRefExtrasAll(); }catch(e){}
       }
-      /* aimBuildNav 는 document 리스너를 새로 달므로, 드롭다운 항목만 교체합니다. */
-      try{
-        const panel = document.getElementById('nav-panel');
-        if(panel && !panel.querySelector('.nav-item[data-v="imgop"]')){
-          const soon = panel.querySelectorAll('.nav-soon');
-          for(let i = 0; i < soon.length; i++){
-            const n = soon[i].querySelector('.n');
-            if(n && n.textContent.indexOf('14차시') === 0){
-              const b = document.createElement('button');
-              b.type = 'button'; b.className = 'nav-item'; b.setAttribute('role', 'menuitem');
-              b.dataset.v = 'imgop';
-              b.innerHTML = '<span class="n">14차시</span><span class="t">행렬 연산으로 이미지 변형하기</span>';
-              b.addEventListener('click', function(){ go('imgop'); });
-              soon[i].parentNode.replaceChild(b, soon[i]);
-              break;
-            }
-          }
-        }
-      }catch(e){}
     };
     if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', redraw);
     else setTimeout(redraw, 0);
   }catch(e){ console.error('io manifest guard', e); }
 })();
 
-/* 추천 영상 — 검증(썸네일 200 · oEmbed 200 OK)된 ID 만 사용합니다. */
+/* 추천 영상 — 2026-07-31 img.youtube.com/vi/<ID>/hqdefault.jpg HTTP 200 재확인.
+   교사 추가 슬롯은 videoDeck 이 언제나 정확히 1칸만 만듭니다(spec §9·§24-1).   */
 const IO_VIDEOS = [
-  {id:'FNECqtfn8rI', t:'8. 이미지 자료의 처리 (1) — 합·차(합성)와 실수배(밝기)', s:'mathT야나수 · 6:04'},
-  {id:'xTax61wFpWM', t:'9. 이미지 자료의 처리 (2) — 행렬의 곱셈(평행이동·대칭이동)', s:'mathT야나수 · 5:18 · 15차시 예습'},
+  {id:'euoTfx3tToc', t:'7. 이미지 자료의 표현', s:'mathT야나수 · 주 디딤영상 — 픽셀과 행렬 표현'},
+  {id:'AlV6TrvMIEc', t:'0과 1로 그림 표현하기 — 픽셀·해상도·RGB', s:'Background Knowledge · 활동 ①② 예습'},
+  {id:'FNECqtfn8rI', t:'8. 이미지 자료의 처리 (1) — 합·차와 실수배', s:'mathT야나수 · 활동 ③④ 예습'},
 ];
 
-/* 마중 퀴즈 — 순차 공개 */
+/* 마중 퀴즈 — "질문 N." 순차 공개
+   ※ warmStepper·quizStepper 는 q·opts 를 cmnEsc 로 이스케이프합니다(HTML 금지).
+      강조가 필요한 곳은 explain(HTML 허용)에서만 표시합니다.                      */
 const IO_WARM = [
-  {q:'회색조 사진의 모든 픽셀 값에 50을 더하면 사진은 어떻게 될까요?',
-   opts:['전체가 밝아진다','전체가 어두워진다','색이 뒤집힌다','아무 변화가 없다'], answer:0,
-   explain:'픽셀 값은 0이 검정, 255가 흰색입니다. 모든 성분에 같은 수를 더하면 값이 커지므로 사진 전체가 고르게 밝아집니다. 행렬로 쓰면 A + 50J 입니다.'},
-  {q:'픽셀 값이 230인 칸에 2를 곱하면 460이 됩니다. 컴퓨터는 이 값을 어떻게 저장할까요?',
-   opts:['460 그대로 저장한다','255로 저장한다','0으로 되돌린다','460 − 255 = 205로 저장한다'], answer:1,
-   explain:'8비트 회색조 한 칸에는 0 이상 255 이하의 정수만 담을 수 있습니다. 흰색보다 더 흰 색은 없으므로 255로 잘라 넣습니다. 이것을 클리핑이라고 합니다.'},
-  {q:'두 사진을 ‘반반’ 섞으려면 각 픽셀에 어떤 계산을 해야 할까요?',
-   opts:['두 값을 그냥 더한다','두 값을 곱한다','두 값에 각각 0.5를 곱해 더한다','큰 값만 남긴다'], answer:2,
-   explain:'그냥 더하면 값이 두 배가 되어 사진이 하얗게 날아갑니다. 각각 0.5를 곱해 더하면 계수의 합이 1이 되어 밝기는 그대로 두고 내용만 섞입니다. 오늘 이 식을 αA + (1 − α)B 로 일반화합니다.'},
+  {q:'회색조 이미지에서 성분값 0 은 어떤 색을 나타낼까요?',
+   opts:['흰색', '검은색', '회색', '투명'], answer:1,
+   explain:'회색조는 <b>0이 검은색, 255가 흰색</b>입니다. 종이에 검은 펜으로 쓰는 경험 때문에 “아무것도 없으면 흰색”이라고 ' +
+           '느끼기 쉽지만, 화면은 스스로 빛을 내는 장치여서 <b>빛이 없으면 검은색</b>입니다. 값이 커질수록 밝아집니다. ' +
+           '(물감이라면 반대입니다 — 모니터 전원을 끄면 화면이 검게 되는 것과 같은 이유입니다.) ' +
+           '<span class="io-src">씨마스 교과서 Ⅲ p.90 「그레이 스케일」 서술을 재구성</span>'},
+  {q:'해상도가 30 × 30 인 회색조 이미지 한 장을 표현하려면 0~255 사이의 수가 몇 개 필요할까요?',
+   opts:['30개', '60개', '900개', '255개'], answer:2,
+   explain:'30 × 30 = <b>900</b>개입니다. 회색조는 픽셀 하나에 수 하나면 충분합니다. ' +
+           '해상도가 2배가 되면 픽셀 수는 <b>4배</b>가 됩니다(60 × 60 = 3,600). ' +
+           '255는 한 픽셀이 가질 수 있는 <b>값의 크기</b>이지 개수가 아닙니다. ' +
+           '<span class="io-src">동아 교과서 Ⅲ p.84 「해상도」 서술을 재구성</span>'},
+  {q:'어떤 회색조 사진의 모든 픽셀 값에 50을 더했습니다. 사진은 어떻게 될까요? 그리고 값이 220이던 픽셀은 어떻게 될까요?',
+   opts:['전체가 어두워지고, 220은 170이 된다',
+         '전체가 밝아지고, 220은 255가 된다',
+         '전체가 밝아지고, 220은 270이 된다',
+         '아무 변화가 없다'], answer:1,
+   explain:'모든 성분에 같은 수를 더하면 전체가 <b>밝아집니다</b>. 그런데 220 + 50 = 270 은 255를 넘으므로 <b>255로 잘라</b> 저장합니다. ' +
+           '이렇게 자르는 것을 <b>클리핑</b>이라 하고, 잘린 정보는 되돌릴 수 없습니다. ' +
+           '계산은 270이 맞지만 <b>저장할 수 있는 최댓값이 255</b>입니다. ' +
+           '<span class="io-src">씨마스 교과서 Ⅲ p.95 「지식 Plus」 서술을 재구성</span>'},
 ];
 
-/* 형성평가 — 성취기준 [12인수03-02] 와 1:1 대응 문항 포함 */
+/* 형성평가 5문항 — 성취기준 [12인수03-01]·[12인수03-02] 와 1:1 대응 */
 const IO_QUIZ = [
-  {q:'회색조 이미지를 나타낸 행렬 R 과 모든 성분이 1인 행렬 J 에 대하여 R₁ = R + tJ 입니다. t < 0 일 때 변환된 이미지는 어떻게 될까요?',
-   opts:['원본보다 밝아진다','원본보다 어두워진다','색이 반전된다','좌우가 뒤집힌다'], answer:1,
-   explain:'모든 성분에 음수를 더하면 픽셀 값이 작아지고, 값이 0에 가까울수록 어둡습니다. 반대로 t > 0 이면 밝아집니다. (씨마스 「인공지능 수학」 Ⅲ p.95)'},
-  {q:'A = [[230, 80], [80, 230]] 일 때 2A 의 (1, 1) 성분은? (성분은 0 이상 255 이하로 조정합니다)',
-   opts:['460','255','230','205'], answer:1,
-   explain:'2 × 230 = 460 이지만 255를 넘으므로 흰색인 255로 잘라 넣습니다. 반면 2 × 80 = 160 은 범위 안이라 그대로 남습니다. 그래서 밝은 곳만 뭉개지는 현상이 생깁니다.'},
-  {q:'픽셀 값이 200인 칸을 반전(255J − A)하면 얼마가 될까요?',
-   opts:['55','155','200','255'], answer:0,
-   explain:'255 − 200 = 55 입니다. 반전은 한 칸만 보면 y = 255 − x, 즉 기울기가 −1인 일차함수이며 두 번 적용하면 원래대로 돌아옵니다.'},
-  {q:'두 이미지 X, Y 를 C = αX + (1 − α)Y 로 합성했습니다. α = 0.8 일 때 결과는?',
-   opts:['X 가 Y 보다 더 선명하게 보인다','Y 가 X 보다 더 선명하게 보인다','두 이미지가 똑같이 보인다','X 만 보이고 Y 는 사라진다'], answer:0,
-   explain:'α 가 1에 가까울수록 X 의 가중치가 커져 X 가 선명해집니다. α = 0.8 이면 Y 도 0.2 만큼 남아 흐릿하게 겹쳐 보입니다. (씨마스 「인공지능 수학」 Ⅲ p.99 · 동아출판 Ⅲ p.93)'},
-  {q:'수직선 위의 두 점 A(2), B(8) 에 대하여 P = αA + (1 − α)B 이고 α = 1/4 일 때, 점 P 의 좌표는?',
-   opts:['3.5','5','6.5','7'], answer:2,
-   explain:'P = (1/4)·2 + (3/4)·8 = 0.5 + 6 = 6.5 입니다. α 가 작을수록 P 는 B 쪽으로 다가가고, 사진 합성에서도 B 가 더 선명해집니다. 내분비로는 AP : PB = 3 : 1 입니다.'},
-  {q:'A = [[1, 2, 3], [4, 5, 6]] 일 때 전치행렬 A<sup>T</sup> 로 옳은 것은?',
-   opts:['[[1, 2, 3], [4, 5, 6]]','[[3, 2, 1], [6, 5, 4]]','[[1, 4], [2, 5], [3, 6]]','[[4, 5, 6], [1, 2, 3]]'], answer:2,
-   explain:'A<sup>T</sup> 의 (i, j) 성분은 A 의 (j, i) 성분입니다. 2 × 3 행렬을 전치하면 3 × 2 행렬이 되고, 첫 행 (1, 2, 3) 이 첫 열로 세워집니다. 이미지로 보면 주대각선을 축으로 뒤집는 변환입니다.'},
+  {q:'[12인수03-01] 해상도가 40 × 25 인 회색조 이미지 한 장을 표현하려면 0 이상 255 이하의 수가 몇 개 필요한가?',
+   opts:['65개', '255개', '1,000개', '3,000개'], answer:2,
+   explain:'40 × 25 = <b>1,000</b>. 회색조는 픽셀 하나에 수 하나입니다. 해상도의 두 수를 곱하면 픽셀 수가 나옵니다. ' +
+           '컬러라면 여기에 3을 곱해야 하는데, 그것은 다음 시간의 이야기입니다. ' +
+           '<button class="btn cmn-go" type="button" onclick="ioSee(1,\'io-act2\')">활동 ②로 돌아가기</button>'},
+  {q:'[12인수03-01] 다음 중 이진행렬로 표현할 수 없는 것은?',
+   opts:['검은 바탕에 흰 십자', '흑백의 QR 코드',
+         '연한 회색에서 진한 회색으로 서서히 변하는 그러데이션', '흰 바탕에 검은 테두리 사각형'], answer:2,
+   explain:'이진행렬은 0과 1 두 값뿐이므로 <b>중간 밝기</b>를 표현할 수 없습니다. ' +
+           '중간 밝기가 필요하면 0~255의 회색조를 써야 합니다. 표현 방식은 <b>무엇을 지킬 것인가</b>에 따라 고릅니다. ' +
+           '<button class="btn cmn-go" type="button" onclick="ioSee(0,\'io-act1\')">활동 ①로 돌아가기</button>'},
+  {q:'[12인수03-02] A = [[180, 60], [240, 100]] 일 때 A + 40J 는? (J 는 모든 성분이 1인 행렬)',
+   opts:['[[220, 100], [280, 140]]', '[[220, 100], [255, 140]]',
+         '[[140, 20], [200, 60]]', '[[220, 100], [240, 140]]'], answer:1,
+   explain:'240 + 40 = 280 은 255를 넘으므로 <b>255로 클리핑</b>합니다. ①은 클리핑을 하지 않은 답입니다. ' +
+           '밝기 값은 저장할 수 있는 범위가 정해져 있다는 점을 늘 확인하세요. ' +
+           '<button class="btn cmn-go" type="button" onclick="ioSee(2,\'io-act3\')">활동 ③으로 돌아가기</button>'},
+  {q:'[12인수03-02] 어떤 회색조 이미지에 반전(255J − A)을 두 번 연속 적용했다. 결과는?',
+   opts:['두 배로 밝아진다', '두 배로 어두워진다', '원본과 완전히 같다', '흑백이 무작위로 섞인다'], answer:2,
+   explain:'255 − (255 − a) = a 이므로 모든 성분이 제자리로 돌아옵니다. 반전은 <b>되돌릴 수 있는 변환</b>입니다. ' +
+           '반면 클리핑이 일어난 밝기 변환은 되돌릴 수 없습니다. 변환을 배울 때는 늘 “되돌릴 수 있는가”를 함께 물어야 합니다. ' +
+           '<button class="btn cmn-go" type="button" onclick="ioSee(3,\'io-act4\')">활동 ④로 돌아가기</button>'},
+  {q:'[12인수03-02] A와 B를 C = αA + (1 − α)B 로 합성했더니 B가 더 진하게 보였다. α의 값으로 알맞은 것은?',
+   opts:['α = 1', 'α = 0.8', 'α = 0.3', 'α = 1.5'], answer:2,
+   explain:'α가 작을수록 (1 − α)가 커져 <b>B의 기여가 커집니다</b>. α = 0.3 이면 B의 계수가 0.7입니다. ' +
+           '④는 범위를 벗어납니다(0 ≤ α ≤ 1). ①은 A만 남고 B는 사라집니다. ' +
+           '두 계수의 합이 1이라는 점이 “섞는다”는 말의 수학적 뜻입니다. ' +
+           '<button class="btn cmn-go" type="button" onclick="ioSee(3,\'io-act4\')">활동 ④로 돌아가기</button>'},
 ];
 
-/* 핵심 개념 칩 상세 설명 */
+/* 핵심 개념 칩 상세 설명 — 정의 → 예시 → 이번 차시 활동 연결 → 앞뒤 차시 연결 */
 const IO_DEFS = {
-  '전치행렬 Aᵀ':
-    '<p><b>정의.</b> m × n 행렬 A = (a<sub>ij</sub>) 의 <b>행과 열을 서로 바꾸어</b> 얻은 n × m 행렬을 ' +
-    'A 의 <b>전치행렬</b>이라 하고 <b>A<sup>T</sup></b> 로 나타냅니다. ' +
-    'A<sup>T</sup> 의 (i, j) 성분은 A 의 (j, i) 성분입니다.</p>' +
-    '<p><b>예시 ①</b> A = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] 이면 A<sup>T</sup> = [[1, 4, 7], [2, 5, 8], [3, 6, 9]].<br>' +
-    '<b>예시 ②</b> A 가 2 × 3 이면 A<sup>T</sup> 는 3 × 2 — 가로로 긴 사진이 세로로 긴 사진이 됩니다.</p>' +
-    '<p><b>성질.</b> (A<sup>T</sup>)<sup>T</sup> = A · (A + B)<sup>T</sup> = A<sup>T</sup> + B<sup>T</sup> · (kA)<sup>T</sup> = kA<sup>T</sup>. ' +
-    'A<sup>T</sup> = A 인 정사각행렬을 <b>대칭행렬</b>이라 합니다.</p>' +
-    '<p><b>이 차시에서는.</b> STEP 2 활동 4에서 3 × 3 숫자표의 (i, j) ↔ (j, i) 를 눌러 확인한 뒤, ' +
-    '같은 규칙을 사진에 적용해 <b>주대각선을 축으로 뒤집히는</b> 장면을 관찰합니다. ' +
-    '지금까지의 변환이 칸의 <b>값</b>을 바꾸었다면, 전치는 칸의 <b>자리</b>를 바꾸는 변환입니다.</p>' +
-    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(3,\'io-act5\')">활동 4로 이동 →</button></div>' +
-    '<span class="io-src">교육과정 Ⅲ영역 용어와 기호 「행렬, 전치행렬」 · 동아출판 「인공지능 수학」 Ⅲ 6절 전치행렬을 이용한 이미지 방향 변환</span>',
+  '픽셀과 해상도':
+    '<h4>픽셀과 해상도</h4>' +
+    '<p><b>정의.</b> 이미지를 이루는 가장 작은 네모 칸 하나를 <b>픽셀</b>(화소)이라 합니다. ' +
+    '이미지가 가로로 몇 칸, 세로로 몇 칸인지를 나타낸 것이 <b>해상도</b>이고, 보통 ' +
+    '<b>가로 픽셀 수 × 세로 픽셀 수</b> 로 씁니다. 픽셀이 많을수록 이미지의 윤곽이 매끄러워집니다.</p>' +
+    '<p><b>예시.</b> ① 해상도 30 × 30 → 픽셀 900개, 해상도 70 × 70 → 픽셀 4,900개 ' +
+    '② 스마트폰 사진 1920 × 1080 → 픽셀 2,073,600개</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ②에서 해상도를 직접 바꿔 가며 같은 그림이 얼마나 거칠어지고 매끄러워지는지 봅니다. ' +
+    '그리고 저장에 필요한 수가 몇 개인지 계산합니다.</p>' +
+    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(1,\'io-act2\')">활동 ②로 이동 →</button>' +
+    '<button class="btn cmn-go" type="button" onclick="go(\'rgb\')">15차시 · 이 개수에 ×3 이 붙습니다</button>' +
+    '<button class="btn cmn-go" type="button" onclick="go(\'imgcls\')">18차시 · 28 × 28 = 784</button></div>' +
+    '<span class="io-src">동아 교과서 Ⅲ p.84 「해상도」 · 씨마스 교과서 Ⅲ p.90 서술을 재구성</span>',
 
-  '행렬의 덧셈·뺄셈':
-    '<p><b>정의.</b> 같은 꼴의 두 행렬 A = (a<sub>ij</sub>), B = (b<sub>ij</sub>) 에 대하여 A ± B 의 (i, j) 성분은 a<sub>ij</sub> ± b<sub>ij</sub> 입니다. ' +
-    '모든 성분이 1인 행렬을 J 라 할 때 <b>A + tJ</b> 는 모든 픽셀에 같은 수 t 를 더하는 변환입니다.</p>' +
-    '<p><b>예시 ①</b> A = [[230, 80], [80, 230]] 에 대하여 A + 50J = [[255, 130], [130, 255]] (230 + 50 = 280 은 255로 조정).<br>' +
-    '<b>예시 ②</b> A − 100J = [[130, 0], [0, 130]] (80 − 100 = −20 은 0으로 조정).</p>' +
-    '<p><b>이 차시에서는.</b> STEP 2 활동 1의 [더하기 t] 슬라이더가 바로 이 연산입니다. t 를 밀면 밝은 곳과 어두운 곳이 ' +
-    '<b>같은 간격을 유지한 채</b> 통째로 올라가는 것을 확인했습니다.</p>' +
-    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(0,\'io-act1\')">활동 1로 이동 →</button>' +
-    '<button class="btn cmn-go" type="button" onclick="go(\'hamming\')">13차시 · 이진 행렬 돌아보기</button></div>' +
-    '<span class="io-src">동아출판 「인공지능 수학」 Ⅲ p.90 · 씨마스 「인공지능 수학」 Ⅲ p.94~95 서술을 재구성</span>',
+  '이진행렬':
+    '<h4>이진행렬 — 0과 1만으로 그린 그림</h4>' +
+    '<p><b>정의.</b> 검은색을 <b>0</b>, 흰색을 <b>1</b> 두 가지로만 나타낸 이미지를 표현한 행렬을 <b>이진행렬</b>이라 합니다. ' +
+    '성분이 0과 1뿐이므로 계산이 아주 간단해지지만, <b>중간 밝기는 표현할 수 없습니다.</b></p>' +
+    '<p><b>예시.</b> ⎡1 1 1⎤ ⎢0 1 0⎥ ⎣0 1 0⎦ 는 위쪽 가로줄과 가운데 세로줄이 흰색인 그림, 즉 <b>T자</b> 모양입니다.</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ①에서 격자 그림을 보고 오른쪽 표에 0과 1을 옮겨 적습니다. ' +
+    '“옮겨 적기”가 곧 <b>표현</b>입니다.</p>' +
+    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(0,\'io-act1\')">활동 ①로 이동 →</button>' +
+    '<button class="btn cmn-go" type="button" onclick="go(\'imgcls\')">18차시 · 다른 칸의 개수를 세는 해밍 거리</button></div>' +
+    '<span class="io-src">씨마스 교과서 Ⅲ p.90 · 활동지 「활동1-2 이진행렬과 행렬값」 서술을 재구성</span>',
 
-  '행렬의 실수배':
-    '<p><b>정의.</b> 실수 k 와 행렬 A = (a<sub>ij</sub>) 에 대하여 kA 의 (i, j) 성분은 k·a<sub>ij</sub> 입니다. ' +
-    '이미지에서는 <b>k > 1 이면 밝아지고, 0 < k < 1 이면 어두워집니다</b>.</p>' +
-    '<p><b>예시.</b> A = [[230, 80], [80, 230]] 일 때 ½A = [[115, 40], [40, 115]], 2A = [[255, 160], [160, 255]].</p>' +
-    '<p><b>덧셈과 다른 점.</b> 덧셈은 모든 칸을 같은 거리만큼 밀지만, 실수배는 <b>큰 값을 더 크게</b> 늘립니다. ' +
-    '그래서 실수배는 밝기와 함께 <b>대비(명암 차이)</b>까지 바꿉니다. 230과 80의 차 150이 2배에서는 300으로 벌어집니다.</p>' +
-    '<p><b>이 차시에서는.</b> 활동 1의 [실수배 k] 드롭다운으로 미션 ①(1.2배)과 ④(2배)를 만들며 이 차이를 관찰했습니다.</p>' +
-    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(0,\'io-act1\')">활동 1로 이동 →</button>' +
-    '<button class="btn cmn-go" type="button" onclick="go(\'pool\')">17차시 · 정규화 X/255 미리 보기</button></div>' +
-    '<span class="io-src">미래엔 「인공지능 수학」 Ⅲ p.92~93 · 동아출판 Ⅲ p.91 서술을 재구성</span>',
+  '회색조 0~255':
+    '<h4>회색조 0~255 — 256단계의 명암</h4>' +
+    '<p><b>정의.</b> 검은색과 흰색 사이의 회색 영역을 <b>256단계</b>로 나누어 0(검은색)부터 255(흰색)까지의 값으로 나타낸 것을 ' +
+    '<b>그레이 스케일(회색조)</b> 이라 합니다. 값이 클수록 밝습니다. 이때 이미지는 0 이상 255 이하의 정수를 성분으로 하는 ' +
+    '<b>행렬 하나</b>로 표현됩니다.</p>' +
+    '<p><b>예시.</b> ① CT·MRI 같은 영상 의학 사진은 X선 흡수율에 따라 각 화소를 흰 점·검은 점·중간 회색 점으로 표현합니다. ' +
+    '② 191 195 173 67 … 처럼 성분이 늘어선 10 × 10 행렬이 곧 뇌 영상 한 조각입니다.</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ②에서 픽셀을 눌러 그 자리의 값을 읽고, 단계 수를 2 → 256으로 올리며 ' +
+    '획의 가장자리가 어떻게 부드러워지는지 확인합니다.</p>' +
+    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(1,\'io-act2\')">활동 ②로 이동 →</button>' +
+    '<button class="btn cmn-go" type="button" onclick="go(\'rgb\')">15차시 · 한 장이 세 장이 됩니다</button></div>' +
+    '<span class="io-src">씨마스 교과서 Ⅲ p.90 「그레이 스케일」·「CT 기기의 원리」 서술을 재구성</span>',
 
-  '반전 255J':
-    '<p><b>정의.</b> 모든 성분이 255인 행렬을 255J 라 할 때, 반전된 이미지는 <b>A₁ = 255J − A</b> 입니다. ' +
-    '한 칸만 보면 <b>y = 255 − x</b> 라는 기울기 −1의 일차함수입니다.</p>' +
-    '<p><b>예시.</b> 흰색 255 → 0(검정), 검정 0 → 255(흰색), 중간 회색 127 → 128. ' +
-    '컬러라면 빨강 (255, 0, 0) → (0, 255, 255) 즉 <b>시안</b>이 됩니다.</p>' +
-    '<p><b>성질.</b> 두 번 반전하면 255 − (255 − x) = x 이므로 <b>원래대로 돌아옵니다</b>. ' +
-    '클리핑과 달리 정보를 잃지 않는 변환입니다.</p>' +
-    '<p><b>이 차시에서는.</b> 활동 1의 [반전] 체크와 활동 2의 [반전 255 − x] 버튼에서 확인했고, ' +
-    '변환 곡선이 오른쪽 아래로 내려가는 모습으로 눈에 담았습니다.</p>' +
-    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(1,\'io-act2\')">활동 2로 이동 →</button></div>' +
-    '<span class="io-src">씨마스 「인공지능 수학」 Ⅲ p.94~95 · 활동 4(밝기 및 채널변형) 5번 문항을 재구성</span>',
+  'A + tJ 와 kA':
+    '<h4>A + tJ 와 kA — 밝기와 대비</h4>' +
+    '<p><b>정의.</b> 이미지를 나타낸 행렬 A의 <b>모든 성분에 같은 수 t를 더하면</b> 이미지 전체가 밝아지거나 어두워집니다. ' +
+    '모든 성분이 1인 행렬을 J라 하면 이 변환은 <b>A + tJ</b> 로 씁니다. 한편 <b>모든 성분에 같은 수 k를 곱하면</b>(kA) ' +
+    '밝은 곳과 어두운 곳의 차이, 즉 <b>대비</b>가 달라집니다.</p>' +
+    '<p><b>예시.</b> t = +50 → 전체가 한 단계 밝아짐 · t = −50 → 전체가 어두워짐 · ' +
+    'k = 1.5 → 밝은 곳은 더 밝아지고 어두운 곳은 조금만 밝아져 <b>또렷해짐</b> · k = 0.5 → 전체가 흐릿해짐</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ③에서 슬라이더 두 개(t, k)를 움직이며 수식과 사진이 동시에 반응하는 것을 봅니다. ' +
+    '사진 앱의 ‘밝기’와 ‘대비’ 버튼이 각각 어느 식인지 스스로 짝지어 봅니다.</p>' +
+    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(2,\'io-act3\')">활동 ③으로 이동 →</button>' +
+    '<button class="btn cmn-go" type="button" onclick="go(\'transpose\')">16차시 · 값이 아니라 자리를 바꾸면</button></div>' +
+    '<span class="io-src">동아 교과서 Ⅲ pp.90~91 · 씨마스 교과서 Ⅲ pp.94~95 서술을 재구성</span>',
 
-  '클리핑':
-    '<p><b>정의.</b> 8비트 이미지의 한 칸은 <b>0 이상 255 이하의 정수</b>만 가질 수 있습니다. ' +
-    '계산 결과가 이 범위를 벗어나면 0보다 작은 값은 0으로, 255보다 큰 값은 255로 <b>잘라 넣습니다</b>.</p>' +
-    '<p><b>예시.</b> 230 × 2 = 460 → 255 / 80 − 100 = −20 → 0. 성분이 정수가 아니면 반올림·올림·버림으로 정수로 맞춥니다.</p>' +
-    '<p><b>왜 중요한가.</b> 잘린 값은 <b>되돌릴 수 없습니다</b>. 255가 된 칸이 원래 280이었는지 460이었는지 알 수 없으므로, ' +
-    'k 를 다시 낮춰도 원본으로 복원되지 않습니다. 사진 보정에서 “하이라이트가 날아갔다”는 말이 바로 이 상태입니다.</p>' +
-    '<p><b>이 차시에서는.</b> 활동 1의 [클리핑 0~255] 체크를 꺼서 숫자 창에 <b>붉은 수</b>가 나타나는 것을 직접 만들어 보았습니다.</p>' +
-    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(0,\'io-act1\')">활동 1로 이동 →</button>' +
-    '<button class="btn cmn-go" type="button" onclick="ioSee(4,\'io-act4\')">활동 5 · 손계산으로 확인 →</button></div>' +
-    '<span class="io-src">씨마스 「인공지능 수학」 Ⅲ p.95 ‘지식 Plus’ · 미래엔 Ⅲ p.92 각주 서술을 재구성</span>',
-
-  '내분점과 가중치':
-    '<p><b>정의.</b> 수직선 위의 두 점 A(a), B(b) 에 대하여 선분 AB 를 m : n 으로 내분하는 점 P 의 좌표는 ' +
-    '<b>P = (m·b + n·a)/(m + n)</b> 입니다. α = n/(m + n) 이라 두면 <b>P = αa + (1 − α)b</b> 이고 두 계수의 합은 언제나 1 입니다.</p>' +
-    '<p><b>이미지로 옮기면.</b> 수 a, b 자리에 이미지 행렬 A, B 를 넣기만 하면 됩니다. ' +
-    '<b>C = αA + (1 − α)B</b> (0 ≤ α ≤ 1). α 가 1 에 가까울수록 A 가, 0 에 가까울수록 B 가 선명합니다.</p>' +
-    '<p><b>예시.</b> A(2), B(8) 을 2 : 1 로 내분하면 P = (2·8 + 1·2)/3 = 6 이고 α = 1/3 입니다. ' +
-    '사진으로는 A 가 33 %, B 가 67 % 섞인 그림이 됩니다.</p>' +
-    '<p><b>이 차시에서는.</b> 활동 3에서 수직선 위의 점 P 를 끌면 계수 α 와 합성 사진이 <b>동시에</b> 바뀌는 것을 확인했습니다.</p>' +
-    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(2,\'io-act3\')">활동 3으로 이동 →</button>' +
-    '<button class="btn cmn-go" type="button" onclick="go(\'conv\')">15차시 · 합성곱 미리 보기</button></div>' +
-    '<span class="io-src">활동 5(사진합성) ‘확인하기 — 수직선 위의 선분의 내분점’ · 씨마스 Ⅲ p.99 · 동아출판 Ⅲ p.92~93 서술을 재구성</span>',
+  '클리핑과 내분':
+    '<h4>클리핑과 내분</h4>' +
+    '<p><b>정의.</b> 계산 결과가 0보다 작아지면 <b>0으로</b>, 255보다 커지면 <b>255로</b> 잘라 넣습니다. ' +
+    '이것을 <b>클리핑</b>이라 하고, 이렇게 잘린 값은 <b>되돌릴 수 없습니다.</b> ' +
+    '한편 두 이미지 A, B를 섞을 때는 <b>C = αA + (1 − α)B</b> 를 씁니다. 두 계수의 합이 언제나 1이므로, ' +
+    '이 식은 <b>수직선 위에서 두 점을 내분하는 점</b>을 구하는 식과 같은 모양입니다.</p>' +
+    '<p><b>예시.</b> 200 + 100 = 300 → <b>255로 저장</b>. 나중에 100을 빼도 200이 아니라 155가 됩니다. · ' +
+    'α = 0.5 → 두 사진의 정확히 가운데. α = 0.8 → A 쪽에 치우친 합성.</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ③에서 잘린 픽셀의 개수 배지가 뜨고, 활동 ④에서 수직선 위의 점 P를 끌면 ' +
+    '사진의 섞임 비율이 함께 바뀝니다.</p>' +
+    '<div class="btn-row"><button class="btn cmn-go" type="button" onclick="ioSee(2,\'io-act3\')">활동 ③으로 이동 →</button>' +
+    '<button class="btn cmn-go" type="button" onclick="ioSee(3,\'io-act4\')">활동 ④로 이동 →</button>' +
+    '<button class="btn cmn-go" type="button" onclick="go(\'rgb\')">15차시 · 되돌릴 수 없는 또 하나의 변환</button></div>' +
+    '<span class="io-src">동아 교과서 Ⅲ p.93 · 씨마스 교과서 Ⅲ p.95 · 활동지 「활동5 사진합성」 서술을 재구성</span>',
 };
 
 /* ── 2. 작은 도구 ───────────────────────────────────────────────────────── */
 
 function ioEl(id){ return document.getElementById(id); }
 function ioTxt(id, s){ const e = ioEl(id); if(e) e.textContent = s; }
+function ioHtml(id, s){ const e = ioEl(id); if(e) e.innerHTML = s; }
 function ioClamp(v){ return v < 0 ? 0 : (v > 255 ? 255 : v); }
-function ioRnd(v){ return Math.round(v); }
 function ioGcd(a, b){ a = Math.abs(a); b = Math.abs(b); while(b){ const t = a % b; a = b; b = t; } return a || 1; }
 
 /* 결정적 의사 난수 — 표본 사진의 질감을 만들 때만 씁니다(매번 같은 그림). */
@@ -17559,7 +17635,6 @@ function ioNoise(x, y){
   return s - Math.floor(s);
 }
 
-/* 캔버스를 화면 폭에 맞춰 선명하게 만듭니다(문자·선이 들어가는 캔버스용). */
 function ioFit(cv, fallbackRatio){
   if(!cv) return null;
   const w = cv.clientWidth || 560;
@@ -17589,7 +17664,14 @@ function ioLock(id, unlocked){
   else{ d.classList.add('io-locked'); d.open = false; }
 }
 
-/* 탭 전환 */
+function ioFb(id, ok, html){
+  const b = ioEl(id);
+  if(!b) return;
+  b.className = 'io-fb ' + (ok ? 'ok' : 'no');
+  b.innerHTML = (ok ? '✓ ' : '✗ ') + html;
+}
+
+/* 탭 전환 — ① 이진행렬 ② 회색조·해상도 ③ 밝기 랩 ④ 반전·합성 */
 function ioTab(n, el){
   const root = ioEl('v-imgop');
   if(!root) return;
@@ -17598,9 +17680,10 @@ function ioTab(n, el){
   root.querySelectorAll('.tpanel').forEach(function(p){ p.classList.remove('on'); });
   const pn = ioEl('io' + n);
   if(pn) pn.classList.add('on');
-  if(n === 2) setTimeout(ioA3Draw, 30);          /* 숨은 캔버스는 폭이 0이라 다시 그립니다 */
-  if(n === 0) setTimeout(ioA1Curve, 30);
-  if(n === 3) setTimeout(function(){ try{ ioA5Grid(); }catch(e){} }, 30);
+  /* 숨은 캔버스는 폭이 0이라 보일 때 다시 그립니다. */
+  if(n === 1) setTimeout(ioResDraw, 30);
+  if(n === 2) setTimeout(ioA1Curve, 30);
+  if(n === 3) setTimeout(ioA3Draw, 30);
 }
 
 /* 학습 목표 → 활동 이동 */
@@ -17615,7 +17698,7 @@ function ioSee(tab, targetId){
 
 /* ── 3. 표본 사진 생성기 (외부 이미지 0) ─────────────────────────────────── */
 
-/* 회색조 표본 — 저녁 언덕과 달. 어두운 곳·중간 톤·아주 밝은 곳이 모두 들어 있어
+/* 회색조 표본 A — 저녁 언덕과 달. 어두운 곳·중간 톤·아주 밝은 곳이 모두 들어 있어
    밝기 변환과 클리핑을 한 화면에서 관찰하기 좋습니다. */
 function ioMakeGray(w, h){
   const a = new Uint8ClampedArray(w * h);
@@ -17647,95 +17730,66 @@ function ioMakeGray(w, h){
   return a;
 }
 
-/* 컬러 표본 — 빛의 삼원색 가산혼합 원판 + 아래쪽 회색 계조 띠.
-   활동 4 학습지의 ‘RGB 값 → 색깔’ 복습표(255,255,0 / 255,0,255 / 0,255,255)를
-   화면에서 바로 확인할 수 있습니다. */
-function ioMakeColor(w, h){
-  const d = new Uint8ClampedArray(w * h * 4);
-  const R = w * 0.235, cy = h * 0.40;
-  const cs = [
-    {x:w * 0.365, y:cy - h * 0.055, c:[255, 0, 0]},
-    {x:w * 0.635, y:cy - h * 0.055, c:[0, 255, 0]},
-    {x:w * 0.500, y:cy + h * 0.175, c:[0, 0, 255]},
-  ];
-  const strip = Math.round(h * 0.80);
-  for(let y = 0; y < h; y++){
-    for(let x = 0; x < w; x++){
-      let r = 22, g = 22, b = 28;
-      if(y >= strip){
-        const v = Math.round(255 * (x / (w - 1)));       /* 회색 계조 띠 */
-        r = g = b = v;
-      }else{
-        for(let i = 0; i < 3; i++){
-          if(Math.hypot(x - cs[i].x, y - cs[i].y) < R){
-            r += cs[i].c[0]; g += cs[i].c[1]; b += cs[i].c[2];
-          }
-        }
-      }
-      const k = (y * w + x) * 4;
-      d[k] = ioClamp(r); d[k + 1] = ioClamp(g); d[k + 2] = ioClamp(b); d[k + 3] = 255;
-    }
-  }
-  return d;
-}
-
-/* 과일 표본 — 활동 5의 바나나·딸기를 캔버스 도형으로 그립니다. */
-function ioMakeFruit(kind, w, h){
+/* 회색조 표본 B — 잎맥이 뚜렷한 나뭇잎. A 와 밝기 분포가 달라 합성 실험에 적합합니다. */
+function ioMakeLeaf(w, h){
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
   const x = c.getContext('2d');
-  if(kind === 'banana'){
-    x.fillStyle = '#faf3e0'; x.fillRect(0, 0, w, h);
-    x.fillStyle = '#efe2c2';
-    x.beginPath(); x.ellipse(w * 0.5, h * 0.86, w * 0.40, h * 0.075, 0, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#f2c93c';
-    x.beginPath();
-    x.moveTo(w * 0.14, h * 0.34);
-    x.quadraticCurveTo(w * 0.46, h * 0.96, w * 0.88, h * 0.56);
-    x.quadraticCurveTo(w * 0.56, h * 0.80, w * 0.26, h * 0.28);
-    x.closePath(); x.fill();
-    x.fillStyle = '#d8a91f';
-    x.beginPath();
-    x.moveTo(w * 0.20, h * 0.31);
-    x.quadraticCurveTo(w * 0.52, h * 0.82, w * 0.86, h * 0.55);
-    x.quadraticCurveTo(w * 0.54, h * 0.74, w * 0.24, h * 0.29);
-    x.closePath(); x.fill();
-    x.fillStyle = '#6b4b16';
-    x.beginPath(); x.ellipse(w * 0.17, h * 0.30, w * 0.055, h * 0.045, -0.5, 0, Math.PI * 2); x.fill();
-    x.beginPath(); x.ellipse(w * 0.88, h * 0.57, w * 0.04, h * 0.035, 0.4, 0, Math.PI * 2); x.fill();
-  }else{
-    x.fillStyle = '#fdf1f1'; x.fillRect(0, 0, w, h);
-    x.fillStyle = '#f2dcdc';
-    x.beginPath(); x.ellipse(w * 0.5, h * 0.88, w * 0.34, h * 0.065, 0, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#d42f42';
-    x.beginPath();
-    x.moveTo(w * 0.5, h * 0.88);
-    x.quadraticCurveTo(w * 0.06, h * 0.52, w * 0.30, h * 0.28);
-    x.quadraticCurveTo(w * 0.50, h * 0.14, w * 0.70, h * 0.28);
-    x.quadraticCurveTo(w * 0.94, h * 0.52, w * 0.5, h * 0.88);
-    x.closePath(); x.fill();
-    x.fillStyle = '#f7d84e';
-    for(let i = 0; i < 22; i++){
-      const px = w * (0.24 + 0.52 * ioNoise(i * 3.1, 7.7));
-      const py = h * (0.30 + 0.48 * ioNoise(i * 1.7, 2.3));
-      if(Math.abs(px - w * 0.5) / (w * 0.34) + Math.abs(py - h * 0.52) / (h * 0.34) > 1.05) continue;
-      x.beginPath(); x.ellipse(px, py, w * 0.016, h * 0.024, 0.5, 0, Math.PI * 2); x.fill();
-    }
-    x.fillStyle = '#3f8f42';
-    for(let i = 0; i < 5; i++){
-      const ang = -Math.PI / 2 + (i - 2) * 0.52;
-      x.beginPath();
-      x.moveTo(w * 0.5, h * 0.26);
-      x.quadraticCurveTo(w * 0.5 + Math.cos(ang) * w * 0.24, h * 0.26 + Math.sin(ang) * h * 0.20,
-                         w * 0.5 + Math.cos(ang) * w * 0.30, h * 0.26 + Math.sin(ang) * h * 0.24);
-      x.quadraticCurveTo(w * 0.5 + Math.cos(ang) * w * 0.14, h * 0.26 + Math.sin(ang) * h * 0.06,
-                         w * 0.5, h * 0.26);
-      x.closePath(); x.fill();
-    }
-    x.fillStyle = '#2f6f33';
-    x.fillRect(w * 0.478, h * 0.14, w * 0.044, h * 0.13);
+  x.fillStyle = '#ececec'; x.fillRect(0, 0, w, h);
+  x.save();
+  x.translate(w * 0.5, h * 0.5);
+  x.rotate(-0.62);
+  x.fillStyle = '#8c8c8c';
+  x.beginPath(); x.ellipse(0, 0, w * 0.16, h * 0.40, 0, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#5e5e5e';
+  x.fillRect(-w * 0.010, -h * 0.44, w * 0.020, h * 0.88);      /* 주맥 */
+  x.strokeStyle = '#4a4a4a'; x.lineWidth = Math.max(1, w * 0.012);
+  for(let i = -4; i <= 4; i++){
+    if(i === 0) continue;
+    const yy = i * h * 0.075;
+    x.beginPath(); x.moveTo(0, yy);
+    x.quadraticCurveTo(w * 0.09 * Math.sign(i || 1), yy + h * 0.04, w * 0.14 * (i % 2 ? 1 : -1), yy + h * 0.075);
+    x.stroke();
+    x.beginPath(); x.moveTo(0, yy);
+    x.quadraticCurveTo(-w * 0.09, yy + h * 0.04, -w * 0.14, yy + h * 0.075);
+    x.stroke();
   }
-  return x.getImageData(0, 0, w, h).data;
+  x.restore();
+  x.fillStyle = '#d2d2d2';
+  x.beginPath(); x.arc(w * 0.80, h * 0.20, w * 0.10, 0, Math.PI * 2); x.fill();   /* 밝은 빛망울 */
+  x.fillStyle = '#2c2c2c';
+  x.beginPath(); x.arc(w * 0.20, h * 0.82, w * 0.09, 0, Math.PI * 2); x.fill();   /* 어두운 그림자 */
+  const d = x.getImageData(0, 0, w, h).data;
+  const a = new Uint8ClampedArray(w * h);
+  for(let i = 0; i < w * h; i++) a[i] = d[i * 4];
+  return a;
+}
+
+/* 손글씨 7 — 활동 ②의 해상도·단계 수 실험용. 4×4 초과표본으로 자연스러운 가장자리를 만듭니다. */
+function ioSevenAt(u, v){
+  if(v > 0.20 && v < 0.30 && u > 0.20 && u < 0.80) return 1;   /* 윗 가로획 */
+  const ax = 0.76, ay = 0.28, bx = 0.38, by = 0.84;
+  const dx = bx - ax, dy = by - ay;
+  let t = ((u - ax) * dx + (v - ay) * dy) / (dx * dx + dy * dy);
+  t = Math.max(0, Math.min(1, t));
+  const px = ax + t * dx, py = ay + t * dy;
+  return Math.hypot(u - px, v - py) < 0.052 ? 1 : 0;
+}
+function ioMakeSeven(n){
+  const a = new Uint8ClampedArray(n * n);
+  const S = 4;
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < n; j++){
+      let ink = 0;
+      for(let sy = 0; sy < S; sy++){
+        for(let sx = 0; sx < S; sx++){
+          ink += ioSevenAt((j + (sx + 0.5) / S) / n, (i + (sy + 0.5) / S) / n);
+        }
+      }
+      a[i * n + j] = Math.round(248 - 222 * (ink / (S * S)));   /* 종이 248 · 획 26 */
+    }
+  }
+  return a;
 }
 
 /* 회색조 배열 → 캔버스 */
@@ -17750,80 +17804,609 @@ function ioPaintGray(cv, arr){
   }
   x.putImageData(im, 0, 0);
 }
-/* RGBA 배열 → 캔버스 */
-function ioPaintRGBA(cv, d){
-  if(!cv || !d) return;
-  const x = cv.getContext('2d');
-  const im = x.createImageData(cv.width, cv.height);
-  im.data.set(d);
-  x.putImageData(im, 0, 0);
+
+/* ── 4. 도입 실자료 — 확대하면 보이는 것 ────────────────────────────────── */
+
+const IO_ZOOM = {src:null};
+
+function ioZoomDraw(){
+  const c0 = ioEl('io-zm0'), c1 = ioEl('io-zm1'), c2 = ioEl('io-zm2');
+  if(!c0 || !c1 || !c2) return;
+  if(!IO_ZOOM.src) IO_ZOOM.src = ioMakeGray(120, 120);
+  const S = IO_ZOOM.src;
+
+  /* 확대할 자리 — 달의 가장자리(밝은 곳과 어두운 하늘이 함께 들어오는 지점) */
+  const CX = 84, CY = 40;
+
+  /* ① 원본 120 × 120 + 확대 위치 표시 */
+  ioPaintGray(c0, S);
+  const x0 = c0.getContext('2d');
+  x0.strokeStyle = ioCss('--red', '#b44133');
+  x0.lineWidth = 2;
+  x0.strokeRect(CX - 8, CY - 8, 16, 16);
+
+  /* ② 8배 확대 — 원본의 15 × 15 조각을 키워 그립니다. */
+  const x1 = c1.getContext('2d');
+  const N1 = 15, ox = CX - 7, oy = CY - 7, cell1 = c1.width / N1;
+  for(let i = 0; i < N1; i++){
+    for(let j = 0; j < N1; j++){
+      const v = S[Math.min(119, oy + i) * 120 + Math.min(119, ox + j)];
+      x1.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')';
+      x1.fillRect(j * cell1, i * cell1, cell1 + 1, cell1 + 1);
+    }
+  }
+
+  /* ③ 32배 확대 — 6 × 6 조각에 밝기 값을 겹쳐 씁니다. */
+  const x2 = c2.getContext('2d');
+  const N2 = 6, ox2 = CX - 3, oy2 = CY - 3, cell2 = c2.width / N2;
+  x2.font = 'bold 20px monospace';
+  x2.textAlign = 'center';
+  x2.textBaseline = 'middle';
+  for(let i = 0; i < N2; i++){
+    for(let j = 0; j < N2; j++){
+      const v = S[Math.min(119, oy2 + i) * 120 + Math.min(119, ox2 + j)];
+      x2.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')';
+      x2.fillRect(j * cell2, i * cell2, cell2, cell2);
+      x2.strokeStyle = 'rgba(128,128,128,0.55)'; x2.lineWidth = 1;
+      x2.strokeRect(j * cell2 + 0.5, i * cell2 + 0.5, cell2 - 1, cell2 - 1);
+      x2.fillStyle = v > 130 ? '#111' : '#f2f2f2';
+      x2.fillText(String(v), j * cell2 + cell2 / 2, i * cell2 + cell2 / 2);
+    }
+  }
 }
 
-/* ── 4. 활동 1 · 밝기 랩 ─────────────────────────────────────────────────── */
+/* ── 5. 활동 ① · 픽셀과 이진행렬 (mnist 탭 ① 흡수) ─────────────────────── */
+
+/* 무늬 정의 — 1 = 흰색, 0 = 검은색 (씨마스 Ⅲ p.90 표기).
+   5·6·8 세 크기 모두 좌우 대칭으로 손수 정의해 소형 격자에서도 형태가 또렷합니다. */
+const IO_PATS = {
+  heart:{
+    nm:'하트',
+    5:[0,1,0,1,0, 1,1,1,1,1, 1,1,1,1,1, 0,1,1,1,0, 0,0,1,0,0],
+    6:[0,0,0,0,0,0, 1,1,0,0,1,1, 1,1,1,1,1,1, 1,1,1,1,1,1, 0,1,1,1,1,0, 0,0,1,1,0,0],
+    8:[0,0,0,0,0,0,0,0, 0,1,1,0,0,1,1,0, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+       1,1,1,1,1,1,1,1, 0,1,1,1,1,1,1,0, 0,0,1,1,1,1,0,0, 0,0,0,1,1,0,0,0],
+  },
+  star:{
+    nm:'별',
+    5:[0,0,1,0,0, 1,1,1,1,1, 0,1,1,1,0, 0,1,0,1,0, 1,0,0,0,1],
+    6:[0,0,1,1,0,0, 0,0,1,1,0,0, 1,1,1,1,1,1, 0,1,1,1,1,0, 0,1,1,1,1,0, 1,1,0,0,1,1],
+    8:[0,0,0,1,1,0,0,0, 0,0,0,1,1,0,0,0, 1,1,1,1,1,1,1,1, 0,1,1,1,1,1,1,0,
+       0,0,1,1,1,1,0,0, 0,0,1,1,1,1,0,0, 0,1,1,0,0,1,1,0, 1,1,0,0,0,0,1,1],
+  },
+  tee:{nm:'T자'},
+  my:{nm:'내가 그리기'},
+};
+
+const ioBin = {pat:'heart', n:6, ans:[], my:[], solved:{}, qi:1, qj:1, opened:false};
+
+/* T자는 크기에 맞춰 자동 생성합니다(윗 가로줄 + 가운데 세로줄). */
+function ioBinTee(n){
+  const g = new Array(n * n).fill(0);
+  const c1 = Math.floor((n - 1) / 2), c2 = Math.ceil((n - 1) / 2);
+  for(let j = 0; j < n; j++) g[j] = 1;
+  for(let i = 0; i < n; i++){ g[i * n + c1] = 1; g[i * n + c2] = 1; }
+  return g;
+}
+function ioBinTarget(){
+  const n = ioBin.n;
+  if(ioBin.pat === 'tee') return ioBinTee(n);
+  if(ioBin.pat === 'my'){
+    if(!ioBin.my || ioBin.my.length !== n * n) ioBin.my = new Array(n * n).fill(0);
+    return ioBin.my;
+  }
+  const p = IO_PATS[ioBin.pat];
+  return (p && p[n]) ? p[n].slice() : new Array(n * n).fill(0);
+}
+function ioBinKey(){ return ioBin.pat + ':' + ioBin.n; }
+
+function ioBinRender(){
+  const pic = ioEl('io-bin-pic'), ans = ioEl('io-bin-ans');
+  if(!pic || !ans) return;
+  const n = ioBin.n, g = ioBinTarget();
+  pic.style.gridTemplateColumns = 'repeat(' + n + ', auto)';
+  ans.style.gridTemplateColumns = 'repeat(' + n + ', auto)';
+  pic.classList.toggle('draw', ioBin.pat === 'my');
+
+  let hp = '';
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < n; j++){
+      const on = g[i * n + j] === 1;
+      hp += '<button type="button" class="io-cellb' + (on ? ' w' : '') +
+            '" data-i="' + i + '" data-j="' + j + '" aria-label="' + (i + 1) + '행 ' + (j + 1) + '열, ' +
+            (on ? '흰색' : '검은색') + '"' + (ioBin.pat === 'my' ? '' : ' disabled') + '></button>';
+    }
+  }
+  pic.innerHTML = hp;
+  if(ioBin.pat === 'my'){
+    pic.querySelectorAll('.io-cellb').forEach(function(b){
+      b.addEventListener('click', function(){
+        const i = +b.dataset.i, j = +b.dataset.j;
+        ioBin.my[i * n + j] = ioBin.my[i * n + j] ? 0 : 1;
+        ioBinRender();
+      });
+    });
+  }
+
+  if(!ioBin.ans || ioBin.ans.length !== n * n) ioBin.ans = new Array(n * n).fill(0);
+  let ha = '';
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < n; j++){
+      const v = ioBin.ans[i * n + j];
+      ha += '<button type="button" class="io-cellb' + (v ? ' one' : '') +
+            '" role="gridcell" data-i="' + i + '" data-j="' + j +
+            '" aria-label="' + (i + 1) + '행 ' + (j + 1) + '열, 값 ' + v + '">' + v + '</button>';
+    }
+  }
+  ans.innerHTML = ha;
+  ans.querySelectorAll('.io-cellb').forEach(function(b){
+    b.addEventListener('click', function(){
+      const i = +b.dataset.i, j = +b.dataset.j;
+      ioBin.ans[i * n + j] = ioBin.ans[i * n + j] ? 0 : 1;
+      ioBinRender();
+    });
+  });
+  ioBinQPos();
+}
+
+function ioBinPat(p){
+  ioBin.pat = p;
+  ioBin.ans = new Array(ioBin.n * ioBin.n).fill(0);
+  const box = ioEl('io-bin-pat');
+  if(box) box.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on', c.dataset.p === p); });
+  const note = ioEl('io-bin-note');
+  if(note){
+    note.innerHTML = (p === 'my')
+      ? '왼쪽 격자를 눌러 <b>내 무늬</b>를 먼저 그린 뒤, 오른쪽 표에 옮겨 적어 보세요. 약속은 <b>검은색 0, 흰색 1</b> 입니다.'
+      : '약속 — <b>검은색은 0, 흰색은 1</b> 입니다. 무늬 「' + (IO_PATS[p] ? IO_PATS[p].nm : '') + '」 을 옮겨 적어 보세요.';
+  }
+  ioBinRender();
+  const fb = ioEl('io-bin-fb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
+}
+function ioBinSize(n){
+  ioBin.n = n;
+  ioBin.ans = new Array(n * n).fill(0);
+  ioBin.my = new Array(n * n).fill(0);
+  const box = ioEl('io-bin-size');
+  if(box) box.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on', +c.dataset.n === n); });
+  ioBinRender();
+}
+function ioBinClear(){
+  ioBin.ans = new Array(ioBin.n * ioBin.n).fill(0);
+  ioBinRender();
+  const fb = ioEl('io-bin-fb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
+}
+function ioBinReveal(){
+  ioBin.ans = ioBinTarget().slice();
+  ioBinRender();
+  ioFb('io-bin-fb', true, '정답을 표시했습니다. <b>표에 적힌 수만 보고도 원래 그림을 되살릴 수 있다</b>는 점을 확인해 보세요.');
+}
+function ioBinCheck(){
+  const n = ioBin.n, g = ioBinTarget(), ans = ioEl('io-bin-ans');
+  if(!ans) return;
+  if(ioBin.pat === 'my' && g.every(function(v){ return v === 0; })){
+    ioFb('io-bin-fb', false, '왼쪽 격자에 <b>무늬를 먼저 그려</b> 주세요. 지금은 전부 검은색(0)입니다.');
+    return;
+  }
+  let wrong = 0;
+  ans.querySelectorAll('.io-cellb').forEach(function(b){
+    const i = +b.dataset.i, j = +b.dataset.j;
+    const ok = (ioBin.ans[i * n + j] === g[i * n + j]);
+    b.classList.remove('ok', 'no');
+    b.classList.add(ok ? 'ok' : 'no');
+    if(!ok) wrong++;
+  });
+  if(wrong === 0){
+    ioBin.solved[ioBinKey()] = 1;
+    ioFb('io-bin-fb', true, '모두 맞았습니다. 그림 하나가 <b>표 하나</b>로 정확히 옮겨졌습니다 — ' +
+      '이 표를 가로줄(<b>행</b>)과 세로줄(<b>열</b>)로 읽으면 그것이 곧 <b>행렬</b>입니다.');
+  }else{
+    ioFb('io-bin-fb', false, '<b>' + wrong + '칸</b>이 다릅니다. 붉게 표시된 칸을 다시 보세요 — ' +
+      '검은 칸에는 <b>0</b>, 흰 칸에는 <b>1</b> 입니다.');
+  }
+  ioBinProg();
+  ioSave();
+}
+function ioBinProg(){
+  const cnt = Object.keys(ioBin.solved).length;
+  ioTxt('io-bin-prog', cnt >= 1
+    ? '맞힌 무늬 ' + cnt + '개 — 아래 세 단계가 열렸습니다.'
+    : '맞힌 무늬 0개 — 한 무늬를 모두 맞히면 아래 세 단계가 열립니다.');
+  if(cnt >= 1){
+    ['io-bin-f1', 'io-bin-f2', 'io-bin-f3'].forEach(function(id){ ioLock(id, true); });
+    const lm = ioEl('io-bin-lockmsg'); if(lm) lm.style.display = 'none';
+  }
+}
+
+/* 일반화 — 성분의 자리 읽기 */
+function ioBinQPos(){
+  const n = ioBin.n;
+  if(ioBin.qi > n) ioBin.qi = n;
+  if(ioBin.qj > n) ioBin.qj = n;
+  ioTxt('io-bin-qi', ioBin.qi);
+  ioTxt('io-bin-qj', ioBin.qj);
+  ioTxt('io-bin-qs', String(ioBin.qi) + String(ioBin.qj));
+}
+function ioBinNewQ(){
+  const n = ioBin.n;
+  let i, j, guard = 0;
+  do{
+    i = 1 + Math.floor(Math.random() * n);
+    j = 1 + Math.floor(Math.random() * n);
+    guard++;
+  }while(i === ioBin.qi && j === ioBin.qj && guard < 20);
+  ioBin.qi = i; ioBin.qj = j;
+  ioBinQPos();
+  const el = ioEl('io-bin-qin'); if(el) el.value = '';
+  const fb = ioEl('io-bin-qfb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
+}
+function ioBinQ(){
+  const el = ioEl('io-bin-qin');
+  if(!el) return;
+  const raw = el.value.trim();
+  if(raw === ''){ ioFb('io-bin-qfb', false, '0 또는 1을 입력해 주세요.'); return; }
+  const v = parseInt(raw, 10);
+  const g = ioBinTarget();
+  const t = g[(ioBin.qi - 1) * ioBin.n + (ioBin.qj - 1)];
+  if(v === t){
+    ioFb('io-bin-qfb', true, '맞았습니다. a<sub>' + ioBin.qi + ioBin.qj + '</sub> = <b>' + t + '</b> — 제 ' +
+      ioBin.qi + ' 행 제 ' + ioBin.qj + ' 열의 칸은 ' + (t ? '<b>흰색</b>' : '<b>검은색</b>') + ' 입니다.');
+  }else{
+    ioFb('io-bin-qfb', false, '다시 보세요. 정답은 <b>' + t + '</b> 입니다. 앞의 수가 <b>행(가로줄)</b>, ' +
+      '뒤의 수가 <b>열(세로줄)</b> 입니다. a<sub>12</sub> 와 a<sub>21</sub> 은 서로 다른 자리입니다.');
+  }
+}
+
+function ioIdeaSubmit(){
+  const t = ioEl('io-a0-idea');
+  const p = ioEl('io-a0-panel');
+  if(p) p.classList.remove('io-veil');
+  ioBin.opened = true;
+  ioTxt('io-a0-msg', (t && t.value.trim())
+    ? '좋습니다. 여러분이 정한 약속과 아래의 약속(검은색 0, 흰색 1)을 비교해 보세요.'
+    : '조작판이 열렸습니다. 생각이 정리되면 위 칸에도 한 줄 적어 두세요.');
+  ioSave();
+}
+
+function ioBinBind(){
+  const pb = ioEl('io-bin-pat');
+  if(pb) pb.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){ ioBinPat(c.dataset.p); });
+  });
+  const sb = ioEl('io-bin-size');
+  if(sb) sb.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){ ioBinSize(+c.dataset.n); });
+  });
+  ioBinRender();
+  ioBinProg();
+}
+
+/* ── 6. 활동 ② · 회색조와 해상도 (mnist 탭 ② 흡수) ─────────────────────── */
+
+const IO_RES_STOPS = [4, 8, 16, 28, 40, 64];
+const ioRes = {ri:2, lv:256, num:false, g:null, sel:null, qi:0, qj:0, seen:{}, opened:false};
+
+function ioResN(){ return IO_RES_STOPS[ioRes.ri]; }
+function ioResQuant(v){
+  const L = ioRes.lv;
+  if(L >= 256) return v;
+  const step = 255 / (L - 1);
+  return Math.round(Math.round(v / step) * step);
+}
+function ioResBuild(){
+  const n = ioResN();
+  const base = ioMakeSeven(n);
+  const g = new Uint8ClampedArray(n * n);
+  for(let i = 0; i < n * n; i++) g[i] = ioResQuant(base[i]);
+  ioRes.g = g;
+}
+
+function ioResDraw(){
+  ioResBuild();
+  const cv = ioEl('io-res-cv');
+  if(!cv) return;
+  const n = ioResN(), g = ioRes.g;
+  const x = cv.getContext('2d');
+  const W = cv.width, cell = W / n;
+  x.clearRect(0, 0, W, W);
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < n; j++){
+      const v = g[i * n + j];
+      x.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')';
+      x.fillRect(j * cell, i * cell, Math.ceil(cell), Math.ceil(cell));
+    }
+  }
+  if(n <= 28){
+    x.strokeStyle = 'rgba(128,128,128,0.40)'; x.lineWidth = 1;
+    for(let k = 0; k <= n; k++){
+      x.beginPath(); x.moveTo(k * cell, 0); x.lineTo(k * cell, W); x.stroke();
+      x.beginPath(); x.moveTo(0, k * cell); x.lineTo(W, k * cell); x.stroke();
+    }
+  }
+  if(ioRes.num && n <= 16){
+    x.font = 'bold ' + Math.max(8, Math.round(cell * 0.34)) + 'px monospace';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    for(let i = 0; i < n; i++){
+      for(let j = 0; j < n; j++){
+        const v = g[i * n + j];
+        x.fillStyle = v > 130 ? '#111' : '#f2f2f2';
+        x.fillText(String(v), j * cell + cell / 2, i * cell + cell / 2);
+      }
+    }
+  }
+  if(ioRes.sel){
+    x.strokeStyle = ioCss('--red', '#b44133'); x.lineWidth = 3;
+    x.strokeRect(ioRes.sel[1] * cell + 1.5, ioRes.sel[0] * cell + 1.5, cell - 3, cell - 3);
+  }
+  ioTxt('io-res-rv', n + ' × ' + n);
+  ioHtml('io-res-badge', '가로 ' + n + ' × 세로 ' + n + ' = <b>' + (n * n).toLocaleString() + '</b> 개');
+  ioResRamp();
+  ioResTable();
+  ioResInfo();
+}
+
+function ioResRamp(){
+  const box = ioEl('io-res-ramp');
+  if(!box) return;
+  const L = Math.min(ioRes.lv, 32);
+  let h = '';
+  for(let i = 0; i < L; i++){
+    const v = Math.round(255 * i / (L - 1));
+    h += '<i style="background:rgb(' + v + ',' + v + ',' + v + ');"></i>';
+  }
+  box.innerHTML = h;
+}
+
+function ioResTable(){
+  const t = ioEl('io-res-vt');
+  if(!t) return;
+  const n = ioResN(), g = ioRes.g, m = Math.min(4, n);
+  let h = '';
+  for(let i = 0; i < m; i++){
+    h += '<tr>';
+    for(let j = 0; j < m; j++){
+      const hot = (ioRes.qi === i && ioRes.qj === j) ? ' class="hot"' : '';
+      h += '<td' + hot + '>' + (hot ? '?' : g[i * n + j]) + '</td>';
+    }
+    h += '</tr>';
+  }
+  t.innerHTML = h;
+}
+
+function ioResInfo(){
+  const t = ioEl('io-res-info');
+  if(!t) return;
+  const n = ioResN(), px = n * n;
+  const gray = px, bin = Math.ceil(px / 8);
+  t.innerHTML =
+    '<tr><th>해상도</th><th>픽셀(성분) 개수</th><th>회색조 저장(1픽셀 1바이트)</th><th>흑백 이진 저장(1픽셀 1비트)</th></tr>' +
+    '<tr><td>' + n + ' × ' + n + '</td><td class="hi">' + px.toLocaleString() + ' 개</td><td>' +
+    gray.toLocaleString() + ' 바이트</td><td>' + px.toLocaleString() + ' 비트 = ' + bin.toLocaleString() + ' 바이트</td></tr>';
+}
+
+function ioResSet(ri){
+  ioRes.ri = Math.max(0, Math.min(IO_RES_STOPS.length - 1, ri));
+  ioRes.sel = null;
+  ioRes.seen[ioResN()] = 1;
+  const n = ioResN();
+  if(ioRes.qi >= n) ioRes.qi = 0;
+  if(ioRes.qj >= n) ioRes.qj = 0;
+  ioResDraw();
+  ioResProg();
+}
+function ioResLevel(L){
+  ioRes.lv = L;
+  const box = ioEl('io-res-lv');
+  if(box) box.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on', +c.dataset.l === L); });
+  ioResDraw();
+}
+function ioResToggleNum(){
+  ioRes.num = !ioRes.num;
+  const c = ioEl('io-res-num');
+  if(c){
+    c.classList.toggle('on', ioRes.num);
+    c.textContent = ioRes.num ? '값 표시 끄기' : '값 표시 켜기';
+  }
+  if(ioRes.num && ioResN() > 16){
+    ioTxt('io-res-sel', '값은 16 × 16 이하에서만 겹쳐 보입니다 — 해상도를 낮춰 보세요.');
+  }
+  ioResDraw();
+}
+function ioResProg(){
+  const cnt = Object.keys(ioRes.seen).length;
+  ioTxt('io-res-prog', cnt >= 2
+    ? '바꾸어 본 해상도 ' + cnt + '가지 — 아래 세 단계가 열렸습니다.'
+    : '바꾸어 본 해상도 ' + cnt + '가지 — 두 가지 이상 바꾸면 아래 세 단계가 열립니다.');
+  if(cnt >= 2){
+    ['io-res-f1', 'io-res-f2', 'io-res-f3'].forEach(function(id){ ioLock(id, true); });
+    const lm = ioEl('io-res-lockmsg'); if(lm) lm.style.display = 'none';
+  }
+}
+function ioResPickAt(clientX, clientY){
+  const cv = ioEl('io-res-cv');
+  if(!cv) return;
+  const b = cv.getBoundingClientRect();
+  const n = ioResN();
+  const j = Math.min(n - 1, Math.max(0, Math.floor((clientX - b.left) / b.width * n)));
+  const i = Math.min(n - 1, Math.max(0, Math.floor((clientY - b.top) / b.height * n)));
+  ioRes.sel = [i, j];
+  ioTxt('io-res-sel', '고른 칸 — 제 ' + (i + 1) + ' 행 제 ' + (j + 1) + ' 열, 밝기 값 ' + ioRes.g[i * n + j] +
+    (ioRes.g[i * n + j] > 128 ? ' (밝은 쪽)' : ' (어두운 쪽)'));
+  ioResDraw();
+}
+function ioResNewQ(){
+  const n = ioResN(), m = Math.min(4, n);
+  ioRes.qi = Math.floor(Math.random() * m);
+  ioRes.qj = Math.floor(Math.random() * m);
+  const el = ioEl('io-res-in'); if(el) el.value = '';
+  const fb = ioEl('io-res-fb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
+  ioResTable();
+}
+function ioResCheck(){
+  const el = ioEl('io-res-in');
+  if(!el) return;
+  const raw = el.value.trim();
+  if(raw === ''){ ioFb('io-res-fb', false, '0 이상 255 이하의 수를 입력해 주세요.'); return; }
+  const n = ioResN();
+  const t = ioRes.g[ioRes.qi * n + ioRes.qj];
+  const v = parseInt(raw, 10);
+  if(v === t){
+    ioFb('io-res-fb', true, '맞았습니다. 제 ' + (ioRes.qi + 1) + ' 행 제 ' + (ioRes.qj + 1) + ' 열의 값은 <b>' + t + '</b> 입니다.');
+  }else{
+    ioFb('io-res-fb', false, '정답은 <b>' + t + '</b> 입니다. 값이 클수록 밝은 칸입니다 — ' +
+      '표의 붉은 칸이 격자에서 어느 자리인지 다시 확인해 보세요.');
+  }
+}
+function ioResFill(){
+  const box = ioEl('io-res-fill');
+  if(!box) return;
+  const want = ['up', '255', '0', 'hi'];
+  const sels = box.querySelectorAll('select');
+  let ok = 0, blank = 0;
+  sels.forEach(function(s){
+    const k = +s.dataset.k;
+    if(!s.value){ blank++; return; }
+    if(s.value === want[k]) ok++;
+  });
+  if(blank){ ioFb('io-res-fillfb', false, '아직 고르지 않은 빈칸이 <b>' + blank + '개</b> 있습니다.'); return; }
+  if(ok === 4){
+    ioFb('io-res-fillfb', true, '모두 맞았습니다 — <b>값이 클수록 밝고</b>, 흰색은 255, 검은색은 0, ' +
+      '픽셀 수가 많을수록 고화질입니다.');
+  }else{
+    ioFb('io-res-fillfb', false, '4개 중 <b>' + ok + '개</b> 맞았습니다. 0이 검은색, 255가 흰색이라는 약속에서 다시 출발해 보세요.');
+  }
+}
+function ioResBytes(){
+  const w = parseInt((ioEl('io-res-w') || {}).value, 10);
+  const h = parseInt((ioEl('io-res-h') || {}).value, 10);
+  const bits = parseInt((ioEl('io-res-mode') || {}).value, 10);
+  if(!w || !h || w < 1 || h < 1){ ioFb('io-res-bfb', false, '가로·세로에 1 이상의 수를 입력해 주세요.'); return; }
+  const px = w * h;
+  const bytes = px * bits / 8;
+  const kb = bytes / 1024, mb = kb / 1024;
+  let size = bytes.toLocaleString() + ' 바이트';
+  if(mb >= 1) size += ' ≒ ' + mb.toFixed(2) + ' MB';
+  else if(kb >= 1) size += ' ≒ ' + kb.toFixed(1) + ' KB';
+  const label = bits === 1 ? '흑백 이진(1비트)' : (bits === 8 ? '회색조(8비트)' : '컬러 R·G·B(24비트)');
+  ioFb('io-res-bfb', true, '픽셀 수 <b>' + px.toLocaleString() + '</b> 개 · ' + label + ' → ' +
+    '(' + px.toLocaleString() + ' × ' + bits + ') ÷ 8 = <b>' + size + '</b>' +
+    (bits === 24 ? ' <span class="io-hint">— 컬러는 한 픽셀에 세 수가 필요합니다(15차시).</span>' : ''));
+}
+
+function ioResIdea(){
+  const p = ioEl('io-res-panel');
+  if(p) p.classList.remove('io-veil');
+  ioRes.opened = true;
+  ioRes.seen[ioResN()] = 1;
+  ioTxt('io-a2-msg', '조작판이 열렸습니다. 단계 수를 2 → 256으로 올리며 여러분의 예상과 비교해 보세요.');
+  setTimeout(ioResDraw, 30);
+  ioResProg();
+  ioSave();
+}
+
+function ioResBind(){
+  const r = ioEl('io-res-r');
+  if(r) r.addEventListener('input', function(){ ioResSet(parseInt(r.value, 10) || 0); });
+  const lv = ioEl('io-res-lv');
+  if(lv) lv.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){ ioResLevel(+c.dataset.l); });
+  });
+  const cv = ioEl('io-res-cv');
+  if(cv){
+    cv.addEventListener('click', function(e){ ioResPickAt(e.clientX, e.clientY); });
+    cv.tabIndex = 0;
+  }
+  ioResDraw();
+  ioResProg();
+}
+
+/* ── 7. 활동 ③ · 밝기 랩 (구 탭 ① 보존 + 11×11 값 패널 신설) ───────────── */
 
 const IO_W1 = 56;                                  /* 회색조 표본 크기 */
 let ioA1Src = null;
-const ioA1 = {k:1, t:0, inv:false, clip:true, r:27, c:27, done:[false, false, false, false], opened:false};
+const ioA1 = {k:1, t:0, clip:true, r:27, c:27, win:11, done:[false, false, false, false], opened:false, side:false};
 
-function ioA1Map(v){                               /* 원본 한 칸 → 결과(자르기 전) */
-  let out = ioA1.k * v + ioA1.t;
-  if(ioA1.inv) out = 255 - out;
-  return Math.round(out);
-}
+function ioA1Map(v){ return Math.round(ioA1.k * v + ioA1.t); }   /* 원본 한 칸 → 결과(자르기 전) */
+
 function ioA1Fml(){
   const k = ioA1.k, t = ioA1.t;
   let inner = (k === 1 ? 'A' : k + 'A');
   if(t > 0) inner += ' + ' + t + 'J';
   else if(t < 0) inner += ' − ' + Math.abs(t) + 'J';
-  if(ioA1.inv) inner = '255J − (' + inner + ')';
   return 'B = ' + inner + (ioA1.clip ? '   ·  0~255로 조정' : '   ·  조정하지 않음');
 }
 
 function ioA1Render(){
   if(!ioA1Src) return;
   const out = ioEl('io-cv-out');
+  let cut = 0;
   if(out){
     const arr = new Uint8ClampedArray(ioA1Src.length);
-    for(let i = 0; i < ioA1Src.length; i++) arr[i] = ioClamp(ioA1Map(ioA1Src[i]));
+    for(let i = 0; i < ioA1Src.length; i++){
+      const raw = ioA1Map(ioA1Src[i]);
+      if(raw < 0 || raw > 255) cut++;
+      arr[i] = ioClamp(raw);
+    }
     ioPaintGray(out, arr);
   }
   ioTxt('io-a1-fml', ioA1Fml());
   ioTxt('io-a1-outcap', ioA1.clip
     ? '결과 B'
     : '결과 B · 클리핑 꺼짐 (화면에는 어쩔 수 없이 잘라 보여 줍니다)');
+  const total = IO_W1 * IO_W1;
+  const badge = ioEl('io-a1-clipbadge');
+  if(badge){
+    badge.textContent = '잘린 픽셀 ' + cut.toLocaleString() + ' 개 (전체의 ' + (cut / total * 100).toFixed(1) + ' %)';
+    badge.classList.toggle('hot', cut > 0);
+  }
   ioA1Win();
   ioA1Curve();
+  if(ioA1.side) ioA1SideDraw();
 }
 
 function ioA1Win(){
   const wa = ioEl('io-a1-winA'), wb = ioEl('io-a1-winB');
   if(!wa || !wb || !ioA1Src) return;
   ioTxt('io-a1-r', ioA1.r); ioTxt('io-a1-c', ioA1.c);
-  wa.style.gridTemplateColumns = 'repeat(5, auto)';
-  wb.style.gridTemplateColumns = 'repeat(5, auto)';
+  const N = ioA1.win, R = (N - 1) / 2;
+  wa.className = 'io-win' + (N === 11 ? ' n11' : '');
+  wb.className = 'io-win' + (N === 11 ? ' n11' : '');
+  wa.style.gridTemplateColumns = 'repeat(' + N + ', auto)';
+  wb.style.gridTemplateColumns = 'repeat(' + N + ', auto)';
   let ha = '', hb = '';
-  for(let dy = -2; dy <= 2; dy++){
-    for(let dx = -2; dx <= 2; dx++){
+  for(let dy = -R; dy <= R; dy++){
+    for(let dx = -R; dx <= R; dx++){
       const y = Math.min(IO_W1 - 1, Math.max(0, ioA1.r + dy));
       const x = Math.min(IO_W1 - 1, Math.max(0, ioA1.c + dx));
       const v = ioA1Src[y * IO_W1 + x];
       const raw = ioA1Map(v);
       const shown = ioA1.clip ? ioClamp(raw) : raw;
-      const mid = (dx === 0 && dy === 0) ? ' c' : '';
+      const mid = (dx === 0 && dy === 0) ? ' c mid' : '';
       const over = (!ioA1.clip && (raw < 0 || raw > 255)) ? ' over' : '';
       ha += '<div class="wc' + mid + '">' + v + '</div>';
       hb += '<div class="wc' + mid + over + '">' + shown + '</div>';
     }
   }
   wa.innerHTML = ha; wb.innerHTML = hb;
-  const v0 = ioA1Src[ioA1.r * IO_W1 + ioA1.c];
-  const raw0 = ioA1Map(v0);
-  const cut = ioClamp(raw0);
-  let line = '가운데 칸 : ' + v0 + ' → ';
-  if(ioA1.inv) line += '255 − (' + ioA1.k + ' × ' + v0 + (ioA1.t ? ' + (' + ioA1.t + ')' : '') + ') = ' + raw0;
-  else line += ioA1.k + ' × ' + v0 + (ioA1.t ? ' + (' + ioA1.t + ')' : '') + ' = ' + raw0;
-  if(raw0 !== cut) line += ioA1.clip ? '  →  0~255로 조정하여 ' + cut : '  →  저장할 수 없는 값 (범위 밖)';
-  ioTxt('io-a1-cell', line);
+
+  /* 가운데 칸의 「원래 값 → 계산 → 결과」 3열 전개 (노션 ex2-1·ex2-2 이식) */
+  const t = ioEl('io-a1-calc');
+  if(t){
+    const v0 = ioA1Src[ioA1.r * IO_W1 + ioA1.c];
+    const raw0 = ioA1Map(v0);
+    const cut0 = ioClamp(raw0);
+    const expr = (ioA1.k === 1 && ioA1.t === 0)
+      ? '변환 없음 (k = 1, t = 0)'
+      : (ioA1.k === 1 ? String(v0) : ioA1.k + ' × ' + v0) +
+        (ioA1.t ? (ioA1.t > 0 ? ' + ' + ioA1.t : ' − ' + Math.abs(ioA1.t)) : '') + ' = ' + raw0;
+    const outCell = (raw0 !== cut0)
+      ? (ioA1.clip
+          ? '<td class="over">' + raw0 + ' → <b>' + cut0 + '</b> (조정)</td>'
+          : '<td class="over">' + raw0 + ' (저장 불가)</td>')
+      : '<td><b>' + cut0 + '</b></td>';
+    t.innerHTML = '<tr><th>원래 값</th><th>계산</th><th>결과</th></tr>' +
+      '<tr><td class="mid">' + v0 + '</td><td class="mid">' + expr + '</td>' + outCell + '</tr>';
+  }
 }
 
 function ioA1Curve(){
@@ -17837,13 +18420,11 @@ function ioA1Curve(){
   x.fillStyle = bg; x.fillRect(0, 0, W, H);
   const X = function(v){ return P + (W - P - 12) * (v / 255); };
   const Y = function(v){ return H - P - (H - P - 12) * (v / 255); };
-  /* 격자 */
   x.strokeStyle = bd; x.lineWidth = 1;
   [0, 64, 128, 192, 255].forEach(function(v){
     x.beginPath(); x.moveTo(X(v), Y(0)); x.lineTo(X(v), Y(255)); x.stroke();
     x.beginPath(); x.moveTo(X(0), Y(v)); x.lineTo(X(255), Y(v)); x.stroke();
   });
-  /* 축 */
   x.strokeStyle = mut; x.lineWidth = 1.6;
   x.beginPath(); x.moveTo(X(0), Y(0)); x.lineTo(X(255), Y(0)); x.stroke();
   x.beginPath(); x.moveTo(X(0), Y(0)); x.lineTo(X(0), Y(255)); x.stroke();
@@ -17851,7 +18432,6 @@ function ioA1Curve(){
   [0, 128, 255].forEach(function(v){ x.fillText(String(v), X(v), Y(0) + 17); });
   x.textAlign = 'right';
   [0, 128, 255].forEach(function(v){ x.fillText(String(v), X(0) - 6, Y(v) + 4); });
-  /* y = x */
   x.strokeStyle = mut; x.setLineDash([5, 5]); x.lineWidth = 1.4;
   x.beginPath(); x.moveTo(X(0), Y(0)); x.lineTo(X(255), Y(255)); x.stroke();
   x.setLineDash([]);
@@ -17880,20 +18460,42 @@ function ioA1Curve(){
   x.fillText('결과값 y', 0, 0); x.restore();
 }
 
+/* 덧셈 vs 실수배 나란히 보기 */
+function ioA1SideDraw(){
+  if(!ioA1Src) return;
+  const ca = ioEl('io-cv-add'), cm = ioEl('io-cv-mul');
+  if(ca){
+    const a = new Uint8ClampedArray(ioA1Src.length);
+    for(let i = 0; i < ioA1Src.length; i++) a[i] = ioClamp(ioA1Src[i] + 50);
+    ioPaintGray(ca, a);
+  }
+  if(cm){
+    const a = new Uint8ClampedArray(ioA1Src.length);
+    for(let i = 0; i < ioA1Src.length; i++) a[i] = ioClamp(Math.round(ioA1Src[i] * 1.2));
+    ioPaintGray(cm, a);
+  }
+}
+function ioA1Side(){
+  ioA1.side = !ioA1.side;
+  const box = ioEl('io-a1-sidebox');
+  if(box) box.style.display = ioA1.side ? 'flex' : 'none';
+  if(ioA1.side) ioA1SideDraw();
+}
+
 function ioA1Missions(){
-  const k = ioA1.k, t = ioA1.t, inv = ioA1.inv;
+  const k = ioA1.k, t = ioA1.t;
   const hit = [
-    (k === 1.2 && t === 0 && !inv),
-    (k === 1 && t === 50 && !inv),
-    (k === 1 && t === 0 && inv),
-    (k === 2 && t === 0 && !inv),
+    (k === 1.2 && t === 0),
+    (k === 1 && t === 50),
+    (k === 1 && t === -50),
+    (k === 2 && t === 0),
   ];
   const msg = [
-    '✓ 미션 ① 완료 — <b>B = 1.2A</b> 입니다. 실수배는 밝은 곳을 더 크게 늘려 대비까지 함께 키웁니다.',
-    '✓ 미션 ② 완료 — <b>B = A + 50J</b> 입니다. 모든 칸이 같은 간격으로 올라가 대비는 그대로입니다.',
-    '✓ 미션 ③ 완료 — <b>B = 255J − A</b> 입니다. 변환 곡선이 오른쪽 아래로 내려간 것을 확인하세요.',
+    '✓ 미션 ① 완료 — <b>B = 1.2A</b> 입니다. 실수배는 밝은 곳을 더 크게 늘려 <b>대비</b>까지 함께 키웁니다.',
+    '✓ 미션 ② 완료 — <b>B = A + 50J</b> 입니다. 모든 칸이 같은 간격으로 올라가 <b>차이는 그대로</b>입니다.',
+    '✓ 미션 ③ 완료 — <b>B = A − 50J</b> 입니다. 값이 50보다 작던 칸은 <b>0으로 잘려</b> 검은색이 됩니다.',
     '✓ 미션 ④ 완료 — <b>B = 2A</b> 입니다. 곡선의 <b>납작해진 구간</b>이 255에 붙어 버린 칸들입니다. ' +
-      '[클리핑 0~255] 체크를 꺼서 숫자 창의 붉은 수도 확인해 보세요.',
+      '[클리핑 0~255] 체크를 꺼서 값 패널의 붉은 수도 확인해 보세요.',
   ];
   let changed = false;
   for(let i = 0; i < 4; i++){
@@ -17920,11 +18522,10 @@ function ioA1Fb(html, ok){
   b.innerHTML = html;
 }
 function ioA1Reset(){
-  ioA1.k = 1; ioA1.t = 0; ioA1.inv = false; ioA1.clip = true;
+  ioA1.k = 1; ioA1.t = 0; ioA1.clip = true;
   const k = ioEl('io-a1-k'); if(k) k.value = '1';
   const t = ioEl('io-a1-t'); if(t) t.value = '0';
   ioTxt('io-a1-tval', '0');
-  const iv = ioEl('io-a1-inv'); if(iv) iv.checked = false;
   const cl = ioEl('io-a1-clip'); if(cl) cl.checked = true;
   ioA1Render();
 }
@@ -17942,6 +18543,7 @@ function ioA1Bind(){
       ioA1.opened = true;
       ioTxt('io-a1-gmsg', '좋습니다. 실험판이 열렸습니다 — 예상이 맞는지 직접 확인해 봅시다. ' +
         '(정답은 ‘둘 다 가능하다’이지만, 두 방법의 결과는 서로 다릅니다.)');
+      setTimeout(ioA1Curve, 30);
       ioSave();
     });
   });
@@ -17954,29 +18556,39 @@ function ioA1Bind(){
     ioTxt('io-a1-tval', (ioA1.t > 0 ? '+' : '') + ioA1.t);
     ioA1Render(); ioA1Missions();
   });
-  const iv = ioEl('io-a1-inv');
-  if(iv) iv.addEventListener('change', function(){ ioA1.inv = iv.checked; ioA1Render(); ioA1Missions(); });
   const cl = ioEl('io-a1-clip');
   if(cl) cl.addEventListener('change', function(){ ioA1.clip = cl.checked; ioA1Render(); });
 
-  const src = ioEl('io-cv-src');
-  if(src) src.addEventListener('click', function(e){
-    const r = src.getBoundingClientRect();
-    ioA1.c = Math.min(IO_W1 - 1, Math.max(0, Math.floor((e.clientX - r.left) / r.width * IO_W1)));
-    ioA1.r = Math.min(IO_W1 - 1, Math.max(0, Math.floor((e.clientY - r.top) / r.height * IO_W1)));
-    ioA1Win();
+  const ws = ioEl('io-a1-wsize');
+  if(ws) ws.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      ws.querySelectorAll('.chip').forEach(function(o){ o.classList.remove('on'); });
+      c.classList.add('on');
+      ioA1.win = +c.dataset.n;
+      ioA1Win();
+    });
   });
+
+  const src = ioEl('io-cv-src');
+  if(src){
+    src.addEventListener('click', function(e){
+      const r = src.getBoundingClientRect();
+      ioA1.c = Math.min(IO_W1 - 1, Math.max(0, Math.floor((e.clientX - r.left) / r.width * IO_W1)));
+      ioA1.r = Math.min(IO_W1 - 1, Math.max(0, Math.floor((e.clientY - r.top) / r.height * IO_W1)));
+      ioA1Win();
+    });
+    src.tabIndex = 0;
+  }
 
   const mis = ioEl('io-a1-mis');
   if(mis) mis.querySelectorAll('.chip').forEach(function(c){
     c.addEventListener('click', function(){
       const m = +c.dataset.m;
-      const set = [[1.2, 0, false], [1, 50, false], [1, 0, true], [2, 0, false]][m];
-      ioA1.k = set[0]; ioA1.t = set[1]; ioA1.inv = set[2];
+      const set = [[1.2, 0], [1, 50], [1, -50], [2, 0]][m];
+      ioA1.k = set[0]; ioA1.t = set[1];
       const kk = ioEl('io-a1-k'); if(kk) kk.value = String(set[0]);
       const tt = ioEl('io-a1-t'); if(tt) tt.value = String(set[1]);
       ioTxt('io-a1-tval', (set[1] > 0 ? '+' : '') + set[1]);
-      const ii = ioEl('io-a1-inv'); if(ii) ii.checked = set[2];
       ioA1Render(); ioA1Missions();
     });
   });
@@ -17984,278 +18596,151 @@ function ioA1Bind(){
   ioA1Render();
 }
 
-/* ── 5. 활동 2 · 반전과 회색조 ───────────────────────────────────────────── */
+/* ── 8. 활동 ④ ㉠ · 반전 255J − A (구 탭 ② 반전 부분) ─────────────────── */
 
-const IO_W2 = 64;
-let ioA2Src = null;
-/* 처음 읽어 주는 픽셀은 빨강 원판과 초록 원판이 겹친 자리(=노랑, 255·255·28)로 둡니다.
-   활동 4 학습지의 복습표(255, 255, 0 → 노랑)와 바로 맞춰 볼 수 있고,
-   평균식(179)과 가중치식(229)의 차이도 한눈에 드러납니다.                        */
-const ioA2 = {mode:'src', gf:'avg', x:32, y:18, used:{}};
+const IO_W4 = 64;
+let ioA4Src = null;
+const ioA4 = {n:0, r:32, c:32, opened:false};
 
-function ioA2Pixel(r, g, b, mode, gf){
-  if(mode === 'r') return [r, 0, 0];
-  if(mode === 'g') return [0, g, 0];
-  if(mode === 'b') return [0, 0, b];
-  if(mode === 'inv') return [255 - r, 255 - g, 255 - b];
-  if(mode === 'gray'){
-    const v = (gf === 'luma')
-      ? Math.round(0.299 * r + 0.587 * g + 0.114 * b)
-      : Math.round((r + g + b) / 3);
-    return [v, v, v];
-  }
-  return [r, g, b];
+function ioA4Cur(){
+  /* 반전 횟수가 홀수이면 255 − v, 짝수이면 원본 */
+  const a = new Uint8ClampedArray(ioA4Src.length);
+  for(let i = 0; i < ioA4Src.length; i++) a[i] = (ioA4.n % 2) ? (255 - ioA4Src[i]) : ioA4Src[i];
+  return a;
 }
-function ioA2Render(){
-  if(!ioA2Src) return;
-  const cv = ioEl('io-cv-color2');
-  if(cv){
-    const d = new Uint8ClampedArray(ioA2Src.length);
-    for(let i = 0; i < ioA2Src.length; i += 4){
-      const o = ioA2Pixel(ioA2Src[i], ioA2Src[i + 1], ioA2Src[i + 2], ioA2.mode, ioA2.gf);
-      d[i] = o[0]; d[i + 1] = o[1]; d[i + 2] = o[2]; d[i + 3] = 255;
+function ioA4Render(){
+  if(!ioA4Src) return;
+  ioPaintGray(ioEl('io-cv-ivt'), ioA4Cur());
+  ioTxt('io-a4-cap', ioA4.n === 0 ? '결과 — 버튼을 눌러 보세요'
+    : (ioA4.n % 2 ? '결과 A′ = 255J − A (' + ioA4.n + '회 반전)' : '결과 = 원본 A 와 같음 (' + ioA4.n + '회 반전)'));
+  ioTxt('io-a4-prog', '반전 횟수 ' + ioA4.n + (ioA4.n >= 2 ? ' — 두 번 반전하면 원본으로 돌아옵니다.' : ' — 반전을 두 번 눌러 보면 무슨 일이 일어날까요?'));
+  ioA4Win();
+}
+function ioA4Win(){
+  const t = ioEl('io-a4-win');
+  if(!t || !ioA4Src) return;
+  let h = '';
+  for(let dy = -2; dy <= 2; dy++){
+    h += '<tr>';
+    for(let dx = -2; dx <= 2; dx++){
+      const y = Math.min(IO_W4 - 1, Math.max(0, ioA4.r + dy));
+      const x = Math.min(IO_W4 - 1, Math.max(0, ioA4.c + dx));
+      const v = ioA4Src[y * IO_W4 + x];
+      if(dx === 0){
+        h += '<td class="mid">255 − ' + v + ' = <b>' + (255 - v) + '</b></td>';
+      }else{
+        h += '<td>' + v + '</td>';
+      }
     }
-    ioPaintRGBA(cv, d);
+    h += '</tr>';
   }
-  const cap = {src:'결과 (원본 그대로)', r:'결과 · R 채널만 (G = O, B = O)', g:'결과 · G 채널만',
-               b:'결과 · B 채널만', gray:'결과 · 회색조 (R₁ = G₁ = B₁)', inv:'결과 · 반전 255J − A'};
-  ioTxt('io-a2-cap', cap[ioA2.mode] || '결과');
-  const gb = ioEl('io-a2-graybox');
-  if(gb) gb.style.display = (ioA2.mode === 'gray') ? 'flex' : 'none';
-  ioA2Read();
+  t.innerHTML = '<tr><th colspan="5">선택한 자리 (행 ' + (ioA4.r + 1) + ', 열 ' + (ioA4.c + 1) + ') 중심 5 × 5 — 가운데 열에 계산식</th></tr>' + h;
 }
-function ioA2Read(){
-  if(!ioA2Src) return;
-  const i = (ioA2.y * IO_W2 + ioA2.x) * 4;
-  const r = ioA2Src[i], g = ioA2Src[i + 1], b = ioA2Src[i + 2];
-  const o = ioA2Pixel(r, g, b, ioA2.mode, ioA2.gf);
-  let calc = '';
-  if(ioA2.mode === 'inv') calc = '  →  (255−' + r + ', 255−' + g + ', 255−' + b + ') = (' + o.join(', ') + ')';
-  else if(ioA2.mode === 'gray'){
-    calc = (ioA2.gf === 'luma')
-      ? '  →  0.299×' + r + ' + 0.587×' + g + ' + 0.114×' + b + ' = ' + o[0]
-      : '  →  (' + r + ' + ' + g + ' + ' + b + ') ÷ 3 = ' + o[0];
-    calc += '  (R₁ = G₁ = B₁ = ' + o[0] + ')';
-  }
-  else if(ioA2.mode !== 'src') calc = '  →  (' + o.join(', ') + ')';
-  ioTxt('io-a2-px', '픽셀 (행 ' + ioA2.y + ', 열 ' + ioA2.x + ') : R = ' + r + ', G = ' + g + ', B = ' + b + calc);
-}
-function ioA2Prog(){
-  const n = Object.keys(ioA2.used).length;
-  ioTxt('io-a2-prog', n >= 4
-    ? '눌러 본 버튼 ' + n + ' / 6 — 아래 단계 토글이 열렸습니다.'
-    : '눌러 본 버튼 ' + n + ' / 6 — 네 가지 이상 눌러 보면 아래 단계 토글이 열립니다.');
-  if(n >= 4){
-    ['io-a2-f1', 'io-a2-f2', 'io-a2-f3'].forEach(function(id){ ioLock(id, true); });
-    const lm = ioEl('io-a2-lockmsg'); if(lm) lm.style.display = 'none';
+function ioA4Inv(){
+  ioA4.n++;
+  ioA4Render();
+  if(ioA4.n === 1){
+    ioFb('io-a4-fb', true, '검은색 0은 흰색 255가 되고, 흰색 255는 검은색 0이 되었습니다. ' +
+      '한 칸만 보면 <b>y = 255 − x</b>, 즉 기울기가 −1인 일차함수입니다. <b>한 번 더</b> 눌러 보세요.');
+  }else if(ioA4.n === 2){
+    ioFb('io-a4-fb', true, '원본으로 돌아왔습니다. 255 − (255 − a) = <b>a</b> 이기 때문입니다. ' +
+      '반전은 <b>되돌릴 수 있는 변환</b>입니다 — 클리핑과는 다릅니다.');
+    ioSave();
   }
 }
+function ioA4Reset(){
+  ioA4.n = 0;
+  ioA4Render();
+}
+function ioA4Bind(){
+  ioA4Src = ioMakeGray(IO_W4, IO_W4);
+  ioPaintGray(ioEl('io-cv-ivs'), ioA4Src);
 
-/* 선택 심화 — 다섯 가지 반전 (color-inversion-lab 아이디어를 축소 이식) */
-function ioSrgb2lin(c){ return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
-function ioLin2srgb(c){ return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; }
-function ioRgb2hsl(r, g, b){
-  const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
-  let h = 0, s = 0; const l = (mx + mn) / 2;
-  if(mx !== mn){
-    const d = mx - mn;
-    s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
-    if(mx === r) h = ((g - b) / d + (g < b ? 6 : 0));
-    else if(mx === g) h = (b - r) / d + 2;
-    else h = (r - g) / d + 4;
-    h /= 6;
-  }
-  return [h, s, l];
-}
-function ioHue2rgb(p, q, t){
-  if(t < 0) t += 1; if(t > 1) t -= 1;
-  if(t < 1 / 6) return p + (q - p) * 6 * t;
-  if(t < 1 / 2) return q;
-  if(t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-  return p;
-}
-function ioHsl2rgb(h, s, l){
-  if(s === 0) return [l, l, l];
-  const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
-  return [ioHue2rgb(p, q, h + 1 / 3), ioHue2rgb(p, q, h), ioHue2rgb(p, q, h - 1 / 3)];
-}
-function ioRgb2hsv(r, g, b){
-  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
-  let h = 0; const s = mx === 0 ? 0 : d / mx;
-  if(d){
-    if(mx === r) h = 60 * (((g - b) / d) % 6);
-    else if(mx === g) h = 60 * ((b - r) / d + 2);
-    else h = 60 * ((r - g) / d + 4);
-  }
-  if(h < 0) h += 360;
-  return [h, s, mx];
-}
-function ioHsv2rgb(h, s, v){
-  const c = v * s, xx = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c;
-  let r = 0, g = 0, b = 0;
-  if(h < 60){ r = c; g = xx; } else if(h < 120){ r = xx; g = c; }
-  else if(h < 180){ g = c; b = xx; } else if(h < 240){ g = xx; b = c; }
-  else if(h < 300){ r = xx; b = c; } else { r = c; b = xx; }
-  return [r + m, g + m, b + m];
-}
-const IO_INV = [
-  {id:'simple', nm:'선형 반전', sub:'255 − x  (오늘의 식)',
-   fn:function(r, g, b){ return [1 - r, 1 - g, 1 - b]; }},
-  {id:'gamma',  nm:'감마 보정 반전', sub:'빛의 세기로 되돌려 반전',
-   fn:function(r, g, b){
-     return [ioLin2srgb(1 - ioSrgb2lin(r)), ioLin2srgb(1 - ioSrgb2lin(g)), ioLin2srgb(1 - ioSrgb2lin(b))];
-   }},
-  {id:'hsl',    nm:'명도 반전', sub:'HSL 의 L 축만 뒤집기',
-   fn:function(r, g, b){ const t = ioRgb2hsl(r, g, b); return ioHsl2rgb(t[0], t[1], 1 - t[2]); }},
-  {id:'luma',   nm:'휘도 반전', sub:'0.299R+0.587G+0.114B 만 뒤집기',
-   fn:function(r, g, b){
-     const Y = 0.299 * r + 0.587 * g + 0.114 * b;
-     const Cb = -0.168736 * r - 0.331264 * g + 0.5 * b, Cr = 0.5 * r - 0.418688 * g - 0.081312 * b;
-     const Y2 = 1 - Y;
-     return [Y2 + 1.402 * Cr, Y2 - 0.344136 * Cb - 0.714136 * Cr, Y2 + 1.772 * Cb];
-   }},
-  {id:'hue',    nm:'보색 반전', sub:'HSV 색상만 180° 회전',
-   fn:function(r, g, b){ const t = ioRgb2hsv(r, g, b); return ioHsv2rgb((t[0] + 180) % 360, t[1], t[2]); }},
-];
-function ioA2Deep(){
-  const box = ioEl('io-a2-invgrid');
-  if(!box || box.dataset.done === '1' || !ioA2Src) return;
-  box.dataset.done = '1';
-  let html = '';
-  IO_INV.forEach(function(m){
-    html += '<figure><canvas id="io-cv-inv-' + m.id + '" width="' + IO_W2 + '" height="' + IO_W2 + '" ' +
-            'aria-label="' + m.nm + '"></canvas><figcaption><b>' + m.nm + '</b><br>' + m.sub + '</figcaption></figure>';
-  });
-  box.innerHTML = html;
-  IO_INV.forEach(function(m){
-    const cv = ioEl('io-cv-inv-' + m.id);
-    if(!cv) return;
-    const d = new Uint8ClampedArray(ioA2Src.length);
-    for(let i = 0; i < ioA2Src.length; i += 4){
-      const o = m.fn(ioA2Src[i] / 255, ioA2Src[i + 1] / 255, ioA2Src[i + 2] / 255);
-      d[i] = ioClamp(Math.round(o[0] * 255));
-      d[i + 1] = ioClamp(Math.round(o[1] * 255));
-      d[i + 2] = ioClamp(Math.round(o[2] * 255));
-      d[i + 3] = 255;
-    }
-    ioPaintRGBA(cv, d);
-  });
-  ioA2InvCurve();
-}
-function ioA2InvCurve(){
-  const cv = ioEl('io-cv-invcurve');
-  if(!cv) return;
-  const x = cv.getContext('2d');
-  const W = cv.width, H = cv.height, P = 34;
-  const fg = ioCss('--fg', '#1a1714'), mut = ioCss('--muted', '#78726a');
-  const bd = ioCss('--border', '#d8d0c4'), blue = ioCss('--blue', '#4a6b8a'), bg = ioCss('--bg', '#f5f0ea');
-  x.fillStyle = bg; x.fillRect(0, 0, W, H);
-  const X = function(v){ return P + (W - P - 12) * (v / 255); };
-  const Y = function(v){ return H - P - (H - P - 12) * (v / 255); };
-  x.strokeStyle = bd; x.lineWidth = 1;
-  [0, 64, 128, 192, 255].forEach(function(v){
-    x.beginPath(); x.moveTo(X(v), Y(0)); x.lineTo(X(v), Y(255)); x.stroke();
-    x.beginPath(); x.moveTo(X(0), Y(v)); x.lineTo(X(255), Y(v)); x.stroke();
-  });
-  x.strokeStyle = mut; x.lineWidth = 1.6;
-  x.beginPath(); x.moveTo(X(0), Y(0)); x.lineTo(X(255), Y(0)); x.stroke();
-  x.beginPath(); x.moveTo(X(0), Y(0)); x.lineTo(X(0), Y(255)); x.stroke();
-  x.fillStyle = mut; x.font = '12px monospace'; x.textAlign = 'center';
-  [0, 127, 255].forEach(function(v){ x.fillText(String(v), X(v), Y(0) + 17); });
-  x.textAlign = 'right';
-  [0, 127, 255].forEach(function(v){ x.fillText(String(v), X(0) - 6, Y(v) + 4); });
-  /* 선형 반전 */
-  x.strokeStyle = fg; x.lineWidth = 2.8;
-  x.beginPath(); x.moveTo(X(0), Y(255)); x.lineTo(X(255), Y(0)); x.stroke();
-  /* 감마 보정 반전 */
-  x.strokeStyle = blue; x.lineWidth = 2.8; x.beginPath();
-  for(let v = 0; v <= 255; v++){
-    const o = ioClamp(Math.round(ioLin2srgb(1 - ioSrgb2lin(v / 255)) * 255));
-    if(v === 0) x.moveTo(X(v), Y(o)); else x.lineTo(X(v), Y(o));
-  }
-  x.stroke();
-  /* 127 표시 */
-  const g127 = ioClamp(Math.round(ioLin2srgb(1 - ioSrgb2lin(127 / 255)) * 255));
-  x.setLineDash([4, 4]); x.strokeStyle = mut; x.lineWidth = 1.2;
-  x.beginPath(); x.moveTo(X(127), Y(0)); x.lineTo(X(127), Y(g127)); x.stroke();
-  x.setLineDash([]);
-  x.fillStyle = fg; x.font = 'bold 12px monospace'; x.textAlign = 'left';
-  x.fillText('선형 127 → 128', X(132), Y(128) - 8);
-  x.fillStyle = blue;
-  x.fillText('감마 127 → ' + g127, X(132), Y(g127) - 8);
-}
-
-function ioA2Bind(){
-  ioA2Src = ioMakeColor(IO_W2, IO_W2);
-  ioPaintRGBA(ioEl('io-cv-color'), ioA2Src);
-
-  const box = ioEl('io-a2-mode');
-  if(box) box.querySelectorAll('.chip').forEach(function(c){
+  const g = ioEl('io-a4-guess');
+  if(g) g.querySelectorAll('.chip').forEach(function(c){
     c.addEventListener('click', function(){
-      box.querySelectorAll('.chip').forEach(function(o){ o.classList.remove('on'); });
+      g.querySelectorAll('.chip').forEach(function(o){ o.classList.remove('on'); });
       c.classList.add('on');
-      ioA2.mode = c.dataset.m;
-      ioA2.used[ioA2.mode] = 1;
-      ioA2Render(); ioA2Prog(); ioSave();
+      ['io-a4-panel', 'io-a3-panel'].forEach(function(id){
+        const p = ioEl(id); if(p) p.classList.remove('io-veil');
+      });
+      ioA4.opened = true;
+      ioTxt('io-a4-gmsg', (c.dataset.g === '1')
+        ? '맞습니다. 255에서 각 값을 빼면 됩니다 — 아래에서 직접 확인해 봅시다.'
+        : '실험판이 열렸습니다. 아래 [반전 실행]을 눌러 어떤 식이 맞는지 직접 확인해 봅시다.');
+      setTimeout(ioA3Draw, 40);
+      ioSave();
     });
   });
-  const root = ioEl('v-imgop');
-  if(root) root.querySelectorAll('input[name="io-a2-gf"]').forEach(function(r){
-    r.addEventListener('change', function(){ ioA2.gf = r.value; ioA2Render(); });
-  });
-  const cv = ioEl('io-cv-color');
-  if(cv) cv.addEventListener('click', function(e){
-    const b = cv.getBoundingClientRect();
-    ioA2.x = Math.min(IO_W2 - 1, Math.max(0, Math.floor((e.clientX - b.left) / b.width * IO_W2)));
-    ioA2.y = Math.min(IO_W2 - 1, Math.max(0, Math.floor((e.clientY - b.top) / b.height * IO_W2)));
-    ioA2Read();
-  });
-  const dp = ioEl('io-a2-deep');
-  if(dp) dp.addEventListener('toggle', function(){ if(dp.open) setTimeout(ioA2Deep, 20); });
-  ioA2Render();
+
+  const cv = ioEl('io-cv-ivs');
+  if(cv){
+    cv.addEventListener('click', function(e){
+      const r = cv.getBoundingClientRect();
+      ioA4.c = Math.min(IO_W4 - 1, Math.max(0, Math.floor((e.clientX - r.left) / r.width * IO_W4)));
+      ioA4.r = Math.min(IO_W4 - 1, Math.max(0, Math.floor((e.clientY - r.top) / r.height * IO_W4)));
+      ioA4Win();
+    });
+    cv.tabIndex = 0;
+  }
+  ioA4Render();
 }
 
-/* ── 6. 활동 3 · 내분점과 사진 합성 ──────────────────────────────────────── */
+/* ── 9. 활동 ④ ㉡ · 내분점과 사진 합성 (구 탭 ③ 보존, 회색조로 통일) ───── */
 
 const IO_W3 = 72;
-const IO_A = 2, IO_B = 8;                      /* 활동 5 의 A(2), B(8) */
+const IO_A = 2, IO_B = 8;                      /* 수직선 위의 A(2), B(8) */
 let ioImgA = null, ioImgB = null;
-const ioA3 = {P:5, drag:false, rows:[], done:{}, px:36, py:36, opened:false};
+const ioA3 = {P:5, drag:false, rows:[], done:{}, px:36, py:36};
 
-function ioA3Alpha(){ return (IO_B - ioA3.P) / (IO_B - IO_A); }   /* A(바나나)의 계수 */
+function ioA3Alpha(){ return (IO_B - ioA3.P) / (IO_B - IO_A); }   /* A 의 계수 */
 
-/* AP : PB 를 간단한 정수비로.
-   AP = (B−A)(1−α), PB = (B−A)α 를 그대로 쓴 뒤 최대공약수로 줄입니다.
-   (α 만 쓰면 α = 1/3 에서 33 : 67 처럼 줄지 않는 비가 나옵니다.)                */
+/* AP : PB 를 간단한 정수비로. */
 function ioA3MN(alpha){
   const d = IO_B - IO_A;
   const ap = Math.round((1 - alpha) * d * 100), pb = Math.round(alpha * d * 100);
   if(ap === 0) return {m:0, n:1, txt:'0 : 1 (P가 A와 일치)'};
   if(pb === 0) return {m:1, n:0, txt:'1 : 0 (P가 B와 일치)'};
   const g = ioGcd(ap, pb);
-  const m = ap / g, n = pb / g;
-  return {m:m, n:n, txt:m + ' : ' + n};
+  return {m:ap / g, n:pb / g, txt:(ap / g) + ' : ' + (pb / g)};
 }
 function ioA3Ratio(alpha){ return ioA3MN(alpha).txt; }
 
 function ioA3Mix(){
   const cv = ioEl('io-cv-mix');
   if(!cv || !ioImgA || !ioImgB) return;
-  const a = ioA3Alpha(), d = new Uint8ClampedArray(ioImgA.length);
-  for(let i = 0; i < d.length; i += 4){
-    d[i]     = Math.round(a * ioImgA[i]     + (1 - a) * ioImgB[i]);
-    d[i + 1] = Math.round(a * ioImgA[i + 1] + (1 - a) * ioImgB[i + 1]);
-    d[i + 2] = Math.round(a * ioImgA[i + 2] + (1 - a) * ioImgB[i + 2]);
-    d[i + 3] = 255;
-  }
-  ioPaintRGBA(cv, d);
+  const a = ioA3Alpha();
+  const d = new Uint8ClampedArray(ioImgA.length);
+  for(let i = 0; i < d.length; i++) d[i] = ioClamp(Math.round(a * ioImgA[i] + (1 - a) * ioImgB[i]));
+  ioPaintGray(cv, d);
   ioTxt('io-a3-mixcap', '합성 결과 C = ' + a.toFixed(2) + '·A + ' + (1 - a).toFixed(2) + '·B');
-  /* 한 픽셀의 계산 과정 */
-  const i = (ioA3.py * IO_W3 + ioA3.px) * 4;
-  const line = '한 픽셀 (행 ' + ioA3.py + ', 열 ' + ioA3.px + ') — R 성분 : ' +
-    a.toFixed(2) + '×' + ioImgA[i] + ' + ' + (1 - a).toFixed(2) + '×' + ioImgB[i] + ' = ' +
-    Math.round(a * ioImgA[i] + (1 - a) * ioImgB[i]);
-  ioTxt('io-a3-px', line);
+  ioA3Win();
+}
+
+/* 3 × 5 계산 전개 — 가운데 열에 αa + (1−α)b 계산식 (노션 ex3-3 이식) */
+function ioA3Win(){
+  const t = ioEl('io-a3-win');
+  if(!t || !ioImgA || !ioImgB) return;
+  const a = ioA3Alpha();
+  let h = '';
+  for(let dy = -1; dy <= 1; dy++){
+    h += '<tr>';
+    for(let dx = -2; dx <= 2; dx++){
+      const y = Math.min(IO_W3 - 1, Math.max(0, ioA3.py + dy));
+      const x = Math.min(IO_W3 - 1, Math.max(0, ioA3.px + dx));
+      const va = ioImgA[y * IO_W3 + x], vb = ioImgB[y * IO_W3 + x];
+      const vc = ioClamp(Math.round(a * va + (1 - a) * vb));
+      if(dx === 0){
+        h += '<td class="mid">' + a.toFixed(2) + ' × ' + va + ' + ' + (1 - a).toFixed(2) + ' × ' + vb +
+             ' = <b>' + vc + '</b></td>';
+      }else{
+        h += '<td>' + vc + '</td>';
+      }
+    }
+    h += '</tr>';
+  }
+  t.innerHTML = '<tr><th colspan="5">선택한 자리 (행 ' + (ioA3.py + 1) + ', 열 ' + (ioA3.px + 1) +
+    ') 중심 3 × 5 — 가운데 열에 계산식</th></tr>' + h;
 }
 
 function ioA3Draw(){
@@ -18274,22 +18759,18 @@ function ioA3Draw(){
     x.beginPath(); x.moveTo(L - 8, yy); x.lineTo(R + 8, yy); x.stroke();
     x.fillStyle = mut; x.font = '12px monospace'; x.textAlign = 'center';
     for(let v = 0; v <= 11; v++) x.fillText(String(v), X(v), yy + 26);
-    /* 선분 AB 강조 */
     x.strokeStyle = ioCss('--accent', '#c8b9a6'); x.lineWidth = 7;
     x.beginPath(); x.moveTo(X(IO_A), yy); x.lineTo(X(IO_B), yy); x.stroke();
-    /* A · B */
     x.fillStyle = blue; x.beginPath(); x.arc(X(IO_A), yy, 8, 0, Math.PI * 2); x.fill();
     x.fillStyle = red;  x.beginPath(); x.arc(X(IO_B), yy, 8, 0, Math.PI * 2); x.fill();
     x.font = 'bold 14px sans-serif'; x.textAlign = 'center';
-    x.fillStyle = blue; x.fillText('A(2) 바나나', X(IO_A), yy - 20);
-    x.fillStyle = red;  x.fillText('B(8) 딸기', X(IO_B), yy - 20);
-    /* P */
+    x.fillStyle = blue; x.fillText('A(2) 사진 A', X(IO_A), yy - 20);
+    x.fillStyle = red;  x.fillText('B(8) 사진 B', X(IO_B), yy - 20);
     const px = X(ioA3.P);
     x.fillStyle = fg; x.beginPath(); x.arc(px, yy, 11, 0, Math.PI * 2); x.fill();
     x.fillStyle = ioCss('--bg', '#f5f0ea'); x.beginPath(); x.arc(px, yy, 4.5, 0, Math.PI * 2); x.fill();
     x.fillStyle = fg; x.font = 'bold 14px sans-serif';
     x.fillText('P(' + ioA3.P.toFixed(2) + ')', px, yy + 46);
-    /* m, n 표시 */
     x.strokeStyle = mut; x.lineWidth = 1.2; x.setLineDash([4, 4]);
     x.beginPath(); x.moveTo(X(IO_A), yy - 34); x.lineTo(px, yy - 34); x.stroke();
     x.beginPath(); x.moveTo(px, yy - 34); x.lineTo(X(IO_B), yy - 34); x.stroke();
@@ -18304,7 +18785,7 @@ function ioA3Draw(){
     '×2) ÷ ' + (mn.m + mn.n) + ' = ' + ioA3.P.toFixed(2));
   ioTxt('io-a3-ca', a.toFixed(2));
   ioTxt('io-a3-cb', (1 - a).toFixed(2));
-  ioTxt('io-a3-cs', (a + (1 - a)).toFixed(2));
+  ioTxt('io-a3-cs', (a + (1 - a)).toFixed(3));
   ioA3Mix();
 }
 
@@ -18313,7 +18794,7 @@ function ioA3Row(alpha){
   if(ioA3.done[key]) return;
   ioA3.done[key] = 1;
   const P = IO_B - (IO_B - IO_A) * alpha;
-  const near = alpha > 0.5 ? 'A(바나나) 쪽' : (alpha < 0.5 ? 'B(딸기) 쪽' : '정확히 한가운데');
+  const near = alpha > 0.5 ? '사진 A 쪽' : (alpha < 0.5 ? '사진 B 쪽' : '정확히 한가운데');
   ioA3.rows.push({r:ioA3Ratio(alpha), p:P.toFixed(2), a:alpha.toFixed(2), b:(1 - alpha).toFixed(2), n:near});
   ioA3Table();
   const chips = ioEl('io-a3-mis');
@@ -18328,12 +18809,8 @@ function ioA3Row(alpha){
     ['io-a3-f1', 'io-a3-f2', 'io-a3-f3'].forEach(function(id){ ioLock(id, true); });
     const lm = ioEl('io-a3-lockmsg'); if(lm) lm.style.display = 'none';
   }
-  const fb = ioEl('io-a3-fb');
-  if(fb){
-    fb.className = 'io-fb ok';
-    fb.innerHTML = '✓ 기록했습니다 — <b>C = ' + alpha.toFixed(2) + '·A + ' + (1 - alpha).toFixed(2) + '·B</b>. ' +
-      '두 계수의 합이 <b>1</b>인지 표에서 확인하세요.';
-  }
+  ioFb('io-a3-fb', true, '기록했습니다 — <b>C = ' + alpha.toFixed(2) + '·A + ' + (1 - alpha).toFixed(2) + '·B</b>. ' +
+    '두 계수의 합이 <b>1</b>인지 표에서 확인하세요.');
   ioSave();
 }
 function ioA3Table(){
@@ -18347,7 +18824,7 @@ function ioA3Table(){
   t.innerHTML = h;
 }
 
-/* 0.1 눈금으로 붙여 줍니다 — 비가 1 : 19 처럼 읽을 수 있는 값으로 정리됩니다. */
+/* 0.1 눈금으로 붙여 줍니다 — 비가 읽을 수 있는 값으로 정리됩니다. */
 function ioA3SetP(v){
   ioA3.P = Math.min(IO_B, Math.max(IO_A, Math.round(v * 10) / 10));
   ioA3Draw();
@@ -18365,13 +18842,16 @@ function ioA3Load(file, which){
       const s = Math.min(im.naturalWidth, im.naturalHeight);
       x.drawImage(im, (im.naturalWidth - s) / 2, (im.naturalHeight - s) / 2, s, s, 0, 0, IO_W3, IO_W3);
       const d = x.getImageData(0, 0, IO_W3, IO_W3).data;
-      if(which === 'a'){ ioImgA = d; ioPaintRGBA(ioEl('io-cv-a'), d); }
-      else{ ioImgB = d; ioPaintRGBA(ioEl('io-cv-b'), d); }
-      ioA3Mix(); ioQ3Render();
+      const a = new Uint8ClampedArray(IO_W3 * IO_W3);
+      for(let i = 0; i < a.length; i++){
+        a[i] = ioClamp(Math.round((d[i * 4] + d[i * 4 + 1] + d[i * 4 + 2]) / 3));
+      }
+      if(which === 'a'){ ioImgA = a; ioPaintGray(ioEl('io-cv-a'), a); }
+      else{ ioImgB = a; ioPaintGray(ioEl('io-cv-b'), a); }
+      ioA3Mix();
     };
     im.onerror = function(){
-      const fb = ioEl('io-a3-fb');
-      if(fb){ fb.className = 'io-fb no'; fb.textContent = '이미지를 읽지 못했습니다. 다른 파일로 시도해 주세요.'; }
+      ioFb('io-a3-fb', false, '이미지를 읽지 못했습니다. 다른 파일로 시도해 주세요.');
     };
     im.src = rd.result;
   };
@@ -18398,23 +18878,10 @@ function ioA3Up(zoneId, inputId, which){
 }
 
 function ioA3Bind(){
-  ioImgA = ioMakeFruit('banana', IO_W3, IO_W3);
-  ioImgB = ioMakeFruit('strawberry', IO_W3, IO_W3);
-  ioPaintRGBA(ioEl('io-cv-a'), ioImgA);
-  ioPaintRGBA(ioEl('io-cv-b'), ioImgB);
-
-  const g = ioEl('io-a3-guess');
-  if(g) g.querySelectorAll('.chip').forEach(function(c){
-    c.addEventListener('click', function(){
-      g.querySelectorAll('.chip').forEach(function(o){ o.classList.remove('on'); });
-      c.classList.add('on');
-      const p = ioEl('io-a3-panel'); if(p) p.classList.remove('io-veil');
-      ioA3.opened = true;
-      ioTxt('io-a3-gmsg', '실험판이 열렸습니다. 점 P 를 끌면서 계수와 사진이 어떻게 함께 움직이는지 확인해 봅시다.');
-      setTimeout(ioA3Draw, 30);
-      ioSave();
-    });
-  });
+  ioImgA = ioMakeGray(IO_W3, IO_W3);
+  ioImgB = ioMakeLeaf(IO_W3, IO_W3);
+  ioPaintGray(ioEl('io-cv-a'), ioImgA);
+  ioPaintGray(ioEl('io-cv-b'), ioImgB);
 
   const cv = ioEl('io-cv-line');
   if(cv){
@@ -18436,7 +18903,7 @@ function ioA3Bind(){
     cv.addEventListener('pointermove', move);
     cv.addEventListener('pointerup', up);
     cv.addEventListener('pointercancel', up);
-    window.addEventListener('pointerup', up);      /* 캔버스 밖에서 손을 떼도 끌기 종료 */
+    window.addEventListener('pointerup', up);
     cv.addEventListener('keydown', function(e){
       if(e.key === 'ArrowLeft'){ ioA3SetP(ioA3.P - 0.1); e.preventDefault(); }
       if(e.key === 'ArrowRight'){ ioA3SetP(ioA3.P + 0.1); e.preventDefault(); }
@@ -18449,8 +18916,7 @@ function ioA3Bind(){
     c.addEventListener('click', function(){
       pre.querySelectorAll('.chip').forEach(function(o){ o.classList.remove('on'); });
       c.classList.add('on');
-      const m = +c.dataset.m, n = +c.dataset.n;
-      ioA3SetP(IO_A + (IO_B - IO_A) * m / (m + n));
+      ioA3SetP(IO_B - (IO_B - IO_A) * parseFloat(c.dataset.a));
     });
   });
 
@@ -18463,7 +18929,7 @@ function ioA3Bind(){
     });
   });
 
-  [['io-cv-a', 'a'], ['io-cv-b', 'b']].forEach(function(p){
+  [['io-cv-a', 'a'], ['io-cv-b', 'b'], ['io-cv-mix', 'c']].forEach(function(p){
     const c = ioEl(p[0]);
     if(!c) return;
     c.addEventListener('click', function(e){
@@ -18480,388 +18946,212 @@ function ioA3Bind(){
   ioA3Draw();
 }
 
-/* ── 7. 활동 4 · 손으로 확인 ─────────────────────────────────────────────── */
+/* ── 10. 판정 문제 (구 탭 ⑤ 「손으로 확인」을 활동별로 분산) ───────────── */
 
-/* A = [[230, 80], [80, 230]] — 동아출판 Ⅲ p.90 예시 행렬을 2×2 로 줄인 것.
-   raw = 조정하기 전의 계산값 · v = 0~255 로 조정한 정답. */
-const IO_Q1 = [
-  {t:'A + 50J',   raw:[280, 130, 130, 280], v:[255, 130, 130, 255]},
-  {t:'A − 100J',  raw:[130, -20, -20, 130], v:[130, 0, 0, 130]},
-  {t:'2A',        raw:[460, 160, 160, 460], v:[255, 160, 160, 255]},
-  {t:'½A',        raw:[115, 40, 40, 115],   v:[115, 40, 40, 115]},
-];
-function ioQ1Build(){
-  const w = ioEl('io-q1-wrap');
+/* 10-1. 선택형 공통 처리 */
+function ioChipQ(boxId, fbId, correct, okMsg, noMsg){
+  const box = ioEl(boxId);
+  if(!box) return;
+  box.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      box.querySelectorAll('.chip').forEach(function(o){ o.classList.remove('on'); });
+      c.classList.add('on');
+      const v = +c.dataset.v;
+      if(v === correct) ioFb(fbId, true, okMsg);
+      else ioFb(fbId, false, noMsg);
+    });
+  });
+}
+
+/* 10-2. 2 × 2 입력 격자 공통 처리 */
+function ioGridBuild(wrapId, defs){
+  const w = ioEl(wrapId);
   if(!w) return;
   let h = '';
-  IO_Q1.forEach(function(q, qi){
-    h += '<div><p class="io-qlab">(' + (qi + 1) + ') ' + q.t + '</p><div class="io-eg" ' +
-         'style="grid-template-columns:repeat(2,auto);">';
+  defs.forEach(function(q, qi){
+    h += '<div><p class="io-qlab">(' + (qi + 1) + ') ' + q.t + '</p>' +
+         '<div class="io-eg" style="grid-template-columns:repeat(2,auto);">';
     for(let i = 0; i < 4; i++){
-      h += '<div class="ec"><input id="io-q1-' + qi + '-' + i + '" type="number" inputmode="numeric" ' +
-           'aria-label="' + q.t + ' 의 성분 ' + (i + 1) + '"></div>';
+      h += '<div class="ec"><input type="number" inputmode="numeric" data-q="' + qi + '" data-i="' + i +
+           '" aria-label="' + q.t + ' 의 성분 ' + (Math.floor(i / 2) + 1) + '행 ' + (i % 2 + 1) + '열"></div>';
     }
     h += '</div></div>';
   });
   w.innerHTML = h;
 }
-function ioQ1Check(){
-  let ok = 0, all = 0, clipped = 0;
-  IO_Q1.forEach(function(q, qi){
-    for(let i = 0; i < 4; i++){
-      const el = ioEl('io-q1-' + qi + '-' + i);
-      if(!el) continue;
-      all++;
-      const cell = el.parentElement;
-      const v = parseInt(el.value, 10);
-      if(v === q.v[i]){ cell.className = 'ec ok'; ok++; }
-      else{ cell.className = 'ec no'; }
-    }
+function ioGridCheck(wrapId, fbId, defs, tail){
+  const w = ioEl(wrapId);
+  if(!w) return;
+  let ok = 0, blank = 0, clipped = 0;
+  w.querySelectorAll('input').forEach(function(inp){
+    const qi = +inp.dataset.q, i = +inp.dataset.i;
+    const cell = inp.parentNode;
+    cell.classList.remove('ok', 'no');
+    const raw = inp.value.trim();
+    if(raw === ''){ blank++; return; }
+    if(parseInt(raw, 10) === defs[qi].v[i]){ cell.classList.add('ok'); ok++; }
+    else cell.classList.add('no');
   });
-  /* 조정(클리핑)이 일어난 칸 수 */
-  IO_Q1.forEach(function(q){
+  defs.forEach(function(q){
     for(let i = 0; i < 4; i++) if(q.raw[i] !== q.v[i]) clipped++;
   });
-  const fb = ioEl('io-q1-fb');
-  if(!fb) return;
-  if(ok === all){
-    fb.className = 'io-fb ok';
-    fb.innerHTML = '✓ ' + ok + ' / ' + all + ' 전부 정답입니다. 이 가운데 <b>' + clipped + '칸</b>은 계산값이 ' +
-      '0~255 밖으로 나가 <b>조정(클리핑)</b>된 칸입니다 — 280→255, −20→0, 460→255. ' +
-      '조정된 칸은 원래 값을 알 수 없으므로 되돌릴 수 없습니다.';
+  const total = defs.length * 4;
+  if(blank){ ioFb(fbId, false, '빈칸이 <b>' + blank + '개</b> 있습니다. 모두 채운 뒤 채점해 주세요.'); return; }
+  if(ok === total){
+    ioFb(fbId, true, '모두 맞았습니다 (' + ok + ' / ' + total + '). ' + tail);
   }else{
-    fb.className = 'io-fb no';
-    fb.innerHTML = '✗ ' + ok + ' / ' + all + ' 정답입니다. 붉은 칸을 다시 계산해 보세요. ' +
-      '<b>실수배는 각 성분에 k를 곱하고</b>, <b>tJ 는 각 성분에 t를 더하는 것</b>입니다. ' +
-      '결과가 0보다 작으면 0, 255보다 크면 255로 적습니다.';
+    ioFb(fbId, false, ok + ' / ' + total + ' 맞았습니다. 붉은 칸을 다시 계산해 보세요 — ' +
+      '<b>0 미만은 0, 255 초과는 255</b> 로 조정해야 합니다. (조정이 필요한 칸은 모두 ' + clipped + '개입니다.)');
   }
 }
-function ioQ1Reset(){
-  IO_Q1.forEach(function(q, qi){
-    for(let i = 0; i < 4; i++){
-      const el = ioEl('io-q1-' + qi + '-' + i);
-      if(el){ el.value = ''; el.parentElement.className = 'ec'; }
-    }
+function ioGridReset(wrapId, fbId){
+  const w = ioEl(wrapId);
+  if(!w) return;
+  w.querySelectorAll('input').forEach(function(inp){
+    inp.value = '';
+    inp.parentNode.classList.remove('ok', 'no');
   });
-  const fb = ioEl('io-q1-fb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
+  const b = ioEl(fbId); if(b){ b.className = 'io-fb'; b.innerHTML = ''; }
 }
 
-const IO_Q2 = [
-  {r:'1 : 1', m:1, n:1},
-  {r:'2 : 1', m:2, n:1},
-  {r:'5 : 1', m:5, n:1},
+/* 활동 ① 판정 — [[1,0],[0,1]] 그리기 */
+function ioQ1bBuild(){
+  const g = ioEl('io-q1b-grid');
+  if(!g) return;
+  g.style.gridTemplateColumns = 'repeat(2, auto)';
+  let h = '';
+  for(let i = 0; i < 4; i++){
+    h += '<button type="button" class="io-cellb" data-i="' + i + '" aria-label="' +
+         (Math.floor(i / 2) + 1) + '행 ' + (i % 2 + 1) + '열"></button>';
+  }
+  g.innerHTML = h;
+  g.querySelectorAll('.io-cellb').forEach(function(b){
+    b.addEventListener('click', function(){ b.classList.toggle('w'); });
+  });
+}
+function ioQ1bClear(){
+  const g = ioEl('io-q1b-grid');
+  if(g) g.querySelectorAll('.io-cellb').forEach(function(b){ b.classList.remove('w'); });
+  const fb = ioEl('io-q1b-fb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
+}
+function ioQ1bCheck(){
+  const g = ioEl('io-q1b-grid');
+  if(!g) return;
+  const want = [1, 0, 0, 1];
+  let ok = true;
+  g.querySelectorAll('.io-cellb').forEach(function(b){
+    const i = +b.dataset.i;
+    const v = b.classList.contains('w') ? 1 : 0;
+    if(v !== want[i]) ok = false;
+  });
+  if(ok){
+    ioFb('io-q1b-fb', true, '맞았습니다 — <b>왼쪽 위와 오른쪽 아래가 흰색</b>인 대각선 무늬입니다. ' +
+      '(1,1)과 (2,2) 성분이 1이기 때문입니다.');
+  }else{
+    ioFb('io-q1b-fb', false, '다시 보세요. 성분이 <b>1인 자리만 흰색</b>으로 칠해야 합니다 — (1,1)과 (2,2)입니다.');
+  }
+}
+
+/* 활동 ③ 판정 — A = [[100,200],[250,50]] */
+const IO_Q3 = [
+  {t:'A + 60J',  raw:[160, 260, 310, 110], v:[160, 255, 255, 110]},
+  {t:'1.5A',     raw:[150, 300, 375, 75],  v:[150, 255, 255, 75]},
 ];
-function ioQ2Build(){
-  const t = ioEl('io-q2-tbl');
-  if(!t) return;
-  let h = '<tr><th>AP : PB</th><th>P의 좌표</th><th>A의 계수 α</th><th>B의 계수 1 − α</th></tr>';
-  IO_Q2.forEach(function(q, i){
-    h += '<tr><td>' + q.r + '</td>' +
-      '<td><input class="io-in num" id="io-q2-p-' + i + '" type="number" step="0.01" inputmode="decimal" aria-label="P의 좌표"></td>' +
-      '<td><input class="io-in num" id="io-q2-a-' + i + '" type="number" step="0.01" inputmode="decimal" aria-label="A의 계수"></td>' +
-      '<td><input class="io-in num" id="io-q2-b-' + i + '" type="number" step="0.01" inputmode="decimal" aria-label="B의 계수"></td></tr>';
-  });
-  t.innerHTML = h;
-}
-function ioQ2Check(){
-  let ok = 0, all = 0;
-  IO_Q2.forEach(function(q, i){
-    const P = (q.m * IO_B + q.n * IO_A) / (q.m + q.n);
-    const a = q.n / (q.m + q.n);
-    [['p', P, 0.011], ['a', a, 0.021], ['b', 1 - a, 0.021]].forEach(function(c){
-      const el = ioEl('io-q2-' + c[0] + '-' + i);
-      if(!el) return;
-      all++;
-      const v = parseFloat(el.value);
-      if(!isNaN(v) && Math.abs(v - c[1]) <= c[2]){ el.style.color = ioCss('--green', '#5a7a5a'); ok++; }
-      else el.style.color = ioCss('--red', '#b44133');
-    });
-  });
-  const fb = ioEl('io-q2-fb');
-  if(!fb) return;
-  if(ok === all){
-    fb.className = 'io-fb ok';
-    fb.innerHTML = '✓ ' + ok + ' / ' + all + ' 전부 정답입니다. 세 줄 모두에서 <b>α + (1 − α) = 1</b> 이 성립합니다. ' +
-      'm : n 으로 내분할 때 <b>A의 계수는 n/(m+n)</b> 이라는 점(가까운 쪽의 계수가 더 크다)을 확인하세요.';
-  }else{
-    fb.className = 'io-fb no';
-    fb.innerHTML = '✗ ' + ok + ' / ' + all + ' 정답입니다. 붉은 칸을 다시 보세요. ' +
-      'P = (m·8 + n·2)/(m + n) 이고, 이를 정리하면 P = <b>(n/(m+n))·2 + (m/(m+n))·8</b> 입니다. ' +
-      'A의 계수는 <b>n/(m+n)</b>, B의 계수는 <b>m/(m+n)</b> 입니다.';
-  }
-}
-function ioQ2Reset(){
-  IO_Q2.forEach(function(q, i){
-    ['p', 'a', 'b'].forEach(function(c){
-      const el = ioEl('io-q2-' + c + '-' + i);
-      if(el){ el.value = ''; el.style.color = ''; }
-    });
-  });
-  const fb = ioEl('io-q2-fb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
-}
-
-const IO_Q3A = [0.2, 0.5, 0.8];                 /* α = 1/5, 1/2, 4/5 */
-let ioQ3Order = [0, 1, 2];
-const IO_Q3L = ['ㄱ', 'ㄴ', 'ㄷ'];
-function ioQ3Shuffle(){
-  for(let i = ioQ3Order.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    const t = ioQ3Order[i]; ioQ3Order[i] = ioQ3Order[j]; ioQ3Order[j] = t;
-  }
-  ioQ3Render();
-  const fb = ioEl('io-q3-fb'); if(fb){ fb.className = 'io-fb'; fb.innerHTML = ''; }
-}
-function ioQ3Render(){
-  const box = ioEl('io-q3-imgs');
-  if(box){
-    let h = '';
-    for(let i = 0; i < 3; i++){
-      h += '<figure class="io-fig"><canvas id="io-cv-q3-' + i + '" width="' + IO_W3 + '" height="' + IO_W3 +
-           '" aria-label="보기 ' + IO_Q3L[i] + '"></canvas><figcaption><b>' + IO_Q3L[i] + '</b></figcaption></figure>';
-    }
-    box.innerHTML = h;
-    for(let i = 0; i < 3; i++){
-      const cv = ioEl('io-cv-q3-' + i);
-      if(!cv || !ioImgA || !ioImgB) continue;
-      const a = IO_Q3A[ioQ3Order[i]];
-      const d = new Uint8ClampedArray(ioImgA.length);
-      for(let k = 0; k < d.length; k += 4){
-        d[k]     = Math.round(a * ioImgA[k]     + (1 - a) * ioImgB[k]);
-        d[k + 1] = Math.round(a * ioImgA[k + 1] + (1 - a) * ioImgB[k + 1]);
-        d[k + 2] = Math.round(a * ioImgA[k + 2] + (1 - a) * ioImgB[k + 2]);
-        d[k + 3] = 255;
-      }
-      ioPaintRGBA(cv, d);
-    }
-  }
-  const sel = ioEl('io-q3-sel');
-  if(sel && !sel.dataset.done){
-    sel.dataset.done = '1';
-    let h = '';
-    ['1/5', '1/2', '4/5'].forEach(function(t, i){
-      h += '<label>α = ' + t + ' 일 때 <select class="io-sel" id="io-q3-s-' + i + '" aria-label="알파 ' + t + '의 보기">' +
-           '<option value="">고르기</option><option value="0">ㄱ</option><option value="1">ㄴ</option><option value="2">ㄷ</option></select></label>';
-    });
-    sel.innerHTML = h;
-  }
-}
+function ioQ3Build(){ ioGridBuild('io-q3-wrap', IO_Q3); }
 function ioQ3Check(){
-  let ok = 0;
-  const pick = [];
-  for(let i = 0; i < 3; i++){
-    const s = ioEl('io-q3-s-' + i);
-    const v = s ? s.value : '';
-    pick.push(v);
-    if(v !== '' && ioQ3Order[+v] === i) ok++;
-  }
-  const fb = ioEl('io-q3-fb');
-  if(!fb) return;
-  if(pick.indexOf('') >= 0){
-    fb.className = 'io-fb no';
-    fb.innerHTML = '세 칸을 모두 고른 뒤에 채점해 주세요.';
-    return;
-  }
-  if(ok === 3){
-    fb.className = 'io-fb ok';
-    fb.innerHTML = '✓ 3 / 3 정답입니다. α 가 <b>클수록 A(바나나)가 선명</b>해집니다. ' +
-      'α = 4/5 이면 A 의 가중치가 0.8 이므로 바나나가 뚜렷하고, α = 1/5 이면 딸기가 뚜렷합니다.';
-  }else{
-    fb.className = 'io-fb no';
-    fb.innerHTML = '✗ ' + ok + ' / 3 정답입니다. <b>C = αX + (1 − α)Y</b> 에서 α 는 <b>X(A, 바나나)의 가중치</b>입니다. ' +
-      'α 가 1 에 가까울수록 바나나가 선명해집니다. 활동 3의 수직선에서 P 를 A 쪽으로 끌어 보며 다시 비교해 보세요.';
-  }
+  ioGridCheck('io-q3-wrap', 'io-q3-fb', IO_Q3,
+    '260 → 255, 310 → 255, 300 → 255, 375 → 255 처럼 <b>255를 넘은 네 칸</b>이 잘렸습니다. ' +
+    '덧셈은 모든 칸을 60씩 밀어 올렸고, 실수배는 큰 값을 더 크게 늘렸습니다.');
+}
+function ioQ3Reset(){ ioGridReset('io-q3-wrap', 'io-q3-fb'); }
+
+/* 활동 ④ 판정 — 반전 · 합성 */
+const IO_Q4A = [{t:'255J − A  (A = [[0,128],[200,255]])', raw:[255, 127, 55, 0], v:[255, 127, 55, 0]}];
+const IO_Q4B = [{t:'C = 0.6A + 0.4B', raw:[140, 120, 40, 92], v:[140, 120, 40, 92]}];
+function ioQ4aBuild(){ ioGridBuild('io-q4a-wrap', IO_Q4A); }
+function ioQ4aCheck(){
+  ioGridCheck('io-q4a-wrap', 'io-q4a-fb', IO_Q4A,
+    '255 − 0 = 255, 255 − 128 = 127, 255 − 200 = 55, 255 − 255 = 0 입니다. ' +
+    '어느 칸도 0~255를 벗어나지 않으므로 <b>클리핑이 일어나지 않습니다</b>.');
+}
+function ioQ4aReset(){ ioGridReset('io-q4a-wrap', 'io-q4a-fb'); }
+function ioQ4bBuild(){ ioGridBuild('io-q4b-wrap', IO_Q4B); }
+function ioQ4bCheck(){
+  ioGridCheck('io-q4b-wrap', 'io-q4b-fb', IO_Q4B,
+    '0.6×100 + 0.4×200 = 140, 0.6×200 + 0.4×0 = 120, 0.6×0 + 0.4×100 = 40, 0.6×60 + 0.4×140 = 92 입니다. ' +
+    '두 계수의 합이 1이므로 결과도 <b>0~255 안에</b> 머뭅니다.');
+}
+function ioQ4bReset(){ ioGridReset('io-q4b-wrap', 'io-q4b-fb'); }
+
+function ioQuestBind(){
+  ioChipQ('io-q1a', 'io-q1a-fb', 1,
+    '맞았습니다 — 성분이 모두 1이면 모든 칸이 흰색이므로 <b>전부 흰색</b> 이미지입니다.',
+    '약속을 다시 보세요 — <b>0이 검은색, 1이 흰색</b> 입니다. 성분이 모두 1이면 전부 흰색입니다.');
+  ioChipQ('io-q2a', 'io-q2a-fb', 2,
+    '맞았습니다 — 60 × 60 = <b>3,600</b> 개입니다. 회색조는 픽셀 하나에 수 하나면 충분합니다.',
+    '해상도의 두 수를 <b>곱하면</b> 픽셀 수가 나옵니다. 60 × 60 = 3,600 개입니다.');
+  ioChipQ('io-q2b', 'io-q2b-fb', 1,
+    '맞았습니다 — 가로 2배 × 세로 2배이므로 픽셀 수는 <b>4배</b>가 됩니다. 저장 용량도 4배가 됩니다.',
+    '가로도 2배, 세로도 2배입니다. 2 × 2 = <b>4배</b> 입니다.');
+  ioChipQ('io-q3c', 'io-q3c-fb', 1,
+    '맞았습니다 — A + 60J 에서 260·310 두 칸, 1.5A 에서 300·375 두 칸이 255로 잘렸습니다.',
+    '두 계산의 결과를 조정 <b>전</b>의 값으로 먼저 적어 보세요. 255를 넘는 칸이 각각 몇 개인가요?');
+  ioChipQ('io-q4c', 'io-q4c-fb', 0,
+    '맞았습니다 — 255 − (255 − a) = a 이므로 <b>한 번 더 반전하면 원래대로</b> 돌아옵니다.',
+    '실험판에서 [반전 실행]을 <b>두 번</b> 눌러 보세요. 원본으로 돌아옵니다.');
+  ioQ1bBuild();
+  ioQ3Build();
+  ioQ4aBuild();
+  ioQ4bBuild();
 }
 
-/* ── 7-2. 활동 4 · 전치행렬 Aᵀ (2026 개정 — Ⅲ영역 필수 용어 「전치행렬」 도입) ───
-   교육과정 Ⅲ영역 「용어와 기호 — 행렬, 전치행렬」을 충족하기 위해 신설한 활동입니다.
-   3×3 숫자표에서 (i, j) ↔ (j, i) 를 눈으로 확인한 뒤, 같은 규칙을 회색조 사진에
-   그대로 적용해 주대각선 대칭 뒤집기를 관찰합니다.                                   */
-
-const IO_W5 = 64;                                   /* 활동 4 표본 사진 크기 */
-let ioA5Src = null;
-const ioA5 = {opened:false, used:{}, mat:0, sel:null};
-
-/* 예시 행렬 3종 — [행, 열, 값 배열(행 우선)] */
-const IO_A5_MATS = [
-  {r:3, c:3, v:[1,2,3, 4,5,6, 7,8,9],
-   nm:'3 × 3 정사각행렬'},
-  {r:2, c:3, v:[10,20,30, 40,50,60],
-   nm:'2 × 3 직사각행렬'},
-  {r:3, c:3, v:[2,7,5, 7,1,9, 5,9,4],
-   nm:'대칭행렬 (Aᵀ = A)'},
-];
-
-function ioA5T(m){                                  /* 행렬 전치 — 새 객체를 돌려줍니다 */
-  const out = {r:m.c, c:m.r, v:new Array(m.r * m.c)};
-  for(let i = 0; i < m.r; i++){
-    for(let j = 0; j < m.c; j++) out.v[j * m.r + i] = m.v[i * m.c + j];
-  }
-  return out;
-}
-
-/* 두 숫자표를 그립니다. sel = {i, j} 이면 A 의 (i,j) 와 Aᵀ 의 (j,i) 를 함께 강조합니다. */
-function ioA5Grid(){
-  const A = IO_A5_MATS[ioA5.mat];
-  const T = ioA5T(A);
-  const build = function(id, m, hit){
-    const box = ioEl(id);
-    if(!box) return;
-    box.style.gridTemplateColumns = 'repeat(' + m.c + ', auto)';
-    let h = '';
-    for(let i = 0; i < m.r; i++){
-      for(let j = 0; j < m.c; j++){
-        const on = hit && hit(i, j) ? ' c' : '';
-        h += '<button type="button" class="wc' + on + '" data-i="' + i + '" data-j="' + j + '">' +
-             m.v[i * m.c + j] + '</button>';
-      }
-    }
-    box.innerHTML = h;
-  };
-  const sel = ioA5.sel;
-  build('io-a5-winA', A, sel ? function(i, j){ return i === sel.i && j === sel.j; } : null);
-  build('io-a5-winT', T, sel ? function(i, j){ return i === sel.j && j === sel.i; } : null);
-
-  const wa = ioEl('io-a5-winA');
-  if(wa) wa.querySelectorAll('.wc').forEach(function(b){
-    b.addEventListener('click', function(){
-      ioA5.sel = {i:+b.dataset.i, j:+b.dataset.j};
-      ioA5Grid();
-    });
-  });
-  const wt = ioEl('io-a5-winT');
-  if(wt) wt.querySelectorAll('.wc').forEach(function(b){
-    b.addEventListener('click', function(){
-      ioA5.sel = {i:+b.dataset.j, j:+b.dataset.i};
-      ioA5Grid();
-    });
-  });
-
-  const lab = ioEl('io-a5-cell');
-  if(lab){
-    if(!sel){
-      lab.innerHTML = '칸을 눌러 보세요 — A 의 (i, j) 성분은 A<sup>T</sup> 의 (j, i) 자리로 갑니다.';
-    }else{
-      const i1 = sel.i + 1, j1 = sel.j + 1;
-      const val = A.v[sel.i * A.c + sel.j];
-      lab.innerHTML = 'A 의 (' + i1 + ', ' + j1 + ') 성분 <b>' + val + '</b> → ' +
-        'A<sup>T</sup> 의 (' + j1 + ', ' + i1 + ') 자리' +
-        (i1 === j1 ? ' <b>— 주대각선 위의 칸이라 자리가 그대로입니다.</b>' : '') +
-        '<br>A 는 ' + A.r + ' × ' + A.c + ' 행렬, A<sup>T</sup> 는 ' + T.r + ' × ' + T.c + ' 행렬입니다.';
-    }
-  }
-}
-
-function ioA5Mat(){
-  const sel = ioEl('io-a5-mat');
-  ioA5.mat = sel ? (parseInt(sel.value, 10) || 0) : 0;
-  ioA5.sel = null;
-  ioA5Grid();
-}
-
-/* 회색조 배열의 전치 — w × h 를 h × w 로 (여기서는 정사각이라 크기가 같습니다) */
-function ioA5Trans(arr, w, h){
-  const out = new Uint8ClampedArray(arr.length);
-  for(let y = 0; y < h; y++){
-    for(let x = 0; x < w; x++) out[x * h + y] = arr[y * w + x];
-  }
-  return out;
-}
-
-const IO_A5_CAP = {
-  a   : {cap:'원본 A', fb:'원본입니다. 아직 아무 연산도 하지 않았습니다.'},
-  t   : {cap:'결과 A<sup>T</sup>',
-         fb:'✓ 전치 A<sup>T</sup> — 왼쪽 위와 오른쪽 아래를 잇는 <b>주대각선을 축으로</b> 접힌 것처럼 뒤집혔습니다. 달의 위치를 확인해 보세요.'},
-  tt  : {cap:'결과 (A<sup>T</sup>)<sup>T</sup>',
-         fb:'✓ 두 번 전치하면 <b>원본과 완전히 같습니다</b>. (A<sup>T</sup>)<sup>T</sup> = A 입니다.'},
-  inv : {cap:'결과 (255J − A)<sup>T</sup>',
-         fb:'✓ 먼저 반전하고 나서 전치했습니다. 이제 ④를 눌러 <b>순서를 바꾼 결과</b>와 비교해 보세요.'},
-  invt: {cap:'결과 255J − A<sup>T</sup>',
-         fb:'✓ 먼저 전치하고 나서 반전했습니다. ③의 결과와 <b>완전히 같습니다</b> — (255J − A)<sup>T</sup> = 255J − A<sup>T</sup> 이기 때문입니다.'},
-};
-
-function ioA5Op(kind, el){
-  if(!ioA5Src) return;
-  const cv = ioEl('io-cv-trt');
-  let out = ioA5Src;
-  if(kind === 't')       out = ioA5Trans(ioA5Src, IO_W5, IO_W5);
-  else if(kind === 'tt') out = ioA5Trans(ioA5Trans(ioA5Src, IO_W5, IO_W5), IO_W5, IO_W5);
-  else if(kind === 'inv'){
-    const inv = new Uint8ClampedArray(ioA5Src.length);
-    for(let i = 0; i < ioA5Src.length; i++) inv[i] = 255 - ioA5Src[i];
-    out = ioA5Trans(inv, IO_W5, IO_W5);
-  }else if(kind === 'invt'){
-    const tr = ioA5Trans(ioA5Src, IO_W5, IO_W5);
-    out = new Uint8ClampedArray(tr.length);
-    for(let i = 0; i < tr.length; i++) out[i] = 255 - tr[i];
-  }
-  ioPaintGray(cv, out);
-
-  const meta = IO_A5_CAP[kind] || IO_A5_CAP.a;
-  const cap = ioEl('io-a5-tcap'); if(cap) cap.innerHTML = meta.cap;
-  const fb = ioEl('io-a5-fb'); if(fb){ fb.className = 'io-fb ok'; fb.innerHTML = meta.fb; }
-
-  const box = ioEl('io-a5-mis');
-  if(box) box.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-  if(el && el.classList) el.classList.add('on');
-
-  if(kind !== 'a') ioA5.used[kind] = true;
-  ioA5Prog();
-  ioSave();
-}
-
-function ioA5Prog(){
-  const n = Object.keys(ioA5.used).length;
-  ioTxt('io-a5-prog', n >= 3
-    ? '눌러 본 버튼 ' + n + ' / 4 — 아래 단계 토글이 열렸습니다.'
-    : '눌러 본 버튼 ' + n + ' / 4 — 세 가지 이상 눌러 보면 아래 단계 토글이 열립니다.');
-  if(n >= 3){
-    ['io-a5-f1', 'io-a5-f2', 'io-a5-f3'].forEach(function(id){ ioLock(id, true); });
-    const lm = ioEl('io-a5-lockmsg'); if(lm) lm.style.display = 'none';
-  }
-}
-
-function ioA5Guess(i, el){
-  const g = ioEl('io-a5-guess');
-  if(g) g.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
-  if(el && el.classList) el.classList.add('on');
-  const p = ioEl('io-a5-panel'); if(p) p.classList.remove('io-veil');
-  ioA5.opened = true;
-  ioTxt('io-a5-gmsg', '기록했습니다. 실험판이 열렸습니다 — 직접 확인해 봅시다.');
-  const fb = ioEl('io-a5-gfb');
-  if(fb){
-    fb.className = 'io-fb';
-    fb.innerHTML = '예상을 적어 두었습니다. <b>①번 버튼을 눌러</b> 실제 결과를 확인한 뒤, ' +
-      '아래 단계 토글에서 답을 맞추어 보세요.';
-  }
-  ioSave();
-}
-
-function ioA5Bind(){
-  ioA5Src = ioMakeGray(IO_W5, IO_W5);
-  ioPaintGray(ioEl('io-cv-trs'), ioA5Src);
-  ioPaintGray(ioEl('io-cv-trt'), ioA5Src);
-  ioA5Grid();
-  ioA5Prog();
-}
-
-/* ── 8. 저장 · 복원 ─────────────────────────────────────────────────────── */
+/* ── 11. 저장 · 복원 ─────────────────────────────────────────────────────── */
 
 const IO_KEY = 'aimath.imgop.state';
+
 function ioSave(){
   try{
     cmnSet(IO_KEY, JSON.stringify({
+      a0:{opened:ioBin.opened, idea:(ioEl('io-a0-idea') || {}).value || '',
+          solved:ioBin.solved, note:(ioEl('io-bin-note2') || {}).value || '',
+          bnote:(ioEl('io-bin-note') || {}).value || ''},
+      a2:{opened:ioRes.opened, idea:(ioEl('io-a2-idea') || {}).value || '',
+          seen:ioRes.seen, note:(ioEl('io-res-note') || {}).value || ''},
       a1:{done:ioA1.done, opened:ioA1.opened, note:(ioEl('io-a1-note') || {}).value || ''},
-      a2:{used:ioA2.used, note:(ioEl('io-a2-note') || {}).value || ''},
-      a3:{rows:ioA3.rows, done:ioA3.done, opened:ioA3.opened, note:(ioEl('io-a3-note') || {}).value || ''},
-      a5:{used:ioA5.used, opened:ioA5.opened, note:(ioEl('io-a5-note') || {}).value || ''},
+      a4:{opened:ioA4.opened, n:ioA4.n},
+      a3:{rows:ioA3.rows, done:ioA3.done, note:(ioEl('io-a3-note') || {}).value || ''},
       ans:[(ioEl('io-ans1') || {}).value || '', (ioEl('io-ans2') || {}).value || ''],
     }));
   }catch(e){}
 }
+
 function ioRestore(){
   let s = null;
   try{ s = JSON.parse(cmnGet(IO_KEY, 'null')); }catch(e){ s = null; }
   if(!s) return;
+
+  if(s.a0){
+    const t = ioEl('io-a0-idea'); if(t && s.a0.idea) t.value = s.a0.idea;
+    if(s.a0.solved) ioBin.solved = s.a0.solved;
+    if(s.a0.opened){
+      const p = ioEl('io-a0-panel'); if(p) p.classList.remove('io-veil');
+      ioBin.opened = true;
+      ioTxt('io-a0-msg', '이전에 적어 둔 생각을 불러왔습니다.');
+    }
+    const bn = ioEl('io-bin-note'); if(bn && s.a0.bnote) bn.value = s.a0.bnote;
+    ioBinProg();
+  }
+  if(s.a2){
+    const t = ioEl('io-a2-idea'); if(t && s.a2.idea) t.value = s.a2.idea;
+    if(s.a2.seen) ioRes.seen = s.a2.seen;
+    if(s.a2.opened){
+      const p = ioEl('io-res-panel'); if(p) p.classList.remove('io-veil');
+      ioRes.opened = true;
+      ioTxt('io-a2-msg', '이전에 적어 둔 예상을 불러왔습니다.');
+    }
+    const n = ioEl('io-res-note'); if(n && s.a2.note) n.value = s.a2.note;
+    ioResProg();
+  }
   if(s.a1){
     if(Array.isArray(s.a1.done)) ioA1.done = s.a1.done;
     if(s.a1.opened){
@@ -18871,18 +19161,18 @@ function ioRestore(){
     const n = ioEl('io-a1-note'); if(n && s.a1.note) n.value = s.a1.note;
     ioA1Missions();
   }
-  if(s.a2){
-    if(s.a2.used) ioA2.used = s.a2.used;
-    const n = ioEl('io-a2-note'); if(n && s.a2.note) n.value = s.a2.note;
-    ioA2Prog();
+  if(s.a4){
+    if(s.a4.opened){
+      ['io-a4-panel', 'io-a3-panel'].forEach(function(id){
+        const p = ioEl(id); if(p) p.classList.remove('io-veil');
+      });
+      ioA4.opened = true;
+    }
+    if(typeof s.a4.n === 'number'){ ioA4.n = s.a4.n; ioA4Render(); }
   }
   if(s.a3){
     if(Array.isArray(s.a3.rows)) ioA3.rows = s.a3.rows;
     if(s.a3.done) ioA3.done = s.a3.done;
-    if(s.a3.opened){
-      const p = ioEl('io-a3-panel'); if(p) p.classList.remove('io-veil');
-      ioA3.opened = true;
-    }
     const n = ioEl('io-a3-note'); if(n && s.a3.note) n.value = s.a3.note;
     ioA3Table();
     const cnt = ioA3.rows.length;
@@ -18900,27 +19190,19 @@ function ioRestore(){
       if(ioA3.done[parseFloat(c.dataset.a).toFixed(2)]) c.classList.add('on');
     });
   }
-  if(s.a5){
-    if(s.a5.used) ioA5.used = s.a5.used;
-    if(s.a5.opened){
-      const p = ioEl('io-a5-panel'); if(p) p.classList.remove('io-veil');
-      ioA5.opened = true;
-    }
-    const n = ioEl('io-a5-note'); if(n && s.a5.note) n.value = s.a5.note;
-    ioA5Prog();
-  }
   if(Array.isArray(s.ans)){
     const a1 = ioEl('io-ans1'), a2 = ioEl('io-ans2');
     if(a1 && s.ans[0]) a1.value = s.ans[0];
     if(a2 && s.ans[1]) a2.value = s.ans[1];
   }
 }
+
 function ioAnsSave(){
   ioSave();
   ioTxt('io-ans-st', '저장했습니다 — 이 기기의 브라우저에만 보관되며, 다음에 이 차시를 열면 그대로 남아 있습니다.');
 }
 
-/* ── 9. 초기화 (IIFE + null 가드) ────────────────────────────────────────── */
+/* ── 12. 초기화 (IIFE + null 가드 + 지연 init) ──────────────────────────── */
 (function imgopInit(){
   const boot = function(){
     const root = ioEl('v-imgop');
@@ -18932,11 +19214,9 @@ function ioAnsSave(){
     if(typeof quizStepper === 'function'){ try{ quizStepper('io-quiz', 'io', IO_QUIZ); }catch(e){ console.error('io quizStepper', e); } }
     if(typeof chipDefs    === 'function'){ try{ chipDefs('#v-imgop .io-keys', IO_DEFS); }catch(e){ console.error('io chipDefs', e); } }
     if(typeof wsLinks     === 'function'){ try{ wsLinks('io-wslinks', 'imgop'); }catch(e){ console.error('io wsLinks', e); } }
+    if(typeof aimRefExtras === 'function'){ try{ aimRefExtras(ioEl('io-refs-extra'), 'imgop'); }catch(e){ console.error('io refExtras', e); } }
 
-    /* 잠긴 단계 토글은 열리지 않게 막습니다.
-       click 의 preventDefault 만으로는 클릭 이외의 경로(키보드 활성화, 브라우저의
-       '페이지에서 찾기' 자동 펼침, 프로그램적 open)로 열리는 것을 막지 못합니다.
-       12·13·15·16차시와 동일하게 toggle 에서 되닫는 가드를 함께 걸어 둡니다. */
+    /* 잠긴 단계 토글은 열리지 않게 막습니다(클릭·키보드·페이지 내 찾기 모두). */
     root.querySelectorAll('.io-fold').forEach(function(d){
       d.addEventListener('click', function(e){ if(d.classList.contains('io-locked')) e.preventDefault(); });
       if(d.dataset.ioGuard === '1') return;
@@ -18946,32 +19226,41 @@ function ioAnsSave(){
       });
     });
 
-    try{ ioA1Bind(); }catch(e){ console.error('io act1', e); }
-    try{ ioA2Bind(); }catch(e){ console.error('io act2', e); }
-    try{ ioA3Bind(); }catch(e){ console.error('io act3', e); }
-    try{ ioA5Bind(); }catch(e){ console.error('io act5(전치행렬)', e); }
-    try{ ioQ1Build(); ioQ2Build(); ioQ3Shuffle(); }catch(e){ console.error('io act4', e); }
+    try{ ioZoomDraw(); }catch(e){ console.error('io zoom', e); }
+    try{ ioBinBind(); }catch(e){ console.error('io act1(이진행렬)', e); }
+    try{ ioResBind(); }catch(e){ console.error('io act2(회색조·해상도)', e); }
+    try{ ioA1Bind(); }catch(e){ console.error('io act3(밝기 랩)', e); }
+    try{ ioA4Bind(); }catch(e){ console.error('io act4-반전', e); }
+    try{ ioA3Bind(); }catch(e){ console.error('io act4-합성', e); }
+    try{ ioQuestBind(); }catch(e){ console.error('io 판정 문제', e); }
     try{ ioRestore(); }catch(e){ console.error('io restore', e); }
 
     /* 기록용 textarea 는 입력할 때마다 저장합니다. */
-    ['io-a1-note', 'io-a2-note', 'io-a3-note', 'io-a5-note', 'io-ans1', 'io-ans2'].forEach(function(id){
-      const el = ioEl(id);
-      if(el) el.addEventListener('input', ioSave);
-    });
+    ['io-a0-idea', 'io-a2-idea', 'io-bin-note', 'io-res-note', 'io-a1-note', 'io-a3-note', 'io-ans1', 'io-ans2']
+      .forEach(function(id){
+        const el = ioEl(id);
+        if(el) el.addEventListener('input', ioSave);
+      });
 
     /* 뷰가 화면에 나타나면 폭 의존 캔버스를 다시 그립니다(go() 수정 없이 지연 init). */
+    const redraw = function(){
+      try{ ioZoomDraw(); }catch(e){}
+      try{ ioA3Draw(); }catch(e){}
+      try{ ioA1Curve(); }catch(e){}
+      try{ ioResDraw(); }catch(e){}
+    };
     try{
       const mo = new MutationObserver(function(){
-        if(root.classList.contains('active')) setTimeout(function(){ ioA3Draw(); ioA1Curve(); }, 40);
+        if(root.classList.contains('active')) setTimeout(redraw, 40);
       });
       mo.observe(root, {attributes:true, attributeFilter:['class']});
     }catch(e){}
     let rt = null;
     window.addEventListener('resize', function(){
       clearTimeout(rt);
-      rt = setTimeout(function(){ ioA3Draw(); }, 160);
+      rt = setTimeout(function(){ try{ ioA3Draw(); }catch(e){} }, 160);
     });
-    if(root.classList.contains('active')) setTimeout(function(){ ioA3Draw(); ioA1Curve(); }, 60);
+    if(root.classList.contains('active')) setTimeout(redraw, 60);
   };
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
@@ -18980,26 +19269,27 @@ function ioAnsSave(){
 /* ●●● ANCHOR-IMGOP ●●● (14차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   15·16차시 (conv · filter) 표준 템플릿 개편 — core.js 끝에 그대로 덧붙입니다.
+   20차시 (conv · filter) 표준 템플릿 개편 — core.js 끝에 그대로 덧붙입니다.
 
    · 기존 core.js 코드는 한 줄도 고치지 않습니다.
      - conv  기존 위젯 : ctab / mkEG / newMan / chkMan / bldA / aStep / aAuto / aReset / ec*
      - filter 기존 위젯 : bldFC / rFK / applyF / applyCustom / createDefImg / loadImg
      위 함수들이 참조하는 DOM id 는 새 view.html 에서도 그대로 유지했습니다.
-   · 신규 전역은 전부 cvx(15차시) · flx(16차시) 접두사만 씁니다.
+   · 신규 전역은 전부 cvx(20차시) · flx(20차시) 접두사만 씁니다.
      (기존 뷰 확장 규약: 기존 접두사 유지 + 신규는 x접미 → conv→cvx, filter→flx)
    · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint / wsLinks)는
      호출만 하고 수정하지 않습니다.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   15차시 · conv — 합성곱의 원리 (접두사 cvx)
+   20차시 · conv — 합성곱의 원리 (접두사 cvx)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. 추천 영상 (videoDeck) — 실존·임베드 확인된 ID만 ───────────────────
    8HQKOjcLJtc : 림팔라의 수상한 수학부 「인공지능 수학 CNN 행렬 합성곱을 이용한 이미지 필터 처리」(28:35)
-                 2022 개정 「인공지능 수학」 공개수업 실황. 15차시는 전반부(~15분) 사용.
+                 2022 개정 「인공지능 수학」 공개수업 실황. 20차시는 전반부(~15분) 사용.
    WCS3J3hnnVA : Dr. Bean의 코딩교실 「인공지능 09-02 / 합성곱과 이미지」                          */
 const CVX_VIDEOS = [
   {id:'8HQKOjcLJtc', t:'CNN 행렬 합성곱을 이용한 이미지 필터 처리 — 공개수업 실황(전반부)', s:'림팔라의 수상한 수학부 · 28:35 · 0~15분 구간'},
@@ -19029,7 +19319,7 @@ const CVX_QUIZ = [
    explain:'(m − m₁ + 1) × (n − n₁ + 1) = (6 − 3 + 1) × (6 − 3 + 1) = <b>4×4</b> 입니다.'},
   {q:'합성곱으로 출력 한 칸을 구하는 순서로 옳은 것은?',
    opts:['먼저 모두 더한 뒤 자리별로 곱한다','자리별로 곱한 뒤 그 곱을 모두 더한다','행과 열을 차례로 곱해 더한다','창 안에서 가장 큰 값만 남긴다'], answer:1,
-   explain:'합성곱은 <b>아다마르 곱 → 전체 합</b>의 두 단계입니다. ③은 행렬의 곱셈, ④는 17차시에서 배울 맥스 풀링입니다.'},
+   explain:'합성곱은 <b>아다마르 곱 → 전체 합</b>의 두 단계입니다. ③은 행렬의 곱셈, ④는 20차시에서 배울 맥스 풀링입니다.'},
   {q:'행의 순서가 뒤섞인 이미지 행렬 S를 원래대로 되돌리는 방법은?',
    opts:['S에 아다마르 곱을 한다','변환행렬 T를 S의 왼쪽에 곱한다(T × S)','변환행렬 T를 S의 오른쪽에 곱한다(S × T)','S를 실수배 한다'], answer:1,
    explain:'왼쪽에 곱하면 <b>행</b>이 움직이고 오른쪽에 곱하면 <b>열</b>이 움직입니다. 그래서 AB 와 BA 는 일반적으로 다릅니다.'},
@@ -19049,7 +19339,7 @@ const CVX_DEFS = {
     '<p><b>이 차시와의 연결</b> — STEP 2 <b>활동 1</b>에서 S ⊙ T 를 직접 실행해 보면, 픽셀이 지워질 뿐 '+
     '<b>다른 자리로 옮겨 가지 않는다</b>는 것을 눈으로 확인하게 됩니다. 그리고 이 연산이 곧 <b>합성곱의 1단계</b>입니다.</p>'+
     '<p><button class="btn" type="button" onclick="cvxSee(0,\'cvx-act1\')">활동 1로 이동 →</button> '+
-    '<button class="btn" type="button" onclick="go(\'pool\')">17차시 · 정규화에서 다시 만납니다</button></p>',
+    '<button class="btn" type="button" onclick="go(\'pool\')">20차시 · 정규화에서 다시 만납니다</button></p>',
   '행렬의 곱셈':
     '<h4>행렬의 곱셈 AB — 행과 열을 차례로 곱해 더하기</h4>'+
     '<p>두 행렬 A, B에 대하여 A의 <b>열의 개수</b>와 B의 <b>행의 개수</b>가 같을 때, '+
@@ -19060,7 +19350,7 @@ const CVX_DEFS = {
     '<p><b>이 차시와의 연결</b> — STEP 2 <b>활동 1</b>에서 섞인 이미지를 되돌리는 T를 직접 만들어 봅니다. '+
     '왼쪽 곱과 오른쪽 곱의 결과가 서로 달라, AB ≠ BA 를 몸으로 확인하게 됩니다.</p>'+
     '<p><button class="btn" type="button" onclick="cvxSee(0,\'cvx-act1\')">활동 1로 이동 →</button> '+
-    '<button class="btn" type="button" onclick="go(\'pipeline\')">18차시 · 분류층 계산에서 다시 만납니다</button></p>',
+    '<button class="btn" type="button" onclick="go(\'pipeline\')">20차시 · 분류층 계산에서 다시 만납니다</button></p>',
   '합성곱':
     '<h4>합성곱 A ⊛ B — 아다마르 곱 → 전체 합</h4>'+
     '<p>이미지 데이터를 나타낸 m×n 행렬 A와, 특징을 찾아내는 필터 역할의 m₁×n₁ 행렬 B에 대하여 '+
@@ -19070,7 +19360,7 @@ const CVX_DEFS = {
     '<p><b>이 차시와의 연결</b> — STEP 2 <b>활동 2</b>에서 커널이 한 칸씩 옮겨 가는 아홉 단계를 보고, '+
     '<b>활동 3</b>에서 4×4 ⊛ 3×3 을 직접 손으로 계산해 채점합니다.</p>'+
     '<p><button class="btn" type="button" onclick="cvxSee(1,\'cvx-act2\')">활동 2로 이동 →</button> '+
-    '<button class="btn" type="button" onclick="go(\'hamming\')">돌아보기 · 13차시 해밍 거리의 한계</button></p>',
+    '<button class="btn" type="button" onclick="go(\'hamming\')">돌아보기 · 18차시 해밍 거리의 한계</button></p>',
   '커널':
     '<h4>커널(필터) — 이미지의 작은 부분에 씌우는 행렬</h4>'+
     '<p>이미지의 작은 부분에 적용하는 행렬로, 보통 3×3 또는 5×5로 만듭니다. '+
@@ -19079,8 +19369,8 @@ const CVX_DEFS = {
     '<p><b>예시 ①</b> [[1,0,−1],[1,0,−1],[1,0,−1]] 은 좌우 밝기 차이를 재므로 <b>세로선</b>을 찾습니다. '+
     '<b>예시 ②</b> 모두 1인 커널은 주변 아홉 칸의 합(9로 나누면 평균)이므로 사진을 흐리게 만듭니다.</p>'+
     '<p><b>이 차시와의 연결</b> — 오늘은 커널이 <b>주어진</b> 상태로 계산했습니다. '+
-    '16차시에서는 그 아홉 개의 수를 여러분이 직접 바꾸고, CNN에서는 이 값을 <b>학습으로</b> 찾아냅니다.</p>'+
-    '<p><button class="btn" type="button" onclick="go(\'filter\')">16차시 · 커널 필터 실험실 →</button></p>',
+    '20차시에서는 그 아홉 개의 수를 여러분이 직접 바꾸고, CNN에서는 이 값을 <b>학습으로</b> 찾아냅니다.</p>'+
+    '<p><button class="btn" type="button" onclick="go(\'filter\')">20차시 · 커널 필터 실험실 →</button></p>',
   '특징 맵':
     '<h4>특징 맵 — 합성곱의 결과로 얻는 수의 표</h4>'+
     '<p>커널을 한 칸씩 옮기며 얻은 출력값을 원래 위치대로 모아 만든 행렬입니다. '+
@@ -19088,9 +19378,9 @@ const CVX_DEFS = {
     '<p><b>예시 ①</b> 5×5 ⊛ 3×3 → 3×3. <b>예시 ②</b> 활동 2의 특징 맵 [[1,3,1],[3,4,3],[1,3,1]] 에서 '+
     '한가운데 4는 그 자리의 무늬가 커널과 가장 많이 겹쳤다는 뜻입니다.</p>'+
     '<p><b>이 차시와의 연결</b> — STEP 2 <b>활동 2·3</b>에서 특징 맵을 직접 채웁니다. '+
-    '이 표를 절반으로 줄이는 방법(맥스 풀링)은 17차시에서 다룹니다.</p>'+
+    '이 표를 절반으로 줄이는 방법(맥스 풀링)은 20차시에서 다룹니다.</p>'+
     '<p><button class="btn" type="button" onclick="cvxSee(2,\'cvx-act3\')">활동 3으로 이동 →</button> '+
-    '<button class="btn" type="button" onclick="go(\'pool\')">17차시 · 풀링과 정규화</button></p>',
+    '<button class="btn" type="button" onclick="go(\'pool\')">20차시 · 풀링과 정규화</button></p>',
 };
 
 /* ── 5. 탭 전환 (기존 ctab 을 감싸고, 숨어 있던 캔버스를 다시 맞춥니다) ── */
@@ -19453,11 +19743,11 @@ function cvxInit(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   16차시 · filter — 커널 필터 실험실 (접두사 flx)
+   20차시 · filter — 커널 필터 실험실 (접두사 flx)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. 추천 영상 ──────────────────────────────────────────────────────────
-   8HQKOjcLJtc : 림팔라의 수상한 수학부 공개수업 실황 — 16차시는 후반부(엣지 검출 커널·필터 시연)
+   8HQKOjcLJtc : 림팔라의 수상한 수학부 공개수업 실황 — 20차시는 후반부(엣지 검출 커널·필터 시연)
    qPid2UFj4kU : Dr. Bean의 코딩교실 「인공지능 09-03 / 합성곱 층(이론)」                        */
 const FLX_VIDEOS = [
   {id:'8HQKOjcLJtc', t:'CNN 행렬 합성곱을 이용한 이미지 필터 처리 — 공개수업 실황(후반부)', s:'림팔라의 수상한 수학부 · 28:35 · 15분 이후 구간'},
@@ -19506,9 +19796,9 @@ const FLX_DEFS = {
     '<p><b>예시 ①</b> [[0,0,0],[0,1,0],[0,0,0]] 은 원본 그대로(항등). '+
     '<b>예시 ②</b> [[−1,0,1],[−2,0,2],[−1,0,1]] 은 좌우 차이를 재는 소벨 커널.</p>'+
     '<p><b>이 차시와의 연결</b> — STEP 2 <b>활동 1</b>에서 커널 격자의 아홉 개 수를 직접 고쳐 결과를 봅니다. '+
-    'CNN에서는 이 값을 사람이 정하지 않고 학습으로 찾습니다(18차시).</p>'+
+    'CNN에서는 이 값을 사람이 정하지 않고 학습으로 찾습니다(20차시).</p>'+
     '<p><button class="btn" type="button" onclick="flxSee(0,\'flx-act1\')">활동 1로 이동 →</button> '+
-    '<button class="btn" type="button" onclick="go(\'conv\')">돌아보기 · 15차시 합성곱</button></p>',
+    '<button class="btn" type="button" onclick="go(\'conv\')">돌아보기 · 20차시 합성곱</button></p>',
   '정규화 계수':
     '<h4>정규화 계수 — 밝기를 되돌리는 나눗셈</h4>'+
     '<p>합성곱의 결과가 픽셀값의 범위(0~255)를 벗어나지 않도록 나누어 주는 수입니다. '+
@@ -19536,7 +19826,7 @@ const FLX_DEFS = {
     '<p><b>이 차시와의 연결</b> — <b>활동 3</b>에서 결과만 보고 어떤 커널인지 맞혀 봅니다. '+
     '“대부분 검고 선만 남았다”면 합이 0인 커널입니다.</p>'+
     '<p><button class="btn" type="button" onclick="flxSee(2,\'flx-act3\')">활동 3으로 이동 →</button> '+
-    '<button class="btn" type="button" onclick="go(\'detect\')">19차시 · 객체 탐지로 이어집니다</button></p>',
+    '<button class="btn" type="button" onclick="go(\'detect\')">20차시 · 객체 탐지로 이어집니다</button></p>',
   '선명화':
     '<h4>선명화(샤프닝) 필터 — 원본에 차이를 더하기</h4>'+
     '<p>[[0,−1,0],[−1,5,−1],[0,−1,0]] 은 “원본 1배 + 경계 검출 결과”로 볼 수 있습니다. '+
@@ -19552,7 +19842,7 @@ const FLX_DEFS = {
     '<b>예시 ②</b> 활동지 「활동8」 질문 1이 바로 이 내용입니다.</p>'+
     '<p><b>이 차시와의 연결</b> — <b>활동 1</b>의 출력 캔버스에서 테두리 한 줄이 비어 있는 것을 볼 수 있습니다. '+
     '0 패딩을 쓰지 않은 결과이기 때문입니다.</p>'+
-    '<p><button class="btn" type="button" onclick="go(\'conv\')">돌아보기 · 15차시 출력 크기</button></p>',
+    '<p><button class="btn" type="button" onclick="go(\'conv\')">돌아보기 · 20차시 출력 크기</button></p>',
 };
 
 /* ── 5. 탭 전환 ── */
@@ -19995,15 +20285,15 @@ function flxInit(){
   else boot();
 })();
 
-/* ●●● ANCHOR-CONV-FILTER (15·16차시) ●●● */
+/* ●●● ANCHOR-CONV-FILTER (20차시) ●●● */
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   3단원 17~19차시 뷰 로직 — core.js 맨 끝에 그대로 덧붙입니다.
+   3단원 20차시 뷰 로직 — core.js 맨 끝에 그대로 덧붙입니다.
    ---------------------------------------------------------------------------
-   · 17차시 pool     : 기존 접두사 p 유지 + 신규 px
-   · 18차시 pipeline : 기존 접두사 cnn 유지 + 신규 cnnx
-   · 19차시 detect   : 기존 접두사 det 유지 + 신규 detx
+   · 20차시 pool     : 기존 접두사 p 유지 + 신규 px
+   · 20차시 pipeline : 기존 접두사 cnn 유지 + 신규 cnnx
+   · 20차시 detect   : 기존 접두사 det 유지 + 신규 detx
    · 기존 함수(ptab·pRst·pStp·pAut·cnnShowStep·cnnAnalyze·detRun·initDetModel 등)와
      공통 컴포넌트(videoDeck·warmStepper·quizStepper·chipDefs·wsPrint·wsLinks)는
      호출만 하고 수정하지 않습니다.
@@ -20090,7 +20380,7 @@ function x3Tb(slotId, files, head){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   17차시 · POOL — 풀링과 정규화 (신규 접두사 px)
+   20차시 · POOL — 풀링과 정규화 (신규 접두사 px)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. 추천 영상 (videoDeck) — 실존·임베드 확인된 ID만 ── */
@@ -20169,16 +20459,16 @@ const PX_DEFS = {
     '<p>예 ① {9, 8, 7, 9} → 9 &nbsp; 예 ② {2, 8, 6, 5} → 8</p>' +
     '<p><b>STEP 2 활동 1</b>에서 네 칸의 결과를 먼저 예측한 뒤 [한 단계]로 확인했던 그 연산입니다.</p>' +
     '<p><button class="btn" type="button" onclick="pxSee(0,\'px-act1\')">활동 1로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'pipeline\')">18차시에서 다시 만나기</button></p>',
+    '<button class="btn" type="button" onclick="go(\'pipeline\')">20차시에서 다시 만나기</button></p>',
 
   '연산량':
     '<p>특징 맵의 <b>크기</b>는 곧 다음 층이 처리해야 할 <b>수의 개수</b>입니다. 2×2 풀링을 한 번 하면 칸의 개수가 1/4이 되므로, ' +
     '세 번만 반복해도 <b>1/64</b>로 줄어듭니다.</p>' +
     '<p>예 ① 224×224(50,176칸) → 112×112(12,544칸) → 56×56(3,136칸) → 28×28(784칸).<br>' +
-    '예 ② 마지막 28×28은 12차시에서 다룬 MNIST 손글씨 한 장의 크기와 같습니다.</p>' +
+    '예 ② 마지막 28×28은 18차시에서 다룬 MNIST 손글씨 한 장의 크기와 같습니다.</p>' +
     '<p><b>STEP 2 활동 1</b>의 「단계 2 정리」 표에서 이 수들을 직접 확인했습니다.</p>' +
     '<p><button class="btn" type="button" onclick="pxSee(0,\'px-act1\')">활동 1로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'mnist\')">돌아보기 · 12차시 28×28</button></p>',
+    '<button class="btn" type="button" onclick="go(\'mnist\')">돌아보기 · 18차시 28×28</button></p>',
 
   '이동 불변성':
     '<p><b>이동 불변성</b>은 입력이 조금 평행이동해도 출력이 크게 변하지 않는 성질입니다. ' +
@@ -20186,9 +20476,9 @@ const PX_DEFS = {
     '<p>예 ① 특징이 1행 1열 → 1행 2열로 이동(같은 구역) → 출력 그대로.<br>' +
     '예 ② 특징이 1행 2열 → 1행 3열로 이동(구역을 넘음) → 출력이 바뀜.</p>' +
     '<p><b>STEP 2 활동 2</b>에서 특징을 한 칸씩 옮기며 “4×4는 달라지는데 2×2는 그대로”인 순간을 직접 세어 보았습니다. ' +
-    '13차시 해밍 거리가 살짝 비뚤어진 7 앞에서 무너졌던 이유와 정확히 반대편에 있는 성질입니다.</p>' +
+    '18차시 해밍 거리가 살짝 비뚤어진 7 앞에서 무너졌던 이유와 정확히 반대편에 있는 성질입니다.</p>' +
     '<p><button class="btn" type="button" onclick="pxSee(1,\'px-act2\')">활동 2로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'hamming\')">돌아보기 · 13차시 해밍 거리</button></p>',
+    '<button class="btn" type="button" onclick="go(\'hamming\')">돌아보기 · 18차시 해밍 거리</button></p>',
 
   '실수배':
     '<p><b>행렬의 실수배</b>는 행렬의 <b>모든 성분에 같은 실수를 곱하는</b> 연산입니다. ' +
@@ -20204,7 +20494,7 @@ const PX_DEFS = {
     '<p>범위를 맞추지 않으면 값이 큰 특성이 학습을 <b>지배</b>합니다. 키(cm)와 몸무게(kg)를 그대로 넣으면 숫자가 큰 쪽이 결과를 좌우하는 것과 같습니다.</p>' +
     '<p>예 ① 이미지 픽셀 → X/255 &nbsp; 예 ② 음성·센서 데이터에도 같은 처리를 합니다.</p>' +
     '<p><b>STEP 2 활동 3</b>의 슬라이더에서 128 → 0.502 로 바뀌는 것을 확인했고, 색이 그대로임도 보았습니다. ' +
-    '26차시 경사하강법에서 “수렴이 빨라진다”는 말의 의미를 다시 만나게 됩니다.</p>' +
+    '28차시 경사하강법에서 “수렴이 빨라진다”는 말의 의미를 다시 만나게 됩니다.</p>' +
     '<p><button class="btn" type="button" onclick="pxSee(2,\'px-act3\')">활동 3으로 이동 →</button></p>'
 };
 
@@ -20564,7 +20854,7 @@ function pxAnsSave(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   18차시 · PIPELINE — CNN 파이프라인 종합 (신규 접두사 cnnx)
+   20차시 · PIPELINE — CNN 파이프라인 종합 (신규 접두사 cnnx)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const CNNX_VIDEOS = [
@@ -20610,7 +20900,7 @@ const CNNX_QUIZ = [
     q: '224 × 224 특징 맵에 2 × 2 최대 풀링을 한 번 적용하면 크기는 어떻게 되나요?',
     opts: ['224 × 224 (그대로)', '112 × 112', '56 × 56', '448 × 448'],
     answer: 1,
-    explain: '2 × 2 구역을 한 칸으로 줄이므로 가로·세로가 각각 절반이 됩니다. 칸 수는 50,176 → 12,544 로 1/4 이 됩니다(17차시). [12인수03-03]'
+    explain: '2 × 2 구역을 한 칸으로 줄이므로 가로·세로가 각각 절반이 됩니다. 칸 수는 50,176 → 12,544 로 1/4 이 됩니다(20차시). [12인수03-03]'
   },
   {
     q: 'CNN의 앞부분(합성곱·ReLU·풀링의 반복)이 하는 일을 한 낱말로 표현하면?',
@@ -20637,10 +20927,10 @@ const CNNX_DEFS = {
     '필터(커널)라는 작은 행렬을 이미지 행렬 위로 슬라이딩하며 적용해 윤곽선·질감 같은 특징을 검출하고, ' +
     '마지막에는 확률을 바탕으로 결과를 예측합니다.</p>' +
     '<p>예 ① 사람 사진 → 윤곽 인식 → 눈·코·입 위치 파악 → 가장 큰 값으로 판단.<br>' +
-    '예 ② MNIST 손글씨 → 0~9 중 하나로 분류(12차시).</p>' +
+    '예 ② MNIST 손글씨 → 0~9 중 하나로 분류(18차시).</p>' +
     '<p><b>STEP 2 활동 1</b>에서 여섯 단계의 순서를 직접 세워 보았고, <b>활동 2</b>에서 내 사진으로 통과시켰습니다.</p>' +
     '<p><button class="btn" type="button" onclick="cnnxSee(0,\'cnnx-act1\')">활동 1로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'conv\')">돌아보기 · 15차시 합성곱</button></p>',
+    '<button class="btn" type="button" onclick="go(\'conv\')">돌아보기 · 20차시 합성곱</button></p>',
 
   '특징 추출':
     '<p>CNN은 크게 두 덩어리입니다. 앞쪽 <b>특징 추출</b>(합성곱 · ReLU · 풀링의 반복)과 뒤쪽 <b>분류</b>(행렬의 곱셈, 곧 다층 퍼셉트론)입니다.</p>' +
@@ -20673,9 +20963,9 @@ const CNNX_DEFS = {
     '<p>주의할 점은 이 확률이 <b>정확도가 아니라는 것</b>입니다. 모델이 아는 범주들 안에서의 <b>기울기</b>를 나타냅니다.</p>' +
     '<p>예 ① 교과서의 「소녀 94% · 시계 3% · 부케 2% · 소파 1%」는 합이 100%입니다.<br>' +
     '예 ② 배우지 않은 물체를 넣어도 어딘가에 94%가 찍힐 수 있습니다.</p>' +
-    '<p><b>STEP 2 활동 3</b>에서 확률의 합이 언제나 1임을 슬라이더로 확인했습니다. 이 한계는 19차시 <b>신뢰도</b>로 이어집니다.</p>' +
+    '<p><b>STEP 2 활동 3</b>에서 확률의 합이 언제나 1임을 슬라이더로 확인했습니다. 이 한계는 20차시 <b>신뢰도</b>로 이어집니다.</p>' +
     '<p><button class="btn" type="button" onclick="cnnxSee(2,\'cnnx-act3\')">활동 3으로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'detect\')">이어보기 · 19차시 신뢰도</button></p>'
+    '<button class="btn" type="button" onclick="go(\'detect\')">이어보기 · 20차시 신뢰도</button></p>'
 };
 
 /* ── 탭 ── */
@@ -20929,7 +21219,7 @@ function cnnxAnsSave(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   19차시 · DETECT — 객체 탐지와 실생활 응용 (3단원 마무리, 신규 접두사 detx)
+   20차시 · DETECT — 객체 탐지와 실생활 응용 (3단원 마무리, 신규 접두사 detx)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const DETX_VIDEOS = [
@@ -20958,16 +21248,16 @@ const DETX_WARM = [
   }
 ];
 
-/* 3단원(12~19차시) 종합 형성평가 — 12~18차시 문항을 포함합니다. */
+/* 3단원(18~20차시) 종합 형성평가 — 18~20차시 문항을 포함합니다. */
 const DETX_QUIZ = [
   {
-    q: '[12차시] 28×28 회색조 이미지 한 장을 행렬로 나타낼 때 성분의 개수와 값의 범위는?',
+    q: '[18차시] 28×28 회색조 이미지 한 장을 행렬로 나타낼 때 성분의 개수와 값의 범위는?',
     opts: ['784개, 0~1', '784개, 0~255', '56개, 0~255', '2,352개, 0~255'],
     answer: 1,
     explain: '28 × 28 = 784개의 성분이고, 회색조 밝기는 0(검정)부터 255(흰색)까지의 정수입니다. [12인수03-01]'
   },
   {
-    q: '[13차시] 두 이진 행렬 사이의 해밍 거리를 구하는 방법으로 옳은 것은?',
+    q: '[18차시] 두 이진 행렬 사이의 해밍 거리를 구하는 방법으로 옳은 것은?',
     opts: ['두 행렬을 더한다', '자리별로 XOR한 뒤 1의 개수를 센다', '두 행렬을 곱한다', '255에서 뺀다'],
     answer: 1,
     explain: 'XOR는 두 값이 서로 다를 때만 1이므로, XOR 결과의 1의 개수가 곧 서로 다른 자리의 수, 즉 해밍 거리입니다. [12인수03-03]'
@@ -20979,13 +21269,13 @@ const DETX_QUIZ = [
     explain: '성분이 작아지면 어두워집니다. 실수배로 모든 성분을 같은 비율로 줄이면 전체가 고르게 어두워집니다. [12인수03-02]'
   },
   {
-    q: '[15차시] 4×4 행렬에 3×3 커널로 합성곱을 하면 결과 행렬의 크기는?',
+    q: '[20차시] 4×4 행렬에 3×3 커널로 합성곱을 하면 결과 행렬의 크기는?',
     opts: ['1×1', '2×2', '3×3', '4×4'],
     answer: 1,
     explain: '(4 − 3 + 1) × (4 − 3 + 1) = 2 × 2 입니다. 커널이 놓일 수 있는 자리의 수가 곧 결과의 크기입니다. [12인수03-02]'
   },
   {
-    q: '[16차시] 3×3 블러(흐림) 커널의 모든 성분이 1일 때 결과를 1/9배 하는 이유는?',
+    q: '[20차시] 3×3 블러(흐림) 커널의 모든 성분이 1일 때 결과를 1/9배 하는 이유는?',
     opts: [
       '값이 아홉 배로 커져 밝기가 원래대로 유지되지 않기 때문',
       '커널의 크기를 줄이기 위해',
@@ -20996,13 +21286,13 @@ const DETX_QUIZ = [
     explain: '아홉 개 값을 그대로 더하면 밝기가 약 9배가 됩니다. 1/9을 곱하는 것은 평균을 구하는 것과 같아 원래 밝기가 유지됩니다. [12인수03-02]'
   },
   {
-    q: '[17차시] 112×112 특징 맵에 2×2 맥스 풀링을 한 번 적용하면 칸의 개수는 처음의 몇 분의 1인가?',
+    q: '[20차시] 112×112 특징 맵에 2×2 맥스 풀링을 한 번 적용하면 칸의 개수는 처음의 몇 분의 1인가?',
     opts: ['1/2', '1/4', '1/8', '1/16'],
     answer: 1,
     explain: '가로도 세로도 절반이 되어 56×56이 되므로 칸의 개수는 1/4입니다(12,544 → 3,136). [12인수03-02]'
   },
   {
-    q: '[18차시] CNN의 분류 결과가 (0.62, 0.31, 0.07)일 때 옳은 설명은?',
+    q: '[20차시] CNN의 분류 결과가 (0.62, 0.31, 0.07)일 때 옳은 설명은?',
     opts: [
       '합이 1이므로 확률분포로 볼 수 있다',
       '이 모델의 정확도가 62%라는 뜻이다',
@@ -21013,7 +21303,7 @@ const DETX_QUIZ = [
     explain: '모든 값이 0 이상이고 합이 1이므로 확률분포입니다. 정확도와는 다르고, 배우지 않은 물체라면 어느 것도 정답이 아닐 수 있습니다. [12인수03-03]'
   },
   {
-    q: '[19차시] 이미지 분류와 객체 탐지의 차이로 옳은 것은?',
+    q: '[20차시] 이미지 분류와 객체 탐지의 차이로 옳은 것은?',
     opts: [
       '분류는 사진당 출력이 1개, 탐지는 사진당 출력이 여러 개일 수 있다',
       '탐지는 행렬을 쓰지 않는다',
@@ -21024,13 +21314,13 @@ const DETX_QUIZ = [
     explain: '분류는 “무엇인가”에 이름 하나로 답하고, 탐지는 “무엇이 어디에”에 (이름 + 상자 + 신뢰도)의 묶음을 여러 개 내놓습니다. [12인수03-03]'
   },
   {
-    q: '[19차시] 정답 상자 A = (20, 30, 60, 40), 내 상자 B = (40, 30, 60, 40)일 때 겹침 비율은?',
+    q: '[20차시] 정답 상자 A = (20, 30, 60, 40), 내 상자 B = (40, 30, 60, 40)일 때 겹침 비율은?',
     opts: ['1/2', '1/3', '2/3', '1/4'],
     answer: 1,
     explain: '가로로 겹친 길이는 80 − 40 = 40, 세로는 40이므로 겹친 넓이 1,600. 두 넓이의 합 2,400 + 2,400 = 4,800에서 겹친 넓이를 빼면 합친 넓이 3,200. 1,600 ÷ 3,200 = 1/2… 이 아니라 겹친 가로는 min(80, 100) − max(20, 40) = 80 − 40 = 40 이므로 1,600, 합친 넓이는 4,800 − 1,600 = 3,200, 따라서 1,600/3,200 = 1/2 입니다. 계산을 다시 따라가 보면 정답은 1/2이 아니라, 겹친 넓이 1,600 ÷ 합친 넓이 4,800 − 1,600 = 3,200 → 1/2. 학습지 ③에서 손으로 다시 확인하세요.'
   },
   {
-    q: '[19차시] 탐지 임계값을 0.5에서 0.9로 올렸을 때 일어나는 일로 옳은 것은?',
+    q: '[20차시] 탐지 임계값을 0.5에서 0.9로 올렸을 때 일어나는 일로 옳은 것은?',
     opts: [
       '잘못 표시(오탐)가 줄고 놓침이 늘어난다',
       '놓침이 줄고 잘못 표시가 늘어난다',
@@ -21053,12 +21343,12 @@ const DETX_DEFS = {
 
   '겹침 비율':
     '<p><b>겹침 비율</b>은 두 상자의 <b>겹친 넓이 ÷ 합친 넓이</b>입니다. 값은 언제나 0 이상 1 이하이며, 완전히 포개지면 1, 전혀 겹치지 않으면 0입니다.</p>' +
-    '<p>10차시의 자카드 유사도 J(A, B) = n(A∩B) ÷ n(A∪B) 와 <b>같은 꼴</b>입니다. 원소의 개수 대신 넓이를 쓴 것뿐입니다.</p>' +
+    '<p>12차시의 자카드 유사도 J(A, B) = n(A∩B) ÷ n(A∪B) 와 <b>같은 꼴</b>입니다. 원소의 개수 대신 넓이를 쓴 것뿐입니다.</p>' +
     '<p>예 ① 넓이가 같은 두 상자가 절반만 겹치면 (1/2) ÷ (3/2) = 1/3.<br>' +
     '예 ② 보통 겹침 비율이 0.5 이상이면 “제대로 찾았다”고 봅니다.</p>' +
     '<p><b>STEP 2 활동 2</b>에서 겹친 가로·세로 길이를 각각 구해 곱하는 방법을 확인했습니다.</p>' +
     '<p><button class="btn" type="button" onclick="detxSee(1,\'detx-act2\')">활동 2로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'senti\')">돌아보기 · 10차시 자카드 유사도</button></p>',
+    '<button class="btn" type="button" onclick="go(\'senti\')">돌아보기 · 12차시 자카드 유사도</button></p>',
 
   '객체 탐지':
     '<p><b>객체 탐지</b>는 이미지 안에서 대상이 <b>어느 영역에 위치하는지</b>와 그 대상이 <b>무엇인지</b>를 함께 인식하는 기술입니다.</p>' +
@@ -21066,12 +21356,12 @@ const DETX_DEFS = {
     '<p>예 ① 자율 주행 — 차량·보행자·신호등을 동시에 탐지.<br>' +
     '예 ② 의료 영상 — 종양이 어디에 있는지 표시.</p>' +
     '<p><b>STEP 2 활동 1</b>에서 다섯 상황을 분류와 탐지로 나누어 보았고, <b>활동 4</b>에서 실제 모델로 탐지해 보았습니다. ' +
-    '13차시 해밍 거리 분류와 18차시 CNN 분류는 모두 “분류” 쪽에 속합니다.</p>' +
+    '18차시 해밍 거리 분류와 20차시 CNN 분류는 모두 “분류” 쪽에 속합니다.</p>' +
     '<p><button class="btn" type="button" onclick="detxSee(0,\'detx-act1\')">활동 1로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'pipeline\')">돌아보기 · 18차시 CNN 분류</button></p>',
+    '<button class="btn" type="button" onclick="go(\'pipeline\')">돌아보기 · 20차시 CNN 분류</button></p>',
 
   '신뢰도':
-    '<p><b>신뢰도</b>는 모델이 “이 상자 안의 물체가 그 이름일 가능성”으로 내놓은 <b>확률</b>입니다. 18차시의 소프트맥스가 만든 값과 같은 성격입니다.</p>' +
+    '<p><b>신뢰도</b>는 모델이 “이 상자 안의 물체가 그 이름일 가능성”으로 내놓은 <b>확률</b>입니다. 20차시의 소프트맥스가 만든 값과 같은 성격입니다.</p>' +
     '<p>신뢰도 0.95는 <b>“100번 중 95번 맞다”가 아닙니다.</b> 모델이 배운 범주들 안에서 그쪽으로 크게 기울었다는 뜻입니다.</p>' +
     '<p>예 ① 배우지 않은 물건(필통)을 넣으면 80종 중 하나(리모컨)에 높은 신뢰도가 붙기도 합니다.<br>' +
     '예 ② 그래서 신뢰도는 사람이 <b>참고</b>하는 수이지, 판단을 대신해 주는 수가 아닙니다.</p>' +
@@ -21107,13 +21397,13 @@ function detxSee(tab, anchor){
 /* ── 활동 1 — 분류인가 탐지인가 ── */
 const DETX_A1 = [
   { q: '사진 속 동물이 개인지 고양이인지 알려 준다.', det: false,
-    ex: '사진 한 장에 이름 하나면 충분합니다. 전형적인 <b>이미지 분류</b>이며, 13차시 해밍 거리 분류와 18차시 CNN이 하던 일입니다.' },
+    ex: '사진 한 장에 이름 하나면 충분합니다. 전형적인 <b>이미지 분류</b>이며, 18차시 해밍 거리 분류와 20차시 CNN이 하던 일입니다.' },
   { q: '교실 사진에서 의자가 몇 개인지 센다.', det: true,
     ex: '개수를 세려면 의자를 <b>하나씩 따로</b> 찾아야 합니다. 출력이 여러 개 나와야 하므로 <b>객체 탐지</b>입니다.' },
   { q: 'X-ray 사진에서 골절 부위를 표시한다.', det: true,
     ex: '“골절이 있다/없다”가 아니라 <b>어디인지</b>를 표시해야 하므로 탐지입니다. 의료 영상은 탐지의 대표적인 활용 분야입니다.' },
   { q: '손글씨 숫자가 0~9 중 무엇인지 맞힌다.', det: false,
-    ex: '숫자 한 글자가 담긴 그림 한 장에 이름 하나를 붙이는 <b>분류</b>입니다(12차시 MNIST).' },
+    ex: '숫자 한 글자가 담긴 그림 한 장에 이름 하나를 붙이는 <b>분류</b>입니다(18차시 MNIST).' },
   { q: '도로 사진에서 보행자·차량·신호등을 동시에 찾는다.', det: true,
     ex: '서로 다른 여러 물체를 각각의 위치와 함께 찾아야 하므로 <b>탐지</b>입니다. 자율 주행의 핵심 기술입니다.' }
 ];
@@ -21397,14 +21687,14 @@ function detxA3Guess(i, el){
 
 /* ── 3단원 한 장 정리 ── */
 const DETX_MAP = [
-  { n: '12차시', t: '이미지는 행렬이다', v: 'mnist', d: '픽셀 0~255, 28×28 = 784' },
-  { n: '13차시', t: '이진화·해밍 거리', v: 'hamming', d: 'XOR로 세는 다름의 개수' },
+  { n: '18차시', t: '이미지는 행렬이다', v: 'mnist', d: '픽셀 0~255, 28×28 = 784' },
+  { n: '18차시', t: '이진화·해밍 거리', v: 'hamming', d: 'XOR로 세는 다름의 개수' },
   { n: '14차시', t: '행렬 연산으로 변형', v: '', d: '합·차·실수배·내분' },
-  { n: '15차시', t: '합성곱의 원리', v: 'conv', d: '자리별 곱의 합, 특징 맵' },
-  { n: '16차시', t: '커널 필터 실험실', v: 'filter', d: '흐림·경계 검출·선명화' },
-  { n: '17차시', t: '풀링과 정규화', v: 'pool', d: '최댓값만 남기기, (1/255)X' },
-  { n: '18차시', t: 'CNN 파이프라인', v: 'pipeline', d: '여섯 단계와 합이 1인 확률' },
-  { n: '19차시', t: '객체 탐지 (오늘)', v: 'detect', d: '상자 네 수와 신뢰도' }
+  { n: '20차시', t: '합성곱의 원리', v: 'conv', d: '자리별 곱의 합, 특징 맵' },
+  { n: '20차시', t: '커널 필터 실험실', v: 'filter', d: '흐림·경계 검출·선명화' },
+  { n: '20차시', t: '풀링과 정규화', v: 'pool', d: '최댓값만 남기기, (1/255)X' },
+  { n: '20차시', t: 'CNN 파이프라인', v: 'pipeline', d: '여섯 단계와 합이 1인 확률' },
+  { n: '20차시', t: '객체 탐지 (오늘)', v: 'detect', d: '상자 네 수와 신뢰도' }
 ];
 function detxMapRender(){
   const box = x3El('detx-map');
@@ -21473,25 +21763,25 @@ function detxAnsSave(){
 })();
 
 
-/* 20차시(prob) 뷰가 아직 없을 때를 대비합니다 — 없는 뷰로 보내면 go()가 조용히 무시되어
+/* 21차시(prob) 뷰가 아직 없을 때를 대비합니다 — 없는 뷰로 보내면 go()가 조용히 무시되어
    버튼이 죽은 것처럼 보이므로, 준비 중임을 알리고 차시 목록을 열어 줍니다. */
 function detxNext20(el){
-  if(document.getElementById('v-prob')){ aimGoLesson('prob','20차시'); return; }
+  if(document.getElementById('v-prob')){ aimGoLesson('prob','21차시'); return; }
   const box = (el && el.parentElement) ? el.parentElement : null;
   if(box && !box.querySelector('.detx-soonmsg')){
     const p = document.createElement('span');
     p.className = 'detx-soonmsg';
     p.style.cssText = 'display:block;margin-top:0.5rem;font-size:0.95rem;line-height:1.75;color:var(--body);';
-    p.innerHTML = '20차시 <b>「데이터에서 확률 읽기」</b> 자료는 <b>준비 중</b>입니다. ' +
-      '상단 <b>[차시 목록 ▾]</b>을 누르면 전체 30차시 계획에서 진행 상황을 확인할 수 있습니다.';
+    p.innerHTML = '21차시 <b>「데이터에서 확률 읽기」</b> 자료는 <b>준비 중</b>입니다. ' +
+      '상단 <b>[차시 목록 ▾]</b>을 누르면 전체 37차시 계획에서 진행 상황을 확인할 수 있습니다.';
     box.appendChild(p);
   }
-  if(el){ el.disabled = true; el.textContent = '20차시 · 준비 중'; }
+  if(el){ el.disabled = true; el.textContent = '21차시 · 준비 중'; }
 }
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   go() 보강 — 17~19차시 뷰로 이동할 때 필요한 재초기화만 덧붙입니다.
+   go() 보강 — 20차시 뷰로 이동할 때 필요한 재초기화만 덧붙입니다.
    (원본 go()는 window.go.__orig 로 계속 보존됩니다.)
    ═══════════════════════════════════════════════════════════════════════════ */
 (function l1719GoHook(){
@@ -21511,9 +21801,9 @@ function detxNext20(el){
 })();
 
 
-/* ═════════ 4·5단원 통합 append: 20~21차시 prob ═════════ */
+/* ═════════ 4·5단원 통합 append: 21~22차시 prob ═════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   PROB (20~21차시: 데이터에서 확률 읽기 / 조건이 있는 확률과 스팸 필터) — 전역 접두사 pb
+   PROB (21~22차시: 데이터에서 확률 읽기 / 조건이 있는 확률과 스팸 필터) — 전역 접두사 pb
    ---------------------------------------------------------------------------
    · core.js 의 **맨 끝**(현재 마지막 앵커 줄 아래)에 이 블록을 통째로 붙여 넣습니다.
    · 공통 컴포넌트(videoDeck · warmStepper · quizStepper · chipDefs · wsPrint · wsLinks ·
@@ -21521,7 +21811,7 @@ function detxNext20(el){
    · 초기화는 맨 아래 IIFE 하나뿐이며, #v-prob 이 없으면 즉시 반환합니다(null 가드).
    · 서술 규약(교육과정 준수) — 조건부확률의 용어와 기호는 화면 어디에도 쓰지 않습니다.
      "표의 범위를 조건으로 제한한다" / "그 조건일 때의 상대도수" 표현만 사용합니다.
-     (근거: 씨마스 「차시별 교수·학습 설계안」 4단원 1/13차시 지도상의 유의점 —
+     (근거: 씨마스 「차시별 교수·학습 설계안」 4단원 1/18차시 지도상의 유의점 —
       "확률의 계산은 상대도수를 활용하게 하며, 조건부확률의 용어와 기호는 다루지 않는다.")
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -21563,11 +21853,11 @@ function pbSum(arr){ var s = 0; for(var i = 0; i < arr.length; i++) s += arr[i];
 
 
 /* ── 1. 홈 썸네일 아트 · 차시 매니페스트 안전망 ───────────────────────────── */
-/* 20·21차시가 한 뷰(prob)를 함께 쓰므로 매니페스트 두 줄을 모두 채웁니다.
+/* 21·22차시가 한 뷰(prob)를 함께 쓰므로 매니페스트 두 줄을 모두 채웁니다.
    홈 카드 썸네일은 차시마다 다른 그림이어야 하므로 아트 키를 둘로 나눕니다
    (AIM_ART.prob20 · AIM_ART.prob21). AIM_ART.prob 는 합본으로 남겨 둡니다. */
 
-/* 20차시 — 시행 횟수가 늘며 상대도수가 이론값에 수렴하는 꺾은선 */
+/* 21차시 — 시행 횟수가 늘며 상대도수가 이론값에 수렴하는 꺾은선 */
 var PB_ART20 = '<svg viewBox="0 0 320 180" role="img" aria-label="시행 횟수가 늘어남에 따라 상대도수가 이론값에 수렴하는 꺾은선">' +
   '<rect width="320" height="180" fill="var(--bg)"/>' +
   '<path d="M30 150 H300" stroke="var(--border)" stroke-width="1.5"/>' +
@@ -21580,7 +21870,7 @@ var PB_ART20 = '<svg viewBox="0 0 320 180" role="img" aria-label="시행 횟수�
   '<text x="165" y="172" font-size="10.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">시행 횟수 n →</text>' +
   '</svg>';
 
-/* 21차시 — 조건에 해당하는 줄만 밝게 남고 분수가 조립되는 이원분류표 */
+/* 22차시 — 조건에 해당하는 줄만 밝게 남고 분수가 조립되는 이원분류표 */
 var PB_ART21 = '<svg viewBox="0 0 320 180" role="img" aria-label="이원분류표의 한 줄만 진하게 표시되고 분수가 조립되는 그림">' +
   '<rect width="320" height="180" fill="var(--bg)"/>' +
   '<g font-family="monospace" font-size="11" text-anchor="middle">' +
@@ -21626,9 +21916,9 @@ var PB_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="상대도수 수
   try{
     if(typeof AIM_LESSONS === 'undefined' || !Array.isArray(AIM_LESSONS)) return;
     var meta = {
-      '20차시': { t: '데이터에서 확률 읽기 — 던질수록 또렷해지는 값',
+      '21차시': { t: '데이터에서 확률 읽기 — 던질수록 또렷해지는 값',
         d: '동전을 수천 번 던져 흔들리던 비율이 한 값에 달라붙는 장면을 직접 만들고, 세어서 구한 확률과 견주어 봅니다. 윷가락·진단 검사 데이터로 상대도수를 손으로 구하고, 전체 도수가 클수록 왜 믿을 만해지는지 흔들림 실험으로 확인합니다.' },
-      '21차시': { t: '조건이 있는 확률과 스팸 필터 — 표의 어느 부분을 볼까',
+      '22차시': { t: '조건이 있는 확률과 스팸 필터 — 표의 어느 부분을 볼까',
         d: '이원분류표에서 조건 칩을 눌러 볼 범위를 좁히고, 분모와 분자가 표에서 뽑혀 나와 분수로 조립되는 과정을 봅니다. 메일 12건으로 나만의 스팸 필터를 만들어 상대도수를 곱해 크기를 비교합니다.' }
     };
     var touched = false;
@@ -21637,13 +21927,13 @@ var PB_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="상대도수 수
       if(!row || !meta[row.n]) continue;
       if(row.v === 'prob') continue;                    /* 이미 반영됨 */
       row.v = 'prob';
-      row.a = (row.n === '21차시') ? 'prob21' : 'prob20';
+      row.a = (row.n === '22차시') ? 'prob21' : 'prob20';
       row.t = meta[row.n].t;
       row.d = meta[row.n].d;
       touched = true;
     }
     /* 일러스트 등록은 manifest 패치 여부와 무관하게 항상 수행합니다.
-       AIM_LESSONS 20·21차시 행을 통합 시점에 이미 고쳐 두면(=권장 절차)
+       AIM_LESSONS 21·22차시 행을 통합 시점에 이미 고쳐 두면(=권장 절차)
        위 루프가 전부 continue 하여 touched 가 false 로 남는데,
        예전처럼 이 블록이 `if(!touched) return;` 뒤에 있으면 그때
        AIM_ART.prob20/prob21 이 끝내 등록되지 않아 홈 카드·표제부
@@ -21667,7 +21957,7 @@ var PB_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="상대도수 수
       try{
         var panel = pbEl('nav-panel');
         if(!panel) return;
-        var want = ['20차시', '21차시'];
+        var want = ['21차시', '22차시'];
         for(var w = 0; w < want.length; w++){
           if(panel.querySelector('.nav-item[data-v="prob"][data-lsn="' + want[w] + '"]')) continue;
           /* aimBuildNav 는 미구현 차시를 <span class="nav-item soon"> 으로 그립니다. */
@@ -21682,7 +21972,7 @@ var PB_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="상대도수 수
               pbEsc(meta[want[w]].t) + '</span>';
             (function(target){
               b.addEventListener('click', function(){
-                pbPending = (target === '21차시') ? 21 : 20;
+                pbPending = (target === '22차시') ? 21 : 20;
                 go('prob');
               });
             })(want[w]);
@@ -21716,8 +22006,8 @@ function pbLesson(n){
   pbSet(PB_LESSON_KEY, String(pbLessonCur));
   var cur = pbEl('nav-cur');
   if(cur && (typeof aimNavOwns !== 'function' || aimNavOwns('v-prob'))) cur.textContent = on21
-    ? '21차시 · 조건이 있는 확률과 스팸 필터 — 표의 어느 부분을 볼까'
-    : '20차시 · 데이터에서 확률 읽기 — 던질수록 또렷해지는 값';
+    ? '22차시 · 조건이 있는 확률과 스팸 필터 — 표의 어느 부분을 볼까'
+    : '21차시 · 데이터에서 확률 읽기 — 던질수록 또렷해지는 값';
   var view = pbEl('v-prob');
   if(view && typeof initToggles === 'function'){ try{ initToggles(view); }catch(e){} }
   /* 숨어 있던 캔버스는 폭이 0이라 그림이 깨지므로, 보일 때 다시 그립니다. */
@@ -21755,20 +22045,20 @@ function pbOpen(anchor){
   else if(k === '20' || k === 'exp'){ pbLesson(20); }
 }
 
-/* 22차시(trend) 뷰가 아직 없을 때를 대비합니다 — 없는 뷰로 보내면 go()가 조용히
+/* 23차시(trend) 뷰가 아직 없을 때를 대비합니다 — 없는 뷰로 보내면 go()가 조용히
    무시되어 버튼이 죽은 것처럼 보이므로, 준비 중임을 알립니다. */
 function pbNext22(el){
-  if(pbEl('v-trend')){ aimGoLesson('trend','22차시'); return; }
+  if(pbEl('v-trend')){ aimGoLesson('trend','23차시'); return; }
   var box = (el && el.parentElement) ? el.parentElement : null;
   if(box && !box.querySelector('.pb-soonmsg')){
     var p = document.createElement('span');
     p.className = 'pb-soonmsg';
     p.style.cssText = 'display:block;margin-top:0.5rem;font-size:0.95rem;line-height:1.75;color:var(--body);';
-    p.innerHTML = '22차시 <b>「산점도와 추세선으로 예측하기」</b> 자료는 <b>준비 중</b>입니다. ' +
-      '상단 <b>[차시 목록 ▾]</b>을 누르면 전체 30차시 계획에서 진행 상황을 확인할 수 있습니다.';
+    p.innerHTML = '23차시 <b>「산점도와 추세선으로 예측하기」</b> 자료는 <b>준비 중</b>입니다. ' +
+      '상단 <b>[차시 목록 ▾]</b>을 누르면 전체 37차시 계획에서 진행 상황을 확인할 수 있습니다.';
     box.appendChild(p);
   }
-  if(el){ el.disabled = true; el.textContent = '22차시 · 준비 중'; }
+  if(el){ el.disabled = true; el.textContent = '23차시 · 준비 중'; }
 }
 
 
@@ -21776,11 +22066,11 @@ function pbNext22(el){
 var PB20_VIDEOS = [
   { id: 'RWYdJX40kPc', t: '확률의 정의와 큰수의 법칙', s: 'BMATH — 수학적 확률과 통계적 확률' },
   { id: 'jpQIqXLMGAk', t: '37. 큰수의 법칙', s: 'mathT야나수 — 「인공지능 수학」 코스' },
-  { id: 'Dhw6vet6yUc', t: '17. 자료의 분석과 예측 (확률 활용)', s: 'mathT야나수 — 21차시 예습용' }
+  { id: 'Dhw6vet6yUc', t: '17. 자료의 분석과 예측 (확률 활용)', s: 'mathT야나수 — 22차시 예습용' }
 ];
 var PB21_VIDEOS = [
   { id: 'Dhw6vet6yUc', t: '17. 자료의 분석과 예측 (확률 활용)', s: 'mathT야나수 — 조건별 상대도수로 예측' },
-  { id: 'RWYdJX40kPc', t: '확률의 정의와 큰수의 법칙', s: 'BMATH — 20차시 복습용' }
+  { id: 'RWYdJX40kPc', t: '확률의 정의와 큰수의 법칙', s: 'BMATH — 21차시 복습용' }
 ];
 
 /* ── 4. 마중 퀴즈 (warmStepper — 순차 공개, 라벨 "질문 N.") ────────────────── */
@@ -21804,7 +22094,7 @@ var PB21_WARM = [
     explain: '조건은 볼 범위를 좁히는 일입니다. 분모가 그 줄의 합계로 작아지므로, 같은 칸이라도 상대도수가 커질 수 있습니다.' },
   { q: '조건을 많이 걸면 걸수록 예측은 언제나 더 좋아질까요?',
     opts: ['언제나 좋아진다', '그렇지 않다 — 분모가 너무 작아질 수 있다'], answer: 1,
-    explain: '조건을 겹치면 값이 뾰족해지지만 그 줄에 남는 자료 수가 줄어듭니다. 분모가 작으면 20차시에서 본 것처럼 흔들림이 커집니다.' }
+    explain: '조건을 겹치면 값이 뾰족해지지만 그 줄에 남는 자료 수가 줄어듭니다. 분모가 작으면 21차시에서 본 것처럼 흔들림이 커집니다.' }
 ];
 
 /* ── 5. 형성평가 (quizStepper — 문항 1개씩, 총점·복기) ────────────────────── */
@@ -21849,7 +22139,7 @@ var PB21_QUIZ = [
     explain: "'특가'와 '무료'는 함께 나오는 경향이 있는데도 서로 영향을 주지 않는다고 단순하게 가정합니다. 그래도 크기 비교 결과는 대체로 옳아 실제 필터에 널리 쓰입니다." },
   { q: '조건을 지나치게 많이 걸었을 때 생기는 문제로 알맞은 것은?',
     opts: ['분모가 작아져 신뢰도가 떨어진다', '분자가 음수가 된다', '합계가 1을 넘는다', '이원분류표를 만들 수 없다'], answer: 0,
-    explain: '조건을 겹칠수록 그 줄에 남는 자료 수가 줄어듭니다. 20차시 흔들림 실험에서 본 것처럼 전체 도수가 작으면 상대도수가 크게 흔들립니다.' }
+    explain: '조건을 겹칠수록 그 줄에 남는 자료 수가 줄어듭니다. 21차시 흔들림 실험에서 본 것처럼 전체 도수가 작으면 상대도수가 크게 흔들립니다.' }
 ];
 
 /* ── 6. 핵심 개념 칩 상세 설명 (chipDefs) ────────────────────────────────── */
@@ -21891,11 +22181,11 @@ var PB20_DEFS = {
     '인공지능이 수백만 건의 데이터를 모으려는 첫 번째 이유입니다.</p>' +
     '<p>다만 양만으로는 충분하지 않습니다. 모은 데이터가 한쪽으로 치우쳐 있으면 아무리 많아도 확률이 실제와 어긋납니다. ' +
     '5차시에서 본 "정확도 95%의 함정"이 그런 경우였습니다.</p>' +
-    '<p><b>다음 차시와의 연결</b> — 21차시에서 조건을 걸면 분모가 작아집니다. 값은 뾰족해지지만 ' +
+    '<p><b>다음 차시와의 연결</b> — 22차시에서 조건을 걸면 분모가 작아집니다. 값은 뾰족해지지만 ' +
     '전체 도수가 줄어드니 <b>맞교환</b>이 생깁니다.</p>' +
     '<span style="display:inline-block;margin-top:0.5rem;">' +
     '<button class="btn" type="button" onclick="go(\'bias\')">5차시 편향 보기</button> ' +
-    '<button class="btn" type="button" onclick="pbLesson(21)">21차시로 이동</button></span>'
+    '<button class="btn" type="button" onclick="pbLesson(21)">22차시로 이동</button></span>'
 };
 var PB21_DEFS = {
   '이원분류표': '<h4>이원분류표 — 두 기준으로 함께 분류한 표</h4>' +
@@ -21911,7 +22201,7 @@ var PB21_DEFS = {
     '<b>그 줄의 100건만</b> 봅니다. 분모가 300에서 100으로 바뀌는 것이 핵심입니다.</p>' +
     '<p>분모가 작아지므로 같은 칸이라도 상대도수는 커질 수 있습니다. 85/300 ≈ 0.283 이던 값이 ' +
     '85/100 = 0.85 로 크게 올라갑니다. <b>조건은 값을 만드는 것이 아니라 보는 창을 좁히는 것</b>입니다.</p>' +
-    '<p><b>주의</b> — 조건을 겹칠수록 창이 좁아져 자료 수가 줄어듭니다. 20차시에서 본 것처럼 ' +
+    '<p><b>주의</b> — 조건을 겹칠수록 창이 좁아져 자료 수가 줄어듭니다. 21차시에서 본 것처럼 ' +
     '전체 도수가 작으면 그 값의 신뢰도가 떨어집니다.</p>' +
     '<span style="display:inline-block;margin-top:0.5rem;"><button class="btn" type="button" onclick="pbTab(21,0)">활동 ①로 이동</button></span>',
   '그 조건일 때의 상대도수': '<h4>그 조건일 때의 상대도수 — 분모는 줄의 합계</h4>' +
@@ -21943,7 +22233,7 @@ var PB21_DEFS = {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   20차시 · 활동 ① 던지기 실험실
+   21차시 · 활동 ① 던지기 실험실
    ═══════════════════════════════════════════════════════════════════════════ */
 var pbMode = 'coin';      /* 'coin' | 'dice' */
 var pbP = 0.5;            /* 앞면이 나올 가능성 */
@@ -22200,7 +22490,7 @@ function pbBuildPred(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   20차시 · 활동 ② 경우의 수와 견주기 (표본공간 격자)
+   21차시 · 활동 ② 경우의 수와 견주기 (표본공간 격자)
    ═══════════════════════════════════════════════════════════════════════════ */
 var PB_SS = {
   dice: {
@@ -22348,7 +22638,7 @@ function pbSsDraw(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   20차시 · 활동 ③ 데이터로 확률 읽기 (윷가락 채점 · 흔들림 실험)
+   21차시 · 활동 ③ 데이터로 확률 읽기 (윷가락 채점 · 흔들림 실험)
    ═══════════════════════════════════════════════════════════════════════════ */
 var PB_YUT = [{ k: 'A', h: 58, n: 100 }, { k: 'B', h: 72, n: 120 }, { k: 'C', h: 63, n: 140 }];
 
@@ -22444,7 +22734,7 @@ function pbWobDraw(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   21차시 · 활동 ① 조건 하이라이트 (이원분류표)
+   22차시 · 활동 ① 조건 하이라이트 (이원분류표)
    ═══════════════════════════════════════════════════════════════════════════ */
 /* 한국어 조사 보조 — 라벨을 데이터로 조립하므로 받침에 따라 조사를 고릅니다. */
 function pbHasJong(w){
@@ -22668,7 +22958,7 @@ function pbFracUpdate(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   21차시 · 활동 ② 크기 비교와 판정
+   22차시 · 활동 ② 크기 비교와 판정
    ═══════════════════════════════════════════════════════════════════════════ */
 var pbCmpRow = -1;
 var pbCmpLog = [];
@@ -22793,7 +23083,7 @@ function pbCntCalc(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   21차시 · 활동 ③ 스팸랩 — 기준 단어로 만드는 나만의 필터
+   22차시 · 활동 ③ 스팸랩 — 기준 단어로 만드는 나만의 필터
    ═══════════════════════════════════════════════════════════════════════════ */
 var PB_MAILS = [
   { t: '★특가★ 지금 클릭하면 무료 배송', s: 1 },
@@ -23039,11 +23329,11 @@ function pbLabRun(){
       try{ wsLinks('pb21-wslinks', 'prob21'); }catch(e){ console.error('pb wsLinks 21', e); }
     }
     try{ pbBuildPred(); }catch(e){ console.error('pb pred', e); }
-    /* 20차시 위젯 */
+    /* 21차시 위젯 */
     try{ pbFaceChips(); pbSetMode('coin'); }catch(e){ console.error('pb throw lab', e); }
     try{ pbSsMode('dice'); }catch(e){ console.error('pb sample space', e); }
     try{ pbWobReset(); }catch(e){ console.error('pb wobble', e); }
-    /* 21차시 위젯 */
+    /* 22차시 위젯 */
     try{ pbData(0); }catch(e){ console.error('pb data', e); }
     try{ pbRenderWchips(); pbRenderMails(); pbWordTbl(); }catch(e){ console.error('pb spamlab', e); }
   }
@@ -23091,10 +23381,10 @@ function pbInit(){
   window.go = g;
 })();
 
-/* 홈 카드·차시 목록·이전 차시의 "이어가기" 버튼에서 20/21차시를 눌렀을 때
+/* 홈 카드·차시 목록·이전 차시의 "이어가기" 버튼에서 20/22차시를 눌렀을 때
    저장된 차시가 아니라 **누른 그 차시**로 들어가게 합니다.
    - 홈 카드·nav 항목: data-v / data-go 로 뷰를 지정합니다.
-   - 19차시 detect 뷰의 「20차시로 이동 →」: 기존 core.js 의 onclick="detxNext20(this)" 이며
+   - 20차시 detect 뷰의 「21차시로 이동 →」: 기존 core.js 의 onclick="detxNext20(this)" 이며
      data-* 속성이 없으므로 onclick 속성도 함께 봅니다(공유 파일 수정 없이 처리). */
 (function pbSniff(){
   var sniff = function(e){
@@ -23106,21 +23396,21 @@ function pbInit(){
     /* prob 뷰로 향하는 조작만 처리합니다. */
     if(v !== 'prob' && oc.indexOf('detxNext20') < 0 && !/go\(\s*['"]prob['"]/.test(oc)) return;
     var t = (el.textContent || '') + ' ' + oc;
-    if(t.indexOf('21차시') >= 0) pbPending = 21;
-    else if(t.indexOf('20차시') >= 0) pbPending = 20;
+    if(t.indexOf('22차시') >= 0) pbPending = 21;
+    else if(t.indexOf('21차시') >= 0) pbPending = 20;
   };
   document.addEventListener('click', sniff, true);
 })();
 
-/* ●●● ANCHOR-PROB ●●● (20~21차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-PROB ●●● (21~22차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
-/* ═════════ 4·5단원 통합 append: 22~23차시 trend ═════════ */
+/* ═════════ 4·5단원 통합 append: 23~24차시 trend ═════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   4단원 22~23차시 뷰 로직 (신규 뷰 trend) — core.js 맨 끝에 그대로 덧붙입니다.
+   4단원 23~24차시 뷰 로직 (신규 뷰 trend) — core.js 맨 끝에 그대로 덧붙입니다.
    ---------------------------------------------------------------------------
-   · 22차시 : 산점도와 추세선으로 예측하기            [12인수04-02]
-   · 23차시 : 어떤 추세선이 좋은가 — 곡선과 과적합    [12인수04-02]
+   · 23차시 : 산점도와 추세선으로 예측하기            [12인수04-02]
+   · 24차시 : 어떤 추세선이 좋은가 — 곡선과 과적합    [12인수04-02]
    · 전역 접두사 tr (차시별 세부는 tr22 · tr23 · TR22_ · TR23_)
      — 차시표·부록 예약 접두사(io pb tr op gs dc pj dl)의 tr 을 이 뷰가 사용합니다.
    · 공통 컴포넌트(videoDeck · warmStepper · quizStepper · chipDefs · wsPrint · wsLinks
@@ -23411,8 +23701,8 @@ function trNavSync(){
   if(!cur) return;
   if(typeof aimNavOwns === 'function' && !aimNavOwns('v-trend')) return;
   cur.textContent = (trLessonCur === 23)
-    ? '23차시 · 어떤 추세선이 좋은가 — 곡선과 과적합'
-    : '22차시 · 산점도와 추세선으로 예측하기';
+    ? '24차시 · 어떤 추세선이 좋은가 — 곡선과 과적합'
+    : '23차시 · 산점도와 추세선으로 예측하기';
 }
 function trLesson(n){
   const s22 = trEl('tr22-root'), s23 = trEl('tr23-root');
@@ -23473,17 +23763,17 @@ function trSoon(el, slug, label, lesson){
     p.className = 'tr-soonmsg';
     p.style.cssText = 'display:block;margin-top:0.5rem;font-size:0.95rem;line-height:1.75;color:var(--body);';
     p.innerHTML = label + ' 자료는 <b>준비 중</b>입니다. ' +
-      '상단 <b>[차시 목록 ▾]</b>을 누르면 전체 30차시 계획에서 진행 상황을 확인할 수 있습니다.';
+      '상단 <b>[차시 목록 ▾]</b>을 누르면 전체 37차시 계획에서 진행 상황을 확인할 수 있습니다.';
     box.appendChild(p);
   }
   if(el){ el.disabled = true; el.textContent = '준비 중'; }
 }
-function trPrev21(el){ trSoon(el, 'prob', '21차시 <b>「조건이 있는 확률과 스팸 필터」</b>', '21차시'); }
-function trNext24(el){ trSoon(el, 'optim', '24차시 <b>「손실함수 L(a)로 최적 추세선 찾기」</b>', '24차시'); }
+function trPrev21(el){ trSoon(el, 'prob', '22차시 <b>「조건이 있는 확률과 스팸 필터」</b>', '22차시'); }
+function trNext24(el){ trSoon(el, 'optim', '25차시 <b>「손실함수 L(a)로 최적 추세선 찾기」</b>', '25차시'); }
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   2. 22차시 — 추천 영상 · 마중 퀴즈 · 형성평가 · 핵심 개념 칩
+   2. 23차시 — 추천 영상 · 마중 퀴즈 · 형성평가 · 핵심 개념 칩
    ═══════════════════════════════════════════════════════════════════════════ */
 const TR22_VIDEOS = [
   { id: 'JYhZItNt9rU', t: '18. 자료의 경향성과 예측 (추세선)', s: 'mathT야나수 · 4:10 · 오늘 수업과 순서가 거의 같습니다' },
@@ -23544,7 +23834,7 @@ const TR22_QUIZ = [
            '여러 사건 중 해당 사건이 발생할 가능성을 수치화한 것이다',
            '두 변량의 평균을 나타낸 값이다'],
     answer: 1,
-    explain: '추세선은 모든 점을 지나지 않아도 됩니다. 오히려 모든 점을 지나려 하면 23차시에서 배울 과적합이 생깁니다. 사건의 가능성을 수치화한 것은 확률입니다. [12인수04-02]'
+    explain: '추세선은 모든 점을 지나지 않아도 됩니다. 오히려 모든 점을 지나려 하면 24차시에서 배울 과적합이 생깁니다. 사건의 가능성을 수치화한 것은 확률입니다. [12인수04-02]'
   },
   {
     q: '추세선이 f(x) = 1.2x일 때, 승리 기여도가 3.5인 선수의 예측 연봉은?',
@@ -23630,7 +23920,7 @@ const TR22_DEFS = {
     '예 ② 출산율 최적선 y = −0.055x + 1.978 → 해마다 평균 약 0.055명씩 줄어드는 경향</p>' +
     '<p><b>STEP 2 활동 1</b>에서 직선의 양 끝을 끌어 a와 b가 함께 변하는 것을 확인했습니다.</p>' +
     '<p><button class="btn" type="button" onclick="tr22See(0,\'tr22-act1\')">활동 1로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="trLesson(23)">23차시에서 곡선 모델 만나기</button></p>',
+    '<button class="btn" type="button" onclick="trLesson(23)">24차시에서 곡선 모델 만나기</button></p>',
 
   '예측값':
     '<p>추세선 f(x) = ax + b 에 입력값 x를 넣어 얻은 값 <b>f(x)</b>를, x에 대응하는 실제 측정값 y의 ' +
@@ -23650,7 +23940,7 @@ const TR22_DEFS = {
     '<p>예 ① 실제 3, 예측 3.6 → 오차 −0.6<br>' +
     '예 ② 실제 12.7, 예측 13.43 → 오차 −0.73</p>' +
     '<p><b>STEP 2 활동 2</b>에서 네 선수의 오차 −0.2, 0.6, −0.6, 0.2를 구하고, 그 합이 정확히 0임을 확인했습니다. ' +
-    '이 상쇄 문제를 해결하려고 24차시에서 오차를 <b>제곱</b>합니다.</p>' +
+    '이 상쇄 문제를 해결하려고 25차시에서 오차를 <b>제곱</b>합니다.</p>' +
     '<p><button class="btn" type="button" onclick="tr22See(1,\'tr22-act2\')">활동 2로 이동 →</button></p>',
 
   '오차의 크기':
@@ -23690,10 +23980,10 @@ const TR23_DEFS = {
     '<b>검증 데이터</b>는 학습에 쓰지 않고 남겨 두었다가 <b>성능을 재는 데만</b> 쓰는 데이터입니다.</p>' +
     '<p>훈련 오차만 보면 모델은 언제나 “잘한다”고 말합니다. 그래서 반드시 <b>처음 보는 데이터</b>로 다시 재야 합니다.</p>' +
     '<p>예 ① 주가 자료 10개로 학습 → 2023~2025년 실제값 3개로 검증<br>' +
-    '예 ② MNIST는 훈련용 6만 개와 테스트용 1만 개를 표준으로 정해 두었습니다(12차시).</p>' +
+    '예 ② MNIST는 훈련용 6만 개와 테스트용 1만 개를 표준으로 정해 두었습니다(18차시).</p>' +
     '<p><b>STEP 2 활동 2</b>의 성적표에서 두 열이 어긋나는 순간을 직접 찾았습니다.</p>' +
     '<p><button class="btn" type="button" onclick="tr23See(1,\'tr23-act2\')">활동 2로 이동 →</button> ' +
-    '<button class="btn" type="button" onclick="go(\'mnist\')">돌아보기 · 12차시 MNIST</button></p>',
+    '<button class="btn" type="button" onclick="go(\'mnist\')">돌아보기 · 18차시 MNIST</button></p>',
 
   '과적합':
     '<p><b>과적합(overfitting)</b>은 모델이 학습 데이터에 너무 잘 맞추려 하여 복잡해진 나머지, ' +
@@ -23741,7 +24031,7 @@ const TR23_DEFS = {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   3. 22차시 · 활동 1 — 추세선 놀이터 (점 드래그 산점도 + 내 추세선)
+   3. 23차시 · 활동 1 — 추세선 놀이터 (점 드래그 산점도 + 내 추세선)
    ═══════════════════════════════════════════════════════════════════════════ */
 const TR22_DS = {
   stock: {
@@ -24137,7 +24427,7 @@ function tr22GuessReveal(){
     '다만 <b>절댓값</b>의 평균만 보면 여러분의 직선이 더 작아지는 경우도 있습니다 — 어떤 기준으로 재는지가 늘 먼저입니다.</span>';
 }
 
-/* ── 22차시 · 활동 2 : 야구 선수 예측값·오차 표 ── */
+/* ── 23차시 · 활동 2 : 야구 선수 예측값·오차 표 ── */
 const TR22_BB = [['A', 1, 1], ['B', 2, 3], ['C', 3, 3], ['D', 4, 5]];
 function tr22BbBuild(){
   const tb = trEl('tr22-bb');
@@ -24235,7 +24525,7 @@ function tr22BbE(i, el){
   tr22BbUnlock();
 }
 
-/* ── 22차시 · 활동 3 : 예측 도전 (미관측 x 자동 출제 · §25) ── */
+/* ── 23차시 · 활동 3 : 예측 도전 (미관측 x 자동 출제 · §25) ── */
 function tr22PdNew(){
   const box = trEl('tr22-pd'), eq = trEl('tr22-pd-eq');
   if(!box || !eq) return;
@@ -24373,7 +24663,7 @@ function tr22PdReal(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   4. 23차시 · 활동 1·2 — 모델 고르기 / 훈련 vs 검증
+   4. 24차시 · 활동 1·2 — 모델 고르기 / 훈련 vs 검증
    계수는 파이썬 최소제곱법으로 사전 계산했습니다(정규화 변수 t = (x − c) / s).
    ═══════════════════════════════════════════════════════════════════════════ */
 const TR23_DS = {
@@ -24683,7 +24973,7 @@ function tr23Guess(i, el){
   tr23Draw();
 }
 
-/* ── 23차시 · 활동 3 : 상관과 인과 판정 ── */
+/* ── 24차시 · 활동 3 : 상관과 인과 판정 ── */
 const TR23_CCOPT = ['상관만 있다 (인과 아님)', '인과를 말할 근거가 있다', '상관조차 없다 (우연·무관)'];
 const TR23_CC = [
   {
@@ -24893,7 +25183,7 @@ const TR_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="산점도 위�
     try{ trLesson(trLS(TR_LESSON_KEY, '22')); }catch(e){}
 
     /* startRouter 와 다른 차시의 지연 init(setTimeout 0)이 모두 끝난 뒤 한 번 더 손봅니다.
-       — 6차시 text 블록의 지연 init 이 nav-cur 를 무조건 덮어쓰므로 현재 차시 표기를 되살리고,
+       — 7차시 text 블록의 지연 init 이 nav-cur 를 무조건 덮어쓰므로 현재 차시 표기를 되살리고,
          뷰가 화면에 나타난 뒤의 실제 폭으로 캔버스를 다시 그립니다. */
     setTimeout(function(){
       const act = document.querySelector('.view.active');
@@ -24948,10 +25238,10 @@ const TR_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="산점도 위�
 })();
 
 
-/* ═════════ 4·5단원 통합 append: 24~26차시 optim ═════════ */
+/* ═════════ 4·5단원 통합 append: 25~28차시 optim ═════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   OPTIM (24~26차시: 손실함수 · 미분계수 · 경사하강법) — 접두사 op
+   OPTIM (25~28차시: 손실함수 · 미분계수 · 경사하강법) — 접두사 op
    · 뷰: views/optim.html (루트 #v-optim)
    · 이 블록은 core.js 파일 맨 끝(현재 마지막 ●●● ANCHOR-… ●●● 주석 아래)에 이어 붙입니다.
    · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint / wsLinks /
@@ -24981,13 +25271,13 @@ const OP_ART = `<svg viewBox="0 0 320 180" role="img" aria-label="손실함수 �
     <text x="60" y="76" font-size="11" fill="var(--blue)" font-family="monospace">L′(a)&lt;0</text>
   </svg>`;
 
-/* STEP 1 추천 영상 — 24·25·26차시 순서 (전부 임베드 가능 확인) */
+/* STEP 1 추천 영상 — 25·27·28차시 순서 (전부 임베드 가능 확인) */
 const OP_VIDEOS = [
-  { id:'z08BEiw5_WA', t:'19. 오차와 손실함수 (6:05)',            s:'mathT야나수 〈인공지능 수학〉 · 24차시 주 디딤영상' },
-  { id:'awFWfQo4ZRc', t:'2. 손실함수와 평균제곱오차(MSE)',        s:'호수돈 민영TV · 24차시 보강' },
-  { id:'MAsiLhyKEYI', t:'22. 다항함수의 평균변화율 (4:04)',       s:'mathT야나수 · 25차시 할선' },
-  { id:'XlzakcXA6f0', t:'23. 다항함수의 미분계수 (5:30)',         s:'mathT야나수 · 25차시 접선' },
-  { id:'8861RzFOFs8', t:'경사하강법 — 딥러닝 2장',                s:'3Blue1Brown 한국어 · 26차시 주 디딤영상' }
+  { id:'z08BEiw5_WA', t:'19. 오차와 손실함수 (6:05)',            s:'mathT야나수 〈인공지능 수학〉 · 25차시 주 디딤영상' },
+  { id:'awFWfQo4ZRc', t:'2. 손실함수와 평균제곱오차(MSE)',        s:'호수돈 민영TV · 25차시 보강' },
+  { id:'MAsiLhyKEYI', t:'22. 다항함수의 평균변화율 (4:04)',       s:'mathT야나수 · 27차시 할선' },
+  { id:'XlzakcXA6f0', t:'23. 다항함수의 미분계수 (5:30)',         s:'mathT야나수 · 27차시 접선' },
+  { id:'8861RzFOFs8', t:'경사하강법 — 딥러닝 2장',                s:'3Blue1Brown 한국어 · 28차시 주 디딤영상' }
 ];
 
 /* STEP 1 마중 퀴즈 — 라벨은 warmStepper 가 "질문 N." 으로 붙입니다. */
@@ -25018,9 +25308,9 @@ const OP_WARM = [
   }
 ];
 
-/* ── 25·26차시 전용 마중 퀴즈 · 미니 체크 (구동 QA D4) ──────────────────
-   optim 한 뷰가 24·25·26차시를 나누어 쓰므로, 25·26차시에도 각자의 도입과
-   즉시 확인 수단을 둡니다. STEP 1 의 OP_WARM 은 24차시용으로 남깁니다. */
+/* ── 27·28차시 전용 마중 퀴즈 · 미니 체크 (구동 QA D4) ──────────────────
+   optim 한 뷰가 25·27·28차시를 나누어 쓰므로, 27·28차시에도 각자의 도입과
+   즉시 확인 수단을 둡니다. STEP 1 의 OP_WARM 은 25차시용으로 남깁니다. */
 
 const OP_WARM25 = [
   {
@@ -25057,14 +25347,14 @@ const OP_WARM26 = [
     explain:'보폭은 k·|L′(a)| 입니다. 바닥(꼭짓점)에 가까워질수록 접선의 기울기 |L′(a)| 가 0 에 가까워지므로 보폭도 저절로 줄어듭니다. 활동 11에서 [한 단계]를 눌러 확인해 봅시다.'
   },
   {
-    q:'27차시의 아이스티 데이터에서는 학습률로 k = 0.0005 처럼 아주 작은 수를 씁니다. 그 까닭은 무엇일까요?',
+    q:'29차시의 아이스티 데이터에서는 학습률로 k = 0.0005 처럼 아주 작은 수를 씁니다. 그 까닭은 무엇일까요?',
     opts:['데이터가 10개뿐이라서','기온 x 가 20~35 라는 큰 수여서','정답이 소수라서','컴퓨터가 느려서'],
     answer:1,
     explain:'지금은 예상만 걸어 두세요. 오늘 <b>활동 12</b>에서 학습률의 상한이 1/A 이고 A = (Σx²)/n 이라는 것을 확인하면, x 가 커질수록 k 를 줄여야 하는 이유가 드러납니다.'
   }
 ];
 
-/* 25차시 미니 체크 — 탭 ③ 말미 */
+/* 27차시 미니 체크 — 탭 ③ 말미 */
 const OP_CHK25 = [
   {
     q:'f(x) = x² − 4x + 5 에 대하여 { f(1+h) − f(1) } ÷ h 의 h → 0 일 때의 극한값은?',
@@ -25076,7 +25366,7 @@ const OP_CHK25 = [
     q:'L(a) 의 그래프 위 점 a₀ 에서 L′(a₀) &gt; 0 이었습니다. L 의 값을 줄이려면 a 를 어느 쪽으로 옮겨야 하는가?',
     opts:['오른쪽(a 를 크게)','왼쪽(a 를 작게)','움직이지 않는다','두 번 미분해 보아야 안다'],
     answer:1,
-    explain:'기울기가 양수이면 오른쪽으로 갈수록 값이 커집니다. 따라서 값을 줄이려면 <b>기울기의 부호와 반대쪽</b>, 곧 왼쪽으로 옮겨야 합니다. 26차시 갱신식의 마이너스 부호가 바로 이 문장입니다.'
+    explain:'기울기가 양수이면 오른쪽으로 갈수록 값이 커집니다. 따라서 값을 줄이려면 <b>기울기의 부호와 반대쪽</b>, 곧 왼쪽으로 옮겨야 합니다. 28차시 갱신식의 마이너스 부호가 바로 이 문장입니다.'
   },
   {
     q:'f(x) = (x − 3)² + 1 에 대하여 f′(3) 의 값은?',
@@ -25086,7 +25376,7 @@ const OP_CHK25 = [
   }
 ];
 
-/* 26차시 미니 체크 — 탭 ④ 말미 */
+/* 28차시 미니 체크 — 탭 ④ 말미 */
 const OP_CHK26 = [
   {
     q:'경사하강법의 갱신식 a<sub>n+1</sub> = a<sub>n</sub> − k·L′(a<sub>n</sub>) 에서 <b>마이너스 부호</b>가 하는 일은?',
@@ -25104,14 +25394,14 @@ const OP_CHK26 = [
     q:'A = 820 인 데이터에서 학습률을 k = 0.1 로 잡으면 어떻게 되는가?',
     opts:['가장 빨리 수렴한다','한 번에 정답에 도달한다','발산한다','아무 일도 일어나지 않는다'],
     answer:2,
-    explain:'|1 − 2 × 820 × 0.1| = |1 − 164| = <b>163</b> 배로 매 걸음 멀어집니다. 수렴하려면 k &lt; 1/A ≒ 0.00122 여야 합니다. 27차시에서 k = 0.0005 를 쓰는 이유입니다.'
+    explain:'|1 − 2 × 820 × 0.1| = |1 − 164| = <b>163</b> 배로 매 걸음 멀어집니다. 수렴하려면 k &lt; 1/A ≒ 0.00122 여야 합니다. 29차시에서 k = 0.0005 를 쓰는 이유입니다.'
   }
 ];
 
-/* STEP 3 형성평가 9문항 — 24·25·26차시 성취기준과 1:1 대응 */
+/* STEP 3 형성평가 9문항 — 25·27·28차시 성취기준과 1:1 대응 */
 const OP_QUIZ = [
   {
-    q:'[24차시] 데이터 (2,3) (3,4) (3,8) (4,7) (5,9) (5,10) 에 대해 두 추세선 f₁(x)=2x, f₂(x)=−x+11 의 오차의 평균이 모두 −1/2 로 같았습니다. 그 까닭은 무엇인가?',
+    q:'[25차시] 데이터 (2,3) (3,4) (3,8) (4,7) (5,9) (5,10) 에 대해 두 추세선 f₁(x)=2x, f₂(x)=−x+11 의 오차의 평균이 모두 −1/2 로 같았습니다. 그 까닭은 무엇인가?',
     opts:['두 추세선이 실제로 성능이 같기 때문','부호가 반대인 오차들이 더해지며 서로 상쇄되었기 때문',
           '데이터의 개수가 짝수이기 때문','오차를 절댓값으로 계산했기 때문'],
     answer:1,
@@ -25120,7 +25410,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(0,\'op-act1\')">활동 1</button></span>'
   },
   {
-    q:'[24차시] 세 개의 데이터 (1, 2), (2, 3), (3, 5) 로부터 추세선 f(x) = ax 를 정했을 때 손실함수 L(a) 는?',
+    q:'[25차시] 세 개의 데이터 (1, 2), (2, 3), (3, 5) 로부터 추세선 f(x) = ax 를 정했을 때 손실함수 L(a) 는?',
     opts:['(14a² − 46a + 38) ÷ 3','(14a² − 46a + 38) ÷ 9','14a² − 46a + 38','(2 − a) + (3 − 2a) + (5 − 3a)'],
     answer:0,
     explain:'오차는 2 − a, 3 − 2a, 5 − 3a 이므로 L(a) = {(2−a)² + (3−2a)² + (5−3a)²} ÷ 3 입니다. '
@@ -25128,7 +25418,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(0,\'op-act2\')">활동 2</button></span>'
   },
   {
-    q:'[24차시] L(a) = (88a² − 330a + 319) ÷ 6 을 최소로 하는 a 의 값과 그때의 최솟값은?',
+    q:'[25차시] L(a) = (88a² − 330a + 319) ÷ 6 을 최소로 하는 a 의 값과 그때의 최솟값은?',
     opts:['a = 15/8, 최솟값 77/48','a = 8/15, 최솟값 48/77','a = 165/44, 최솟값 77/6','a = 2, 최솟값 11/6'],
     answer:0,
     explain:'L(a) = (44/3)(a − 15/8)² + 77/48 이므로 a = 15/8 = 1.875 에서 최솟값 77/48 ≒ 1.604 를 가집니다. '
@@ -25137,7 +25427,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(0,\'op-act3\')">활동 3</button></span>'
   },
   {
-    q:'[24차시] 오차의 제곱 대신 절댓값의 평균을 손실함수로 쓰면 생기는 수학적 어려움은 무엇인가?',
+    q:'[25차시] 오차의 제곱 대신 절댓값의 평균을 손실함수로 쓰면 생기는 수학적 어려움은 무엇인가?',
     opts:['값이 음수가 될 수 있다','그래프에 꺾인 점이 생겨 그 점에서 접선의 기울기를 하나로 정할 수 없다',
           '값이 항상 0 이 된다','데이터가 많아지면 계산할 수 없다'],
     answer:1,
@@ -25147,7 +25437,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(0,\'op-act4\')">활동 4</button></span>'
   },
   {
-    q:'[25차시] f(x) = x² − 4x + 5 에 대하여 { f(1+h) − f(1) } ÷ h 의 h → 0 일 때의 극한값은?',
+    q:'[27차시] f(x) = x² − 4x + 5 에 대하여 { f(1+h) − f(1) } ÷ h 의 h → 0 일 때의 극한값은?',
     opts:['−4','−2','0','2'],
     answer:1,
     explain:'{ f(1+h) − f(1) } ÷ h = (2·1·h + h² − 4h) ÷ h = 2 − 4 + h = −2 + h 이므로, h → 0 이면 <b>−2</b> 입니다. '
@@ -25155,7 +25445,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(1,\'op-act5\')">활동 5</button></span>'
   },
   {
-    q:'[25차시] f(x) = (x − 3)² + 1 에 대하여 f′(1) + f′(5) 의 값은?',
+    q:'[27차시] f(x) = (x − 3)² + 1 에 대하여 f′(1) + f′(5) 의 값은?',
     opts:['−8','0','8','알 수 없다'],
     answer:1,
     explain:'f′(t) = 2t − 6 이므로 f′(1) = −4, f′(5) = 4 이고 합은 <b>0</b> 입니다. '
@@ -25164,7 +25454,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(1,\'op-act6\')">활동 6</button></span>'
   },
   {
-    q:'[26차시] 손실함수 L(a) = 3a² − 2a + 7 에 대하여 a = 5 에서 학습률 0.1 인 경사하강법으로 1회 갱신한 a 의 값은?',
+    q:'[28차시] 손실함수 L(a) = 3a² − 2a + 7 에 대하여 a = 5 에서 학습률 0.1 인 경사하강법으로 1회 갱신한 a 의 값은?',
     opts:['2.2','2.8','4.72','7.8'],
     answer:0,
     explain:'L′(a) = 6a − 2 이므로 L′(5) = 28 입니다. a₁ = a₀ − k·L′(a₀) = 5 − 0.1 × 28 = <b>2.2</b> 입니다. '
@@ -25172,7 +25462,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(3,\'op-act10\')">활동 10</button></span>'
   },
   {
-    q:'[26차시] 갱신식 a₁ = a₀ − k·L′(a₀) 에서 L′(a₀) < 0 이라면 a₁ 은 a₀ 와 비교해 어떻게 되는가? (k > 0)',
+    q:'[28차시] 갱신식 a₁ = a₀ − k·L′(a₀) 에서 L′(a₀) < 0 이라면 a₁ 은 a₀ 와 비교해 어떻게 되는가? (k > 0)',
     opts:['a₀ 보다 작아진다','a₀ 보다 커진다','a₀ 와 같다','k 의 값에 따라 다르다'],
     answer:1,
     explain:'음수인 L′(a₀) 에 양수 k 를 곱하면 여전히 음수이고, 그것을 <b>빼면</b> 더해지는 것과 같아 a 가 커집니다. '
@@ -25180,7 +25470,7 @@ const OP_QUIZ = [
       + '<span class="op-back">→ 되돌아가기: <button type="button" class="btn" onclick="opSee(1,\'op-act7\')">활동 7</button></span>'
   },
   {
-    q:'[26차시] 학습률 k 를 너무 크게 잡았을 때 나타나는 현상으로 가장 알맞은 것은?',
+    q:'[28차시] 학습률 k 를 너무 크게 잡았을 때 나타나는 현상으로 가장 알맞은 것은?',
     opts:['최솟값에 매우 빠르게 정확히 도달한다','최솟값을 지나쳐 반대쪽으로 건너뛰며 손실함수의 값이 오히려 커진다',
           'a 의 값이 전혀 변하지 않는다','손실함수의 모양이 바뀐다'],
     answer:1,
@@ -25203,8 +25493,8 @@ const OP_DEFS = {
     + '<p><b>이번 차시 연결.</b> STEP 2 <b>활동 1</b>에서 두 추세선의 오차 합과 오차의 제곱의 합을 직접 계산해 넣어 보았습니다. '
     + '<b>활동 2</b>의 왼쪽 캔버스에서 각 점에 붙는 정사각형의 넓이가 바로 이 오차의 제곱입니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="opSee(0,\'op-act1\')">활동 1로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 22차시에서 추세선의 예측값과 실제값의 차를 처음 다루었습니다 → '
-    + '<a href="#trend" onclick="go(\'trend\');return false;">22~23차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 23차시에서 추세선의 예측값과 실제값의 차를 처음 다루었습니다 → '
+    + '<a href="#trend" onclick="go(\'trend\');return false;">23~24차시 보기</a></p>'
     + '<p class="op-src">씨마스 「인공지능 수학」 Ⅳ p.154~155, 동아출판 「인공지능 수학」 Ⅳ p.136 서술을 재구성</p>',
 
   '손실함수':
@@ -25219,8 +25509,8 @@ const OP_DEFS = {
     + '<p><b>이번 차시 연결.</b> <b>활동 2</b>의 오른쪽 캔버스가 바로 L(a) 의 그래프이고, 슬라이더로 a 를 바꾸면 붉은 점이 그 위를 움직입니다. '
     + '왼쪽 정사각형 넓이의 합을 데이터의 개수로 나눈 값이 그 점의 높이입니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="opSee(0,\'op-act2\')">활동 2로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 27차시에서 이 정의를 스프레드시트 수식으로 직접 조립합니다 → '
-    + '<a href="#gdsheet" onclick="go(\'gdsheet\');return false;">27차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 29차시에서 이 정의를 스프레드시트 수식으로 직접 조립합니다 → '
+    + '<a href="#gdsheet" onclick="go(\'gdsheet\');return false;">29차시 보기</a></p>'
     + '<p class="op-src">씨마스 「인공지능 수학」 Ⅳ p.155 정의와 지식 Plus, 동아출판 「인공지능 수학」 Ⅳ p.137 서술을 재구성</p>',
 
   '최적화':
@@ -25233,8 +25523,8 @@ const OP_DEFS = {
     + '<p><b>이번 차시 연결.</b> <b>활동 3</b>에서 완전제곱식의 두 빈칸을 직접 채워 15/8 과 77/48 을 구했습니다. '
     + '<b>활동 2</b>에서 [최적 a로 이동]을 누르면 슬라이더가 정확히 그 값으로 옮겨 갑니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="opSee(0,\'op-act3\')">활동 3으로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 23차시에서 여러 모델의 추세선을 비교하며 "최적"의 필요를 느꼈습니다 → '
-    + '<a href="#trend" onclick="go(\'trend\');return false;">23차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 24차시에서 여러 모델의 추세선을 비교하며 "최적"의 필요를 느꼈습니다 → '
+    + '<a href="#trend" onclick="go(\'trend\');return false;">24차시 보기</a></p>'
     + '<p class="op-src">씨마스 「인공지능 수학」 Ⅳ p.158~159 및 ‘배웠어요 — 이차함수의 최솟값’ 서술을 재구성</p>',
 
   '극한':
@@ -25276,12 +25566,12 @@ const OP_DEFS = {
     + '<p><b>이번 차시 연결.</b> <b>활동 11</b>의 시뮬레이터에서 [한 단계]를 누르면 접선 → 부호 판정 → 이동의 세 단계가 차례로 보이고, '
     + '<b>활동 12</b>에서는 학습률만 바꾸어 수렴·지그재그·진동·발산을 한 표로 비교했습니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="opSee(3,\'op-act11\')">활동 11로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 27차시에서 같은 갱신식을 스프레드시트 셀로 옮겨 아이스티 판매량 예측 AI 를 완성합니다 → '
-    + '<a href="#gdsheet" onclick="go(\'gdsheet\');return false;">27차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 29차시에서 같은 갱신식을 스프레드시트 셀로 옮겨 아이스티 판매량 예측 AI 를 완성합니다 → '
+    + '<a href="#gdsheet" onclick="go(\'gdsheet\');return false;">29차시 보기</a></p>'
     + '<p class="op-src">씨마스 「인공지능 수학」 Ⅳ p.162·167~171, 동아출판 「인공지능 수학」 Ⅳ p.145~149, 연수교재 합본 p.296 서술을 재구성</p>'
 };
 
-/* 데이터 프리셋 — 24·26차시 공용 */
+/* 데이터 프리셋 — 25·28차시 공용 */
 const OP_PRESETS = {
   cars:  { name:'차량 6점 (씨마스 Ⅳ p.154)', xl:'차량 수(대)', yl:'통과 시간(초)',
            pts:[[2,3],[3,4],[3,8],[4,7],[5,9],[5,10]] },
@@ -25494,8 +25784,8 @@ function opTab(n, el){
   opTabCur = n;
   opSet('aimath.optim.tab', String(n));
   if(typeof initToggles === 'function'){ try{ initToggles(root); }catch(e){} }
-  /* 24·25·26차시가 optim 한 뷰를 나누어 쓰므로, 탭이 바뀌면 현재 차시 표기도 함께 바꿉니다.
-     (구동 QA D2 — 25·26차시로 들어가도 헤더가 24차시에 머물던 결함) */
+  /* 25·27·28차시가 optim 한 뷰를 나누어 쓰므로, 탭이 바뀌면 현재 차시 표기도 함께 바꿉니다.
+     (구동 QA D2 — 27·28차시로 들어가도 헤더가 25차시에 머물던 결함) */
   if(typeof aimNavOwns === 'function' && aimNavOwns('v-optim') && typeof aimNavSync === 'function'){
     try{ aimNavSync('optim'); }catch(e){}
   }
@@ -25553,7 +25843,7 @@ function opUnlock(key){
   opLockGuard();
 }
 
-/* ═══════════ 24차시 · 탭 ① 손실함수 L(a) ═══════════════════════════════════ */
+/* ═══════════ 25차시 · 탭 ① 손실함수 L(a) ═══════════════════════════════════ */
 
 let opLPts   = OP_PRESETS.cars.pts.map(p => [p[0], p[1]]);
 let opLKey   = 'cars';
@@ -25889,7 +26179,7 @@ function opLA4Render(){
   }
 }
 
-/* ═══════════ 25차시 · 탭 ② 할선 → 접선 · 탭 ③ 안개 속 최솟값 ═══════════ */
+/* ═══════════ 27차시 · 탭 ② 할선 → 접선 · 탭 ③ 안개 속 최솟값 ═══════════ */
 
 /* ── 색 보간 도우미 (등고선 격자용 — :root 토큰만 섞습니다) ─────────────── */
 function opHex(h){
@@ -26072,7 +26362,7 @@ function opD6Draw(){
         : '기울기가 <b>양수</b>입니다 → <b>왼쪽</b>(x 를 작게)으로 가야 값이 줄어듭니다.'));
 }
 
-/* ── 활동 7 — 24차시 손실함수에 적용 ───────────────────────────────────── */
+/* ── 활동 7 — 25차시 손실함수에 적용 ───────────────────────────────────── */
 
 let opD7 = 0.6, opD7Moves = 0;
 
@@ -26454,7 +26744,7 @@ function opCtrRevealAll(){
   opCtrRender();
 }
 
-/* ═══════════ 26차시 · 탭 ④ 경사하강법 (gd-visual-ax 이식) ════════════════ */
+/* ═══════════ 28차시 · 탭 ④ 경사하강법 (gd-visual-ax 이식) ════════════════ */
 
 /* 학습률은 눈금이 아니라 값의 목록으로 둡니다 — 교과서 값(0.1)과 합본 값(0.0005·0.0011)을 정확히 재현하기 위함입니다. */
 const OP_LRS = [0.0001, 0.0002, 0.0005, 0.001, 0.0011, 0.002, 0.005, 0.01, 0.02, 0.05,
@@ -26986,11 +27276,11 @@ function opResizeAll(){
    "준비 중" 으로 남지 않도록 런타임에 보강합니다. 이미 반영돼 있으면 아무 일도 하지 않습니다.
    정식 설치는 AIM_LESSONS·AIM_ART 를 직접 고치는 것입니다. */
 const OP_ROWS = [
-  { n:'24차시', t:'손실함수 L(a)로 최적 추세선 찾기',
+  { n:'25차시', t:'손실함수 L(a)로 최적 추세선 찾기',
     d:'오차를 그냥 더하면 상쇄되어 비교할 수 없습니다. 제곱해 만든 L(a) 의 포물선 위에서 잔차 정사각형이 가장 작아지는 순간을 찾고, 완전제곱식으로 최적 기울기 15/8 을 정확히 구합니다.' },
-  { n:'25차시', t:'내려갈 방향 — 극한과 미분계수',
+  { n:'27차시', t:'내려갈 방향 — 극한과 미분계수',
     d:'h 를 줄이며 할선이 접선이 되는 순간을 보고, 미분계수의 부호로 내려갈 방향을 읽습니다. 안개에 가려진 손실함수를 탐침만으로 걸어 내려가 경사하강법의 전략을 스스로 발견합니다.' },
-  { n:'26차시', t:'경사하강법 — 학습률과 수렴·발산',
+  { n:'28차시', t:'경사하강법 — 학습률과 수렴·발산',
     d:'aₙ₊₁ = aₙ − k·L′(aₙ) 을 한 걸음씩 눌러 접선·부호·이동 세 단계를 확인하고, 학습률만 바꾸어 수렴·지그재그·진동·발산이 갈리는 이유를 |1 − 2Ak| 한 줄로 정리합니다.' }
 ];
 
@@ -27059,12 +27349,12 @@ const OP_ROWS = [
     if(typeof chipDefs    === 'function'){ try{ chipDefs('#v-optim .op-keys', OP_DEFS); }catch(e){ console.error('op chipDefs', e); } }
     if(typeof wsLinks     === 'function'){ try{ wsLinks('op-wslinks', 'optim'); }catch(e){ console.error('op wsLinks', e); } }
 
-    /* 24차시 */
+    /* 25차시 */
     opLGrid();
     opLA4Render();
     opLSlide(1);
 
-    /* 25차시 */
+    /* 27차시 */
     opDSetT(1);
     opDSetH(1);
     opDHist();
@@ -27081,7 +27371,7 @@ const OP_ROWS = [
     }
     opCtrNew();
 
-    /* 26차시 */
+    /* 28차시 */
     opGGrid();
     opGLr(opGLrI);
 
@@ -27110,13 +27400,13 @@ const OP_ROWS = [
   else boot();
 })();
 
-/* ●●● ANCHOR-OPTIM ●●● (24~26차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-OPTIM ●●● (25~28차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
-/* ═════════ 4·5단원 통합 append: 27차시 gdsheet ═════════ */
+/* ═════════ 4·5단원 통합 append: 29차시 gdsheet ═════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   GDSHEET (27차시: 종합 실습 — 아이스티 판매 예측 AI) — 접두사 gs
+   GDSHEET (29차시: 종합 실습 — 아이스티 판매 예측 AI) — 접두사 gs
    · 뷰: views/gdsheet.html (루트 #v-gdsheet)
    · 이 블록은 core.js 파일 맨 끝(●●● ANCHOR-OPTIM ●●● 아래)에 이어 붙입니다.
    · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint / wsLinks /
@@ -27155,8 +27445,8 @@ const GS_ART = `<svg viewBox="0 0 320 180" role="img" aria-label="스프레드�
 
 /* STEP 1 추천 영상 — 전부 임베드 가능(oEmbed 200 OK) 확인분 */
 const GS_VIDEOS = [
-  { id:'uhnm1UNumxo', t:'15-1. 퍼셉트론의 학습 과정 (8:08)',        s:'mathT야나수 〈인공지능 수학〉 · 27차시 주 디딤영상(가중치 갱신 절차)' },
-  { id:'fiJ5J3vb-qo', t:'25. 손실함수의 최적화 — 경사하강법 (8:53)', s:'mathT야나수 · 24~26차시 복습' },
+  { id:'uhnm1UNumxo', t:'15-1. 퍼셉트론의 학습 과정 (8:08)',        s:'mathT야나수 〈인공지능 수학〉 · 29차시 주 디딤영상(가중치 갱신 절차)' },
+  { id:'fiJ5J3vb-qo', t:'25. 손실함수의 최적화 — 경사하강법 (8:53)', s:'mathT야나수 · 25~28차시 복습' },
   { id:'phQNHmPQzRk', t:'20. 경사하강법 (2:43)',                     s:'mathT야나수 · 짧은 복습용' },
   { id:'Wrja1YO2Q_I', t:'16. MNIST 데이터셋과 손글씨 숫자 분류 (7:42)', s:'mathT야나수 · 실제 학습 파이프라인' }
 ];
@@ -27287,8 +27577,8 @@ const GS_DEFS = {
     + '<p><b>이번 차시 연결.</b> 탭 ②에서 D·E·F 열과 MSE 칸을 조립하면 이 정의가 시트 네 칸으로 그대로 옮겨집니다. '
     + '슬라이더로 a 를 바꾸면 잔차와 MSE 가 함께 움직입니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="gsSee(1,\'gs-act2\')">활동 2로 이동</button></div>'
-    + '<p><b>이전·다음 차시.</b> 24차시에서 오차를 제곱하는 까닭과 완전제곱식으로 최솟값을 구하는 방법을 배웠습니다 → '
-    + '<a href="#optim" onclick="go(\'optim\');return false;">24~26차시 보기</a></p>'
+    + '<p><b>이전·다음 차시.</b> 25차시에서 오차를 제곱하는 까닭과 완전제곱식으로 최솟값을 구하는 방법을 배웠습니다 → '
+    + '<a href="#optim" onclick="go(\'optim\');return false;">25~28차시 보기</a></p>'
     + '<p class="gs-src">동아출판 「인공지능 수학」 Ⅳ p.136~137, 씨마스 「인공지능 수학」 Ⅳ p.155, 합본 p.291 서술을 재구성</p>',
 
   '절대참조':
@@ -27311,8 +27601,8 @@ const GS_DEFS = {
     + '<p><b>이번 차시 연결.</b> 시트에서는 이 값을 <b>‘오차의 방향’</b>이라 부르며 F 열이 계산합니다. '
     + 'SUMPRODUCT 로 각 데이터의 기여를 한꺼번에 더한 것이 바로 위 식입니다.</p>'
     + '<div class="btn-row"><button class="btn" type="button" onclick="gsSee(2,\'gs-act4\')">활동 3으로 이동</button></div>'
-    + '<p><b>이전 차시.</b> 25차시에서 h 를 줄여 할선을 접선으로 만드는 과정을 다루었습니다 → '
-    + '<a href="#optim" onclick="go(\'optim\');return false;">25차시 보기</a></p>'
+    + '<p><b>이전 차시.</b> 27차시에서 h 를 줄여 할선을 접선으로 만드는 과정을 다루었습니다 → '
+    + '<a href="#optim" onclick="go(\'optim\');return false;">27차시 보기</a></p>'
     + '<p class="gs-src">합본 p.292 생각해 보기 4, 씨마스 「인공지능 수학」 Ⅳ p.164~167 서술을 재구성</p>',
 
   '에포크':
@@ -27342,7 +27632,7 @@ const GS_DEFS = {
     + '<p class="gs-src">합본 p.296 교사용 이론 정리 7, p.298 ④ 관찰 기록 및 p.288 ‘탐구 확장(하이퍼파라미터 튜닝)’ 을 재구성</p>'
 };
 
-/* 27차시 학습 데이터 — 합본 p.289 PART 1 (기온 ℃, 판매량 잔) */
+/* 29차시 학습 데이터 — 합본 p.289 PART 1 (기온 ℃, 판매량 잔) */
 const GS_DATA0 = [[20,45],[22,50],[24,55],[25,60],[28,65],[30,72],[31,76],[33,82],[34,85],[35,90]];
 
 /* 탭 ③ 학습률 선택 상자에 쓰는 라벨(발산 판정 표시용) */
@@ -27798,7 +28088,7 @@ const GS_ASM = [
     opts:['=D2-C2', '=C2-D2', '=ABS(C2-D2)', '=C2-$H$2'], ok:1,
     why:['예측 − 실제가 되어 부호가 <b>반대</b>가 됩니다. 오차는 (실제) − (예측) 으로 정의합니다.',
          '오차 = (실제 판매량 C) − (예측 D) 입니다. 부호가 살아 있어야 다음 칸에서 제곱의 뜻이 드러납니다.',
-         '지금 절댓값을 씌우면 <b>제곱해야 하는 이유</b>가 사라지고, 뒤에서 미분도 어려워집니다(24차시).',
+         '지금 절댓값을 씌우면 <b>제곱해야 하는 이유</b>가 사라지고, 뒤에서 미분도 어려워집니다(25차시).',
          'a 를 그대로 빼면 단위가 맞지 않습니다. 빼야 하는 것은 <b>예측값 D2</b> 입니다.'] },
   { cell:'F2', name:'오차²',
     opts:['=E2*2', '=SQRT(E2)', '=E2^2', '=ABS(E2)'], ok:2,
@@ -27903,7 +28193,7 @@ function gsSnapOpt(){
   gsSnap(v);
   gsBanner('gs-a2-ok', true,
     '<span>최적 a = ' + gsN(c.opt, 4) + ' (= Σxy ÷ Σx² = ' + gsTrim(c.sxy) + ' ÷ ' + gsTrim(c.sx2) +
-    ') · 이때 MSE = ' + gsN(c.min, 3) + ' 입니다. 24차시의 완전제곱식으로 구한 값과 같습니다.</span>');
+    ') · 이때 MSE = ' + gsN(c.min, 3) + ' 입니다. 25차시의 완전제곱식으로 구한 값과 같습니다.</span>');
 }
 
 /* ── 시트 · 통계 · 두 캔버스 ───────────────────────────────────────────── */
@@ -27958,7 +28248,7 @@ function gsDrawSc2(){
   const ax = gsAxes(g, xr, yr, '기온 x (℃)', '판매량 y (잔)');
   ctx.save();
   ctx.beginPath(); ctx.rect(ax.L, ax.T, g.W - ax.L - ax.R, g.H - ax.T - ax.B); ctx.clip();
-  /* 잔차 정사각형 — 24차시의 ‘오차의 제곱’ 을 눈으로 잇습니다. */
+  /* 잔차 정사각형 — 25차시의 ‘오차의 제곱’ 을 눈으로 잇습니다. */
   d.forEach(p => {
     const px = ax.sx(p[0]), py = ax.sy(p[1]), qy = ax.sy(gsA * p[0]);
     const side = Math.abs(qy - py);
@@ -28603,7 +28893,7 @@ function gsResizeAll(){
    "준비 중" 으로 남지 않도록 런타임에 보강합니다. 이미 반영돼 있으면 아무 일도 하지 않습니다.
    정식 설치는 AIM_LESSONS·AIM_ART 를 직접 고치는 것입니다. */
 const GS_ROWS = [
-  { n:'27차시', t:'종합 실습 — 아이스티 판매 예측 AI',
+  { n:'29차시', t:'종합 실습 — 아이스티 판매 예측 AI',
     d:'기온과 판매량 10일치로 예측 AI 를 만듭니다. 수식을 드롭다운으로 조립해 MSE 를 완성하고, 갱신식을 셀에 연결해 a 가 2 에서 2.427 로 자라나는 과정을 표와 곡선으로 기록합니다.' }
 ];
 
@@ -28711,15 +29001,15 @@ const GS_ROWS = [
   else boot();
 })();
 
-/* ●●● ANCHOR-GDSHEET ●●● (27차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-GDSHEET ●●● (29차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
-/* ═════════ 4·5단원 통합 append: 28·30차시 decision/project ═════════ */
+/* ═════════ 4·5단원 통합 append: 32·34차시 decision/project ═════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   28·30차시 (decision · project) 신규 뷰 로직 — core.js 의 **맨 끝**에 그대로
+   32·34차시 (decision · project) 신규 뷰 로직 — core.js 의 **맨 끝**에 그대로
    이어 붙입니다. 기존 core.js 코드는 한 줄도 고치지 않습니다.
 
-   · 전역 접두사 : 28차시 = dc / DC_ , 30차시 = pj / PJ_   (§1-4 예약 접두사)
+   · 전역 접두사 : 32차시 = dc / DC_ , 34차시 = pj / PJ_   (§1-4 예약 접두사)
    · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint /
      wsLinks / cmnGet / cmnSet / cmnEsc / go)는 **호출만** 하고 수정하지 않습니다.
    · 뷰가 없으면 조용히 빠져나오는 null 가드 + IIFE 초기화(go() 수정 불필요).
@@ -28731,7 +29021,7 @@ const GS_ROWS = [
 
 
 /* ███████████████████████████████████████████████████████████████████████████
-   PART A · 28차시 DECISION — 합리적 의사 결정 사례 해부      (접두사 dc / DC_)
+   PART A · 32차시 DECISION — 합리적 의사 결정 사례 해부      (접두사 dc / DC_)
    ███████████████████████████████████████████████████████████████████████████ */
 
 /* ── A0. 작은 도구 ──────────────────────────────────────────────────────── */
@@ -29096,11 +29386,11 @@ const DC_CASES=[
      {k:0, t:'실시간 차량 흐름·기상 데이터·도로 정보·사건 및 사고 데이터를 모은다',
       x:'수집이 곧 <b>① 데이터 학습</b> 칸입니다. 교과서 도해의 왼쪽 칸에 그대로 적혀 있는 네 종류입니다.'},
      {k:0, t:'같은 요일·같은 시간대의 과거 정체 기록을 함께 쌓아 둔다',
-      x:'<b>①</b>입니다. “5~15분 뒤”를 맞히려면 <b>과거의 같은 조건</b>이 있어야 합니다. 21차시의 “조건일 때의 상대도수”가 쓰이는 지점입니다.'},
+      x:'<b>①</b>입니다. “5~15분 뒤”를 맞히려면 <b>과거의 같은 조건</b>이 있어야 합니다. 22차시의 “조건일 때의 상대도수”가 쓰이는 지점입니다.'},
      {k:1, t:'특정 도로·특정 시간대에 정체가 생길 확률을 과거 기록의 상대도수로 계산한다',
       x:'<b>② 최적화 전략</b>입니다. 교과서는 “대표적인 최적화 전략으로 <b>확률</b>이 있다”고 못 박습니다.'},
      {k:1, t:'비 오는 날과 맑은 날의 정체 확률을 나누어 비교해 더 큰 쪽을 고른다',
-      x:'<b>②</b>입니다. 조건을 나누어 확률을 비교하는 계산은 21차시 스팸 분류와 완전히 같은 구조입니다.'},
+      x:'<b>②</b>입니다. 조건을 나누어 확률을 비교하는 계산은 22차시 스팸 분류와 완전히 같은 구조입니다.'},
      {k:2, t:'교통 관리자가 신호 주기를 조절하고 우회 경로를 권고한다',
       x:'<b>③ 합리적 의사 결정</b>입니다. 이 칸에는 반드시 <b>행동</b>이 들어갑니다. 계산 결과만 있으면 아직 의사 결정이 아닙니다.'},
      {k:2, t:'운전자가 예측 정보를 보고 최적 경로를 골라 출발한다',
@@ -29122,11 +29412,11 @@ const DC_CASES=[
      {k:0, t:'카메라와 센서로 도로 상황·차량 위치·기상 조건·차량 흐름·보행자 위치를 수집한다',
       x:'<b>①</b>입니다. 교과서 도해의 첫 칸에 적힌 다섯 가지 항목입니다.'},
      {k:0, t:'수집한 이미지에 레이블을 붙인 뒤 지도학습·비지도학습 알고리즘으로 모델을 훈련시킨다',
-      x:'<b>①</b>입니다. <b>레이블링</b>은 12차시에서 직접 해 본 작업입니다. 정답을 붙여 주면 지도학습, 붙이지 않으면 비지도학습입니다.'},
+      x:'<b>①</b>입니다. <b>레이블링</b>은 18차시에서 직접 해 본 작업입니다. 정답을 붙여 주면 지도학습, 붙이지 않으면 비지도학습입니다.'},
      {k:1, t:'연료·교통량·이동 시간을 함께 고려해 목표 지점까지의 경로를 수학적으로 계산한다',
       x:'<b>②</b>입니다. 여러 항목을 한꺼번에 고려해 가장 작은 값을 찾는 일 — 손실함수를 세워 최소화하는 구조와 같습니다.'},
      {k:1, t:'돌발 상황에서 안전한 상태와의 오차를 최소화하는 회피 경로를 계산한다',
-      x:'<b>②</b>입니다. “<b>오차를 최소화</b>”라는 말이 나오면 거의 언제나 최적화 칸입니다(24~26차시).'},
+      x:'<b>②</b>입니다. “<b>오차를 최소화</b>”라는 말이 나오면 거의 언제나 최적화 칸입니다(25~28차시).'},
      {k:2, t:'지금이 감속할 상황인지 차선을 바꿀 상황인지 판단해 운행한다',
       x:'<b>③</b>입니다. 인식과 판단을 거쳐 <b>실제 운행</b>으로 옮기는 칸입니다.'},
      {k:2, t:'보행자를 인식하면 정지 거리를 확보하도록 제동을 시작한다',
@@ -29147,11 +29437,11 @@ const DC_CASES=[
      {k:0, t:'인터넷상의 대규모 텍스트(대화·기사·논문)를 모아 자연어 처리 기술로 분석한다',
       x:'<b>①</b>입니다. 교과서는 “인간이 작성한 대화, 기사, 논문 등 다양한 텍스트 데이터를 활용한다”고 적습니다.'},
      {k:0, t:'각 단어를 벡터로 바꾸고 임베딩을 거쳐 단어의 의미와 관계를 학습한다',
-      x:'<b>①</b>입니다. 7차시에서 “왕 − 남자 + 여자”로 확인한 그 임베딩입니다.'},
+      x:'<b>①</b>입니다. 8차시에서 “왕 − 남자 + 여자”로 확인한 그 임베딩입니다.'},
      {k:1, t:'이전 단어들을 근거로 다음 단어가 나올 확률이 가장 큰 것을 고른다',
       x:'<b>②</b>입니다. 문장 생성은 결국 <b>확률이 가장 큰 다음 단어</b>를 반복해 고르는 일입니다.'},
      {k:1, t:'정확하게 답변하도록 손실함수 값을 최소화하는 방향으로 학습한다',
-      x:'<b>②</b>입니다. 24~26차시에서 손으로 해 본 그 최소화가 초거대 규모로 일어납니다.'},
+      x:'<b>②</b>입니다. 25~28차시에서 손으로 해 본 그 최소화가 초거대 규모로 일어납니다.'},
      {k:2, t:'사용자가 제공한 정보를 정확하게 이해하고 그에 맞는 문장을 생성한다',
       x:'<b>③</b>입니다. 출력 그 자체가 행동이 되는 특이한 사례입니다.'},
      {k:2, t:'요약·번역·초안 작성 같은 창의적 결과물을 만들어 낸다',
@@ -29173,7 +29463,7 @@ const DC_CASES=[
      {k:0, t:'지원자의 학교·전공·경력을 수치로 바꾸어 벡터로 만든다',
       x:'<b>①</b>입니다. 사람을 수의 나열로 바꾸는 순간, 담기지 않은 정보는 결정에서 사라집니다.'},
      {k:1, t:'과거 합격자와 비슷할수록 높은 점수가 되도록 가중치를 조정한다',
-      x:'<b>②</b>입니다. 계산 자체는 9차시 유사도와 다르지 않습니다. 문제는 <b>무엇과 비슷해지려 했는가</b>입니다.'},
+      x:'<b>②</b>입니다. 계산 자체는 11차시 유사도와 다르지 않습니다. 문제는 <b>무엇과 비슷해지려 했는가</b>입니다.'},
      {k:1, t:'합격 예측의 오차를 최소화하도록 학습을 반복한다',
       x:'<b>②</b>입니다. 목표가 “과거를 잘 재현하기”였기 때문에, 과거의 치우침까지 충실히 재현했습니다.'},
      {k:2, t:'점수가 높은 지원자를 서류 합격으로 자동 분류한다',
@@ -29199,7 +29489,7 @@ const DC_CASES=[
      {k:0, t:'사건의 특징(범죄 유형·피해 정도·전과)을 수치로 바꾸어 표로 정리한다',
       x:'<b>①</b>입니다. 수치로 바꾸는 순간 “피해자의 사정”처럼 <b>수로 옮기기 어려운 것</b>은 빠집니다.'},
      {k:1, t:'새 사건과 가장 가까운 과거 사건 k개를 거리로 찾아 다수의 형량을 따른다',
-      x:'<b>②</b>입니다. 교과서가 「더 알아보기」로 실은 <b>k-최근접 이웃(k-NN)</b>이 바로 이 계산입니다. 9차시 거리와 13차시 최근접 분류가 그대로 쓰입니다.'},
+      x:'<b>②</b>입니다. 교과서가 「더 알아보기」로 실은 <b>k-최근접 이웃(k-NN)</b>이 바로 이 계산입니다. 11차시 거리와 18차시 최근접 분류가 그대로 쓰입니다.'},
      {k:1, t:'예측 형량과 실제 형량의 차이를 줄이도록 기준을 조정한다',
       x:'<b>②</b>입니다. “차이를 줄인다”는 말은 곧 손실 최소화입니다.'},
      {k:2, t:'비슷한 사건에 일관된 형량을 빠르게 제시한다',
@@ -29515,7 +29805,7 @@ function dcA3Down(){
     const blob=new Blob([txt], {type:'application/json'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
-    a.download='28차시_윤리판정.json';
+    a.download='32차시_윤리판정.json';
     document.body.appendChild(a);
     a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 300);
@@ -29732,7 +30022,7 @@ function dcInit(){
 
 
 /* ███████████████████████████████████████████████████████████████████████████
-   PART B · 28~30차시 PROJECT — 탐구 워크스페이스                (접두사 pj / PJ_)
+   PART B · 32~34차시 PROJECT — 탐구 워크스페이스                (접두사 pj / PJ_)
    ███████████████████████████████████████████████████████████████████████████ */
 
 /* ── B0. 작은 도구 ──────────────────────────────────────────────────────── */
@@ -29908,7 +30198,7 @@ const PJ_QUIZ=[
          '데이터가 클수록 좋으므로 불필요한 속성까지 모두 넣는 것이 효율적이다',
          '지도학습을 쓸 경우 학습 데이터에 정답을 표시하는 라벨링 과정이 필요하다'],
    answer:4,
-   explain:'라벨링은 12차시에서 직접 해 본 작업입니다. 결측치·이상치는 <b>전처리 단계에서</b> 처리하고, 불필요한 속성은 오히려 성능을 떨어뜨립니다.'},
+   explain:'라벨링은 18차시에서 직접 해 본 작업입니다. 결측치·이상치는 <b>전처리 단계에서</b> 처리하고, 불필요한 속성은 오히려 성능을 떨어뜨립니다.'},
   {q:'루브릭에서 ‘A(주제 선정 및 문제 정의)’ 영역이 4점을 받는 조건은?',
    opts:['탐구 주제가 새롭고 아무도 하지 않은 것일 때',
          '실생활 문제와 SDGs가 긴밀히 연계되고 탐구 목표가 구체적·명확할 때',
@@ -30042,31 +30332,31 @@ const PJ_SDG=[
 ];
 
 const PJ_TOOLS=[
-  {k:0, n:'추세선 y=ax+b', fit:'예측', view:'trend', vlab:'22·23차시 추세선',
+  {k:0, n:'추세선 y=ax+b', fit:'예측', view:'trend', vlab:'23·24차시 추세선',
    math:'산점도 · 일차함수 · 예측값과 오차',
    tpl:'{subj}의 관계를 산점도와 추세선 y = ax + b로 나타내어 아직 관측하지 않은 값을 예측하기'},
-  {k:1, n:'손실함수·경사하강법', fit:'예측', view:'optim', vlab:'24~26차시 손실·경사하강',
+  {k:1, n:'손실함수·경사하강법', fit:'예측', view:'optim', vlab:'25~28차시 손실·경사하강',
    math:'제곱오차의 합 L(a) · 이차함수의 최솟값 · 미분계수 · aₙ₊₁ = aₙ − k·L′(aₙ)',
    tpl:'{subj} 데이터로 손실함수 L(a)를 세우고 경사하강법으로 최적의 기울기 a를 찾기'},
-  {k:2, n:'상대도수·조건일 때의 상대도수', fit:'분류', view:'prob', vlab:'20·21차시 확률',
+  {k:2, n:'상대도수·조건일 때의 상대도수', fit:'분류', view:'prob', vlab:'21·22차시 확률',
    math:'이원분류표 · 조건일 때의 상대도수 · 확률의 곱 비교',
    tpl:'{subj}를 이원분류표로 정리하고 조건일 때의 상대도수를 비교해 분류·예측하기'},
-  {k:3, n:'유클리드·코사인 유사도', fit:'유사도', view:'sim', vlab:'9차시 유사도',
+  {k:3, n:'유클리드·코사인 유사도', fit:'유사도', view:'sim', vlab:'11차시 유사도',
    math:'n차원 거리 · 사잇각의 코사인 · L2 정규화',
    tpl:'{subj}를 벡터로 바꾸고 유클리드·코사인 유사도로 가까운 것끼리 묶기'},
-  {k:4, n:'자카드 유사도·감성 분석', fit:'텍스트', view:'senti', vlab:'10차시 감성 분석',
+  {k:4, n:'자카드 유사도·감성 분석', fit:'텍스트', view:'senti', vlab:'12차시 감성 분석',
    math:'집합의 교집합·합집합 · J(A,B) · 임계값 k 판정',
    tpl:'{subj}에 대한 의견 텍스트를 감성 사전과 자카드 유사도로 긍정·부정 판정하기'},
-  {k:5, n:'TF-IDF 핵심어 추출', fit:'텍스트', view:'tfidf', vlab:'8차시 TF-IDF',
+  {k:5, n:'TF-IDF 핵심어 추출', fit:'텍스트', view:'tfidf', vlab:'9차시 TF-IDF',
    math:'단어 빈도 TF · 문서빈도 DF · IDF = n/DF',
    tpl:'{subj} 관련 기사·게시글에서 TF-IDF로 핵심 단어를 뽑아 시기별로 비교하기'},
   {k:6, n:'행렬 연산 이미지 변환', fit:'이미지', view:'imgop', vlab:'14차시 행렬 연산',
    math:'행렬의 덧셈·실수배 · 반전 255−x · 내분 aA+(1−a)B',
    tpl:'{subj}를 촬영한 이미지를 행렬 연산(밝기·반전·합성)으로 변환해 비교하기'},
-  {k:7, n:'해밍 거리 분류', fit:'이미지', view:'hamming', vlab:'13차시 해밍 거리',
+  {k:7, n:'해밍 거리 분류', fit:'이미지', view:'hamming', vlab:'18차시 해밍 거리',
    math:'이진화 · 대칭차집합 · d = Σ(A⊕B) · 최근접 분류',
    tpl:'{subj}를 이진 행렬로 바꾸고 해밍 거리로 참조 이미지와 견주어 분류하기'},
-  {k:8, n:'합성곱·CNN 분류', fit:'이미지', view:'pipeline', vlab:'15~18차시 CNN',
+  {k:8, n:'합성곱·CNN 분류', fit:'이미지', view:'pipeline', vlab:'20차시 CNN',
    math:'합성곱 · 커널 · 풀링 · 소프트맥스 확률',
    tpl:'{subj} 사진을 모아 합성곱 신경망(티처블머신)으로 분류하고 확률을 해석하기'},
   {k:9, n:'혼동행렬·집단별 정확도', fit:'판정', view:'bias', vlab:'5차시 편향',
@@ -30569,7 +30859,7 @@ const PJ_EG=[
      ['B 2-2','비정형 데이터(이미지). 각 사진은 224×224 픽셀의 행렬 3장(R·G·B)으로 표현된다.'],
      ['B 2-3','흐릿한 사진 12장 제외, 두 병이 함께 찍힌 사진 8장 제외. 밝기가 지나치게 어두운 사진은 실수배로 보정.'],
      ['C 3-1','행렬(이미지 표현) · 합성곱(특징 추출) · 확률(소프트맥스). 이미지는 픽셀 행렬이므로 행렬 연산이 곧 전처리가 된다.'],
-     ['C 3-2','합성곱 신경망(티처블머신). 비교군으로 13차시 해밍 거리 최근접 분류도 함께 계산해 성능을 견준다.'],
+     ['C 3-2','합성곱 신경망(티처블머신). 비교군으로 18차시 해밍 거리 최근접 분류도 함께 계산해 성능을 견준다.'],
      ['C 3-3','특징 맵 = 입력 행렬 ⊛ 커널, 분류 확률 p₁ + p₂ = 1. 정확도 = (TP + TN) / 전체.'],
      ['D 4-1','티처블머신(학습) · 구글 스프레드시트(혼동행렬 계산) · 이미지 편집(밝기 보정)'],
      ['D 4-2','혼동행렬 2×2 표와 정확도 막대그래프, 오분류된 8장의 사진 모음'],
@@ -30588,9 +30878,9 @@ const PJ_EG=[
      ['B 2-2','정형 데이터. 학생 32명 × 키워드 8개의 0/1 행렬(32×8).'],
      ['B 2-3','미응답 2명 제외, 키워드를 9개에서 8개로 통합(“의료”와 “보건”을 하나로), 자유 응답은 가장 가까운 키워드로 배정.'],
      ['C 3-1','벡터(성분·차원) · 코사인 유사도(사잇각) · 자카드 유사도(집합의 겹침). 0/1 벡터라 두 유사도를 모두 계산해 비교할 수 있다.'],
-     ['C 3-2','코사인 유사도 기반 군집. 9차시에서 배운 대로 크기보다 방향이 중요하므로 코사인을 주로 쓴다.'],
+     ['C 3-2','코사인 유사도 기반 군집. 11차시에서 배운 대로 크기보다 방향이 중요하므로 코사인을 주로 쓴다.'],
      ['C 3-3','cos θ = (a₁b₁ + … + a₈b₈) / (|a||b|), J(A,B) = n(A∩B) / n(A∪B).'],
-     ['D 4-1','구글 스프레드시트(32×32 유사도 행렬) · 9차시 sim 뷰(검산) · 워드클라우드(키워드 빈도)'],
+     ['D 4-1','구글 스프레드시트(32×32 유사도 행렬) · 11차시 sim 뷰(검산) · 워드클라우드(키워드 빈도)'],
      ['D 4-2','32×32 유사도 히트맵, 유사도 0.6 이상인 짝 41쌍의 연결 그림'],
      ['D 4-3','군집 3개가 나타났다(공학·의료·인문). 코사인과 자카드의 순위가 6쌍에서 뒤바뀌었다.'],
      ['E 5-1','군집 3개는 담임 선생님이 파악한 분포와 대체로 일치했습니다. 다만 관심사가 두 군집에 걸친 5명은 어느 쪽에도 잘 들어가지 않았습니다.'],
@@ -30907,7 +31197,7 @@ function pjRbCsv(){
     const blob=new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
-    a.download='30차시_루브릭_집계.csv';
+    a.download='34차시_루브릭_집계.csv';
     document.body.appendChild(a);
     a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 300);
@@ -31059,23 +31349,23 @@ const PJ_VIEWS=[
   {v:'logic',      n:'3차시',    t:'진리표 · 규칙 추론'},
   {v:'perceptron', n:'4차시',    t:'가중합 · 활성화함수'},
   {v:'bias',       n:'5차시',    t:'집단별 정확도 · 부등식'},
-  {v:'text',       n:'6·7차시',  t:'단어집합 · 벡터 표현'},
-  {v:'tfidf',      n:'8차시',    t:'TF-IDF 핵심어'},
-  {v:'sim',        n:'9차시',    t:'거리 · 코사인 유사도'},
-  {v:'senti',      n:'10차시',   t:'자카드 · 감성 분석'},
-  {v:'review',     n:'11차시',   t:'유사도 행렬 · 추천'},
-  {v:'mnist',      n:'12차시',   t:'픽셀 행렬 · 데이터셋'},
-  {v:'hamming',    n:'13차시',   t:'이진화 · 해밍 거리'},
+  {v:'text',       n:'7·8차시',  t:'단어집합 · 벡터 표현'},
+  {v:'tfidf',      n:'9차시',    t:'TF-IDF 핵심어'},
+  {v:'sim',        n:'11차시',    t:'거리 · 코사인 유사도'},
+  {v:'senti',      n:'12차시',   t:'자카드 · 감성 분석'},
+  {v:'review',     n:'13차시',   t:'유사도 행렬 · 추천'},
+  {v:'mnist',      n:'18차시',   t:'픽셀 행렬 · 데이터셋'},
+  {v:'hamming',    n:'18차시',   t:'이진화 · 해밍 거리'},
   {v:'imgop',      n:'14차시',   t:'행렬 덧셈 · 실수배'},
-  {v:'conv',       n:'15차시',   t:'합성곱 · 특징 맵'},
-  {v:'filter',     n:'16차시',   t:'커널의 시각 효과'},
-  {v:'pool',       n:'17차시',   t:'풀링 · 정규화'},
-  {v:'pipeline',   n:'18차시',   t:'CNN · 소프트맥스 확률'},
-  {v:'detect',     n:'19차시',   t:'객체 탐지 · 신뢰도'},
-  {v:'prob',       n:'20·21차시', t:'상대도수 · 조건일 때의 상대도수'},
-  {v:'trend',      n:'22·23차시', t:'추세선 · 과적합'},
-  {v:'optim',      n:'24~26차시', t:'손실 · 미분 · 경사하강'},
-  {v:'gdsheet',    n:'27차시',   t:'MSE · 학습 루프'}
+  {v:'conv',       n:'20차시',   t:'합성곱 · 특징 맵'},
+  {v:'filter',     n:'20차시',   t:'커널의 시각 효과'},
+  {v:'pool',       n:'20차시',   t:'풀링 · 정규화'},
+  {v:'pipeline',   n:'20차시',   t:'CNN · 소프트맥스 확률'},
+  {v:'detect',     n:'20차시',   t:'객체 탐지 · 신뢰도'},
+  {v:'prob',       n:'21·22차시', t:'상대도수 · 조건일 때의 상대도수'},
+  {v:'trend',      n:'23·24차시', t:'추세선 · 과적합'},
+  {v:'optim',      n:'25~28차시', t:'손실 · 미분 · 경사하강'},
+  {v:'gdsheet',    n:'29차시',   t:'MSE · 학습 루프'}
 ];
 
 function pjMapBuild(){
@@ -31398,16 +31688,16 @@ function pjInit(){
 /* ●●● ANCHOR-PROJECT ●●● */
 
 
-/* ═════════ 4·5단원 통합 append: 29차시 datalab ═════════ */
+/* ═════════ 4·5단원 통합 append: 33차시 datalab ═════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   DATALAB (29차시: 탐구 수행 — 데이터·모델링·시각화) — 접두사 dl
+   DATALAB (33차시: 탐구 수행 — 데이터·모델링·시각화) — 접두사 dl
    ---------------------------------------------------------------------------
-   · 이 블록은 core.js 맨 끝(28차시 decision·project 블록 뒤)에 그대로 덧붙입니다.
+   · 이 블록은 core.js 맨 끝(32차시 decision·project 블록 뒤)에 그대로 덧붙입니다.
    · 뷰(views/datalab.html)가 없어도 core.js가 죽지 않도록 초기화는 IIFE + null 가드.
    · 공통 컴포넌트(videoDeck·warmStepper·quizStepper·chipDefs·wsPrint·wsLinks)는
      호출만 하고 수정하지 않습니다.
    · **op 유틸 재사용 규약(INTEGRATION.md §3)** — 손실·미분·경사하강 계산은
-     24~26차시 optim 뷰가 소유하는 공용 함수(opLossCoef·opMSE·opBestA·opLossPrime·
+     25~28차시 optim 뷰가 소유하는 공용 함수(opLossCoef·opMSE·opBestA·opLossPrime·
      opGdNext)를 **호출 시점에 존재하면 그것을 쓰고**, 아직 없으면 동일한 식의
      dl 내부 구현으로 대체합니다. 두 구현은 같은 식이므로 결과가 일치하며,
      optim이 붙은 뒤에는 단일 진실 공급원(op*)만 실행됩니다.
@@ -31416,7 +31706,7 @@ function pjInit(){
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 0. 저장 키 (부록 F) ─────────────────────────────────────────────────── */
-const DL_K_STATE     = 'aimath.datalab.state';   /* 표·축이름·a·유형·메모 (29차시 소유) */
+const DL_K_STATE     = 'aimath.datalab.state';   /* 표·축이름·a·유형·메모 (33차시 소유) */
 const DL_K_PROJ      = 'aimath.project';         /* 5단원 보고서 A~F — project 소유, D만 병합 */
 const DL_K_ROOM      = 'aimath.classroom.url';   /* 학급 공유 자료함 (전 차시 공통 키) */
 const DL_K_ROOM_CORE = 'aimath.shared.folder';   /* core.js aimRefExtras 가 쓰는 키 — 값만 미러링 */
@@ -31477,7 +31767,7 @@ function dlPts(){
   });
   return out;
 }
-/* optim(24~27차시)이 실제로 내보내는 형식으로 바꿉니다.
+/* optim(25~29차시)이 실제로 내보내는 형식으로 바꿉니다.
    optim 은 점을 [x, y] 배열로 받고 손실·기울기의 인자 순서가 (a, pts) 입니다.
    datalab 은 {x, y} 객체를 쓰므로 위임할 때만 배열로 변환합니다. */
 function dlOpArr(pts){
@@ -31597,7 +31887,7 @@ const DL_PRESETS = {
   blank:{
     t:'내 자료 직접 넣기',
     xl:'x', yl:'y',
-    src:'28차시 계획서에 적은 데이터 출처에서 가져온 자료를 붙여넣으세요.',
+    src:'32차시 계획서에 적은 데이터 출처에서 가져온 자료를 붙여넣으세요.',
     csv:''
   }
 };
@@ -32729,27 +33019,27 @@ const DL_TYPES = {
   num:{ nm:'수치·표 자료',
     hd:'수치·표 자료 — 예측하려면 추세선에서 손실함수로, 손실함수에서 경사하강으로',
     ds:'두 수의 관계를 묻는 탐구입니다. 오늘의 활동 2·3이 바로 이 유형을 위한 도구입니다. '+
-       '확률로 예측하려면 20·21차시의 ‘조건일 때의 상대도수’를 씁니다.',
-    vs:[['trend','22·23차시 추세선·과적합'],['optim','24~26차시 손실함수·경사하강'],
-        ['gdsheet','27차시 학습 루프'],['prob','20·21차시 확률']] },
+       '확률로 예측하려면 21·22차시의 ‘조건일 때의 상대도수’를 씁니다.',
+    vs:[['trend','23·24차시 추세선·과적합'],['optim','25~28차시 손실함수·경사하강'],
+        ['gdsheet','29차시 학습 루프'],['prob','21·22차시 확률']] },
   img:{ nm:'이미지 자료',
     hd:'이미지 자료 — 사진을 행렬로 바꾸는 순간 수학이 시작됩니다',
-    ds:'분류·검출이 목표라면 이진화와 해밍 거리(13차시)로 시작하고, 특징을 뽑아야 하면 '+
-       '합성곱·풀링(15~17차시), 실제 모델로 확인하려면 CNN 파이프라인·객체 탐지(18·19차시)로 갑니다.',
-    vs:[['mnist','12차시 이미지=행렬'],['hamming','13차시 해밍 거리'],
-        ['pipeline','18차시 CNN 파이프라인'],['detect','19차시 객체 탐지']] },
+    ds:'분류·검출이 목표라면 이진화와 해밍 거리(18차시)로 시작하고, 특징을 뽑아야 하면 '+
+       '합성곱·풀링(20차시), 실제 모델로 확인하려면 CNN 파이프라인·객체 탐지(20차시)로 갑니다.',
+    vs:[['mnist','18차시 이미지=행렬'],['hamming','18차시 해밍 거리'],
+        ['pipeline','20차시 CNN 파이프라인'],['detect','20차시 객체 탐지']] },
   txt:{ nm:'텍스트 자료',
     hd:'텍스트 자료 — 글을 집합과 벡터로 바꾸면 셀 수 있습니다',
-    ds:'핵심어를 뽑으려면 TF-IDF(8차시), 비슷함을 재려면 유클리드·코사인(9차시)이나 자카드(10차시), '+
-       '긍·부정을 판정하려면 감성 분석(10차시), 여러 건을 한꺼번에 보려면 대시보드(11차시)입니다.',
-    vs:[['text','6·7차시 전처리·벡터'],['tfidf','8차시 TF-IDF'],
-        ['sim','9차시 유사도'],['senti','10차시 자카드·감성']] },
+    ds:'핵심어를 뽑으려면 TF-IDF(9차시), 비슷함을 재려면 유클리드·코사인(11차시)이나 자카드(12차시), '+
+       '긍·부정을 판정하려면 감성 분석(12차시), 여러 건을 한꺼번에 보려면 대시보드(13차시)입니다.',
+    vs:[['text','7·8차시 전처리·벡터'],['tfidf','9차시 TF-IDF'],
+        ['sim','11차시 유사도'],['senti','12차시 자카드·감성']] },
   mix:{ nm:'두 가지 이상 섞임',
     hd:'섞인 자료 — 둘로 나누어 각각 도구를 붙이고, 결론에서 합칩니다',
     ds:'사진과 표를 함께 모았다면 사진은 이미지 도구, 표는 수치 도구로 각각 결과를 낸 뒤 '+
        '한 문단으로 잇습니다. 도구를 많이 쓰는 것이 좋은 탐구가 아닙니다 — 물음에 꼭 필요한 것만 고르세요.',
-    vs:[['hamming','13차시 해밍 거리'],['trend','22차시 추세선'],
-        ['senti','10차시 감성 분석'],['project','30차시 보고서 정리']] }
+    vs:[['hamming','18차시 해밍 거리'],['trend','23차시 추세선'],
+        ['senti','12차시 감성 분석'],['project','34차시 보고서 정리']] }
 };
 function dlType(t, el){
   const d = DL_TYPES[t];
@@ -32788,7 +33078,7 @@ function dlSumRefresh(){
   const kind = kindMap[dlGdKind()] || '아직 실행하지 않음';
   const vv = function(id){ const e = dlEl(id); return e ? String(e.value || '').trim() : ''; };
   const L = [];
-  L.push('[D] 탐구 수행 · 결과   (29차시 datalab 자동 요약)');
+  L.push('[D] 탐구 수행 · 결과   (33차시 datalab 자동 요약)');
   L.push('');
   L.push('1) 자료');
   L.push('  · 자료 이름 : ' + (p.t || '내 자료'));
@@ -32819,7 +33109,7 @@ function dlSumRefresh(){
   L.push('4) 데이터 유형과 도구 선택');
   L.push('  · 유형 : ' + (dlDtype ? DL_TYPES[dlDtype].nm : '(아직 고르지 않음)'));
   if(dlDtype) L.push('  · 이어 볼 차시 : ' + DL_TYPES[dlDtype].vs.map(function(v){ return v[1]; }).join(', '));
-  L.push('  · 계산 유틸 : ' + (dlOpLinked() ? '24~26차시 optim 공용 함수(op*) 사용' : 'datalab 내부 구현(op* 미연결)'));
+  L.push('  · 계산 유틸 : ' + (dlOpLinked() ? '25~28차시 optim 공용 함수(op*) 사용' : 'datalab 내부 구현(op* 미연결)'));
   const ans = vv('dl-ans1');
   if(ans){
     L.push('');
@@ -32837,7 +33127,7 @@ function dlSumRefresh(){
    그래서 요약문을 그 세 칸의 뜻에 맞게 나누어 넣습니다. 기계가 읽을 수치는
    project 가 쓰지 않는 별도 최상위 키 `datalab` 에 둡니다(pjDoc 이 모르는 키는
    지우지 않고 그대로 보존하므로 안전합니다).                                  */
-const DL_D_MK0 = '── 29차시 datalab 자동 기록 ──';
+const DL_D_MK0 = '── 33차시 datalab 자동 기록 ──';
 const DL_D_MK1 = '── (자동 기록 끝) ──';
 
 /* 학생이 project 에서 손으로 쓴 글은 남기고, 지난 자동 기록만 바꿔 끼웁니다. */
@@ -32869,9 +33159,9 @@ function dlDParts(){
 
   /* 4-1. 활용 도구 */
   const A = [];
-  A.push('· 29차시 「데이터 랩」 웹 도구 — 표 편집기(CSV 붙여넣기), 산점도, y = ax 슬라이더, 경사하강 실행기');
+  A.push('· 33차시 「데이터 랩」 웹 도구 — 표 편집기(CSV 붙여넣기), 산점도, y = ax 슬라이더, 경사하강 실행기');
   A.push('· 손실·미분·경사하강 계산 : ' +
-    (dlOpLinked() ? '24~26차시 optim 뷰의 공용 함수(op*) 재사용' : 'datalab 내부 구현(op* 미연결 상태)'));
+    (dlOpLinked() ? '25~28차시 optim 뷰의 공용 함수(op*) 재사용' : 'datalab 내부 구현(op* 미연결 상태)'));
   A.push('· 자료 유형 : ' + (dlDtype ? DL_TYPES[dlDtype].nm : '(아직 고르지 않음)'));
   if(dlDtype) A.push('· 유형에 맞추어 이어 본 차시 : ' + DL_TYPES[dlDtype].vs.map(function(v){ return v[1]; }).join(', '));
   A.push('· 자료 출처 : ' + ((dlPre === 'blank') ? '(직접 적어 주세요)' : (p.src || '-')));
@@ -32947,7 +33237,7 @@ function dlToD(){
   try{
     dlLSSet(DL_K_PROJ, JSON.stringify(o));
     dlFb('dl-d-fb', true, '보고서 <b>[D]란</b>의 <b>4-1 활용 도구 · 4-2 수행 과정 시각화 · 4-3 예측/최적화 결과</b> '+
-      '세 칸에 저장했습니다. 30차시 <b>project</b> 뷰의 [보고서 A~F] 탭에서 이어서 고쳐 쓸 수 있습니다. '+
+      '세 칸에 저장했습니다. 34차시 <b>project</b> 뷰의 [보고서 A~F] 탭에서 이어서 고쳐 쓸 수 있습니다. '+
       '([A]·[B]·[C]·[E]·[F]란과 직접 쓴 글은 그대로 두었습니다.)');
     dlSt('dl-d-st', '저장 위치 — localStorage[\'aimath.project\'].report.D1·D2·D3  ·  ' + new Date().toLocaleString('ko-KR'));
   }catch(e){
@@ -33139,7 +33429,7 @@ const DL_QUIZ = [
     opts:['이상치','결측값','잔차','불용어'],
     answer:1,
     explain:'비어 있는 칸은 <b>결측값</b>, 다른 값과 크게 동떨어져 의심스러운 값은 <b>이상치(이상값)</b>입니다. '+
-      '잔차는 실제값과 예측값의 차이이고, 불용어는 6차시에서 걸러 낸 의미 없는 낱말입니다. [12인수05-02]' },
+      '잔차는 실제값과 예측값의 차이이고, 불용어는 7차시에서 걸러 낸 의미 없는 낱말입니다. [12인수05-02]' },
   { q:'x = 1, 2, 2 이고 y = 2, 5, 3 일 때 y = ax 에서 손실 L(a)를 가장 작게 하는 a는? (a = Σxy ÷ Σx²)',
     opts:['1.5','2','2.5','3'],
     answer:1,
@@ -33158,7 +33448,7 @@ const DL_QUIZ = [
   { q:'우리 학교 급식 만족도 설문의 <b>서술형 답변 200건</b>에서 학생들이 자주 쓴 핵심 단어를 뽑으려 한다. 가장 알맞은 도구는?',
     opts:['해밍 거리','TF-IDF','맥스 풀링','경사하강법'],
     answer:1,
-    explain:'텍스트에서 <b>핵심어</b>를 뽑는 도구는 8차시의 TF-IDF입니다. 해밍 거리는 이미지·비트열의 차이, '+
+    explain:'텍스트에서 <b>핵심어</b>를 뽑는 도구는 9차시의 TF-IDF입니다. 해밍 거리는 이미지·비트열의 차이, '+
       '맥스 풀링은 특징 맵 축소, 경사하강법은 최적값 탐색에 쓰입니다. '+
       '자료의 <b>유형과 물음</b>이 도구를 정한다는 것이 오늘의 결론입니다. [12인수05-02]' },
   { q:'이상치를 처리한 뒤 보고서에 반드시 함께 적어야 하는 것은?',
@@ -33180,9 +33470,9 @@ const DL_DEFS = {
     '<p><b>이번 차시에서</b> STEP 2 활동 1에서 이 두 값이 실제로 들어 있는 교과서 원자료를 직접 고쳐 보고, '+
     '평균이 48.3kg에서 31.8kg으로 바뀌는 것을 확인했습니다. '+
     '<button class="btn" type="button" onclick="dlSee(0,\'dl-act1\')">활동 1로 이동</button></p>'+
-    '<p><b>이어지는 차시</b> 6차시에서 불용어를 걸러 낸 것도, 17차시에서 픽셀값에 1/255를 곱한 것도 전처리였습니다. '+
-    '<button class="btn" type="button" onclick="go(\'text\')">6차시 전처리</button> '+
-    '<button class="btn" type="button" onclick="go(\'pool\')">17차시 정규화</button></p>',
+    '<p><b>이어지는 차시</b> 7차시에서 불용어를 걸러 낸 것도, 20차시에서 픽셀값에 1/255를 곱한 것도 전처리였습니다. '+
+    '<button class="btn" type="button" onclick="go(\'text\')">7차시 전처리</button> '+
+    '<button class="btn" type="button" onclick="go(\'pool\')">20차시 정규화</button></p>',
 
   '산점도와 추세선':
     '<h4>산점도와 추세선 y = ax — 흩어진 점에 직선 하나를</h4>'+
@@ -33193,8 +33483,8 @@ const DL_DEFS = {
     '② 온실가스 자료처럼 원점을 지나지 않는 관계에서는 y = ax + b 가 필요합니다(교과서 추세선 y = 1.08x + 9).</p>'+
     '<p><b>이번 차시에서</b> 활동 2에서 a 슬라이더를 움직여 직선이 회전하는 것과 잔차가 함께 바뀌는 것을 보았습니다. '+
     '<button class="btn" type="button" onclick="dlSee(1,\'dl-act2\')">활동 2로 이동</button></p>'+
-    '<p><b>이어지는 차시</b> 22차시에서 추세선을 처음 그었고 23차시에서 여러 모델을 비교했습니다. '+
-    '<button class="btn" type="button" onclick="go(\'trend\')">22·23차시 trend</button></p>',
+    '<p><b>이어지는 차시</b> 23차시에서 추세선을 처음 그었고 24차시에서 여러 모델을 비교했습니다. '+
+    '<button class="btn" type="button" onclick="go(\'trend\')">23·24차시 trend</button></p>',
 
   '잔차와 손실함수':
     '<h4>잔차와 손실함수 MSE — ‘가장 좋은 직선’의 정의</h4>'+
@@ -33206,9 +33496,9 @@ const DL_DEFS = {
     '<p><b>이번 차시에서</b> 활동 2의 [잔차 제곱 정사각형 보기]를 켜면 각 오차의 제곱이 실제 넓이로 보이고, '+
     '그 넓이의 합이 가장 작아지는 순간이 최적입니다. '+
     '<button class="btn" type="button" onclick="dlSee(1,\'dl-act2\')">활동 2로 이동</button></p>'+
-    '<p><b>이어지는 차시</b> 24차시에서 손실함수를 세웠고, 27차시에서 시트로 MSE를 조립했습니다. '+
-    '<button class="btn" type="button" onclick="go(\'optim\')">24차시 optim</button> '+
-    '<button class="btn" type="button" onclick="go(\'gdsheet\')">27차시 gdsheet</button></p>',
+    '<p><b>이어지는 차시</b> 25차시에서 손실함수를 세웠고, 29차시에서 시트로 MSE를 조립했습니다. '+
+    '<button class="btn" type="button" onclick="go(\'optim\')">25차시 optim</button> '+
+    '<button class="btn" type="button" onclick="go(\'gdsheet\')">29차시 gdsheet</button></p>',
 
   '경사하강법':
     '<h4>경사하강법 aₙ₊₁ = aₙ − k·L′(aₙ) — 기계가 스스로 찾는 방법</h4>'+
@@ -33220,21 +33510,21 @@ const DL_DEFS = {
     '<p><b>이번 차시에서</b> 활동 3에서 학습률을 상한의 0.05·0.5·0.95·1.4배로 바꾸어 느린 수렴·즉시 수렴·진동·발산을 '+
     '모두 만들어 보았습니다. '+
     '<button class="btn" type="button" onclick="dlSee(2,\'dl-act3\')">활동 3으로 이동</button></p>'+
-    '<p><b>이어지는 차시</b> 25차시에서 할선이 접선으로 수렴하는 과정을, 26차시에서 갱신 규칙을 배웠습니다. '+
-    '<button class="btn" type="button" onclick="go(\'optim\')">25·26차시 optim</button></p>',
+    '<p><b>이어지는 차시</b> 27차시에서 할선이 접선으로 수렴하는 과정을, 28차시에서 갱신 규칙을 배웠습니다. '+
+    '<button class="btn" type="button" onclick="go(\'optim\')">27·28차시 optim</button></p>',
 
   '데이터 유형과 도구':
     '<h4>데이터 유형과 도구 선택 — 물음이 도구를 정한다</h4>'+
     '<p>같은 주제라도 모은 자료가 <b>수치·이미지·텍스트</b> 중 무엇이냐에 따라 쓸 수 있는 수학이 달라집니다. '+
     '수치는 추세선·손실함수·경사하강, 이미지는 행렬·해밍 거리·합성곱, 텍스트는 집합·빈도·유사도가 기본 도구입니다.</p>'+
-    '<p><b>예시</b> ① ‘급식 잔반 줄이기’ — 무게 표는 추세선(22·24차시), 잔반 사진은 해밍 거리(13차시), '+
-    '서술형 설문은 TF-IDF·감성 분석(8·10차시). ② 교과서 예시 — 페트병 분리수거는 이미지의 표현과 해밍 거리, '+
+    '<p><b>예시</b> ① ‘급식 잔반 줄이기’ — 무게 표는 추세선(23·25차시), 잔반 사진은 해밍 거리(18차시), '+
+    '서술형 설문은 TF-IDF·감성 분석(9·12차시). ② 교과서 예시 — 페트병 분리수거는 이미지의 표현과 해밍 거리, '+
     'ChatGPT 원리는 단어 임베딩 벡터 연산.</p>'+
     '<p><b>이번 차시에서</b> 활동 4의 도구 지도에서 내 자료 유형을 고르면 해당 차시로 가는 버튼이 열립니다. '+
     '<button class="btn" type="button" onclick="dlSee(3,\'dl-act4\')">활동 4로 이동</button></p>'+
-    '<p><b>이어지는 차시</b> 28차시에 세운 계획서의 x·y가 도구를 정했고, 30차시에는 그 선택의 근거를 발표합니다. '+
-    '<button class="btn" type="button" onclick="go(\'decision\')">28차시 decision</button> '+
-    '<button class="btn" type="button" onclick="go(\'project\')">30차시 project</button></p>',
+    '<p><b>이어지는 차시</b> 32차시에 세운 계획서의 x·y가 도구를 정했고, 34차시에는 그 선택의 근거를 발표합니다. '+
+    '<button class="btn" type="button" onclick="go(\'decision\')">32차시 decision</button> '+
+    '<button class="btn" type="button" onclick="go(\'project\')">34차시 project</button></p>',
 
   '시각화':
     '<h4>시각화 — 표를 그림으로 바꾸어 읽는다</h4>'+
@@ -33246,8 +33536,8 @@ const DL_DEFS = {
     '<p><b>이번 차시에서</b> 산점도·잔차 정사각형·손실함수 곡선·epoch 꺾은선·수직선 자취의 다섯 가지 시각화를 '+
     '만들었습니다. 보고서에는 <b>그림 한 장 + 그 그림에서 읽은 사실 한 문장</b>을 짝지어 넣습니다. '+
     '<button class="btn" type="button" onclick="dlSee(0,\'dl-act1\')">활동 1 산점도로</button></p>'+
-    '<p><b>이어지는 차시</b> 11차시 리뷰 대시보드에서 네 패널을 함께 읽는 연습을 했습니다. '+
-    '<button class="btn" type="button" onclick="go(\'review\')">11차시 review</button></p>'
+    '<p><b>이어지는 차시</b> 13차시 리뷰 대시보드에서 네 패널을 함께 읽는 연습을 했습니다. '+
+    '<button class="btn" type="button" onclick="go(\'review\')">13차시 review</button></p>'
 };
 
 /* ── 15. 리사이즈 ────────────────────────────────────────────────────────── */
@@ -33339,13 +33629,13 @@ function dlResizeAll(){
   else boot();
 })();
 
-/* ●●● ANCHOR-DATALAB ●●● (29차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+/* ●●● ANCHOR-DATALAB ●●● (33차시 보강 코드는 이 줄 바로 위에 붙입니다) */
 
 
-/* ═════════ 4단원 통합 보정: 22~26차시 진입 차시 정합 (접두사 aimES) ═════════ */
+/* ═════════ 4단원 통합 보정: 23~28차시 진입 차시 정합 (접두사 aimES) ═════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   증상 — 차시 목록(nav-panel)·홈 카드에서 「23차시」를 눌러도 trend 뷰가
-   직전에 보던 22차시 화면 그대로 열렸습니다. 24·25·26차시도 마찬가지로
+   증상 — 차시 목록(nav-panel)·홈 카드에서 「24차시」를 눌러도 trend 뷰가
+   직전에 보던 23차시 화면 그대로 열렸습니다. 25·27·28차시도 마찬가지로
    optim 뷰의 직전 탭이 그대로 열렸습니다.
 
    원인 — trend·optim 은 한 뷰가 여러 차시를 담는데(trend=22·23,
@@ -33362,7 +33652,7 @@ function dlResizeAll(){
 (function aimESLessonEntry(){
   var pendTrend = 0, pendOptim = -1;
   var TR_LSN = { '22': 22, '23': 23 };
-  var OP_TAB = { '24': 0, '25': 1, '26': 3 };   /* 탭 ③(안개)도 25차시지만 기본은 ② */
+  var OP_TAB = { '24': 0, '25': 1, '26': 3 };   /* 탭 ③(안개)도 27차시지만 기본은 ② */
 
   document.addEventListener('click', function(e){
     if(!e.target || !e.target.closest) return;
@@ -33379,7 +33669,7 @@ function dlResizeAll(){
     else if(v === 'optim' || /go\(\s*['"]optim['"]/.test(oc) || /\btrNext24\b/.test(oc)) target = 'optim';
     if(!target) return;
 
-    /* 「22·23차시」·「24~26차시」처럼 묶어 부르는 링크는 앞 차시로 엽니다. */
+    /* 「23·24차시」·「25~28차시」처럼 묶어 부르는 링크는 앞 차시로 엽니다. */
     var n = null;
     var rng = txt.match(/(2[2-6])\s*[~·∼–—\-,\/]\s*(2[2-6])\s*차시/);
     if(rng) n = rng[1];
@@ -33412,7 +33702,7 @@ function dlResizeAll(){
 
 /* ═════════ 4단원 통합 보정: 늦게 등록된 일러스트 반영 (접두사 aimES) ═════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
-   증상 — 홈 화면의 24·25·26차시(optim)·27차시(gdsheet) 카드와 두 뷰의 표제부
+   증상 — 홈 화면의 25·27·28차시(optim)·29차시(gdsheet) 카드와 두 뷰의 표제부
    워터마크가 실제 일러스트 대신 「준비 중」 회색 점선 그림으로 나왔습니다.
 
    원인 — loader.js 가 core.js 를 DOM 삽입이 끝난 뒤에 붙이므로 스크립트 평가
@@ -33486,7 +33776,7 @@ function dlResizeAll(){
    ---------------------------------------------------------------------------
    구동 QA D6 — assets/textbook-local/ 은 저작권상 배포하지 않으므로(.gitignore),
    파일을 넣지 않은 기기에서는 <img onerror> 가 figure 를 통째로 지웁니다.
-   깨진 아이콘이 없는 것은 설계대로지만, 결과적으로 8·9·10·20·21·28·29·30차시는
+   깨진 아이콘이 없는 것은 설계대로지만, 결과적으로 9·11·12·21·22·32·33·34차시는
    교과서 비교 자료가 아무것도 뜨지 않고 1~5차시는 뜨는 불균질이 생겼습니다.
 
    조치 — 이미지는 그대로 배포하지 않되, figcaption 에 이미 적혀 있는
@@ -33551,8 +33841,8 @@ function dlResizeAll(){
 /* ═══════════════════════════════════════════════════════════════════════════
    릴리스 보정 R4 — 「일반화 · 내 문장으로」 산출 칸 (접두사 aimRf)
    ---------------------------------------------------------------------------
-   흥미·탐구 C-5 — 1~5차시 전원과 20차시는 선택형 클릭만으로 끝나 학생의
-   문장 산출물이 하나도 남지 않았습니다(textarea 0). 6차시 이후가 쓰는 양식과
+   흥미·탐구 C-5 — 1~5차시 전원과 21차시는 선택형 클릭만으로 끝나 학생의
+   문장 산출물이 하나도 남지 않았습니다(textarea 0). 7차시 이후가 쓰는 양식과
    같은 카드를 STEP 3 정리(다음 차시 예고 앞)에 한 장씩 붙입니다.
    저장은 다른 차시와 같은 localStorage 규약(aimath.<slug>.reflect)을 씁니다.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -33586,7 +33876,7 @@ function aimRfBuild(){
       '<p>' + r.q + '</p>' +
       '<textarea class="aim-rf-ta" id="' + id + '" rows="4" placeholder="' + r.ph + '"></textarea>' +
       '<div class="btn-row"><button class="btn" type="button" data-rf="' + r.v + '">내 답 저장</button></div>' +
-      '<p class="status" data-rfst="' + r.v + '">이 기기의 브라우저에만 저장되며, 30차시 회고에서 다시 꺼내 볼 수 있습니다.</p>';
+      '<p class="status" data-rfst="' + r.v + '">이 기기의 브라우저에만 저장되며, 34차시 회고에서 다시 꺼내 볼 수 있습니다.</p>';
 
     /* 삽입 위치 — 「다음 차시 예고」 앞, 없으면 학습지 앞, 그것도 없으면 맨 끝 */
     var infos = view.querySelectorAll('.info');
@@ -33621,11 +33911,11 @@ function aimRfBuild(){
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   릴리스 보정 R2 — quickdraw(12차시 도입 10분) 뷰 (접두사 qd)
+   릴리스 보정 R2 — quickdraw(18차시 도입 10분) 뷰 (접두사 qd)
    ---------------------------------------------------------------------------
    구동 QA D5 — 홈·차시 목록에 정식 카드로 노출되면서도 본문 331자에
    외부 링크 하나뿐이고 본수업(mnist)으로 돌아가는 버튼이 없어 막다른 길이었습니다.
-   관찰 메모를 저장해 12차시 활동 3 에서 다시 꺼내 쓰도록 잇습니다.
+   관찰 메모를 저장해 18차시 활동 3 에서 다시 꺼내 쓰도록 잇습니다.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 var QD_KEY = 'aimath.quickdraw.notes';
@@ -33638,7 +33928,7 @@ function qdSave(){
     cmnSet(QD_KEY, JSON.stringify({ n1:(a ? a.value : ''), n2:(b ? b.value : '') }));
   }catch(e){}
   var st = qdEl('qd-st');
-  if(st) st.textContent = '저장했습니다 — 12차시 활동 3 에서 이 메모를 다시 볼 수 있습니다.';
+  if(st) st.textContent = '저장했습니다 — 18차시 활동 3 에서 이 메모를 다시 볼 수 있습니다.';
   try{ qdEcho(); }catch(e){}
 }
 
@@ -33646,7 +33936,7 @@ function qdLoad(){
   try{ return JSON.parse(cmnGet(QD_KEY, 'null')) || null; }catch(e){ return null; }
 }
 
-/* 12차시 활동 3 카드 위에 도입에서 적은 메모를 되살립니다. */
+/* 18차시 활동 3 카드 위에 도입에서 적은 메모를 되살립니다. */
 function qdEcho(){
   var host = document.getElementById('mnx-act3');
   if(!host) return;
@@ -33717,9 +34007,9 @@ function qdEcho(){
    여러 차시를 담습니다. 지금까지는 뷰마다 서로 다른 방식(txPending 클릭 sniff,
    pbPending, aimESLessonEntry 의 문자열 sniff)으로 이를 보정했고, optim 만
    보정이 없어 다음 결함이 남아 있었습니다.
-     · D1 — 5차시의 「다음 차시 · 6차시」 버튼이 localStorage 에 남은 7차시로 진입
-     · D2 — 25·26차시로 들어가도 헤더·드롭다운이 24차시에 머묾(세 줄 모두 하이라이트)
-     · D3 — 최초 로드 시 홈인데 헤더에 20차시가 표시
+     · D1 — 5차시의 「다음 차시 · 7차시」 버튼이 localStorage 에 남은 8차시로 진입
+     · D2 — 27·28차시로 들어가도 헤더·드롭다운이 25차시에 머묾(세 줄 모두 하이라이트)
+     · D3 — 최초 로드 시 홈인데 헤더에 21차시가 표시
      · D7 — go(v) 에 차시 파라미터가 없어 라우팅이 패치 의존적
 
    조치 — 「뷰 + 차시」를 한 쌍으로 다루는 계층을 둡니다.
@@ -33734,21 +34024,24 @@ function qdEcho(){
    let 로 선언된 변수(trLessonCur 등)는 평가 시점에 따라 TDZ 가 될 수 있으므로
    모든 접근을 try 로 감쌉니다. */
 var AIM_MULTI = {
-  text : { ls:[6,7],
-    cur:function(){ try{ return String(txLessonCur)==='7' ? 7 : 6; }catch(e){ return 6; } },
-    set:function(n){ try{ if(typeof txLesson==='function') txLesson(n===7?7:6); }catch(e){} } },
-  prob : { ls:[20,21],
-    cur:function(){ try{ return String(pbLessonCur)==='21' ? 21 : 20; }catch(e){ return 20; } },
-    set:function(n){ try{ if(typeof pbLesson==='function') pbLesson(n===21?21:20); }catch(e){} } },
-  trend: { ls:[22,23],
-    cur:function(){ try{ return String(trLessonCur)==='23' ? 23 : 22; }catch(e){ return 22; } },
-    set:function(n){ try{ if(typeof trLesson==='function') trLesson(n===23?23:22); }catch(e){} } },
-  /* optim 은 탭 ①=24차시, 탭 ②③=25차시, 탭 ④=26차시 입니다. */
-  optim: { ls:[24,25,26],
-    cur:function(){ try{ var t=opTabCur; return (t===0)?24:((t===3)?26:25); }catch(e){ return 24; } },
+  /* 37차시 재편 — 뷰 안의 내부 차시 번호(구 번호)는 그대로 두고, 바깥으로 드러나는
+     차시 번호만 새 번호로 옮깁니다. text 6·7 → 7·8 / prob 20·21 → 21·22 /
+     trend 22·23 → 23·24 / optim 24·25·26 → 25·27·28 (26 은 신설 loss2). */
+  text : { ls:[7,8],
+    cur:function(){ try{ return String(txLessonCur)==='7' ? 8 : 7; }catch(e){ return 7; } },
+    set:function(n){ try{ if(typeof txLesson==='function') txLesson(n===8?7:6); }catch(e){} } },
+  prob : { ls:[21,22],
+    cur:function(){ try{ return String(pbLessonCur)==='21' ? 22 : 21; }catch(e){ return 21; } },
+    set:function(n){ try{ if(typeof pbLesson==='function') pbLesson(n===22?21:20); }catch(e){} } },
+  trend: { ls:[23,24],
+    cur:function(){ try{ return String(trLessonCur)==='23' ? 24 : 23; }catch(e){ return 23; } },
+    set:function(n){ try{ if(typeof trLesson==='function') trLesson(n===24?23:22); }catch(e){} } },
+  /* optim 은 탭 ①=25차시, 탭 ②③=27차시, 탭 ④=28차시 입니다. */
+  optim: { ls:[25,27,28],
+    cur:function(){ try{ var t=opTabCur; return (t===0)?25:((t===3)?28:27); }catch(e){ return 25; } },
     set:function(n){ try{
       if(typeof opTab!=='function') return;
-      var i = (n===26) ? 3 : ((n===25) ? 1 : 0);
+      var i = (n===28) ? 3 : ((n===27) ? 1 : 0);
       var bs = document.querySelectorAll('#v-optim .tabs .tab');
       opTab(i, bs[i] || null);
     }catch(e){} } }
@@ -33792,7 +34085,7 @@ function aimNavSync(v){
   });
 }
 
-/* 차시를 지정해 이동합니다. k 는 '25차시' 같은 라벨이나 숫자 모두 받습니다.
+/* 차시를 지정해 이동합니다. k 는 '27차시' 같은 라벨이나 숫자 모두 받습니다.
    AIM_MULTI 에 없는 뷰(1:1 대응 차시)는 go(v) 와 완전히 같습니다. */
 function aimGoLesson(v, k){
   if(!v) return;
@@ -33829,3 +34122,9193 @@ if(typeof window !== 'undefined'){
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(run, 0); });
   else setTimeout(run, 0);
 })();
+
+
+/* ══════════ 37차시 재편 통합 · 6차시 DATAETH ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATAETH — 6차시 「데이터의 얼굴과 AI 윤리 기준」  (뷰 슬러그 dataeth · 전역 접두사 da)
+   ---------------------------------------------------------------------------
+   · views/dataeth.html 과 짝을 이룹니다. core.js 맨 끝에 그대로 덧붙입니다.
+   · 전역 선언은 모두 DA_* / da* 접두사입니다(다른 차시와 충돌하지 않습니다).
+   · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint / wsLinks /
+     initToggles / cmnGet / cmnSet / go / aimGoLesson)는 호출만 하고 수정하지 않습니다.
+   · 5차시(bias)와의 역할 분담 — 5차시=정확도라는 수의 착시(혼동행렬·부등식),
+     6차시=데이터의 종류·편향 유입 단계·윤리 기준. 티처블머신 자산과 패들렛 편향 영상
+     2종(RufLe4Q5FYs · i-ybvGDJ-Ng)은 5차시 1곳에만 둡니다.
+   · 교육과정 준수: 내적 기호·조건부확률 기호·회전변환 미사용.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. 잔손 도구 ────────────────────────────────────────────────────────── */
+function daEl(id){ return document.getElementById(id); }
+function daEsc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function daGet(k,d){
+  if(typeof cmnGet === 'function') return cmnGet(k,d);
+  try{ var v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; }
+}
+function daSet(k,v){
+  if(typeof cmnSet === 'function'){ cmnSet(k,v); return; }
+  try{ localStorage.setItem(k,v); }catch(e){}
+}
+function daJson(k,d){
+  try{ var v = JSON.parse(daGet(k,'null')); return (v === null || v === undefined) ? d : v; }
+  catch(e){ return d; }
+}
+/* 칩 정의·학습 목표 안내 행에서 해당 활동으로 스크롤 이동합니다. */
+function daSee(id){
+  var t = daEl(id);
+  if(!t) return;
+  try{ t.scrollIntoView({behavior:'smooth', block:'start'}); }
+  catch(e){ try{ t.scrollIntoView(); }catch(e2){} }
+}
+function daFb(id, ok, html){
+  var b = daEl(id);
+  if(!b) return;
+  b.className = 'da-fb ' + (ok === null ? '' : (ok ? 'ok' : 'no'));
+  b.innerHTML = html;
+}
+function daBars(id, rows){
+  var b = daEl(id);
+  if(!b) return;
+  var mx = 1;
+  rows.forEach(function(r){ if(r.v > mx) mx = r.v; });
+  b.innerHTML = rows.map(function(r){
+    var w = Math.round(r.v / mx * 100);
+    return '<div class="da-bar"><span class="nm">' + daEsc(r.n) + '</span>' +
+           '<span class="tk"><span class="fl" style="width:' + w + '%;' +
+           (r.c ? 'background:' + r.c + ';' : '') + '"></span></span>' +
+           '<span class="vl">' + daEsc(r.t) + '</span></div>';
+  }).join('');
+}
+
+
+/* ── 1. 홈 카드·워터마크용 16:9 아트 (AIM_ART.dataeth 로 옮겨 넣습니다) ──── */
+var DA_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="표·사진·말풍선·막대그래프 네 종류의 데이터 타일과 체크 표시">' +
+  '<rect width="320" height="180" fill="var(--bg)"/>' +
+  '<g fill="var(--card)" stroke="var(--fg)" stroke-width="2">' +
+    '<rect x="14" y="30" width="62" height="62" rx="5"/>' +
+    '<rect x="90" y="30" width="62" height="62" rx="5"/>' +
+    '<rect x="242" y="30" width="64" height="62" rx="5"/>' +
+  '</g>' +
+  '<g stroke="var(--muted)" stroke-width="1.6"><path d="M14 50 H76 M14 71 H76 M35 30 V92 M56 30 V92"/></g>' +
+  '<path d="M95 86 l17 -22 12 14 10 -12 13 20 z" fill="var(--muted)"/>' +
+  '<circle cx="110" cy="48" r="6" fill="var(--accent)"/>' +
+  '<g fill="var(--card)" stroke="var(--fg)" stroke-width="2">' +
+    '<rect x="168" y="32" width="58" height="20" rx="10"/>' +
+    '<rect x="176" y="58" width="52" height="20" rx="10"/>' +
+  '</g>' +
+  '<path d="M176 78 l-3 10 10 -10" fill="none" stroke="var(--fg)" stroke-width="2"/>' +
+  '<g fill="var(--accent)">' +
+    '<rect x="250" y="70" width="9" height="18"/><rect x="263" y="56" width="9" height="32"/>' +
+    '<rect x="276" y="44" width="9" height="44"/><rect x="289" y="76" width="9" height="12"/>' +
+  '</g>' +
+  '<g font-family="monospace" font-size="15" font-weight="700" text-anchor="middle">' +
+    '<text x="45" y="115" fill="var(--green)">✓</text><text x="121" y="115" fill="var(--red)">✗</text>' +
+    '<text x="197" y="115" fill="var(--red)">✗</text><text x="274" y="115" fill="var(--green)">✓</text>' +
+  '</g>' +
+  '<text x="160" y="150" font-size="12.5" fill="var(--muted)" font-family="monospace" text-anchor="middle">' +
+    '표 계산에 바로 넣을 수 있나요?</text>' +
+  '<text x="160" y="168" font-size="12.5" fill="var(--fg)" font-family="monospace" text-anchor="middle">' +
+    '형태가 계산을 정한다</text>' +
+  '</svg>';
+
+
+/* ── 2. 매니페스트 안전망 ───────────────────────────────────────────────────
+   core.js 의 AIM_LESSONS / AIM_ART 편집(INTEGRATION.md §2·§3)이 누락된 경우에만
+   런타임에 6차시 행을 채워 넣습니다. 정식 편집을 마쳤다면 아무 일도 하지 않습니다. */
+(function daManifestGuard(){
+  try{
+    if(typeof AIM_ART === 'object' && AIM_ART && !AIM_ART.dataeth) AIM_ART.dataeth = DA_ART;
+    if(typeof AIM_LESSONS === 'undefined' || !Array.isArray(AIM_LESSONS)) return;
+    var row = {
+      u:0, n:'6차시', t:'데이터의 얼굴과 AI 윤리 기준', v:'dataeth', a:'dataeth',
+      d:'학교 데이터 24장을 정형·비정형으로, 다시 연속형·이산형·순서형·명목형으로 분류해 "형태가 계산을 정한다"를 확인하고, 차별 사례 5건을 수집·분석 5단계 위에 놓아 편향이 들어온 지점을 지목한 뒤 우리 반 AI 윤리 점검표를 만듭니다.'
+    };
+    var found = -1, insertAt = -1;
+    for(var i = 0; i < AIM_LESSONS.length; i++){
+      var L = AIM_LESSONS[i];
+      if(L && L.v === 'dataeth'){ found = i; break; }
+      if(L && L.n === '5차시') insertAt = i + 1;
+    }
+    if(found >= 0) return;                       /* 정식 편집이 끝난 상태 */
+    if(insertAt < 0) insertAt = AIM_LESSONS.length;
+    AIM_LESSONS.splice(insertAt, 0, row);
+    if(typeof aimBuildHome === 'function'){ try{ aimBuildHome(); }catch(e){} }
+    if(typeof aimBuildMarks === 'function'){ try{ aimBuildMarks(); }catch(e){} }
+  }catch(e){}
+})();
+
+
+/* ── 3. 추천 영상 (videoDeck) — 실존 확인된 ID만 (2026-07-31 썸네일 HEAD 200) ──
+   5차시 전용인 RufLe4Q5FYs · i-ybvGDJ-Ng 는 쓰지 않습니다(중복 금지).
+   4번 카드는 영상 ID가 없는 **검색 링크**이므로 새 탭으로 엽니다(ID 창작 금지). */
+var DA_VIDEOS = [
+  { id:'XtH2GUW8CO8',
+    t:'인공지능 윤리기준 [1] 인공지능 윤리기준이란',
+    s:'KISDI 정보통신정책연구원 · 주 디딤영상' },
+  { id:'_ZEOZ5zlrjA',
+    t:'인공지능 윤리기준 [3] 다양성 존중 · 데이터 관리',
+    s:'KISDI · 오늘 활동 ②와 직결' },
+  { id:'OrOEuiERzR8',
+    t:'인공지능 윤리기준 [4] 책임성 · 안전성 · 투명성',
+    s:'KISDI · 오늘 활동 ③과 직결' },
+  { id:'',
+    t:'🔎 「정형 데이터 비정형 데이터」 검색',
+    s:'유튜브 검색 · 새 탭에서 열림 ↗' }
+];
+var DA_SEARCH_IDX = 3;
+var DA_SEARCH_URL = 'https://www.youtube.com/results?search_query=' +
+  encodeURIComponent('정형 데이터 비정형 데이터 차이');
+
+/* videoDeck 은 카드를 다시 그릴 때마다 innerHTML 을 갈아 끼우므로,
+   컨테이너에 캡처 단계 리스너를 두어 재렌더에도 살아남게 합니다. */
+function daVideoPatch(){
+  var box = daEl('da-videos');
+  if(!box || box.getAttribute('data-da-patched') === '1') return;
+  box.setAttribute('data-da-patched','1');
+
+  box.addEventListener('click', function(ev){
+    var card = ev.target && ev.target.closest ? ev.target.closest('.cmn-vd-card') : null;
+    if(!card) return;
+    if(ev.target && ev.target.closest && ev.target.closest('.cmn-vd-del')) return;
+    var grid = card.parentNode;
+    if(!grid) return;
+    var idx = Array.prototype.indexOf.call(grid.querySelectorAll('.cmn-vd-card'), card);
+    if(idx !== DA_SEARCH_IDX) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    try{ window.open(DA_SEARCH_URL, '_blank', 'noopener'); }catch(e){}
+  }, true);
+
+  var decorate = function(){
+    var grid = box.querySelector('.cmn-vd-grid');
+    if(!grid) return;
+    var card = grid.querySelectorAll('.cmn-vd-card')[DA_SEARCH_IDX];
+    if(!card || card.getAttribute('data-da-newtab') === '1') return;
+    card.setAttribute('data-da-newtab','1');
+    card.title = '유튜브 검색 결과가 새 탭에서 열립니다. 영상 ID를 임의로 만들어 넣지 않았습니다.';
+    var th = card.querySelector('.cmn-vd-thumb');
+    if(th && !th.querySelector('.da-newtab-bg')){
+      var b = document.createElement('span');
+      b.className = 'cmn-vd-badge da-newtab-bg';
+      b.textContent = '↗ 새 탭';
+      th.appendChild(b);
+    }
+  };
+  decorate();
+  try{ new MutationObserver(decorate).observe(box, {childList:true, subtree:true}); }catch(e){}
+}
+
+
+/* ── 4. 마중 퀴즈 (warmStepper — 순차 공개, 라벨 「질문 N.」) ────────────── */
+var DA_WARM = [
+  { q:'다음 중 표 계산 프로그램에 그대로 넣어 평균을 구할 수 있는 자료는?',
+    opts:['우리 반 키 기록표','급식 사진 100장','학급 단톡방 대화','체육대회 응원 영상'],
+    answer:0,
+    explain:'키 기록표는 행과 열이 정해진 <b>정형 데이터</b>여서 평균·표준편차를 바로 구할 수 있습니다. ' +
+      '나머지 셋은 형식이 없는 <b>비정형 데이터</b>여서, 컴퓨터가 쓰려면 먼저 수로 바꾸는 가공이 필요합니다. ' +
+      '놀라운 사실은 우리가 만드는 데이터의 <b>약 80% 이상이 뒤의 세 종류</b>라는 것입니다. ' +
+      '그래서 2·3단원 전체가 "글과 사진을 수로 바꾸는 법"에 쓰입니다.' },
+  { q:'혈액형 A·B·O·AB를 각각 1·2·3·4로 바꾸어 평균을 내면 우리 반의 "평균 혈액형"을 구할 수 있다.',
+    opts:['O (구할 수 있다)','X (구할 수 없다)'],
+    answer:1,
+    explain:'혈액형은 순서를 줄 수 없는 <b>명목형 데이터</b>입니다. 1·2·3·4는 이름 대신 붙인 표시일 뿐이어서 ' +
+      '그 평균 2.5는 아무 뜻이 없습니다. 반면 성적 등위처럼 순서를 줄 수 있는 <b>순서형</b>, ' +
+      '키처럼 값이 이어지는 <b>연속형</b>은 계산의 뜻이 살아 있습니다. ' +
+      '<b>어떤 계산이 허용되는지가 데이터의 형태로 정해집니다.</b>' },
+  { q:'지난 시간 "양식 1000장 · 한식 0장" 데이터로 학습한 인공지능이 한식을 전혀 맞히지 못했습니다. 이 문제의 1차 원인은 어디에 있었나요?',
+    opts:['계산식(수학 공식)이 틀렸다','데이터를 모으는 단계','컴퓨터 성능이 낮았다','정확도를 계산하는 방법이 틀렸다'],
+    answer:1,
+    explain:'계산식도, 컴퓨터도, 정확도 공식도 잘못이 없었습니다. 잘못은 <b>세상을 담는 방식</b>에 있었습니다. ' +
+      '교과서의 표현대로 "원본 데이터에 존재하는 편향이나 불균형은 인공지능에서도 그대로 나타납니다." ' +
+      '오늘 활동 ②에서는 실제 사례 5건이 각각 어느 단계에서 편향을 얻었는지 직접 지목해 봅니다.' }
+];
+
+
+/* ── 5. 형성평가 (quizStepper — 문항 1개씩, 총점·복기·다시 풀기) ────────── */
+var DA_QUIZ = [
+  { q:'다음 중 비정형 데이터끼리 짝지어진 것은?',
+    opts:['출석부, 키 기록표','급식 사진, 상담 녹음','성적 등위, 혈액형','학급별 학생 수, 교실 온도 기록'],
+    answer:1,
+    explain:'사진·음성·영상·누리 소통 매체의 글처럼 <b>정해진 형식이 없는</b> 자료가 비정형 데이터입니다. ' +
+      '나머지는 모두 표에 정리할 수 있는 정형 데이터입니다(3번은 정형 중 범주형). ' +
+      '비정형 데이터는 전체의 약 80% 이상을 차지하며, 컴퓨터가 쓰려면 먼저 정형으로 가공해야 합니다. ' +
+      '<span class="da-src">▸ <a href="#da-act1" onclick="daSee(\'da-act1\');return false;">활동 ①로 돌아가기</a></span>' },
+  { q:'"성적 등위(1등급~9등급)"는 어떤 데이터입니까?',
+    opts:['연속형','이산형','순서형','명목형'],
+    answer:2,
+    explain:'범주형 데이터 중 <b>순서를 정할 수 있는</b> 것이 순서형입니다. 혈액형처럼 순서를 줄 수 없는 것은 명목형입니다. ' +
+      '등급은 순서가 있지만 "1등급과 2등급의 차이"와 "8등급과 9등급의 차이"가 같다고 볼 수는 없으므로, ' +
+      '뺄셈·평균을 쓸 때는 반드시 그 뜻을 함께 설명해야 합니다. ' +
+      '<span class="da-src">▸ <a href="#da-act1" onclick="daSee(\'da-act1\');return false;">활동 ①로 돌아가기</a></span>' },
+  { q:'채용 인공지능이 "여성"이라는 단어가 든 이력서에 감점을 준 사례의 근본 원인은?',
+    opts:['계산 과정의 오류','과거 채용 기록에 담긴 사회적 편향을 학습했다','데이터가 너무 많았다','활성화함수를 잘못 골랐다'],
+    answer:1,
+    explain:'이 시스템은 성과가 높은 직원의 데이터를 학습했고, 그 집단에는 <b>개발 직군 남성</b>이 매우 많았습니다. ' +
+      '특정 용어만 중립적으로 처리하도록 고쳤지만 같은 문제가 반복되지 않으리라는 확신을 주지 못해 <b>결국 폐기</b>되었습니다. ' +
+      '편향은 계산이 아니라 <b>데이터가 담은 과거</b>에서 옵니다. ' +
+      '<span class="da-src">근거: 씨마스 「인공지능 수학」 Ⅰ 단원 p.41 서술을 재구성 · ' +
+      '▸ <a href="#da-act2" onclick="daSee(\'da-act2\');return false;">활동 ②로 돌아가기</a></span>' },
+  { q:'다음 조치는 어느 윤리 기준에 해당합니까? — "이 인공지능이 어떤 데이터로 학습했고 어떤 기준으로 판단하는지 안내문에 공개한다."',
+    opts:['공정성','투명성','안전성','인간 중심성'],
+    answer:1,
+    explain:'어떤 데이터를 쓰고 어떻게 결정하는지 <b>공개하고 설명할 수 있게</b> 하는 것이 투명성입니다. ' +
+      '참고로 "한식·양식 각각의 정확도를 따로 확인한다"는 <b>공정성</b>, "잘못된 판정의 담당을 정한다"는 <b>책임성</b>, ' +
+      '"사진 속 얼굴을 지운다"는 <b>개인 정보 보호</b>에 해당합니다. ' +
+      '<span class="da-src">▸ <a href="#da-act3" onclick="daSee(\'da-act3\');return false;">활동 ③으로 돌아가기</a></span>' },
+  { q:'우리가 살펴본 차별 사례 5건에서 편향이 가장 많이 들어온 단계는 어디였습니까?',
+    opts:['① 문제 정의','② 데이터 수집','③ 라벨링·전처리','⑤ 활용·의사 결정'],
+    answer:1,
+    explain:'다섯 사례가 <b>모두 ② 데이터 수집</b>에 걸렸습니다 — 백인 남성 얼굴 위주, 과거 채용 기록, 남성 환자 데이터, ' +
+      '고정관념이 담긴 인터넷 글, 기존 신용 기록. 사례 2·5에는 ①·③(사람이 내리는 결정)이 더해지고, ' +
+      '사례 4에는 ⑤(결과가 고정관념을 다시 강화)가 더해집니다. ' +
+      '<b>편향은 계산 단계가 아니라 그 앞에서 결정됩니다.</b> ' +
+      '<span class="da-src">▸ <a href="#da-act2" onclick="daSee(\'da-act2\');return false;">활동 ②로 돌아가기</a></span>' }
+];
+
+
+/* ── 6. 핵심 개념 칩 상세 설명 (chipDefs) ──────────────────────────────────
+   구성: ① 교과서식 정의 ② 구체 예시 ③ 이번 차시 활동과의 연결(+이동 버튼)
+         ④ 이전·다음 차시 연결 ⑤ 출처 줄                                    */
+var DA_DEFS = {
+  '데이터와 정보':
+    '<h4>데이터와 정보</h4>' +
+    '<p>관찰이나 측정으로 얻은, 아직 <b>가공되지 않은</b> 값이나 사실을 <b>데이터</b>라고 합니다. ' +
+    '이 데이터를 처리·분석해서 얻어 낸 <b>의미</b>를 <b>정보</b>라고 합니다. ' +
+    '인공지능은 데이터를 먹고 정보를 내놓는 장치이므로, <b>어떤 데이터를 먹였는지가 어떤 정보를 내놓는지를 결정합니다.</b></p>' +
+    '<p><b>예시</b><br>· 버스 카드 승·하차 기록 한 줄 한 줄은 <b>데이터</b>이고, 그것을 모아 만든 ' +
+    '"이 정류장은 오전 7시 40분에 가장 붐빈다"는 결론은 <b>정보</b>입니다.<br>' +
+    '· 우리 반 30명의 키를 적은 표는 데이터이고, 거기서 구한 평균 173cm는 정보입니다.</p>' +
+    '<p><b>이번 차시와의 연결</b><br>STEP 2 활동 ①에서 여러분이 분류하는 24장의 카드는 모두 <b>데이터</b>입니다. ' +
+    '그중 어떤 것은 표 계산 프로그램에 바로 넣을 수 있고, 어떤 것은 사람이 한 번 손을 봐야 합니다. ' +
+    '그 차이가 오늘의 첫 번째 주제입니다.</p>' +
+    '<p><button class="btn" type="button" onclick="daSee(\'da-act1\')">활동 ①로 이동 ▸</button></p>' +
+    '<p class="da-src">◂ 5차시에서 다룬 빅데이터 5V 중 <b>다양성(Variety)</b>이 바로 이 형태의 다양성입니다. ' +
+    '<a href="#bias" onclick="go(\'bias\');return false;">5차시 보기</a><br>' +
+    '▸ 7차시에서는 가장 다루기 어려운 비정형 데이터인 <b>글</b>을 계산할 수 있는 형태로 바꾸기 시작합니다. ' +
+    '<a href="#text" onclick="go(\'text\');return false;">7차시 보기</a></p>' +
+    '<p class="da-src">출처: 동아출판 「인공지능 수학」 Ⅰ 단원 p.29 · 씨마스 「인공지능 수학」 Ⅰ 단원 p.33 서술을 재구성</p>',
+
+  '정형·비정형 데이터':
+    '<h4>정형 데이터 · 비정형 데이터</h4>' +
+    '<p>정해진 형식에 맞추어 정리한 자료를 <b>정형 데이터</b>, 일정한 형식 없이 쌓인 자료를 <b>비정형 데이터</b>라고 합니다. ' +
+    '정형 데이터는 표의 행과 열이 정해져 있어 <b>통계 분석에 바로 쓸 수 있지만</b>, ' +
+    '비정형 데이터는 컴퓨터가 인식할 수 있도록 <b>먼저 정형 데이터로 가공해야</b> 합니다. ' +
+    '그런데 우리가 만드는 데이터의 <b>약 80% 이상</b>이 비정형 데이터입니다.</p>' +
+    '<p><b>예시</b><br>· <b>정형</b> — 학생 이름·나이·키·성별을 적은 표, 급식 만족도 설문의 5점 척도 응답.<br>' +
+    '· <b>비정형</b> — 급식 사진, 학급 단톡방 대화, 상담 녹음, 체육대회 영상.<br>' +
+    '· <b>중간 형태</b> — 학교 누리집의 HTML 문서처럼 형식이 일부만 있는 자료를 <b>반정형 데이터</b>라고 합니다.</p>' +
+    '<p><b>이번 차시와의 연결</b><br>활동 ①의 1차 분류에서 여러분은 24장을 정형·비정형·반정형 세 바구니에 나눕니다. ' +
+    '이때 "왜 이 카드는 표에 넣기 어려운가"를 한 줄로 적게 되는데, ' +
+    '그 한 줄이 2·3단원에서 텍스트와 이미지를 수로 바꾸는 <b>이유</b>가 됩니다.</p>' +
+    '<p><button class="btn" type="button" onclick="daSee(\'da-act1\')">활동 ①로 이동 ▸</button></p>' +
+    '<p class="da-src">▸ 14차시에서는 비정형 데이터인 <b>사진</b>을 수의 행렬이라는 정형 데이터로 바꿉니다. ' +
+    '<a href="#imgop" onclick="go(\'imgop\');return false;">14차시 보기</a><br>' +
+    '▸ 7차시에서는 비정형 데이터인 <b>문장</b>을 집합과 벡터로 바꿉니다. ' +
+    '<a href="#text" onclick="go(\'text\');return false;">7차시 보기</a></p>' +
+    '<p class="da-src">출처: 씨마스 「인공지능 수학」 Ⅰ 단원 pp.33~34 · 동아출판 「인공지능 수학」 Ⅰ 단원 p.29 서술을 재구성</p>',
+
+  '연속형·이산형·순서형·명목형':
+    '<h4>연속형 · 이산형 · 순서형 · 명목형</h4>' +
+    '<p>정형 데이터는 <b>값의 형식</b>에 따라 다시 나뉩니다. 수로 나타내는 <b>수치형</b> 데이터는 ' +
+    '온도·길이처럼 값이 이어지는 <b>연속형</b>과 사람의 수처럼 뚝뚝 끊기는 <b>이산형</b>으로, ' +
+    '범주로 나누는 <b>범주형</b> 데이터는 성적 등위처럼 순서를 줄 수 있는 <b>순서형</b>과 ' +
+    '혈액형처럼 순서를 줄 수 없는 <b>명목형</b>으로 나뉩니다. ' +
+    '<b>이 분류에 따라 쓸 수 있는 계산이 달라집니다.</b></p>' +
+    '<p><b>예시</b><br>· <b>연속형</b> — 키 170cm, 173cm, 185cm → 평균 176cm를 말할 수 있습니다.<br>' +
+    '· <b>명목형</b> — 혈액형 A·B·O·AB를 1·2·3·4로 바꿔 평균을 내면 "평균 혈액형 2.5"가 되는데, ' +
+    '이런 값은 <b>아무 뜻이 없습니다</b>.</p>' +
+    '<p><b>이번 차시와의 연결</b><br>활동 ①의 2차 분류에서 정형 카드 12장만 다시 네 바구니에 나눕니다. ' +
+    '마지막에 "이 카드로 평균을 낼 수 있는가?"를 묻는 판정 문제가 붙는데, ' +
+    '이것이 4단원에서 추세선과 평균을 다룰 때의 <b>전제 조건</b>이 됩니다.</p>' +
+    '<p><button class="btn" type="button" onclick="daSee(\'da-act1\')">활동 ①로 이동 ▸</button></p>' +
+    '<p class="da-src">◂ 2차시 k-means에서 군집의 중심을 <b>평균</b>으로 구했던 것은 좌표가 연속형이었기 때문입니다. ' +
+    '<a href="#mlplay" onclick="go(\'mlplay\');return false;">2차시 보기</a><br>' +
+    '▸ 8차시 원-핫 벡터는 <b>명목형 데이터를 계산 가능한 수로 바꾸는</b> 표준적인 방법입니다. ' +
+    '<a href="#text" onclick="go(\'text\');return false;">8차시 보기</a></p>' +
+    '<p class="da-src">출처: 동아출판 「인공지능 수학」 Ⅰ 단원 p.30 분류 도표와 씨마스 「인공지능 수학」 Ⅰ 단원 p.34 서술을 재구성</p>',
+
+  '데이터 편향성':
+    '<h4>데이터 편향성</h4>' +
+    '<p>인공지능이 <b>사람의 주관적 판단이 섞인 데이터</b>를 학습해 그 판단 결과가 한쪽으로 치우치거나 왜곡되는 것을 ' +
+    '<b>데이터 편향성</b>이라고 합니다. 핵심은 이것입니다 — ' +
+    '<b>원본 데이터에 있는 편향이나 불균형은 인공지능에도 그대로 나타납니다.</b> ' +
+    '계산식이 틀려서가 아니라, <b>세상을 담은 방식</b>이 치우쳐서 생기는 문제입니다.</p>' +
+    '<p><b>예시</b><br>· 하얀 백조 사진만 학습한 인공지능은 검은 백조를 백조로 인식하지 못합니다.<br>' +
+    '· 서양권에서 개발한 얼굴 인식 시스템이 백인 남성을 가장 잘 인식하는 것도 학습 데이터의 구성 때문입니다.</p>' +
+    '<p><b>이번 차시와의 연결</b><br>활동 ②에서 여러분은 실제 사례 5건을 읽고 편향이 들어온 지점을 ' +
+    '데이터의 수집·분석 5단계 중 어디인지 지목합니다. ' +
+    '다섯 사례가 거의 모두 <b>같은 단계</b>에 몰리는 것을 보게 됩니다.</p>' +
+    '<p><button class="btn" type="button" onclick="daSee(\'da-act2\')">활동 ②로 이동 ▸</button></p>' +
+    '<p class="da-src">◂ 5차시에서 슬라이더로 만든 "전체 정확도 95%, 한식 정확도 0%"가 이 편향의 <b>수치적 얼굴</b>입니다. ' +
+    '<a href="#bias" onclick="go(\'bias\');return false;">5차시 보기</a><br>' +
+    '▸ 31·32차시에서는 편향을 줄이는 것이 <b>수학으로 풀리는 문제인가</b>를 정면으로 다룹니다. ' +
+    '<a href="#decision" onclick="go(\'decision\');return false;">32차시 보기</a></p>' +
+    '<p class="da-src">출처: 씨마스 「인공지능 수학」 Ⅰ 단원 p.40 서술을 재구성</p>',
+
+  '인공지능 윤리 기준':
+    '<h4>인공지능 윤리 기준</h4>' +
+    '<p>인공지능을 만들고 쓸 때 지켜야 할 약속을 정리한 것을 <b>인공지능 윤리 기준</b>이라고 합니다. ' +
+    '널리 쓰이는 여섯 가지는 <b>공정성</b>(특성에 따라 차별하지 않기), <b>투명성</b>(어떤 데이터로 어떻게 판단하는지 공개하기), ' +
+    '<b>책임성</b>(잘못된 결정에 책임질 주체를 두기), <b>개인 정보 보호</b>(동의 없이 수집·분석·공유하지 않기), ' +
+    '<b>안전성</b>(오작동·악용 위험을 최소화하기), <b>인간 중심성</b>(사람의 자율성과 복지를 높이는 방향으로 만들기)입니다.</p>' +
+    '<p><b>예시</b><br>· <b>공정성</b> — 채용 인공지능이 "여성"이라는 단어에 감점을 주지 않는지 <b>집단별로 나누어</b> 정확도를 확인합니다.<br>' +
+    '· <b>투명성</b> — "이 모델은 우리 학교 3개 학급 급식 사진 400장으로 학습했습니다"를 안내문에 적습니다.</p>' +
+    '<p><b>이번 차시와의 연결</b><br>활동 ③에서 여섯 기준마다 "우리가 만든 급식 판별 인공지능에 적용할 점검 문장"을 골라 ' +
+    '<b>우리 반 점검표</b>를 완성합니다. 완성한 점검표는 저장되어 <b>32차시</b> 의사 결정 사례 판정에서 다시 쓰입니다.</p>' +
+    '<p><button class="btn" type="button" onclick="daSee(\'da-act3\')">활동 ③으로 이동 ▸</button></p>' +
+    '<p class="da-src">◂ 1차시에서 "기계가 지능이 있다고 판단하는 기준"을 물었던 것처럼, ' +
+    '오늘은 "기계를 <b>써도 좋다</b>고 판단하는 기준"을 세웁니다. ' +
+    '<a href="#intro" onclick="go(\'intro\');return false;">1차시 보기</a><br>' +
+    '▸ 32차시에서는 이 기준으로 실제 의사 결정 사례의 윤리성을 판단합니다. ' +
+    '<a href="#decision" onclick="go(\'decision\');return false;">32차시 보기</a></p>' +
+    '<p class="da-src">출처: 씨마스 「인공지능 수학」 Ⅰ 지도서 p.109 「생각해 보기 예시 답안 — 인공지능의 윤리 기준」 서술을 재구성</p>'
+};
+
+
+/* ── 7. 활동 ① 데이터 24장 분류 ───────────────────────────────────────────
+   l1: 1차 분류 정답 · l2: 2차 분류 정답(정형만) · av: 평균의 뜻 ○ △ ✗      */
+var DA_CARDS = [
+  {id:1,  label:'출석부(날짜×학생 표)',         l1:'정형',  l2:'명목형', av:'✗', hint:'행과 열이 정해져 있나요?'},
+  {id:2,  label:'우리 반 키 기록(cm)',           l1:'정형',  l2:'연속형', av:'○', hint:'값이 이어지나요?'},
+  {id:3,  label:'우리 반 몸무게 기록(kg)',       l1:'정형',  l2:'연속형', av:'○', hint:'값이 이어지나요?'},
+  {id:4,  label:'학급별 학생 수',                l1:'정형',  l2:'이산형', av:'○', hint:'2.5명이 있을 수 있나요?'},
+  {id:5,  label:'도서관 대출 권수',              l1:'정형',  l2:'이산형', av:'○', hint:'뚝뚝 끊기는 수인가요?'},
+  {id:6,  label:'교실 온도 기록(℃)',            l1:'정형',  l2:'연속형', av:'○', hint:'값이 이어지나요?'},
+  {id:7,  label:'혈액형 조사 결과',              l1:'정형',  l2:'명목형', av:'✗', hint:'순서를 줄 수 있나요?'},
+  {id:8,  label:'성적 등위(1~9등급)',            l1:'정형',  l2:'순서형', av:'△', hint:'순서는 있는데 간격이 같나요?'},
+  {id:9,  label:'급식 만족도 5점 척도',          l1:'정형',  l2:'순서형', av:'△', hint:'1과 2의 차이 = 4와 5의 차이일까요?'},
+  {id:10, label:'거주 지역(동 이름)',            l1:'정형',  l2:'명목형', av:'✗', hint:'순서를 줄 수 있나요?'},
+  {id:11, label:'동아리 종류',                   l1:'정형',  l2:'명목형', av:'✗', hint:'순서를 줄 수 있나요?'},
+  {id:12, label:'등교 소요 시간(분)',            l1:'정형',  l2:'연속형', av:'○', hint:'값이 이어지나요?'},
+  {id:13, label:'급식 사진 400장',               l1:'비정형', l2:'',      av:'✗', hint:'표의 칸에 적을 수 있나요?'},
+  {id:14, label:'체육대회 응원 영상',            l1:'비정형', l2:'',      av:'✗', hint:'표의 칸에 적을 수 있나요?'},
+  {id:15, label:'학급 단톡방 대화',              l1:'비정형', l2:'',      av:'✗', hint:'형식이 정해져 있나요?'},
+  {id:16, label:'상담 녹음 파일',                l1:'비정형', l2:'',      av:'✗', hint:'형식이 정해져 있나요?'},
+  {id:17, label:'학교 신문 기사 원고',           l1:'비정형', l2:'',      av:'✗', hint:'형식이 정해져 있나요?'},
+  {id:18, label:'급식 만족도 서술 응답',         l1:'비정형', l2:'',      av:'✗', hint:'같은 설문이라도 서술은 다릅니다'},
+  {id:19, label:'미술 시간 작품 사진',           l1:'비정형', l2:'',      av:'✗', hint:'표의 칸에 적을 수 있나요?'},
+  {id:20, label:'방송부 점심 방송 음성',         l1:'비정형', l2:'',      av:'✗', hint:'형식이 정해져 있나요?'},
+  {id:21, label:'CCTV 영상',                     l1:'비정형', l2:'',      av:'✗', hint:'표의 칸에 적을 수 있나요?'},
+  {id:22, label:'학교 누리집 HTML 문서',         l1:'반정형', l2:'',      av:'✗', hint:'형식이 “일부만” 있지 않나요?'},
+  {id:23, label:'시간표 XML 파일',               l1:'반정형', l2:'',      av:'✗', hint:'형식이 “일부만” 있지 않나요?'},
+  {id:24, label:'사진에 붙은 촬영 정보(날짜·기종)', l1:'반정형', l2:'',   av:'✗', hint:'사진 자체와 그 정보는 다릅니다'}
+];
+var DA_L1 = ['정형','비정형','반정형'];
+var DA_L1_HINT = {
+  '정형'  : '표의 행과 열이 정해진 자료',
+  '비정형': '형식 없이 쌓인 사진·소리·영상·글',
+  '반정형': '형식이 일부만 있는 중간 형태'
+};
+var DA_L2 = ['연속형','이산형','순서형','명목형'];
+var DA_L2_HINT = {
+  '연속형':'값이 이어짐 · 평균 ○', '이산형':'뚝뚝 끊김 · 평균 ○',
+  '순서형':'순서 있음 · 평균 △',   '명목형':'순서 없음 · 평균 ✗'
+};
+
+var daA1 = {place:{}, sel:null, graded:false, rule:false};
+var daA2 = {place:{}, sel:null, graded:false};
+
+function daA1Save(){
+  daSet('aimath.dataeth.act1', JSON.stringify({p1:daA1.place, p2:daA2.place, r:daA1.rule}));
+}
+function daA1Load(){
+  var s = daJson('aimath.dataeth.act1', null);
+  if(!s) return;
+  if(s.p1) daA1.place = s.p1;
+  if(s.p2) daA2.place = s.p2;
+  if(s.r)  daA1.rule = true;
+}
+
+/* 카드 한 장을 그립니다. stage 1 = 1차, 2 = 2차 */
+function daCardHTML(c, stage, state){
+  var cls = 'da-card2';
+  if(state.sel === c.id) cls += ' sel';
+  if(state.graded){
+    var right = (stage === 1) ? c.l1 : c.l2;
+    var got   = state.place[c.id];
+    if(got) cls += (got === right ? ' ok' : ' bad');
+  }
+  var badge = '';
+  if(state.graded && state.place[c.id] && state.place[c.id] !== ((stage === 1) ? c.l1 : c.l2)){
+    badge = '<span class="hb">' + daEsc(c.hint) + '</span>';
+  }
+  return '<button type="button" class="' + cls + '" draggable="true" data-id="' + c.id +
+    '" data-stage="' + stage + '" aria-pressed="' + (state.sel === c.id ? 'true' : 'false') + '">' +
+    '<span class="no">' + c.id + '</span>' + daEsc(c.label) + badge + '</button>';
+}
+
+function daA1Render(){
+  var pool = daEl('da-a1-pool'), bk = daEl('da-a1-baskets');
+  if(!pool || !bk) return;
+  var rest = DA_CARDS.filter(function(c){ return !daA1.place[c.id]; });
+  pool.innerHTML = rest.length
+    ? rest.map(function(c){ return daCardHTML(c, 1, daA1); }).join('')
+    : '<p class="da-hint" style="grid-column:1/-1;margin:0;">모든 카드를 담았습니다. 아래에서 <b>내 기준</b>을 적고 [채점]을 누르세요.</p>';
+  var left = daEl('da-a1-left'); if(left) left.textContent = rest.length;
+
+  bk.innerHTML = DA_L1.map(function(k){
+    var mine = DA_CARDS.filter(function(c){ return daA1.place[c.id] === k; });
+    return '<div class="da-basket" data-bk="' + k + '" data-stage="1">' +
+      '<button type="button" class="da-bk-head" data-bk="' + k + '" data-stage="1">' +
+      '<span>' + k + ' 데이터</span><span class="cnt">' + mine.length + '</span></button>' +
+      '<div class="da-bk-body">' + mine.map(function(c){ return daCardHTML(c, 1, daA1); }).join('') + '</div>' +
+      '<p class="da-bk-hint">' + DA_L1_HINT[k] + '</p></div>';
+  }).join('');
+
+  var g = daEl('da-a1-grade');
+  if(g) g.disabled = !(daA1.rule && rest.length === 0);
+  daA1Save();
+}
+
+function daA2Render(){
+  var pool = daEl('da-a2-pool'), bk = daEl('da-a2-baskets');
+  if(!pool || !bk) return;
+  var only = DA_CARDS.filter(function(c){ return c.l1 === '정형'; });
+  var rest = only.filter(function(c){ return !daA2.place[c.id]; });
+  pool.innerHTML = rest.length
+    ? rest.map(function(c){ return daCardHTML(c, 2, daA2); }).join('')
+    : '<p class="da-hint" style="grid-column:1/-1;margin:0;">12장을 모두 담았습니다. [채점]을 눌러 확인하세요.</p>';
+  var left = daEl('da-a2-left'); if(left) left.textContent = rest.length;
+
+  bk.innerHTML = DA_L2.map(function(k){
+    var mine = only.filter(function(c){ return daA2.place[c.id] === k; });
+    return '<div class="da-basket" data-bk="' + k + '" data-stage="2">' +
+      '<button type="button" class="da-bk-head" data-bk="' + k + '" data-stage="2">' +
+      '<span>' + k + '</span><span class="cnt">' + mine.length + '</span></button>' +
+      '<div class="da-bk-body">' + mine.map(function(c){ return daCardHTML(c, 2, daA2); }).join('') + '</div>' +
+      '<p class="da-bk-hint">' + DA_L2_HINT[k] + '</p></div>';
+  }).join('');
+  daA1Save();
+}
+
+function daSelNote(stage){
+  var st = (stage === 1) ? daA1 : daA2;
+  var box = daEl(stage === 1 ? 'da-a1-sel' : 'da-a2-sel');
+  if(!box) return;
+  if(!st.sel){ box.textContent = '고른 카드가 없습니다. 카드를 눌러 고른 뒤 바구니 제목을 누르세요.'; return; }
+  var c = DA_CARDS.filter(function(x){ return x.id === st.sel; })[0];
+  box.innerHTML = '고른 카드 → <b>' + daEsc(c.label) + '</b> · 이제 <b>바구니 제목</b>을 누르거나 카드를 끌어다 놓으세요.';
+}
+
+/* 카드 선택 · 바구니 담기 (클릭 · 키보드 · 드래그 앤 드롭 공통 경로) */
+function daPlace(stage, id, bk){
+  var st = (stage === 1) ? daA1 : daA2;
+  st.place[id] = bk;
+  st.sel = null;
+  if(stage === 1){ daA1Render(); } else { daA2Render(); }
+  daSelNote(stage);
+}
+function daPick(stage, id){
+  var st = (stage === 1) ? daA1 : daA2;
+  if(st.place[id]){ delete st.place[id]; st.sel = id; }   /* 바구니 안의 카드를 누르면 꺼냅니다 */
+  else { st.sel = (st.sel === id) ? null : id; }
+  if(stage === 1){ daA1Render(); } else { daA2Render(); }
+  daSelNote(stage);
+}
+
+/* 위임 리스너 — 카드·바구니가 매번 다시 그려져도 살아남습니다. */
+function daSortBind(){
+  var root = daEl('v-dataeth');
+  if(!root || root.getAttribute('data-da-sortbound') === '1') return;
+  root.setAttribute('data-da-sortbound','1');
+
+  root.addEventListener('click', function(ev){
+    var t = ev.target;
+    if(!t || !t.closest) return;
+    var head = t.closest('.da-bk-head');
+    if(head){
+      var stage = parseInt(head.getAttribute('data-stage'), 10);
+      var st = (stage === 1) ? daA1 : daA2;
+      if(st.sel) daPlace(stage, st.sel, head.getAttribute('data-bk'));
+      return;
+    }
+    var card = t.closest('.da-card2');
+    if(card){ daPick(parseInt(card.getAttribute('data-stage'), 10), parseInt(card.getAttribute('data-id'), 10)); }
+  });
+
+  root.addEventListener('dragstart', function(ev){
+    var card = ev.target && ev.target.closest ? ev.target.closest('.da-card2') : null;
+    if(!card) return;
+    try{ ev.dataTransfer.setData('text/plain', card.getAttribute('data-stage') + ':' + card.getAttribute('data-id')); }catch(e){}
+  });
+  root.addEventListener('dragover', function(ev){
+    var b = ev.target && ev.target.closest ? ev.target.closest('.da-basket') : null;
+    if(!b) return;
+    ev.preventDefault();
+    b.classList.add('over');
+  });
+  root.addEventListener('dragleave', function(ev){
+    var b = ev.target && ev.target.closest ? ev.target.closest('.da-basket') : null;
+    if(b) b.classList.remove('over');
+  });
+  root.addEventListener('drop', function(ev){
+    var b = ev.target && ev.target.closest ? ev.target.closest('.da-basket') : null;
+    if(!b) return;
+    ev.preventDefault();
+    b.classList.remove('over');
+    var raw = '';
+    try{ raw = ev.dataTransfer.getData('text/plain') || ''; }catch(e){}
+    var p = raw.split(':');
+    if(p.length !== 2) return;
+    if(parseInt(p[0], 10) !== parseInt(b.getAttribute('data-stage'), 10)) return;
+    daPlace(parseInt(p[0], 10), parseInt(p[1], 10), b.getAttribute('data-bk'));
+  });
+}
+
+function daA1SaveRule(){
+  var t = daEl('da-a1-rule');
+  if(!t) return;
+  if(!t.value.trim()){
+    daFb('da-a1-fb', false, '한 줄이라도 좋습니다. <b>무엇을 보고 나눴는지</b> 적어야 채점이 열립니다.' +
+      '<span class="x">정답을 맞히는 것이 목적이 아니라, 내가 세운 기준과 교과서의 기준을 견주어 보는 것이 목적입니다.</span>');
+    return;
+  }
+  daA1.rule = true;
+  daSet('aimath.dataeth.rule', t.value.trim());
+  daFb('da-a1-fb', true, '내 기준을 저장했습니다. 이제 [채점]을 누를 수 있습니다.' +
+    '<span class="x">여러분이 적은 기준과 교과서의 기준(“형식이 정해져 있는가”)이 얼마나 가까운지 확인해 보세요.</span>');
+  daA1Render();
+}
+
+function daA1Grade(){
+  var ok = 0, wrong = [];
+  DA_CARDS.forEach(function(c){
+    if(daA1.place[c.id] === c.l1) ok++; else wrong.push(c);
+  });
+  daA1.graded = true;
+  daA1Render();
+  /* 틀린 카드 흔들기 */
+  setTimeout(function(){
+    var root = daEl('v-dataeth');
+    if(!root) return;
+    root.querySelectorAll('.da-card2.bad').forEach(function(el){
+      el.classList.add('da-shake');
+      setTimeout(function(){ el.classList.remove('da-shake'); }, 500);
+    });
+  }, 30);
+
+  var cnt = {}, tot = {};
+  DA_L1.forEach(function(k){ cnt[k] = 0; tot[k] = 0; });
+  DA_CARDS.forEach(function(c){
+    tot[c.l1]++;
+    if(daA1.place[c.id] === c.l1) cnt[c.l1]++;
+  });
+  daBars('da-a1-bars', DA_L1.map(function(k){
+    return {n:k, v:tot[k] ? cnt[k] / tot[k] * 100 : 0, t:cnt[k] + ' / ' + tot[k],
+            c:(cnt[k] === tot[k] ? 'var(--green)' : 'var(--accent)')};
+  }));
+
+  var msg = (ok === 24)
+    ? '✓ 24장 모두 맞혔습니다! 교과서의 기준과 여러분의 기준이 정확히 겹쳤습니다.'
+    : '점수 <b>' + ok + ' / 24</b> — 틀린 카드는 빨간 테두리와 힌트로 표시했습니다.';
+  daFb('da-a1-fb', ok === 24, msg +
+    '<span class="x">정답 구성은 <b>정형 12장 · 비정형 9장 · 반정형 3장</b>입니다. ' +
+    '헷갈리기 쉬운 것은 22~24번 <b>반정형</b>입니다 — HTML·XML·촬영 정보는 ' +
+    '“형식이 아예 없는” 것이 아니라 <b>형식이 일부만</b> 있습니다. ' +
+    '그리고 18번 급식 만족도 <b>서술</b> 응답은 같은 설문이라도 5점 척도(9번)와 달리 ' +
+    '사람마다 문장이 달라 <b>비정형</b>입니다. ' +
+    '실제 세상에서는 비정형이 <b>약 80% 이상</b>인데, 우리 카드가 정형에 유리하게 짜인 것뿐입니다.</span>');
+
+  var ag = daEl('da-a1-again'); if(ag) ag.style.display = wrong.length ? '' : 'none';
+  var sec = daEl('da-a1-second'); if(sec) sec.style.display = '';
+  daA2Render();
+  daSheetCards();
+}
+
+function daA1Retry(){
+  DA_CARDS.forEach(function(c){ if(daA1.place[c.id] !== c.l1) delete daA1.place[c.id]; });
+  daA1.graded = false;
+  daA1Render();
+  daFb('da-a1-fb', null, '틀린 카드만 꺼냈습니다. 힌트를 보고 다시 담아 보세요.');
+}
+
+function daA1Reset(){
+  daA1 = {place:{}, sel:null, graded:false, rule:daA1.rule};
+  daA1Render(); daSelNote(1);
+  daFb('da-a1-fb', null, '');
+  daBars('da-a1-bars', []);
+  var ag = daEl('da-a1-again'); if(ag) ag.style.display = 'none';
+}
+
+function daA2Grade(){
+  var only = DA_CARDS.filter(function(c){ return c.l1 === '정형'; });
+  var ok = 0;
+  only.forEach(function(c){ if(daA2.place[c.id] === c.l2) ok++; });
+  daA2.graded = true;
+  daA2Render();
+  var cnt = {}, tot = {};
+  DA_L2.forEach(function(k){ cnt[k] = 0; tot[k] = 0; });
+  only.forEach(function(c){ tot[c.l2]++; if(daA2.place[c.id] === c.l2) cnt[c.l2]++; });
+  daBars('da-a2-bars', DA_L2.map(function(k){
+    return {n:k, v:tot[k] ? cnt[k] / tot[k] * 100 : 0, t:cnt[k] + ' / ' + tot[k],
+            c:(cnt[k] === tot[k] ? 'var(--green)' : 'var(--accent)')};
+  }));
+  daFb('da-a2-fb', ok === 12, (ok === 12 ? '✓ 12장 모두 맞혔습니다!' : '점수 <b>' + ok + ' / 12</b>') +
+    '<span class="x">정답 구성은 <b>연속형 4(키·몸무게·온도·등교 시간) · 이산형 2(학생 수·대출 권수) · ' +
+    '순서형 2(성적 등위·만족도 5점) · 명목형 4(출석부·혈액형·거주 지역·동아리)</b>입니다. ' +
+    '가장 많이 틀리는 것은 <b>만족도 5점 척도</b>입니다 — 수처럼 보이지만 ' +
+    '“1과 2의 차이”가 “4와 5의 차이”와 같다고 보장할 수 없어 <b>순서형</b>입니다. ' +
+    '그래서 “만족도 평균 3.4점”을 말할 때는 그 수가 무엇을 뜻하는지 <b>늘 함께 설명해야</b> 합니다.</span>');
+  daSheetCards();
+}
+
+function daA2Reset(){
+  daA2 = {place:{}, sel:null, graded:false};
+  daA2Render(); daSelNote(2);
+  daFb('da-a2-fb', null, '');
+  daBars('da-a2-bars', []);
+}
+
+/* 판정 문제 1 — 복수 선택 */
+var DA_Q1_OPTS = [
+  {id:2,  label:'2 · 키(cm)',              ok:true},
+  {id:4,  label:'4 · 학급별 학생 수',      ok:true},
+  {id:6,  label:'6 · 교실 온도(℃)',        ok:true},
+  {id:12, label:'12 · 등교 소요 시간(분)', ok:true},
+  {id:7,  label:'7 · 혈액형',              ok:false},
+  {id:8,  label:'8 · 성적 등위',           ok:false},
+  {id:9,  label:'9 · 만족도 5점 척도',     ok:false},
+  {id:10, label:'10 · 거주 지역',          ok:false}
+];
+var daQ1Pick = {};
+function daQ1Render(){
+  var b = daEl('da-a1-q1');
+  if(!b) return;
+  b.innerHTML = DA_Q1_OPTS.map(function(o){
+    return '<button type="button" class="btn' + (daQ1Pick[o.id] ? ' pri' : '') +
+      '" onclick="daQ1Toggle(' + o.id + ')">' + daEsc(o.label) + '</button>';
+  }).join('');
+}
+function daQ1Toggle(id){
+  daQ1Pick[id] = !daQ1Pick[id];
+  daQ1Render();
+}
+function daQ1Check(){
+  var miss = 0, over = 0;
+  DA_Q1_OPTS.forEach(function(o){
+    if(o.ok && !daQ1Pick[o.id]) miss++;
+    if(!o.ok && daQ1Pick[o.id]) over++;
+  });
+  var ok = (miss === 0 && over === 0);
+  daFb('da-a1-q1fb', ok,
+    (ok ? '✓ 정확합니다.' : '✗ 다시 봅시다. 빠뜨린 것 ' + miss + '개, 잘못 고른 것 ' + over + '개.') +
+    '<span class="x">정답은 <b>2 키 · 4 학급별 학생 수 · 6 교실 온도 · 12 등교 소요 시간</b>입니다 — ' +
+    '모두 <b>수치형</b>(연속형·이산형)이라 평균의 뜻이 살아 있습니다. ' +
+    '보기에 없지만 <b>3 몸무게 · 5 대출 권수</b>도 같은 이유로 평균을 낼 수 있습니다.<br>' +
+    '<b>7 혈액형 · 10 거주 지역</b>은 순서를 줄 수 없는 <b>명목형</b>이므로 평균이 아무 뜻이 없습니다. ' +
+    '<b>8 성적 등위 · 9 만족도 5점 척도</b>는 <b>순서형</b>입니다 — 평균을 쓰는 관행이 있지만, ' +
+    '“만족도 3.4점”이 무엇을 뜻하는지 반드시 함께 설명해야 합니다.</span>');
+}
+function daQ2Check(){
+  var t = daEl('da-a1-q2');
+  var mine = t ? t.value.trim() : '';
+  if(!mine){
+    daFb('da-a1-q2fb', false, '먼저 한 문장이라도 적어 보세요.' +
+      '<span class="x">모범 답안은 <b>내가 시도한 뒤에</b> 열립니다.</span>');
+    return;
+  }
+  daFb('da-a1-q2fb', true, '내 답을 확인했습니다. 모범 답안과 견주어 보세요.' +
+    '<span class="x"><b>모범 답안</b> — “불필요한 말을 걷어내고 단어의 목록으로 만든 뒤 수로 바꾼다.”<br>' +
+    '그 작업이 정확히 <b>7·8차시</b>에서 할 일입니다. 7차시에서는 문장을 어절로 쪼개고 불용어를 걷어내 ' +
+    '<b>단어집합</b>을 만들고, 8차시에서는 그 집합을 눈금 삼아 문장을 <b>벡터</b>로 바꿉니다. ' +
+    '오늘 “가공이 필요하다”고만 말한 그 가공의 정체입니다.</span>');
+}
+
+
+/* ── 8. 활동 ② 편향 유입 5단계 ────────────────────────────────────────────
+   씨마스 Ⅰ 지도서 pp.108~109 「생각해 보기 예시 답안」의 사례 5종을
+   학생용 3단(무슨 일 / 왜 / 결과) 서술로 재구성했습니다.                    */
+var DA_STAGES = [
+  {i:1, n:'① 문제 정의',        e:'🎯', d:'무엇을 맞힐 것인가'},
+  {i:2, n:'② 데이터 수집',      e:'📥', d:'누구를 얼마나 모을까'},
+  {i:3, n:'③ 라벨링·전처리',    e:'🏷️', d:'무엇을 정답이라 할까'},
+  {i:4, n:'④ 학습·모델 만들기', e:'⚙️', d:'가중치를 조정'},
+  {i:5, n:'⑤ 활용·의사 결정',   e:'🧭', d:'누구에게 쓸까'}
+];
+
+var DA_CASES = [
+  { id:1, title:'사례 1 · 얼굴 인식의 인종·성별 오류',
+    lines:[
+      {t:'여러 경찰 기관이 쓴 얼굴 인식 시스템이 흑인 남성·여성의 얼굴에서 특히 높은 오류율을 보였습니다.', key:false},
+      {t:'학습에 쓴 데이터가 주로 백인 남성의 얼굴로 구성되어 있었습니다.', key:true},
+      {t:'그 결과 무고한 시민이 용의자로 오인되는 일이 발생했습니다.', key:false}
+    ],
+    stages:[2], ethics:['공정성','책임성'],
+    sol:'편향은 <b>② 데이터 수집</b>에서 들어왔습니다. 얼굴을 모을 때 어떤 사람의 얼굴을 얼마나 모았는지가 ' +
+        '그대로 성능 격차가 되었습니다. 5차시의 표현을 빌리면 <b>대표성이 무너진</b> 상태입니다.',
+    src:'씨마스 Ⅰ 지도서 p.108 · 참고: MIT Media Lab' },
+  { id:2, title:'사례 2 · 채용 인공지능의 성차별',
+    lines:[
+      {t:'지원자를 평가하는 시스템이 여성 지원자에게 낮은 점수를 주고 특정 직무에서 배제했습니다.', key:false},
+      {t:'과거 채용 기록을 학습했고, 그 기록에는 기술 분야에서 남성이 선호된 경향이 담겨 있었습니다.', key:true},
+      {t:'특정 용어를 중립적으로 처리하도록 고쳤지만 확신을 주지 못해 결국 폐기되었습니다.', key:false}
+    ],
+    stages:[1,2], ethics:['공정성','투명성','책임성'],
+    sol:'<b>② 데이터 수집</b>(과거 기록 자체가 치우침)에 더해 <b>① 문제 정의</b>가 함께 걸립니다 — ' +
+        '“무엇을 <b>좋은 지원자</b>라고 부를 것인가”를 <b>과거 합격자</b>로 정의한 순간, ' +
+        '편향은 계산이 시작되기도 전에 이미 결정되었습니다.',
+    src:'씨마스 Ⅰ 지도서 p.108 · 한국일보 2021.10.14.' },
+  { id:3, title:'사례 3 · 의료 진단의 성별 편향',
+    lines:[
+      {t:'인공지능 기반 진단 시스템이 여성 환자의 심혈관 질환 진단에서 오류를 보였습니다.', key:false},
+      {t:'주로 남성 환자 데이터로 학습해 여성에게 나타나는 증상을 인식하지 못했습니다.', key:true},
+      {t:'여성 환자들이 진단과 치료에서 적절한 의료 서비스를 받지 못하는 상황이 생겼습니다.', key:false}
+    ],
+    stages:[2], ethics:['공정성','안전성'],
+    sol:'<b>② 데이터 수집</b>입니다. 사례 1과 구조가 같습니다 — 모으지 않은 집단은 ' +
+        '<b>모델에게 존재하지 않는 사람</b>이 됩니다. 의료에서는 그 결과가 곧 <b>안전성</b> 문제가 됩니다.',
+    src:'씨마스 Ⅰ 지도서 p.108 · 장윤정·정원섭(2023)' },
+  { id:4, title:'사례 4 · 기계 번역의 성별 고정관념',
+    lines:[
+      {t:'성별을 구분하지 않는 언어를 번역할 때 “의사”는 남성으로, “간호사”는 여성으로 번역되었습니다.', key:false},
+      {t:'인터넷의 방대한 텍스트에 성 역할 고정관념이 반영되어 있었습니다.', key:true},
+      {t:'이런 번역이 다시 널리 쓰이면서 성별 고정관념을 더 강화했습니다.', key:false}
+    ],
+    stages:[2,5], ethics:['공정성','인간 중심성'],
+    sol:'<b>② 데이터 수집</b>과 <b>⑤ 활용·의사 결정</b> 둘 다입니다. ' +
+        '개별 번역문은 문법적으로 <b>정확</b>했지만, 그 결과가 다시 인터넷의 글이 되어 편향을 키웁니다(피드백 루프). ' +
+        '<b>정확한 인공지능이 공정하지 않을 수 있다</b>는 것을 가장 잘 보여 주는 사례입니다.',
+    src:'씨마스 Ⅰ 지도서 p.109 · 아시아경제 2017.12.4.' },
+  { id:5, title:'사례 5 · 신용평가의 경제적 편향',
+    lines:[
+      {t:'저소득층·비정규직 근로자가 대출 심사에서 낮은 등급을 받았습니다.', key:false},
+      {t:'기존 신용 기록에 소득·직업 안정성에 따라 불리하게 평가하는 기준이 이미 존재했습니다.', key:true},
+      {t:'금융 서비스 접근성이 제한되어 경제적 불평등이 더 심해졌습니다.', key:false}
+    ],
+    stages:[2,3], ethics:['공정성','투명성'],
+    sol:'<b>② 데이터 수집</b>과 <b>③ 라벨링·전처리</b>입니다. ' +
+        '“무엇을 <b>위험</b>이라고 이름 붙일 것인가”는 기계가 아니라 <b>사람이 정한 라벨</b>입니다. ' +
+        '라벨이 기울면 아무리 정교한 모델도 기운 답을 냅니다.',
+    src:'씨마스 Ⅰ 지도서 p.109 · 최성민(2022)' }
+];
+
+var daA3 = {place:{}, ev:{}, sel:null, submitted:false};
+
+function daA3Save(){ daSet('aimath.dataeth.act2', JSON.stringify({p:daA3.place, e:daA3.ev})); }
+function daA3Load(){
+  var s = daJson('aimath.dataeth.act2', null);
+  if(!s) return;
+  if(s.p) daA3.place = s.p;
+  if(s.e) daA3.ev = s.e;
+}
+function daA3Of(id){ return (daA3.place[id] || []).slice().sort(function(a,b){ return a - b; }); }
+
+function daA3RenderPipe(){
+  var p = daEl('da-a3-pipe');
+  if(!p) return;
+  p.innerHTML = DA_STAGES.map(function(s){
+    var here = DA_CASES.filter(function(c){ return daA3Of(c.id).indexOf(s.i) >= 0; });
+    return '<div class="da-stage" data-st="' + s.i + '">' +
+      '<span class="sh"><em>' + s.e + '</em>' + daEsc(s.n) + '</span>' +
+      '<div class="sb">' + here.map(function(c){
+        return '<button type="button" class="da-chip2" onclick="daA3Toggle(' + c.id + ',' + s.i + ')" ' +
+          'title="누르면 이 단계에서 뺍니다">사례 ' + c.id + '</button>';
+      }).join('') + '</div>' +
+      '<button type="button" class="sd" onclick="daA3Drop(' + s.i + ')">여기에 놓기</button></div>';
+  }).join('');
+}
+
+function daA3RenderCases(){
+  var b = daEl('da-a3-cases');
+  if(!b) return;
+  b.innerHTML = DA_CASES.map(function(c){
+    var mine = daA3Of(c.id);
+    return '<div class="da-case' + (daA3.sel === c.id ? ' sel' : '') + '" id="da-case-' + c.id + '">' +
+      '<h4><button type="button" class="da-casebtn" onclick="daA3Sel(' + c.id + ')">' +
+      daEsc(c.title) + '</button></h4>' +
+      c.lines.map(function(l, k){
+        return '<button type="button" class="ln' + (daA3.ev[c.id] === k ? ' mark' : '') + '" ' +
+          'onclick="daA3Ev(' + c.id + ',' + k + ')">' + daEsc(l.t) + '</button>';
+      }).join('') +
+      '<div class="pick">' + DA_STAGES.map(function(s){
+        return '<button type="button" class="da-chip2" style="' +
+          (mine.indexOf(s.i) >= 0 ? '' : 'background:var(--bg);border-color:var(--border);color:var(--muted);') +
+          '" onclick="daA3Toggle(' + c.id + ',' + s.i + ')">' + s.i + '</button>';
+      }).join('') + '</div>' +
+      '<span class="tag">내 배치: ' + (mine.length ? mine.join(' · ') + '단계' : '(아직 없음)') +
+      ' / 근거 문장: ' + (daA3.ev[c.id] === undefined ? '아직 고르지 않음' : (daA3.ev[c.id] + 1) + '번째 문장') + '</span>' +
+      '<div class="sol' + (daA3.submitted ? ' on' : '') + '">' +
+        '<b>모범 배치 — ' + c.stages.join(' · ') + '단계</b><br>' + c.sol +
+        '<br><span class="tag">근거가 되는 문장은 <b>2번째 문장</b>(왜 그랬나)입니다. ' +
+        '“무슨 일이 있었나”는 결과이지 원인이 아닙니다.</span>' +
+        '<span class="tag">출처: ' + daEsc(c.src) + '</span>' +
+      '</div></div>';
+  }).join('');
+  var need = DA_CASES.filter(function(c){ return daA3.ev[c.id] === undefined || !daA3Of(c.id).length; });
+  var sb = daEl('da-a3-submit');
+  if(sb){
+    sb.disabled = need.length > 0;
+    sb.textContent = need.length ? ('제출 — 아직 ' + need.length + '개 사례가 남았습니다') : '제출 — 모범 배치 보기';
+  }
+  daA3Save();
+}
+function daA3Render(){ daA3RenderPipe(); daA3RenderCases(); daA3Note(); }
+
+function daA3Note(){
+  var box = daEl('da-a3-sel');
+  if(!box) return;
+  if(!daA3.sel){ box.textContent = '사례 제목을 누르면 그 사례가 선택되고, 5단계 띠의 [여기에 놓기]로 배치할 수 있습니다.'; return; }
+  var c = DA_CASES.filter(function(x){ return x.id === daA3.sel; })[0];
+  box.innerHTML = '고른 사례 → <b>' + daEsc(c.title) + '</b> · 5단계 띠에서 <b>[여기에 놓기]</b>를 누르세요.';
+}
+function daA3Sel(id){ daA3.sel = (daA3.sel === id) ? null : id; daA3Render(); }
+function daA3Ev(id, k){ daA3.ev[id] = (daA3.ev[id] === k) ? undefined : k; daA3Render(); }
+function daA3Toggle(cid, st){
+  var a = daA3.place[cid] || [];
+  var i = a.indexOf(st);
+  if(i >= 0) a.splice(i, 1); else a.push(st);
+  daA3.place[cid] = a;
+  daA3Render();
+}
+function daA3Drop(st){
+  if(!daA3.sel){ daFb('da-a3-fb', false, '먼저 <b>사례 제목</b>을 눌러 사례를 고르세요.'); return; }
+  daA3Toggle(daA3.sel, st);
+}
+
+function daA3Submit(){
+  var score = 0, full = 0;
+  DA_CASES.forEach(function(c){
+    var mine = daA3Of(c.id), right = c.stages.slice().sort(function(a,b){ return a - b; });
+    var inter = mine.filter(function(x){ return right.indexOf(x) >= 0; });
+    if(mine.length === right.length && inter.length === right.length){ score += 2; full++; }
+    else if(inter.length >= 1){ score += 1; }
+  });
+  daA3.submitted = true;
+  daA3Render();
+  daA3Heat();
+  daFb('da-a3-fb', score >= 8,
+    '점수 <b>' + score + ' / 10</b> (완전 일치 ' + full + '건 · 정답 칸 1개 이상 일치 = 1점, 전부 일치 = 2점)' +
+    '<span class="x">다섯 사례가 <b>모두 ② 데이터 수집</b>에 걸립니다. ' +
+    '계산식이나 컴퓨터 성능이 아니라 <b>무엇을 얼마나 모았는가</b>에서 문제가 시작됐습니다. ' +
+    '여기에 사례 2는 <b>①</b>(무엇을 좋은 지원자로 볼 것인가), 사례 5는 <b>③</b>(무엇을 위험으로 라벨링할 것인가), ' +
+    '사례 4는 <b>⑤</b>(그 결과가 고정관념을 다시 강화)가 더해집니다. ' +
+    '①·③·⑤는 모두 <b>사람이 내리는 결정</b>이라는 공통점이 있습니다 — ' +
+    '편향은 데이터에만 있는 것이 아니라 <b>데이터를 정의하는 사람의 판단</b>에도 있습니다.</span>');
+}
+
+function daA3Heat(){
+  daBars('da-a3-bars', DA_STAGES.map(function(s){
+    var n = DA_CASES.filter(function(c){ return daA3Of(c.id).indexOf(s.i) >= 0; }).length;
+    return {n:s.n, v:n, t:n + ' 건', c:(n >= 4 ? 'var(--red)' : 'var(--accent)')};
+  }));
+}
+function daA3Reset(){
+  daA3 = {place:{}, ev:{}, sel:null, submitted:false};
+  daA3Render();
+  daFb('da-a3-fb', null, '');
+  daBars('da-a3-bars', []);
+}
+
+
+/* ── 9. 활동 ③ 우리 반 AI 윤리 점검표 ─────────────────────────────────── */
+var DA_ETHICS = [
+  { k:'공정성', def:'성별·인종·나이·경제적 배경 등 다양한 특성에 따라 차별하지 않아야 합니다.',
+    opts:['전체 정확도가 90%를 넘는지 확인한다',
+          '한식·양식·중식 각각의 정확도를 따로 확인한다',
+          '정확도를 소수 둘째 자리까지 계산한다'],
+    ans:1,
+    why:['5차시에서 <b>전체 정확도 95%가 한식 정확도 0%를 감췄던</b> 것을 떠올려 보세요. ' +
+         '전체 정확도는 사진이 많은 쪽의 성적표에 가깝습니다.',
+         '',
+         '자릿수를 아무리 늘려도 <b>감춰진 집단</b>은 드러나지 않습니다. 필요한 것은 정밀도가 아니라 <b>분모를 나누는 일</b>입니다.'],
+    back:'bias' },
+  { k:'투명성', def:'어떤 데이터를 쓰고 어떻게 결정하는지 공개하고 설명할 수 있어야 합니다.',
+    opts:['학습에 쓴 사진의 출처와 장수를 안내문에 적는다',
+          '모델 파일을 비공개로 한다',
+          '정확도만 공개한다'],
+    ans:0,
+    why:['', '비공개는 투명성의 <b>반대</b>입니다. 설명할 수 없는 판단은 책임도 물을 수 없습니다.',
+         '정확도라는 <b>하나의 수</b>만 공개하는 것으로는 무엇을 학습했는지 알 수 없습니다. ' +
+         '5차시에서 본 것처럼 그 수 하나는 얼마든지 착시가 될 수 있습니다.'],
+    back:'bias' },
+  { k:'책임성', def:'잘못된 결정에 책임을 질 주체(설계자·개발자·운영자)가 있어야 합니다.',
+    opts:['판정이 틀렸을 때 누가 확인하고 고칠지 담당을 미리 정해 둔다',
+          '틀린 판정은 사진을 잘못 찍은 학생 탓으로 한다',
+          '문제가 생기면 조용히 서비스를 내린다'],
+    ans:0,
+    why:['', '<b>이용자에게 책임을 넘기는 것</b>은 책임성이 아닙니다. 시스템을 만든 쪽에 책임이 있습니다.',
+         '문제를 감추는 것은 <b>같은 문제가 반복될 여지</b>를 남깁니다. 채용 인공지능 사례가 그랬습니다.'],
+    back:'' },
+  { k:'개인 정보 보호', def:'개인 데이터를 동의 없이 수집·분석·공유하지 않아야 합니다.',
+    opts:['급식 사진에 학생 얼굴이 찍혔는지 확인하고 지운다',
+          '사진을 학급 단톡방에 공유한다',
+          '촬영 날짜만 지운다'],
+    ans:0,
+    why:['', '<b>공유 자체가 수집·확산</b>입니다. 동의 없이 얼굴이 담긴 사진을 옮기지 않습니다.',
+         '오늘 활동 ①의 24번 카드를 떠올려 보세요 — 사진에는 <b>촬영 정보(반정형)</b>도 함께 붙습니다. ' +
+         '날짜만 지운다고 얼굴이 지워지지는 않습니다.'],
+    back:'' },
+  { k:'안전성', def:'오작동이나 악의적 사용의 위험을 최소화하도록 설계·운영하고 지속적으로 점검해야 합니다.',
+    opts:['확신이 낮은 판정은 사람이 다시 확인하도록 한다',
+          '판정이 틀려도 그대로 쓴다',
+          '오류가 나면 프로그램을 껐다 켠다'],
+    ans:0,
+    why:['', '틀린 판정을 그대로 쓰면 <b>피해가 쌓입니다</b>. 의료 사례에서 그 결과가 무엇이었는지 떠올려 보세요.',
+         '재시작은 증상만 없앨 뿐 <b>원인</b>을 고치지 못합니다.'],
+    back:'' },
+  { k:'인간 중심성', def:'인간의 가치를 존중하고 자율성과 복지를 높이는 방향으로 개발해야 합니다.',
+    opts:['최종 결정은 사람이 하도록 하고, 인공지능은 참고 자료만 제공한다',
+          '급식 메뉴를 인공지능이 최종 결정하도록 한다',
+          '학생 의견은 받지 않는다'],
+    ans:0,
+    why:['', '사람의 <b>자율성</b>을 대신 결정해 버리는 설계입니다.',
+         '영향을 받는 사람의 목소리를 듣지 않는 시스템은 <b>인간 중심</b>이 아닙니다.'],
+    back:'' }
+];
+
+var daA4 = {pick:{}, text:{}, open:'', tags:{}, built:false};
+
+function daA4Save(){
+  daSet('aimath.dataeth.act3', JSON.stringify({p:daA4.pick, t:daA4.text, g:daA4.tags}));
+}
+function daA4Load(){
+  var s = daJson('aimath.dataeth.act3', null);
+  if(!s) return;
+  if(s.p) daA4.pick = s.p;
+  if(s.t) daA4.text = s.t;
+  if(s.g) daA4.tags = s.g;
+}
+function daA4Sentence(k){
+  var e = DA_ETHICS.filter(function(x){ return x.k === k; })[0];
+  if(daA4.text[k]) return daA4.text[k];
+  if(daA4.pick[k] !== undefined && e) return e.opts[daA4.pick[k]];
+  return '';
+}
+
+function daA4Chips(){
+  var b = daEl('da-a4-chips');
+  if(!b) return;
+  b.innerHTML = DA_ETHICS.map(function(e){
+    return '<button type="button" class="da-ethchip' + (daA4.open === e.k ? ' on' : '') +
+      (daA4Sentence(e.k) ? ' done' : '') + '" onclick="daA4Open(\'' + e.k + '\')">' + daEsc(e.k) + '</button>';
+  }).join('');
+}
+function daA4Open(k){
+  daA4.open = (daA4.open === k) ? '' : k;
+  daA4Chips();
+  var box = daEl('da-a4-box');
+  if(!box) return;
+  if(!daA4.open){ box.innerHTML = '<p class="da-hint" style="margin:0;">위의 기준 칩을 눌러 시작하세요.</p>'; return; }
+  var e = DA_ETHICS.filter(function(x){ return x.k === k; })[0];
+  box.innerHTML = '<b>' + daEsc(e.k) + '</b> — ' + e.def +
+    '<p class="da-lbl" style="margin-top:0.6rem;">우리 급식 판별 인공지능에 맞는 점검 문장을 하나 고르세요</p>' +
+    e.opts.map(function(o, i){
+      var cls = 'opt' + (daA4.pick[k] === i ? ' pick' : '') + ((daA4.pick[k] !== undefined && i === e.ans) ? ' ans' : '');
+      return '<button type="button" class="' + cls + '" onclick="daA4Pick(\'' + k + '\',' + i + ')">' +
+        String.fromCharCode(12910 + i) + ' ' + daEsc(o) + '</button>';
+    }).join('') +
+    '<div class="da-fb" id="da-a4-optfb"></div>' +
+    '<p class="da-lbl" style="margin-top:0.6rem;">또는 우리 반 문장을 직접 적기</p>' +
+    '<textarea class="da-ta" id="da-a4-own" placeholder="예) 학년별로 나누어 정확도를 각각 확인한다">' +
+    daEsc(daA4.text[k] || '') + '</textarea>' +
+    '<div class="btn-row"><button class="btn" type="button" onclick="daA4Own(\'' + k + '\')">이 문장으로 정하기</button></div>';
+  if(daA4.pick[k] !== undefined) daA4Fb(k);
+}
+function daA4Fb(k){
+  var e = DA_ETHICS.filter(function(x){ return x.k === k; })[0];
+  var i = daA4.pick[k];
+  var ok = (i === e.ans);
+  var extra = (!ok && e.why[i]) ? e.why[i] : '';
+  var link = (!ok && e.back) ? ' <button class="btn" type="button" onclick="go(\'' + e.back + '\')">5차시 다시 보기 →</button>' : '';
+  daFb('da-a4-optfb', ok,
+    (ok ? '✓ 이 문장이 ' + e.k + '을(를) 실제로 점검합니다.' : '✗ 이 문장으로는 ' + e.k + '을(를) 점검하기 어렵습니다.') +
+    '<span class="x">' + (ok ? '' : extra + '<br>') + '권장 문장 — <b>' + daEsc(e.opts[e.ans]) + '</b>' + link + '</span>');
+}
+function daA4Pick(k, i){
+  daA4.pick[k] = i;
+  delete daA4.text[k];
+  daA4Save();
+  daA4Open(k); daA4Open(k);     /* 닫았다 열어 다시 그림 */
+  daA4Chips();
+}
+function daA4Own(k){
+  var t = daEl('da-a4-own');
+  if(!t || !t.value.trim()){ daFb('da-a4-optfb', false, '문장을 적은 뒤 눌러 주세요.'); return; }
+  daA4.text[k] = t.value.trim();
+  daA4Save();
+  daA4Chips();
+  daFb('da-a4-optfb', true, '우리 반 문장으로 정했습니다.' +
+    '<span class="x">직접 적은 문장이 <b>실제로 확인 가능한지</b> 점검해 보세요 — ' +
+    '“무엇을, 어떻게, 어떤 수로 확인하는가”가 들어 있으면 좋은 점검 문장입니다.</span>');
+}
+
+function daA4Build(){
+  var miss = DA_ETHICS.filter(function(e){ return !daA4Sentence(e.k); });
+  if(miss.length){
+    daFb('da-a4-fb', false, '아직 <b>' + miss.length + '개 기준</b>이 비어 있습니다: ' +
+      miss.map(function(e){ return e.k; }).join(' · ') +
+      '<span class="x">여섯 칸을 모두 채워야 점검표가 만들어집니다. 여섯 기준은 서로 독립적이지 않습니다 — ' +
+      '투명성이 없으면 책임성을 물을 수 없고, 공정성은 투명성 없이는 확인조차 되지 않습니다.</span>');
+    return;
+  }
+  daA4.built = true;
+  var box = daEl('da-a4-table');
+  if(box){
+    box.innerHTML = '<table class="da-tbl" style="margin-top:0.7rem;width:100%;">' +
+      '<tr><th>기준</th><th>우리 반 점검 문장</th><th>우리 AI</th><th>개선 조치 한 줄</th></tr>' +
+      DA_ETHICS.map(function(e){
+        var saved = daJson('aimath.dataeth.checklist', {});
+        var row = saved[e.k] || {};
+        return '<tr><td><b>' + daEsc(e.k) + '</b></td>' +
+          '<td class="l">' + daEsc(daA4Sentence(e.k)) + '</td>' +
+          '<td><select class="da-refin" style="height:2.1rem;flex:none;width:4.4rem;" ' +
+          'onchange="daA4Mark(\'' + e.k + '\',this.value)">' +
+          ['—','✓','△','✗'].map(function(v){
+            return '<option' + (row.mark === v ? ' selected' : '') + '>' + v + '</option>';
+          }).join('') + '</select></td>' +
+          '<td><input class="da-refin" style="width:100%;flex:none;" value="' + daEsc(row.fix || '') +
+          '" placeholder="예) 한식 사진을 667장 더 모은다" oninput="daA4Fix(\'' + e.k + '\',this.value)"></td></tr>';
+      }).join('') + '</table>';
+  }
+  daA4Store();
+  daFb('da-a4-fb', true, '✓ <b>우리 반 AI 윤리 점검표</b>가 만들어졌습니다. 이 기기에 저장했습니다.' +
+    '<span class="x">판정(✓ △ ✗)과 개선 조치를 채우면 함께 저장됩니다. ' +
+    '이 점검표는 <b>32차시</b> 「합리적 의사 결정」에서 실제 사례를 판정할 때 다시 불러옵니다. ' +
+    '기억할 것 하나 — 점검표는 <b>다 만든 뒤에 붙이는 도장이 아니라 만들기 전에 펴 놓는 설계도</b>입니다.</span>');
+}
+function daA4Store(){
+  var o = daJson('aimath.dataeth.checklist', {});
+  DA_ETHICS.forEach(function(e){
+    o[e.k] = o[e.k] || {};
+    o[e.k].sentence = daA4Sentence(e.k);
+  });
+  daSet('aimath.dataeth.checklist', JSON.stringify(o));
+}
+function daA4Mark(k, v){
+  var o = daJson('aimath.dataeth.checklist', {});
+  o[k] = o[k] || {}; o[k].mark = v; o[k].sentence = daA4Sentence(k);
+  daSet('aimath.dataeth.checklist', JSON.stringify(o));
+}
+function daA4Fix(k, v){
+  var o = daJson('aimath.dataeth.checklist', {});
+  o[k] = o[k] || {}; o[k].fix = v; o[k].sentence = daA4Sentence(k);
+  daSet('aimath.dataeth.checklist', JSON.stringify(o));
+}
+function daA4Reset(){
+  daA4 = {pick:{}, text:{}, open:'', tags:{}, built:false};
+  daSet('aimath.dataeth.checklist', '{}');
+  daA4Save();
+  daA4Chips(); daA4Open(''); daA4Tags();
+  var b = daEl('da-a4-table'); if(b) b.innerHTML = '';
+  daFb('da-a4-fb', null, '');
+}
+
+/* 사례 태깅 — 정답 판정 없음(토의 자료) */
+function daA4Tags(){
+  var b = daEl('da-a4-tags');
+  if(!b) return;
+  b.innerHTML = DA_CASES.map(function(c){
+    var mine = daA4.tags[c.id] || [];
+    return '<div class="da-case" style="margin-top:0.6rem;"><h4>' + daEsc(c.title) + '</h4>' +
+      '<div class="pick">' + DA_ETHICS.map(function(e){
+        var on = mine.indexOf(e.k) >= 0;
+        return '<button type="button" class="da-chip2" style="' +
+          (on ? '' : 'background:var(--bg);border-color:var(--border);color:var(--muted);') +
+          '" onclick="daA4Tag(' + c.id + ',\'' + e.k + '\')">' + daEsc(e.k) + '</button>';
+      }).join('') + '</div>' +
+      '<span class="tag">교과서 지도서가 든 기준: ' + c.ethics.join(' · ') + ' (참고용 — 정답은 아닙니다)</span></div>';
+  }).join('');
+  daA4Bars();
+}
+function daA4Tag(cid, k){
+  var a = daA4.tags[cid] || [];
+  var i = a.indexOf(k);
+  if(i >= 0) a.splice(i, 1); else a.push(k);
+  daA4.tags[cid] = a;
+  daA4Save();
+  daA4Tags();
+}
+function daA4Counts(){
+  return DA_ETHICS.map(function(e){
+    var n = 0;
+    DA_CASES.forEach(function(c){ if((daA4.tags[c.id] || []).indexOf(e.k) >= 0) n++; });
+    return {k:e.k, n:n};
+  });
+}
+function daA4Bars(){
+  var cs = daA4Counts();
+  daBars('da-a4-tagbars', cs.map(function(x){
+    return {n:x.k, v:x.n, t:x.n + ' 건', c:(x.n >= 4 ? 'var(--red)' : 'var(--accent)')};
+  }));
+  daA4Dial(cs);
+}
+function daA4Dial(cs){
+  var svg = daEl('da-a4-dial');
+  if(!svg) return;
+  var cx = 160, cy = 145, R = 96, mx = 5;
+  function pt(i, r){
+    var a = -Math.PI / 2 + i * Math.PI / 3;
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  }
+  var rings = '';
+  [0.25, 0.5, 0.75, 1].forEach(function(f){
+    var p = [];
+    for(var i = 0; i < 6; i++){ var q = pt(i, R * f); p.push(q[0].toFixed(1) + ',' + q[1].toFixed(1)); }
+    rings += '<polygon points="' + p.join(' ') + '" fill="none" stroke="var(--border)" stroke-width="1"/>';
+  });
+  var spokes = '', labels = '', poly = [];
+  cs.forEach(function(x, i){
+    var e = pt(i, R), l = pt(i, R + 22), v = pt(i, Math.max(6, R * (x.n / mx)));
+    spokes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) +
+      '" stroke="var(--border)" stroke-width="1"/>';
+    labels += '<text x="' + l[0].toFixed(1) + '" y="' + (l[1] + 4).toFixed(1) +
+      '" font-size="11" font-family="monospace" fill="var(--muted)" text-anchor="middle">' +
+      daEsc(x.k) + ' ' + x.n + '</text>';
+    poly.push(v[0].toFixed(1) + ',' + v[1].toFixed(1));
+  });
+  svg.innerHTML = '<rect width="320" height="300" fill="var(--bg)"/>' + rings + spokes +
+    '<polygon points="' + poly.join(' ') + '" fill="var(--accent)" fill-opacity="0.55" stroke="var(--fg)" stroke-width="2"/>' +
+    labels +
+    '<text x="160" y="290" font-size="11.5" font-family="monospace" fill="var(--muted)" text-anchor="middle">' +
+    '바깥으로 뻗을수록 자주 어겨진 기준입니다 (최대 5건)</text>';
+}
+
+
+/* ── 10. 정리 · 서술형 · 참고 자료 · 학습지 ───────────────────────────── */
+function daSaveAnswer(){
+  var t = daEl('da-answer');
+  if(!t) return;
+  if(!t.value.trim()){ daFb('da-answer-fb', false, '한 문장이라도 적어 보세요.'); return; }
+  daSet('aimath.dataeth.answer', t.value.trim());
+  daFb('da-answer-fb', true, '내 답을 저장했습니다.' +
+    '<span class="x">학습지를 인쇄하면 이 답을 옮겨 적을 수 있는 칸이 함께 나옵니다. ' +
+    '31·32차시 탐구에서 다시 꺼내 볼 문장입니다.</span>');
+}
+function daEssay(){
+  var t = daEl('da-essay');
+  if(!t || !t.value.trim()){
+    daFb('da-essay-fb', false, '먼저 ㉠과 ㉡을 한 문장씩 적어 보세요.' +
+      '<span class="x">채점 기준은 <b>내가 시도한 뒤에</b> 열립니다.</span>');
+    return;
+  }
+  daSet('aimath.dataeth.essay', t.value.trim());
+  daFb('da-essay-fb', true, '내 답을 저장했습니다. 아래 채점 기준으로 스스로 채점해 보세요.' +
+    '<span class="x"><b>㉠ 1점</b> — “부족한 집단(한식)의 사진을 목표 비율까지 더 모은다” / ' +
+    '“집단별 정확도를 따로 계산해 격차를 확인한다” / ' +
+    '“라벨을 누가 어떤 기준으로 붙였는지 점검한다” 중 하나 이상이면 1점입니다.<br>' +
+    '<b>㉡ 1점</b> — “무엇을 공정하다고 볼지(정확도 격차인가 합격률인가)를 사람이 먼저 합의해야 한다” 또는 ' +
+    '“두 공정성 목표가 서로 충돌할 수 있어 데이터만으로는 정할 수 없다”는 취지면 1점입니다.<br><br>' +
+    '<b>해설</b> — ㉠은 <b>수학·데이터의 영역</b>이고 ㉡은 <b>합의의 영역</b>입니다. ' +
+    '이 경계선이 31차시 탐구의 출발점입니다. ' +
+    '<button class="btn" type="button" onclick="daSee(\'da-act3-warn\')">경고 배너 다시 보기 ▸</button></span>');
+}
+
+/* 참고 자료 — 교사가 추가한 링크(이 기기에만 저장) */
+var DA_REF_KEY = 'aimath.dataeth.customrefs';
+function daRefLoad(){ var a = daJson(DA_REF_KEY, []); return Array.isArray(a) ? a : []; }
+function daRefSave(a){ daSet(DA_REF_KEY, JSON.stringify(a)); }
+function daRefRender(){
+  var box = daEl('da-ref-custom');
+  if(!box) return;
+  box.innerHTML = daRefLoad().map(function(r, i){
+    return '<div class="da-refwrap">' +
+      '<a class="da-ref" href="' + daEsc(r.u) + '" target="_blank" rel="noopener">' +
+        '<span class="th"><span class="bg">추가 자료</span>🔗</span>' +
+        '<span class="bd"><span class="tt">' + daEsc(r.t) + '</span>' +
+        '<span class="ds">' + daEsc(r.u) + '</span></span></a>' +
+      '<button class="rm" type="button" title="이 자료 삭제" aria-label="이 자료 삭제" onclick="daRefDel(' + i + ')">×</button>' +
+      '</div>';
+  }).join('');
+}
+function daRefAdd(){
+  var iu = daEl('da-ref-url'), it = daEl('da-ref-tt'), st = daEl('da-ref-st');
+  if(!iu) return;
+  var u = iu.value.trim();
+  if(!/^https?:\/\//i.test(u)){ if(st) st.textContent = 'http(s)로 시작하는 전체 주소를 붙여넣어 주세요.'; return; }
+  var t = (it && it.value.trim()) || u.replace(/^https?:\/\//i, '').split('/')[0];
+  var a = daRefLoad(); a.push({u:u, t:t}); daRefSave(a);
+  iu.value = ''; if(it) it.value = '';
+  if(st) st.textContent = '자료를 추가했습니다. 이 기기에만 저장됩니다.';
+  daRefRender();
+}
+function daRefDel(i){
+  var a = daRefLoad();
+  if(i < 0 || i >= a.length) return;
+  a.splice(i, 1); daRefSave(a);
+  var st = daEl('da-ref-st'); if(st) st.textContent = '자료를 삭제했습니다.';
+  daRefRender();
+}
+
+/* 실물 학습지 파일이 학교 서버에 올라오면 카드가 자동으로 나타납니다(없으면 숨김). */
+var DA_WSFILES = [
+  {u:'assets/worksheets/unit1/6차시_데이터의얼굴과AI윤리기준_학습지.pdf', t:'6차시 활동지 (PDF)', s:'PDF'},
+  {u:'assets/worksheets/unit1/6차시_윤리점검표.hwpx',                     t:'윤리 점검표 양식 (HWPX)', s:'HWPX'}
+];
+function daWsFiles(){
+  var box = daEl('da-wsfiles');
+  if(!box) return;
+  box.innerHTML = '';
+  DA_WSFILES.forEach(function(f){
+    try{
+      fetch(f.u, {method:'HEAD'}).then(function(r){
+        if(!r || !r.ok) return;
+        var a = document.createElement('a');
+        a.className = 'ws-btn sec';
+        a.href = f.u; a.setAttribute('download', '');
+        a.innerHTML = '📄 ' + daEsc(f.t) + ' <span class="sz">' + daEsc(f.s) + '</span>';
+        var wrap = daEl('da-wsfiles');
+        if(wrap){
+          if(!wrap.querySelector('.ws-dl')){
+            var d = document.createElement('div'); d.className = 'ws-dl'; wrap.appendChild(d);
+          }
+          wrap.querySelector('.ws-dl').appendChild(a);
+        }
+      }).catch(function(){});
+    }catch(e){}
+  });
+}
+
+/* 학습지 지면의 24장 카드 표를 채웁니다. */
+function daSheetCards(){
+  var t = daEl('da-sheet-cards');
+  if(!t) return;
+  var head = t.querySelector('tr');
+  t.innerHTML = '';
+  if(head) t.appendChild(head);
+  DA_CARDS.forEach(function(c){
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + c.id + '</td><td>' + daEsc(c.label) + '</td>' +
+      '<td class="blank"></td><td class="blank"></td><td class="blank"></td>';
+    t.appendChild(tr);
+  });
+}
+
+/* 윤리 점검표만 A4 1쪽으로 인쇄 */
+function daPrintChecklist(){
+  var s = daEl('da-chk-sheet');
+  if(!s) return;
+  var saved = daJson('aimath.dataeth.checklist', {});
+  s.innerHTML = '<div class="ws-h"><h2>우리 반 AI 윤리 점검표 — 6차시</h2>' +
+    '<span class="ws-id">2학년 ___반 ___번 이름 __________ 날짜 ___ / ___</span></div>' +
+    '<p class="note">점검 대상: 5차시에서 만든 급식 판별 인공지능 (학교 급식 만족도 조사에 실제 사용 예정)</p>' +
+    '<table><tr><th style="width:18%;">기준</th><th style="width:40%;">우리 반 점검 문장</th>' +
+    '<th style="width:12%;">우리 AI</th><th>개선 조치 한 줄</th></tr>' +
+    DA_ETHICS.map(function(e){
+      var r = saved[e.k] || {};
+      var sent = r.sentence || daA4Sentence(e.k);
+      return '<tr><td><b>' + daEsc(e.k) + '</b></td>' +
+        '<td>' + (sent ? daEsc(sent) : '') + '</td>' +
+        '<td>' + (r.mark && r.mark !== '—' ? daEsc(r.mark) : '✓ △ ✗') + '</td>' +
+        '<td>' + daEsc(r.fix || '') + '</td></tr>';
+    }).join('') + '</table>' +
+    '<p class="note">점검 시점 — 데이터를 모으기 <b>전에</b> 공정성·개인 정보 보호를, ' +
+    '배포하기 <b>전에</b> 투명성·책임성을 묻습니다. 점검표는 다 만든 뒤에 붙이는 도장이 아니라 ' +
+    '만들기 전에 펴 놓는 설계도입니다.</p>' +
+    '<h3>사례 태깅 결과 — 우리 반이 판단한 기준별 위반 빈도</h3>' +
+    '<table><tr>' + DA_ETHICS.map(function(e){ return '<th>' + daEsc(e.k) + '</th>'; }).join('') + '</tr><tr>' +
+    daA4Counts().map(function(x){ return '<td>' + x.n + ' 건</td>'; }).join('') + '</tr></table>' +
+    '<p class="note">출처: 씨마스 「인공지능 수학」 Ⅰ 지도서 p.109 「생각해 보기 예시 답안」 · ' +
+    '천재교육 「인공지능 수학」 Ⅴ 단원 p.175 체크 리스트 서술을 재구성</p>';
+  if(typeof wsPrint === 'function') wsPrint('da-chk-sheet');
+}
+
+
+/* ── 11. 초기화 ─────────────────────────────────────────────────────────── */
+(function dataethInit(){
+  var boot = function(){
+    var root = daEl('v-dataeth');
+    if(!root) return;                       /* 뷰가 없어도 core.js 가 죽지 않도록 가드 */
+
+    /* 공통 컴포넌트 */
+    if(typeof videoDeck   === 'function') videoDeck('da-videos', 'dataeth', DA_VIDEOS);
+    daVideoPatch();
+    if(typeof warmStepper === 'function') warmStepper('da-warm', 'da', DA_WARM);
+    if(typeof quizStepper === 'function') quizStepper('da-quiz', 'da', DA_QUIZ);
+    if(typeof chipDefs    === 'function') chipDefs('#v-dataeth .da-keys', DA_DEFS);
+    if(typeof wsLinks     === 'function') wsLinks('da-wslinks', 'dataeth');
+
+    /* 저장값 복원 */
+    daA1Load(); daA3Load(); daA4Load();
+    var r = daGet('aimath.dataeth.rule', '');
+    var rt = daEl('da-a1-rule');
+    if(rt && r){ rt.value = r; daA1.rule = true; }
+    var an = daGet('aimath.dataeth.answer', '');
+    var at = daEl('da-answer'); if(at && an) at.value = an;
+    var es = daGet('aimath.dataeth.essay', '');
+    var et = daEl('da-essay'); if(et && es) et.value = es;
+
+    /* 5차시 실험 결과가 있으면 활동 ③ 문제 문장에 실제 수치를 대입합니다. */
+    try{
+      var br = daJson('aimath.bias.result', null);
+      var box = daEl('da-a4-intro');
+      if(br && box && (br.all !== undefined || br.kor !== undefined)){
+        box.innerHTML = '5차시에서 여러분의 모델은 <b>전체 정확도 ' + daEsc(br.all) +
+          '%, 한식 정확도 ' + daEsc(br.kor) + '%</b> 였습니다. ' +
+          '이 <b>급식 판별 인공지능</b>을 학교 급식 만족도 조사에 <b>실제로 쓰겠다</b>고 합니다. ' +
+          '배포 전에 무엇을 점검해야 할까요? 여섯 가지 기준마다 점검 문장을 하나씩 골라 ' +
+          '<b>우리 반 점검표</b>를 완성해 봅시다.';
+      }
+    }catch(e){}
+
+    /* 뷰 전용 위젯 */
+    daSortBind();
+    daA1Render(); daSelNote(1);
+    daA2Render(); daSelNote(2);
+    if(Object.keys(daA1.place).length === DA_CARDS.length){
+      var sec = daEl('da-a1-second'); if(sec) sec.style.display = '';
+    }
+    daQ1Render();
+    daA3Render(); daA3Heat();
+    daA4Chips(); daA4Open(''); daA4Tags();
+    if(DA_ETHICS.every(function(e){ return !!daA4Sentence(e.k); })) daA4Build();
+    daRefRender();
+    daWsFiles();
+    daSheetCards();
+    if(typeof initToggles === 'function'){ try{ initToggles(root); }catch(e){} }
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+/* ●●● ANCHOR-DATAETH ●●● (6차시 dataeth 블록 끝 — 재통합 시 이 줄까지 교체) */
+
+
+/* ══════════ 37차시 재편 통합 · 10차시 VECOP ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VECOP (10차시: 문장을 더하고, 늘이고, 재기 — 벡터의 연산과 크기) — 접두사 vc
+   ---------------------------------------------------------------------------
+   · 이 블록은 core.js 맨 끝에 그대로 덧붙입니다.
+   · 뷰(views/vecop.html)가 없어도 core.js 가 죽지 않도록 초기화는 IIFE + null 가드.
+   · 공통 컴포넌트(videoDeck·warmStepper·quizStepper·chipDefs·wsPrint·wsLinks)는
+     호출만 하고 수정하지 않습니다.
+   · 벡터 유틸 AIMATH.vec.{add,sub,scale,norm,dist,equalDim} 은 이 파일이 "없을 때만"
+     설치합니다(설계서 §0-4 #6 공용 승격). 11차시 sim · 18차시 imgcls 가 같은 함수를 씁니다.
+   · 교육과정 준수 — 이 차시가 다루는 연산은 덧셈·뺄셈·실수배뿐입니다.
+     두 벡터를 곱하는 연산과 관련된 용어·기호는 이 파일 어디에도 없습니다([12인수02-03] 유의 사항).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. 공용 벡터 유틸 승격 (중복 정의 방지 가드) ────────────────────────── */
+(function vcVecInstall(){
+  var root = (typeof window !== 'undefined') ? window : this;
+  if(!root) return;
+  root.AIMATH = root.AIMATH || {};
+  if(root.AIMATH.vec) return;              /* 이미 core.js 공용 영역에 있으면 그대로 씁니다 */
+
+  function dimOk(a, b){
+    return Array.isArray(a) && Array.isArray(b) && a.length === b.length;
+  }
+  root.AIMATH.vec = {
+    equalDim: dimOk,
+    add: function(a, b){
+      if(!dimOk(a, b)) throw new Error('VEC_DIM');
+      return a.map(function(x, i){ return x + b[i]; });
+    },
+    sub: function(a, b){
+      if(!dimOk(a, b)) throw new Error('VEC_DIM');
+      return a.map(function(x, i){ return x - b[i]; });
+    },
+    scale: function(k, a){
+      if(!Array.isArray(a)) throw new Error('VEC_DIM');
+      return a.map(function(x){ return k * x; });
+    },
+    /* √ 안의 값(sq)과 실제 값(val)을 함께 돌려줍니다 — 무리수 표기용 */
+    norm: function(a){
+      var sq = (a || []).reduce(function(s, x){ return s + x * x; }, 0);
+      return { sq: sq, val: Math.sqrt(sq) };
+    },
+    dist: function(a, b){ return root.AIMATH.vec.norm(root.AIMATH.vec.sub(b, a)); }
+  };
+})();
+
+/* ── 1. 소도구 ───────────────────────────────────────────────────────────── */
+function vcEsc(s){
+  if(typeof cmnEsc === 'function') return cmnEsc(s);
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function vcLS(k, d){
+  if(typeof cmnGet === 'function') return cmnGet(k, d);
+  try{ var v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; }
+}
+function vcLSSet(k, v){
+  if(typeof cmnSet === 'function'){ cmnSet(k, v); return; }
+  try{ localStorage.setItem(k, v); }catch(e){}
+}
+function vcEl(id){ return document.getElementById(id); }
+function vcRoot(){ return vcEl('v-vecop'); }
+function vcReduce(){
+  try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }
+}
+function vcV(){ return (typeof AIMATH !== 'undefined' && AIMATH && AIMATH.vec) ? AIMATH.vec : null; }
+
+/* 음수 부호는 수학 기호 −(U+2212)로 씁니다. */
+function vcN(x){
+  var n = Number(x);
+  if(!isFinite(n)) return '—';
+  var r = Math.round(n * 1000) / 1000;
+  return (r < 0 ? '−' : '') + String(Math.abs(r));
+}
+function vcFix(x, d){
+  var n = Number(x);
+  if(!isFinite(n)) return '—';
+  var s = Math.abs(n).toFixed(d);
+  return (n < 0 && Number(s) !== 0 ? '−' : '') + s;
+}
+function vcTuple(a){ return '(' + (a || []).map(vcN).join(', ') + ')'; }
+
+/* √sq 를 k√m 꼴로 정리합니다(완전제곱이면 정수). */
+function vcSimp(sq){
+  var n = Math.round(Number(sq) || 0);
+  if(n < 0) return { out: 0, in: 0, exact: true };
+  if(n === 0) return { out: 0, in: 1, exact: true };
+  var out = 1, inn = n;
+  for(var k = 2; k * k <= inn; k++){
+    while(inn % (k * k) === 0){ inn = inn / (k * k); out *= k; }
+  }
+  return { out: out, in: inn, exact: (inn === 1) };
+}
+/* 무리수 표시 규약 — 완전제곱이면 근호 없이, 아니면 √m ≈ 소수 둘째 자리 */
+function vcRad(sq){
+  var s = vcSimp(sq), v = Math.sqrt(Math.max(0, Number(sq) || 0));
+  if(s.exact) return String(s.out);
+  var head = (s.out === 1 ? '' : String(s.out));
+  return head + '√' + s.in + ' ≈ ' + v.toFixed(2);
+}
+function vcRadShort(sq){
+  var s = vcSimp(sq);
+  if(s.exact) return String(s.out);
+  return (s.out === 1 ? '' : String(s.out)) + '√' + s.in;
+}
+
+/* 입력 칸의 수 읽기 — 빈 칸은 null */
+function vcVal(el){
+  if(!el) return null;
+  var t = String(el.value == null ? '' : el.value).trim().replace(/−/g, '-').replace(/\s+/g, '');
+  if(t === '') return null;
+  var n = Number(t);
+  return isFinite(n) ? n : null;
+}
+function vcMark(el, ok){
+  if(!el) return;
+  el.classList.remove('ok', 'no');
+  el.classList.add(ok ? 'ok' : 'no');
+  if(!ok && !vcReduce()){
+    el.classList.remove('shake');
+    void el.offsetWidth;
+    el.classList.add('shake');
+  }
+}
+function vcFb(id, ok, html){
+  var box = vcEl(id);
+  if(!box) return;
+  box.className = 'vc-fb ' + (ok ? 'ok' : 'no');
+  box.innerHTML = (ok ? '✓ ' : '✗ ') + html;
+}
+function vcFbClear(id){
+  var box = vcEl(id);
+  if(!box) return;
+  box.className = 'vc-fb';
+  box.innerHTML = '';
+}
+
+/* ── 2. 저장 키 ──────────────────────────────────────────────────────────── */
+var VC_K_ANS   = 'aimath.vecop.answer';
+var VC_K_A1    = 'aimath.vecop.act1done';
+var VC_K_CORP  = 'aimath.corpus.mysent';   /* 7·8차시와 공유하는 학급 말뭉치(읽기 전용) */
+
+/* ── 3. 자료 — 추천 영상 ─────────────────────────────────────────────────── */
+/* 썸네일 HTTP 200 확인 완료(2026-07-31). 새 ID를 임의로 만들지 않았습니다. */
+var VC_VIDEOS = [
+  { id:'j0dgue-bBjU', t:'벡터의 덧셈과 뺄셈 [선택·심화]', s:'개념원리 〈기하〉 — 작도 중심. 우리는 성분끼리 계산합니다.' }
+];
+
+/* ── 4. 자료 — 마중 퀴즈 3문항(순차 공개) ────────────────────────────────── */
+var VC_WARM = [
+  { q:'후기 A의 감성 벡터가 (3, 0, 2), 후기 B가 (2, 2, 2)입니다. 두 후기를 하나의 글로 이어 붙이면 감성 벡터는 어떻게 될까요?',
+    opts:['(5, 2, 4)', '(6, 0, 4)', '(5, 2, 2)', '구할 수 없다'],
+    answer:0,
+    explain:'감성 벡터의 첫째 성분은 긍정 단어의 수, 둘째는 부정 단어의 수, 셋째는 중립 단어의 수입니다. ' +
+            '두 글을 이어 붙이면 각 종류의 단어 수가 <b>각각 합쳐지므로</b> 성분끼리 더하면 됩니다 — (3+2, 0+2, 2+2) = (5, 2, 4). ' +
+            '②는 성분끼리 곱한 값이 섞였고, ③은 셋째 성분을 빠뜨렸습니다.' },
+  { q:'벡터 (1, 2)와 벡터 (1, 2, 3)은 더할 수 있다.',
+    opts:['O — 더할 수 있다', 'X — 더할 수 없다'],
+    answer:1,
+    explain:'벡터의 덧셈은 <b>차원이 같을 때만</b> 할 수 있습니다. 성분끼리 짝을 지어 더하는 계산이므로 짝이 맞지 않으면 정의되지 않습니다. ' +
+            '텍스트에서 이 말은 “두 문장을 비교하려면 <b>같은 단어집합</b>을 기준으로 벡터를 만들어야 한다”는 뜻입니다 — ' +
+            '7차시에서 전체집합 U를 먼저 만든 이유가 여기 있습니다.' },
+  { q:'같은 문장을 그대로 두 번 이어 붙이면 그 글의 빈도수 벡터는 어떻게 될까요?',
+    opts:['그대로다', '모든 성분이 2배가 된다', '차원이 2배가 된다', '성분이 모두 0 또는 1이 된다'],
+    answer:1,
+    explain:'단어의 종류(=차원)는 그대로이고, 각 단어가 쓰인 <b>횟수만 2배</b>가 되므로 벡터는 2a가 됩니다. 이것이 오늘 배울 <b>실수배</b>입니다. ' +
+            '그리고 이 사실이 다음 차시의 중요한 장면을 만듭니다 — 내용은 똑같은데 분량만 두 배인 글이, ' +
+            '거리로 재면 갑자기 ‘덜 비슷한’ 글이 되어 버립니다.' }
+];
+
+/* ── 5. 자료 — 형성평가 5문항 ────────────────────────────────────────────── */
+var VC_QUIZ = [
+  { q:'문항 1. P = (2, 1, 4, 0), Q = (0, 1, −2, 3)일 때 P + Q 는?',
+    opts:['(2, 2, 2, 3)', '(2, 2, 6, 3)', '(2, 0, 6, −3)', '구할 수 없다'],
+    answer:0,
+    explain:'성분끼리 더합니다 — (2+0, 1+1, 4+(−2), 0+3) = (2, 2, 2, 3). ' +
+            '②는 셋째 성분에서 뺄셈을 덧셈으로 착각한 것입니다. 두 벡터의 차원이 모두 4이므로 덧셈이 정의됩니다. ' +
+            '<button class="btn" type="button" onclick="vcSee(0,\'vc-act1\')">활동 ①로 돌아가기</button>' },
+  { q:'문항 2. 세 벡터 P = (1, 4, −3), Q = (−3, 1, 0), R = (5, −3, 2)에 대하여 P + Q + R 은?',
+    opts:['(3, 2, −1)', '(3, 2, 1)', '(−3, 2, −1)', '(9, 8, 5)'],
+    answer:0,
+    explain:'(1−3+5, 4+1−3, −3+0+2) = (3, 2, −1). 세 개 이상의 벡터도 성분끼리 한 번에 더할 수 있고, ' +
+            '어느 순서로 더해도 같습니다(결합법칙). ④는 절댓값만 더한 오답입니다. ' +
+            '<button class="btn" type="button" onclick="vcSee(0,\'vc-act1\')">활동 ①로 돌아가기</button>' },
+  { q:'문항 3. a = (3, 1, 2)일 때 |a|의 값은?',
+    opts:['√6', '√14', '14', '6'],
+    answer:1,
+    explain:'|a| = √(3² + 1² + 2²) = √(9+1+4) = √14 ≈ 3.74 입니다. ③은 근호를 빠뜨린 오답, ④는 성분을 그냥 더한 오답입니다. ' +
+            '크기는 <b>원점에서 종점까지의 거리</b>이므로 항상 0 이상입니다. ' +
+            '<button class="btn" type="button" onclick="vcSee(3,\'vc-act4\')">활동 ④로 돌아가기</button>' },
+  { q:'문항 4. a = (3, 0, 3, 2, 1), b = (1, 1, 0, 1, 2)에 대하여 두 벡터의 종점 사이의 거리는?',
+    opts:['4', '√14', '16', '8'],
+    answer:0,
+    explain:'a − b = (2, −1, 3, 1, −1)이고 그 크기는 √(4+1+9+1+1) = √16 = 4 입니다. ' +
+            '<b>두 종점 사이의 거리 = 차 벡터의 크기</b>입니다. ③은 근호를 빠뜨린 값입니다. ' +
+            '이 계산이 다음 차시 유클리드 유사도 d(a, b)와 완전히 같습니다. ' +
+            '<button class="btn" type="button" onclick="vcSee(1,\'vc-act2\')">활동 ②로 돌아가기</button>' },
+  { q:'문항 5. 감성 벡터가 (2, 5, 3)인 후기를 그대로 3번 이어 붙였습니다. 감성 벡터와 감성 점수, 판정은?',
+    opts:['(6, 15, 9) · 점수 −9 · 여전히 부정', '(6, 15, 9) · 점수 −3 · 여전히 부정',
+          '(2, 5, 3) · 점수 −3 · 여전히 부정', '(6, 15, 9) · 점수 −9 · 긍정으로 바뀜'],
+    answer:0,
+    explain:'실수배는 모든 성분을 k배 하므로 3a = (6, 15, 9)이고 점수도 k배가 됩니다(−3 → −9). ' +
+            '그러나 <b>부호가 바뀌지 않으므로 판정은 그대로 부정</b>입니다. ' +
+            '실수배는 분량을 바꾸고 경향은 바꾸지 않는 연산이라는 것을 수로 확인한 셈입니다. ' +
+            '<button class="btn" type="button" onclick="vcSee(2,\'vc-act3\')">활동 ③으로 돌아가기</button>' }
+];
+
+
+/* ── 6. 자료 — 핵심 개념 칩 상세 (spec §8 — 정의 / 예시 / 이번 차시 연결 / 이전·다음 차시) ── */
+var VC_DEFS = {
+  '벡터·성분·차원·상등':
+    '<h4>벡터 · 성분 · 차원 · 상등</h4>' +
+    '<p>하나 또는 여러 개의 데이터를 <b>순서쌍의 형태로 표현한 것</b>을 벡터라 하고 a, b, c, … 로 씁니다. ' +
+    'a = (a₁, a₂, …, aₙ)의 각 수를 <b>성분</b>, 성분의 개수를 <b>차원</b>이라고 합니다. ' +
+    '두 벡터는 <b>대응하는 성분이 모두 같을 때</b> 서로 같습니다(상등).</p>' +
+    '<p>벡터는 본래 ‘크기와 방향을 갖는 양’이지만, 텍스트를 다룰 때는 먼저 ‘데이터를 순서쌍으로 담은 것’으로 이해합니다.</p>' +
+    '<p><b>예시</b> · 장바구니 A에 사과 1·오렌지 1·바나나 2가 있으면 a = (1, 1, 2) — 3차원 벡터입니다.<br>' +
+    '· 두 벡터 a = (1, x), b = (y, 3)이 같으면 x = 3, y = 1입니다.</p>' +
+    '<p><b>이번 차시와의 연결</b> — 활동 ②에서 두 벡터의 차가 <b>영벡터</b>가 되는 경우를 만납니다. ' +
+    '그때 “두 벡터가 같다”는 말이 “두 글이 쓴 단어의 개수가 모든 칸에서 같다”는 뜻임을 확인합니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="vcSee(1,\'vc-act2\')">활동 ②로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'text\')">8차시 · 빈도수 벡터</button>' +
+    '<button class="btn" type="button" onclick="go(\'sim\')">11차시 · 유사도</button></div>' +
+    '<span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.49 · 동아출판 「인공지능 수학」 Ⅱ 단원 pp.48~49 서술을 재구성</span>',
+
+  '벡터의 덧셈과 뺄셈':
+    '<h4>벡터의 덧셈과 뺄셈</h4>' +
+    '<p>차원이 같은 두 벡터 a = (a₁, …, aₙ), b = (b₁, …, bₙ)에 대하여 <b>성분끼리</b> 계산합니다.</p>' +
+    '<div class="vc-fml">a + b = (a₁+b₁,  a₂+b₂,  …,  aₙ+bₙ)　　a − b = (a₁−b₁,  a₂−b₂,  …,  aₙ−bₙ)</div>' +
+    '<p><b>차원이 다르면 더할 수 없습니다.</b> 세 개 이상의 벡터도 더할 수 있고 결합법칙이 성립합니다.</p>' +
+    '<p><b>예시</b> · a = (2, 1, 3, 1), b = (1, 1, 2, 1) → a + b = (3, 2, 5, 2), a − b = (1, 0, 1, 0)<br>' +
+    '· 감성 벡터 A(3, 0, 2) + B(2, 2, 2) + C(1, 4, 1) = (6, 6, 5) — 세 후기를 합친 전체 여론입니다.</p>' +
+    '<p><b>이번 차시와의 연결</b> — 활동 ①에서 후기 세 건의 감성 벡터를 더해 보면, ' +
+    '<b>개별로는 긍정·중립·부정이 하나씩인데 전체는 중립</b>이 되는 장면을 만납니다. ' +
+    '활동 ②에서는 차를 구해 “두 글이 어디서 갈리는가”를 봅니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="vcSee(0,\'vc-act1\')">활동 ①로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'senti\')">12차시 · 감성 분석</button>' +
+    '<button class="btn" type="button" onclick="go(\'sim\')">11차시 · d(a, b) = |b − a|</button></div>' +
+    '<span class="vc-src">출처 — 천재교육 「인공지능 수학」 Ⅱ 단원 p.66 · 미래엔 Ⅱ 단원 p.66 · 씨마스 Ⅱ 단원 p.72 서술을 재구성</span>',
+
+  '벡터의 실수배':
+    '<h4>벡터의 실수배</h4>' +
+    '<p>실수 k와 벡터 a = (a₁, …, aₙ)에 대하여 모든 성분에 k를 곱한 벡터를 a의 <b>실수배</b>라고 합니다.</p>' +
+    '<div class="vc-fml">k a = (k a₁,  k a₂,  …,  k aₙ)　(단, k는 실수)</div>' +
+    '<p>실수배는 벡터의 <b>방향은 그대로 두고 크기만 바꿉니다</b>(k > 0인 경우). ' +
+    '여러 벡터의 합에 1/n을 곱하면 <b>평균 벡터</b>가 됩니다.</p>' +
+    '<p><b>예시</b> · 같은 문장을 두 번 이어 붙이면 빈도수 벡터의 모든 성분이 2배가 되어 2a가 됩니다.<br>' +
+    '· 후기 3건의 합 (6, 6, 5)에 1/3을 곱하면 평균 후기 (2, 2, 5/3)입니다.</p>' +
+    '<p><b>이번 차시와의 연결</b> — 활동 ③에서 k 슬라이더를 움직이면 표의 성분과 캔버스의 화살표가 함께 변합니다. ' +
+    '<b>k를 아무리 키워도 화살표가 가리키는 방향은 바뀌지 않는다</b>는 사실이, ' +
+    '다음 차시에서 “긴 글이 거리 기준에서 불리해지는” 이유가 됩니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="vcSee(2,\'vc-act3\')">활동 ③으로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'tfidf\')">9차시 · 긴 문서 문제</button>' +
+    '<button class="btn" type="button" onclick="go(\'sim\')">11차시 · L2 정규화</button></div>' +
+    '<span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 서술을 재구성</span>',
+
+  '위치벡터':
+    '<h4>위치벡터</h4>' +
+    '<p>벡터를 좌표평면 위의 고정된 한 점 O를 <b>시점</b>으로 하는 화살표로 나타내고 그 <b>종점의 좌표</b>로 ' +
+    '표현한 것을 위치벡터라고 합니다. 벡터 a = (a₁, a₂)는 점 A(a₁, a₂)에 대한 위치벡터 OA로 나타냅니다.</p>' +
+    '<p>문장을 벡터로 바꾸면 문장 하나가 <b>공간 위의 점 하나</b>가 되고, ' +
+    '그때부터 수학이 이미 가진 도구(거리·각)를 쓸 수 있습니다.</p>' +
+    '<p><b>예시</b> · 후기 A의 빈도수 벡터가 (3, 1)이면, 좌표평면의 점 (3, 1)에 화살표 끝이 놓입니다.<br>' +
+    '· 성분이 세 개 이상이면 그림으로 다 그릴 수 없으므로, 축 두 개를 골라 <b>2차원으로 투영해서</b> 봅니다.</p>' +
+    '<p><b>이번 차시와의 연결</b> — 활동 ④에서 표의 두 성분을 축으로 골라 원점에서 화살표를 그립니다. ' +
+    '성분 값을 고치면 종점이 움직이고, 그 화살표의 길이가 곧 다음 개념(벡터의 크기)입니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="vcSee(3,\'vc-act4\')">활동 ④로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'mlplay\')">2차시 · 점 사이의 거리</button>' +
+    '<button class="btn" type="button" onclick="go(\'sim\')">11차시 · 종점 사이의 거리</button></div>' +
+    '<span class="vc-src">출처 — 씨마스 「인공지능 수학」 Ⅱ 단원 p.72 서술을 재구성</span>',
+
+  '벡터의 크기':
+    '<h4>벡터의 크기</h4>' +
+    '<p>벡터 a = (a₁, a₂, …, aₙ)의 <b>크기</b>는 원점에서 종점까지의 거리이며 기호로 |a|와 같이 씁니다.</p>' +
+    '<div class="vc-fml">|a| = √(a₁² + a₂² + … + aₙ²)</div>' +
+    '<p>텍스트에서는 <b>글이 길수록, 같은 단어를 여러 번 쓸수록 크기가 커집니다.</b> ' +
+    '두 벡터가 같으면 두 종점 사이의 거리는 0입니다.</p>' +
+    '<p><b>예시</b> · a = (3, 1, 2) → |a| = √(9 + 1 + 4) = √14 ≈ 3.74<br>' +
+    '· 문장을 두 번 이어 붙이면 |2a| = 2|a| — 크기가 정확히 2배가 됩니다.</p>' +
+    '<p><b>이번 차시와의 연결</b> — 활동 ④에서 |a| 계산 칸을 직접 채우고, [2배 복사]로 |2a| = 2|a|를 표로 확인합니다. ' +
+    '마지막 확인 문제에서 두 벡터의 차의 크기가 딱 <b>4</b>로 정리되는데, 그 4가 다음 차시의 유클리드 유사도 d(a, b)입니다.</p>' +
+    '<p>11차시 코사인 유사도의 분모에 있는 <b>“크기의 곱” |a| · |b|</b> 도 바로 이 |a|입니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="vcSee(3,\'vc-act4\')">활동 ④로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'sim\')">11차시 · 크기의 곱</button>' +
+    '<button class="btn" type="button" onclick="go(\'imgcls\')">18차시 · 해밍 거리(또 다른 자)</button></div>' +
+    '<span class="vc-src">출처 — 천재교육 「인공지능 수학」 Ⅱ 단원 pp.66~67 · 씨마스 Ⅱ 단원 p.72 서술을 재구성</span>'
+};
+
+/* ── 7. 탭 · 활동 이동 · 단계 토글 잠금 ──────────────────────────────────── */
+function vcTab(n, el){
+  var root = vcRoot();
+  if(!root) return;
+  root.querySelectorAll('.tabs .tab').forEach(function(t){ t.classList.remove('on'); });
+  if(el) el.classList.add('on');
+  else {
+    var tabs = root.querySelectorAll('.tabs .tab');
+    if(tabs[n]) tabs[n].classList.add('on');
+  }
+  root.querySelectorAll('.tpanel').forEach(function(p){ p.classList.remove('on'); });
+  var pn = vcEl('vc' + n);
+  if(pn) pn.classList.add('on');
+  /* 숨어 있던 캔버스는 크기가 0이므로 탭이 열릴 때 다시 그립니다. */
+  setTimeout(function(){
+    try{ if(n === 2) vcA3Draw(); }catch(e){}
+    try{ if(n === 3) vcA4Draw(); }catch(e){}
+  }, 30);
+}
+
+/* 탭을 열고 그 안의 카드로 스크롤합니다(핵심 개념 칩·형성평가 해설의 되돌아가기 링크). */
+function vcSee(n, anchorId){
+  var root = vcRoot();
+  if(!root) return;
+  if(!root.classList.contains('active')){
+    try{ go('vecop'); }catch(e){}
+  }
+  vcTab(n, null);
+  setTimeout(function(){
+    var t = vcEl(anchorId);
+    if(!t || typeof t.scrollIntoView !== 'function') return;
+    try{ t.scrollIntoView({ behavior: vcReduce() ? 'auto' : 'smooth', block: 'start' }); }
+    catch(e){ try{ t.scrollIntoView(); }catch(e2){} }
+  }, 60);
+}
+
+/* 조작을 마치면 그 활동의 단계 토글이 열립니다(시도 전 해설 잠금 — spec §2 STEP2 규약). */
+var vcDone = { a1:false, a2:false, a3:false, a4:false };
+function vcUnlock(key){
+  if(vcDone[key]) return;
+  vcDone[key] = true;
+  var root = vcRoot();
+  if(!root) return;
+  root.querySelectorAll('.vc-fold[data-need="' + key + '"]').forEach(function(d){
+    d.classList.remove('vc-locked');
+  });
+  var msg = vcEl('vc-' + key + '-lock');
+  if(msg) msg.style.display = 'none';
+}
+function vcLockGuard(){
+  var root = vcRoot();
+  if(!root) return;
+  root.querySelectorAll('.vc-fold').forEach(function(d){
+    if(d.getAttribute('data-vc-lg') === '1') return;
+    d.setAttribute('data-vc-lg', '1');
+    var sm = d.querySelector('summary');
+    if(!sm) return;
+    sm.addEventListener('click', function(e){
+      if(d.classList.contains('vc-locked')){
+        e.preventDefault();
+        var need = d.getAttribute('data-need') || '';
+        var msg = vcEl('vc-' + need + '-lock');
+        if(msg && !vcReduce()){
+          msg.style.transition = 'none';
+          msg.style.color = 'var(--red)';
+          setTimeout(function(){ msg.style.color = ''; }, 900);
+        }
+      }
+    });
+  });
+}
+
+
+/* ═══════════ 활동 ① 「우리 반 후기를 한 장으로」 — 벡터의 덧셈 ═══════════ */
+/* 미래엔 Ⅱ pp.65~66 의 사과 후기 3건을 학교 매점 상황으로 재구성했습니다.
+   c 는 정답 분류 — p 긍정 · n 부정 · u 중립 */
+var VC_REVIEWS = [
+  { k:'A', tx:'새로 나온 빵이 달고 맛있어요. 정말 좋네요. 다음에 또 주문할게요.',
+    ws:[{w:'달다',c:'p'},{w:'맛있다',c:'p'},{w:'좋다',c:'p'},{w:'다음',c:'u'},{w:'주문',c:'u'}],
+    v:[3,0,2] },
+  { k:'B', tx:'크기가 작아 실망했는데 신선하고 당도가 높네요.',
+    ws:[{w:'크기',c:'u'},{w:'작다',c:'n'},{w:'실망',c:'n'},{w:'신선하다',c:'p'},{w:'당도',c:'u'},{w:'높다',c:'p'}],
+    v:[2,2,2] },
+  { k:'C', tx:'상한 것이 많고 배송이 늦어서 별로예요. 실망!',
+    ws:[{w:'상하다',c:'n'},{w:'많다',c:'p'},{w:'배송',c:'u'},{w:'늦다',c:'n'},{w:'별로',c:'n'},{w:'실망',c:'n'}],
+    v:[1,4,1] }
+];
+var VC_ORDER = ['', 'p', 'n', 'u'];          /* 없음 → 긍정 → 부정 → 중립 */
+var VC_LBL   = { p:'긍정', n:'부정', u:'중립' };
+var vcA1Tag  = [[], [], []];                  /* 학생이 붙인 배지 */
+var vcA1Sumd = false;
+
+function vcA1Render(){
+  var box = vcEl('vc-a1-revs');
+  if(!box) return;
+  box.innerHTML = '';
+  VC_REVIEWS.forEach(function(r, ri){
+    vcA1Tag[ri] = r.ws.map(function(){ return ''; });
+    var d = document.createElement('div');
+    d.className = 'vc-rev';
+    d.innerHTML = '<div class="hd"><span class="k">후기 ' + r.k + '</span>' +
+                  '<span class="tx">' + vcEsc(r.tx) + '</span></div>' +
+                  '<div class="vc-wchips"></div>';
+    var wrap = d.querySelector('.vc-wchips');
+    r.ws.forEach(function(o, wi){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'vc-wchip';
+      b.setAttribute('aria-label', o.w + ' — 눌러서 감성 배지 바꾸기');
+      b.innerHTML = vcEsc(o.w) + '<span class="ic"></span>';
+      b.addEventListener('click', function(){ vcA1Cycle(ri, wi, b); });
+      wrap.appendChild(b);
+    });
+    box.appendChild(d);
+  });
+
+  var tb = vcEl('vc-a1-body');
+  if(tb){
+    tb.innerHTML = '';
+    VC_REVIEWS.forEach(function(r, ri){
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="lb">' + r.k + '</td>' +
+        '<td><input class="vc-in num" id="vc-a1-' + ri + '-0" type="number" inputmode="numeric" aria-label="후기 ' + r.k + ' 긍정 단어 수"></td>' +
+        '<td><input class="vc-in num" id="vc-a1-' + ri + '-1" type="number" inputmode="numeric" aria-label="후기 ' + r.k + ' 부정 단어 수"></td>' +
+        '<td><input class="vc-in num" id="vc-a1-' + ri + '-2" type="number" inputmode="numeric" aria-label="후기 ' + r.k + ' 중립 단어 수"></td>' +
+        '<td><input class="vc-in num" id="vc-a1-' + ri + '-s" type="number" inputmode="numeric" aria-label="후기 ' + r.k + ' 감성 점수"></td>' +
+        '<td id="vc-a1-' + ri + '-vd"><span class="vc-badge z">—</span></td>';
+      tb.appendChild(tr);
+      var si = tr.querySelector('#vc-a1-' + ri + '-s');
+      if(si) si.addEventListener('input', function(){ vcA1Verdict(ri); });
+    });
+  }
+
+  var q = vcEl('vc-a1-q');
+  if(q){
+    q.innerHTML = '<span class="vc-kval">P + Q = (</span>' +
+      [0,1,2,3].map(function(i){
+        return '<input class="vc-in num" id="vc-a1-q' + i + '" type="number" inputmode="numeric" aria-label="' +
+               (i+1) + '번째 성분">';
+      }).join('<span>,</span>') + '<span class="vc-kval">)</span>';
+  }
+}
+
+function vcA1Cycle(ri, wi, btn){
+  var cur = vcA1Tag[ri][wi] || '';
+  var idx = VC_ORDER.indexOf(cur);
+  var nx  = VC_ORDER[(idx + 1) % VC_ORDER.length];
+  vcA1Tag[ri][wi] = nx;
+  btn.classList.remove('p', 'n', 'u');
+  if(nx) btn.classList.add(nx);
+  var ic = btn.querySelector('.ic');
+  if(ic) ic.textContent = nx ? VC_LBL[nx] : '';
+  vcA1Sync(ri);
+}
+
+/* 배지 개수를 표의 세 칸에 자동으로 채웁니다(학생이 직접 고칠 수도 있습니다). */
+function vcA1Sync(ri){
+  var cnt = { p:0, n:0, u:0 };
+  vcA1Tag[ri].forEach(function(t){ if(t) cnt[t]++; });
+  ['p','n','u'].forEach(function(key, i){
+    var el = vcEl('vc-a1-' + ri + '-' + i);
+    if(el){ el.value = String(cnt[key]); el.classList.remove('ok','no'); }
+  });
+  var s = vcEl('vc-a1-' + ri + '-s');
+  if(s && s.value === '') { /* 점수는 학생이 직접 계산합니다 */ }
+  vcA1Verdict(ri);
+}
+
+function vcA1Verdict(ri){
+  var cell = vcEl('vc-a1-' + ri + '-vd');
+  if(!cell) return;
+  var s = vcVal(vcEl('vc-a1-' + ri + '-s'));
+  if(s === null){ cell.innerHTML = '<span class="vc-badge z">—</span>'; return; }
+  if(s > 0)      cell.innerHTML = '<span class="vc-badge p">긍정</span>';
+  else if(s < 0) cell.innerHTML = '<span class="vc-badge n">부정</span>';
+  else           cell.innerHTML = '<span class="vc-badge z">중립</span>';
+}
+
+function vcA1Reset(){
+  vcA1Render();
+  vcFbClear('vc-a1-fb');
+  vcFbClear('vc-a1-sumfb');
+  var st = vcEl('vc-a1-st');
+  if(st) st.textContent = '세 후기의 성분과 감성 점수를 모두 맞히면 [전체 후기 합치기]가 열립니다.';
+  var sb = vcEl('vc-a1-sum');
+  if(sb) sb.disabled = true;
+  vcA1Sumd = false;
+}
+
+function vcA1Check(){
+  var bad = [], all = true;
+  VC_REVIEWS.forEach(function(r, ri){
+    [0,1,2].forEach(function(i){
+      var el = vcEl('vc-a1-' + ri + '-' + i);
+      var ok = (vcVal(el) === r.v[i]);
+      vcMark(el, ok);
+      if(!ok){ all = false; if(bad.indexOf(r.k) < 0) bad.push(r.k); }
+    });
+    var se = vcEl('vc-a1-' + ri + '-s');
+    var sok = (vcVal(se) === (r.v[0] - r.v[1]));
+    vcMark(se, sok);
+    if(!sok){ all = false; if(bad.indexOf(r.k) < 0) bad.push(r.k); }
+  });
+
+  if(all){
+    vcFb('vc-a1-fb', true,
+      '세 후기의 감성 벡터를 모두 맞혔습니다 — <b>A(3, 0, 2) 긍정 · B(2, 2, 2) 중립 · C(1, 4, 1) 부정</b>. ' +
+      '이제 [전체 후기 합치기]를 눌러 세 줄을 한 줄로 모아 봅시다.');
+    var sb = vcEl('vc-a1-sum');
+    if(sb) sb.disabled = false;
+    var st = vcEl('vc-a1-st');
+    if(st) st.textContent = '준비 완료 — [전체 후기 합치기]를 누르세요.';
+  }else{
+    vcFb('vc-a1-fb', false,
+      '후기 <b>' + bad.join(' · ') + '</b> 를 다시 보세요. ' +
+      '감성 점수는 <b>(첫째 성분) − (둘째 성분)</b> 입니다. ' +
+      '단어를 눌러 배지를 붙이면 앞의 세 칸은 자동으로 채워집니다.');
+  }
+}
+
+function vcA1Sum(){
+  var tb = vcEl('vc-a1-body');
+  if(!tb) return;
+  var old = tb.querySelector('tr.sum');
+  if(old) tb.removeChild(old);
+
+  var v = vcV();
+  var s = VC_REVIEWS[0].v.slice();
+  if(v){ s = v.add(v.add(VC_REVIEWS[0].v, VC_REVIEWS[1].v), VC_REVIEWS[2].v); }
+  var sc = s[0] - s[1];
+
+  var tr = document.createElement('tr');
+  tr.className = 'sum drop';
+  tr.innerHTML = '<td class="lb">A + B + C</td>' +
+    '<td>' + s[0] + '<span class="vc-sumfx">3+2+1</span></td>' +
+    '<td>' + s[1] + '<span class="vc-sumfx">0+2+4</span></td>' +
+    '<td>' + s[2] + '<span class="vc-sumfx">2+2+1</span></td>' +
+    '<td>' + vcN(sc) + '<span class="vc-sumfx">' + s[0] + ' − ' + s[1] + '</span></td>' +
+    '<td><span class="vc-badge z">중립</span></td>';
+  tb.appendChild(tr);
+
+  vcFb('vc-a1-sumfb', true,
+    '세 후기를 합치면 <b>(6, 6, 5)</b>, 전체 감성 점수는 6 − 6 = <b>0 → 중립</b>입니다. ' +
+    '개별로는 긍정 하나·중립 하나·부정 하나였는데, 합치니 <b>전체는 중립</b>이 되었습니다. ' +
+    '긍정 단어 6개와 부정 단어 6개가 정확히 맞섰기 때문입니다.');
+  vcA1Sumd = true;
+  vcLSSet(VC_K_A1, '1');
+  vcUnlock('a1');
+}
+
+/* 7·8차시에서 모은 학급 말뭉치의 빈도수 벡터를 모두 더합니다. */
+function vcA1Corpus(){
+  var box = vcEl('vc-a1-corpusbox');
+  if(!box) return;
+  var arr = [];
+  try{
+    var raw = JSON.parse(vcLS(VC_K_CORP, '[]'));
+    if(Array.isArray(raw)) arr = raw.filter(function(it){ return it && typeof it.t === 'string' && it.t.trim(); });
+  }catch(e){ arr = []; }
+
+  if(!arr.length){
+    box.innerHTML = '<p class="vc-hint" style="margin-top:0.6rem;">' +
+      '아직 저장된 학급 문장이 없습니다. <b>7차시 「텍스트를 집합으로」</b>에서 문장을 모으면 ' +
+      '여기서 그 문장들의 빈도수 벡터를 모두 더해 볼 수 있습니다.</p>' +
+      '<div class="btn-row"><button class="btn" type="button" onclick="go(\'text\')">7차시로 이동</button></div>';
+    var cb = vcEl('vc-a1-corpus');
+    if(cb) cb.disabled = true;
+    return;
+  }
+
+  var freq = {}, total = 0;
+  arr.forEach(function(it){
+    var toks = null;
+    if(typeof stTok === 'function'){ try{ toks = stTok(it.t); }catch(e){ toks = null; } }
+    if(!Array.isArray(toks)){
+      toks = String(it.t).replace(/[.,!?;:'"()\[\]{}·…“”‘’~]/g, ' ')
+        .split(/\s+/).filter(function(w){ return w.length > 1; });
+    }
+    toks.forEach(function(w){ if(!w) return; freq[w] = (freq[w] || 0) + 1; total++; });
+  });
+  var top = Object.keys(freq).sort(function(x, y){ return freq[y] - freq[x] || (x < y ? -1 : 1); }).slice(0, 5);
+  var max = top.length ? freq[top[0]] : 1;
+
+  box.innerHTML = '<p class="vc-hint" style="margin-top:0.7rem;">문장 <b>' + arr.length + '개</b>의 빈도수 벡터를 ' +
+    '모두 더했습니다(성분 합계 ' + total + '). 가장 큰 성분 다섯 개입니다.</p><div class="vc-bars"></div>';
+  var bars = box.querySelector('.vc-bars');
+  top.forEach(function(w){
+    var d = document.createElement('div');
+    d.className = 'vc-cbar';
+    d.innerHTML = '<span class="nm" title="' + vcEsc(w) + '">' + vcEsc(w) + '</span>' +
+      '<span class="tk"><i></i></span><span class="vl">' + freq[w] + '</span>';
+    bars.appendChild(d);
+    setTimeout(function(){
+      var i = d.querySelector('i');
+      if(i) i.style.width = Math.max(6, Math.round(freq[w] / max * 100)) + '%';
+    }, 40);
+  });
+}
+
+function vcA1Q(){
+  var P = [2, 1, 4, 0], Q = [0, 1, -2, 3];
+  var v = vcV();
+  var ans = v ? v.add(P, Q) : [2, 2, 2, 3];
+  var all = true, wrong = [];
+  ans.forEach(function(x, i){
+    var el = vcEl('vc-a1-q' + i);
+    var ok = (vcVal(el) === x);
+    vcMark(el, ok);
+    if(!ok){ all = false; wrong.push(i + 1); }
+  });
+  if(all){
+    vcFb('vc-a1-qfb', true, 'P + Q = <b>(2, 2, 2, 3)</b> 입니다. 성분끼리 (2+0, 1+1, 4+(−2), 0+3) 으로 계산합니다.');
+  }else{
+    vcFb('vc-a1-qfb', false,
+      '<b>' + wrong.join(' · ') + '번째 성분</b>을 다시 보세요. ' +
+      (wrong.indexOf(3) >= 0 ? '셋째 성분에서 <b>−2를 더하는 것</b>을 잊지 않았나요? ' : '') +
+      '성분끼리 짝을 지어 더합니다.');
+  }
+}
+
+/* ═══════════ 활동 ② 「두 글은 어디서 갈리나」 — 벡터의 뺄셈 ═══════════ */
+var VC_A2 = {
+  words: ['인공지능', '데이터', '학교', '수업', '미래'],
+  a: [10, 5, 1, 1, 5],
+  b: [3, 2, 1, 4, 2]
+};
+var vcA2Bcur = VC_A2.b.slice();
+var vcA2Ok   = false;
+
+function vcA2Render(){
+  var q = vcEl('vc-a2-q');
+  if(q){
+    q.innerHTML = '<span class="vc-kval">a − b = (</span>' +
+      VC_A2.words.map(function(w, i){
+        return '<label style="flex-direction:column;align-items:center;gap:0.15rem;">' +
+          '<span style="font-size:0.72rem;color:var(--muted);">' + vcEsc(w) + '</span>' +
+          '<input class="vc-in num" id="vc-a2-d' + i + '" type="number" inputmode="numeric" aria-label="' +
+          vcEsc(w) + ' 성분의 차"></label>';
+      }).join('<span>,</span>') + '<span class="vc-kval">)</span>';
+  }
+
+  var eq = vcEl('vc-a2-eq');
+  if(eq){
+    vcA2Bcur = VC_A2.b.slice();
+    eq.innerHTML = '<span class="vc-kval">기사 b = (</span>' +
+      VC_A2.words.map(function(w, i){
+        return '<label style="flex-direction:column;align-items:center;gap:0.15rem;">' +
+          '<span style="font-size:0.72rem;color:var(--muted);">' + vcEsc(w) + '</span>' +
+          '<input class="vc-in num" id="vc-a2-b' + i + '" type="number" inputmode="numeric" value="' +
+          VC_A2.b[i] + '" aria-label="' + vcEsc(w) + ' 성분의 기사 b 값"></label>';
+      }).join('<span>,</span>') + '<span class="vc-kval">)</span>';
+    VC_A2.words.forEach(function(w, i){
+      var el = vcEl('vc-a2-b' + i);
+      if(el) el.addEventListener('input', vcA2EqSync);
+    });
+  }
+  vcA2EqSync();
+}
+
+function vcA2Check(){
+  var v = vcV();
+  var d = v ? v.sub(VC_A2.a, VC_A2.b) : [7, 3, 0, -3, 3];
+  var all = true, wrong = [];
+  d.forEach(function(x, i){
+    var el = vcEl('vc-a2-d' + i);
+    var ok = (vcVal(el) === x);
+    vcMark(el, ok);
+    if(!ok){ all = false; wrong.push(VC_A2.words[i]); }
+  });
+  vcA2Ok = all;
+  if(all){
+    vcFb('vc-a2-fb', true,
+      'a − b = <b>(7, 3, 0, −3, 3)</b> 입니다. 부호는 <b>누가 더 많이 썼는가</b>를, ' +
+      '절댓값은 <b>얼마나 차이 나는가</b>를 알려 줍니다.');
+    vcA2Bars();
+    var st = vcEl('vc-a2-st');
+    if(st) st.textContent = '막대가 나타났습니다. [0인 성분 찾기]도 눌러 보세요.';
+    vcUnlock('a2');
+  }else{
+    vcFb('vc-a2-fb', false,
+      '<b>' + wrong.join(' · ') + '</b> 칸을 다시 보세요. ' +
+      '기사 a의 수에서 기사 b의 수를 <b>같은 자리끼리</b> 뺍니다. ' +
+      '기사 b가 더 큰 자리에서는 결과가 <b>음수</b>가 됩니다.');
+  }
+}
+
+function vcA2Bars(){
+  var box = vcEl('vc-a2-bars');
+  if(!box) return;
+  var v = vcV();
+  var d = v ? v.sub(VC_A2.a, VC_A2.b) : [7, 3, 0, -3, 3];
+  var max = Math.max.apply(null, d.map(Math.abs).concat([1]));
+  var rank = d.map(function(x, i){ return { i:i, m:Math.abs(x) }; })
+              .sort(function(p, q){ return q.m - p.m; }).slice(0, 3)
+              .filter(function(o){ return o.m > 0; })
+              .map(function(o){ return o.i; });
+
+  box.innerHTML = '';
+  d.forEach(function(x, i){
+    var pct = Math.abs(x) / max * 50;
+    var row = document.createElement('div');
+    row.className = 'vc-dbar' + (rank.indexOf(i) >= 0 ? ' top' : '');
+    row.id = 'vc-a2-bar' + i;
+    row.innerHTML = '<span class="nm" title="' + vcEsc(VC_A2.words[i]) + '">' + vcEsc(VC_A2.words[i]) + '</span>' +
+      '<span class="mid"><span class="zero"></span><i class="' + (x >= 0 ? 'pos' : 'neg') + '"></i></span>' +
+      '<span class="vl">' + vcN(x) + '</span>';
+    box.appendChild(row);
+    var bar = row.querySelector('i');
+    setTimeout(function(){
+      if(!bar) return;
+      if(x >= 0){ bar.style.left = '50%'; bar.style.width = pct + '%'; }
+      else { bar.style.left = (50 - pct) + '%'; bar.style.width = pct + '%'; }
+    }, 40);
+  });
+}
+
+function vcA2Zero(){
+  if(!vcA2Ok){
+    vcFb('vc-a2-fb', false, '먼저 다섯 칸을 채워 <b>채점</b>을 눌러 주세요. 막대가 나타난 뒤에 찾을 수 있습니다.');
+    return;
+  }
+  var v = vcV();
+  var d = v ? v.sub(VC_A2.a, VC_A2.b) : [7, 3, 0, -3, 3];
+  var hit = [];
+  d.forEach(function(x, i){
+    var row = vcEl('vc-a2-bar' + i);
+    if(!row) return;
+    row.classList.remove('zero-on');
+    if(x === 0){ row.classList.add('zero-on'); hit.push(VC_A2.words[i]); }
+  });
+  vcFb('vc-a2-fb', true,
+    '값이 0인 성분은 <b>' + (hit.length ? hit.join(' · ') : '없습니다') + '</b> 입니다 — ' +
+    '두 기사가 <b>똑같이 쓴 단어</b>라는 뜻입니다. 차 벡터에서 0은 “여기는 다르지 않다”는 표시입니다.');
+}
+
+function vcA2EqSync(){
+  var v = vcV();
+  VC_A2.words.forEach(function(w, i){
+    var n = vcVal(vcEl('vc-a2-b' + i));
+    vcA2Bcur[i] = (n === null ? 0 : n);
+  });
+  var d = v ? v.sub(VC_A2.a, vcA2Bcur) : VC_A2.a.map(function(x, i){ return x - vcA2Bcur[i]; });
+  var line = vcEl('vc-a2-eqline');
+  if(line) line.textContent = 'a − b = ' + vcTuple(d);
+  var zero = d.every(function(x){ return x === 0; });
+  var fb = vcEl('vc-a2-eqfb');
+  if(!fb) return;
+  if(zero){
+    fb.className = 'vc-fb ok';
+    fb.innerHTML = '✓ <b>두 벡터가 같아졌습니다.</b> 차 벡터가 <b>영벡터</b>이므로 ' +
+      '두 벡터의 <b>종점 사이의 거리는 0</b> 입니다. ' +
+      '“두 글이 같다”는 말은 “모든 칸에서 단어의 개수가 같다”는 뜻이었습니다.';
+    vcUnlock('a2');
+  }else{
+    var left = d.filter(function(x){ return x !== 0; }).length;
+    fb.className = 'vc-fb';
+    fb.innerHTML = '<span style="font-weight:600;color:var(--muted);">아직 <b>' + left +
+      '개</b> 성분이 0이 아닙니다. 기사 b의 수를 기사 a와 같게 맞춰 보세요.</span>';
+  }
+}
+
+function vcA2EqReset(){
+  VC_A2.words.forEach(function(w, i){
+    var el = vcEl('vc-a2-b' + i);
+    if(el) el.value = String(VC_A2.b[i]);
+  });
+  vcA2EqSync();
+}
+
+
+/* ═══════════ 캔버스 공통 — 좌표평면과 화살표 ═══════════ */
+var VC_COLORS = null;
+function vcColor(name, fb){
+  try{
+    if(!VC_COLORS) VC_COLORS = getComputedStyle(document.documentElement);
+    var v = VC_COLORS.getPropertyValue(name);
+    if(v && v.trim()) return v.trim();
+  }catch(e){}
+  return fb;
+}
+
+function vcCv(id){
+  var cv = vcEl(id);
+  if(!cv) return null;
+  var w = cv.clientWidth || (cv.parentNode ? cv.parentNode.clientWidth : 0) || 0;
+  if(w < 60) return null;                       /* 숨어 있는 탭이면 그리지 않습니다 */
+  var h = Math.round(Math.min(Math.max(w * 0.78, 180), 320));
+  var dpr = window.devicePixelRatio || 1;
+  cv.width  = Math.round(w * dpr);
+  cv.height = Math.round(h * dpr);
+  cv.style.height = h + 'px';
+  var ctx = cv.getContext('2d');
+  if(!ctx) return null;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  return { cv:cv, ctx:ctx, W:w, H:h };
+}
+
+function vcArrow(ctx, x0, y0, x1, y1, color, width){
+  var dx = x1 - x0, dy = y1 - y0;
+  var len = Math.sqrt(dx * dx + dy * dy);
+  ctx.strokeStyle = color; ctx.fillStyle = color;
+  ctx.lineWidth = width; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+  if(len < 6) return;
+  var ux = dx / len, uy = dy / len, hd = Math.min(11, Math.max(6, len * 0.18));
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x1 - ux * hd - uy * hd * 0.5, y1 - uy * hd + ux * hd * 0.5);
+  ctx.lineTo(x1 - ux * hd + uy * hd * 0.5, y1 - uy * hd - ux * hd * 0.5);
+  ctx.closePath(); ctx.fill();
+}
+
+/* opts = { pts:[{x,y,color,w,label,alpha}], guide:{x,y}, axl:'첫째 성분', ayl:'둘째 성분' } */
+function vcPlot(c, opts){
+  if(!c) return;
+  var ctx = c.ctx, W = c.W, H = c.H, pad = 26;
+  var fg = vcColor('--fg', '#1a1714'), bd = vcColor('--border', '#d8d0c4'),
+      mu = vcColor('--muted', '#78726a'), bg = vcColor('--bg', '#f5f0ea');
+  var pts = opts.pts || [];
+
+  var mx = 3;
+  pts.forEach(function(p){ mx = Math.max(mx, Math.abs(p.x), Math.abs(p.y)); });
+  if(opts.guide) mx = Math.max(mx, Math.abs(opts.guide.x), Math.abs(opts.guide.y));
+  var R = Math.ceil(mx * 1.12) + 1;
+
+  var s  = Math.min((W - pad * 2) / (2 * R), (H - pad * 2) / (2 * R));
+  var ox = W / 2, oy = H / 2;
+  function PX(x){ return ox + x * s; }
+  function PY(y){ return oy - y * s; }
+
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  /* 눈금 간격 — 폰에서 라벨이 겹치지 않도록 픽셀 간격 26px 이상을 보장합니다. */
+  var step = 1;
+  while(step * s < 26) step += (step < 2 ? 1 : (step < 5 ? 3 : 5));
+
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = bd;
+  for(var g = -R; g <= R; g += step){
+    ctx.beginPath(); ctx.moveTo(PX(g), PY(-R)); ctx.lineTo(PX(g), PY(R)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PX(-R), PY(g)); ctx.lineTo(PX(R), PY(g)); ctx.stroke();
+  }
+  ctx.strokeStyle = mu; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(PX(-R), PY(0)); ctx.lineTo(PX(R), PY(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(PX(0), PY(-R)); ctx.lineTo(PX(0), PY(R)); ctx.stroke();
+
+  ctx.fillStyle = mu;
+  ctx.font = '11px monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for(var t = -R + step; t <= R - 1; t += step){
+    if(t === 0) continue;
+    ctx.fillText(String(t), PX(t), PY(0) + 4);
+  }
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(var u = -R + step; u <= R - 1; u += step){
+    if(u === 0) continue;
+    ctx.fillText(String(u), PX(0) - 5, PY(u));
+  }
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('O', PX(0) + 5, PY(0) + 4);
+  if(opts.axl){ ctx.textAlign = 'right'; ctx.fillText(opts.axl, W - 4, PY(0) + 4); }
+  if(opts.ayl){ ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText(opts.ayl, PX(0) + 5, 3); }
+
+  /* 방향선 — 실수배를 해도 종점이 이 선 위를 벗어나지 않습니다. */
+  if(opts.guide && (opts.guide.x !== 0 || opts.guide.y !== 0)){
+    var gx = opts.guide.x, gy = opts.guide.y;
+    var m = Math.max(Math.abs(gx), Math.abs(gy));
+    var f = R / m;
+    ctx.save();
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = mu; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(PX(-gx * f), PY(-gy * f));
+    ctx.lineTo(PX(gx * f), PY(gy * f));
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  pts.forEach(function(p){
+    ctx.save();
+    ctx.globalAlpha = (p.alpha == null ? 1 : p.alpha);
+    vcArrow(ctx, PX(0), PY(0), PX(p.x), PY(p.y), p.color || fg, p.w || 3);
+    if(p.label){
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = p.color || fg;
+      ctx.font = 'bold 12px sans-serif';
+      var lx = PX(p.x), ly = PY(p.y);
+      ctx.textAlign = (p.x >= 0 ? 'left' : 'right');
+      ctx.textBaseline = (p.y >= 0 ? 'bottom' : 'top');
+      ctx.fillText(p.label, lx + (p.x >= 0 ? 7 : -7), ly + (p.y >= 0 ? -6 : 6));
+    }
+    ctx.restore();
+  });
+  ctx.fillStyle = fg;
+  ctx.beginPath(); ctx.arc(PX(0), PY(0), 3.2, 0, Math.PI * 2); ctx.fill();
+}
+
+/* ═══════════ 활동 ③ 「늘이고 줄이기」 — 실수배 ═══════════ */
+var VC_A3_BASE = [3, 1, 2];
+var vcA3k = 1;
+var vcA3TrailOn = false;
+var vcA3Hist = [];
+
+function vcA3Cur(){
+  var v = vcV();
+  return v ? v.scale(vcA3k, VC_A3_BASE) : VC_A3_BASE.map(function(x){ return x * vcA3k; });
+}
+
+function vcA3K(val, silent){
+  var k = parseFloat(val);
+  if(!isFinite(k)) return;
+  vcA3k = Math.round(k * 10) / 10;
+  var lab = vcEl('vc-a3-kv');
+  if(lab) lab.textContent = 'k = ' + vcA3k.toFixed(1);
+  var klb = vcEl('vc-a3-klb');
+  if(klb) klb.textContent = vcA3k.toFixed(1).replace(/\.0$/, '') + 'a';
+
+  var cur = vcA3Cur();
+  [0, 1, 2].forEach(function(i){
+    var c = vcEl('vc-a3-c' + i);
+    if(c) c.textContent = vcFix(cur[i], (Math.abs(cur[i] - Math.round(cur[i])) < 1e-9 ? 0 : 1));
+  });
+  var sc = cur[0] - cur[1];
+  var se = vcEl('vc-a3-sc');
+  if(se) se.textContent = vcFix(sc, (Math.abs(sc - Math.round(sc)) < 1e-9 ? 0 : 1));
+  var vd = vcEl('vc-a3-vd');
+  if(vd){
+    vd.innerHTML = sc > 0 ? '<span class="vc-badge p">긍정</span>'
+                 : (sc < 0 ? '<span class="vc-badge n">부정</span>' : '<span class="vc-badge z">중립</span>');
+  }
+  var note = vcEl('vc-a3-note');
+  if(note){
+    note.innerHTML = 'k = ' + vcA3k.toFixed(1) + ' 일 때 감성 점수는 ' + vcFix(sc, 1) +
+      ' — a의 점수 2의 <b>' + vcA3k.toFixed(1) + '배</b>입니다. 그런데 <b>부호가 그대로여서 판정은 바뀌지 않습니다.</b>';
+  }
+
+  if(vcA3TrailOn){
+    if(vcA3Hist.indexOf(vcA3k) < 0){ vcA3Hist.push(vcA3k); if(vcA3Hist.length > 8) vcA3Hist.shift(); }
+  }
+  vcA3Draw();
+  if(!silent) vcUnlock('a3');       /* 초기 렌더(k = 1)로는 해설이 열리지 않습니다 */
+}
+
+function vcA3Set(k, silent){
+  var sl = vcEl('vc-a3-k');
+  if(sl){ sl.value = String(k); }
+  vcA3K(k, silent);
+}
+
+function vcA3Trail(){
+  vcA3TrailOn = !vcA3TrailOn;
+  if(!vcA3TrailOn) vcA3Hist = [];
+  var b = vcEl('vc-a3-trailbtn');
+  if(b) b.textContent = vcA3TrailOn ? '자취 지우기' : '자취 남기기 켜기';
+  vcA3Draw();
+}
+
+function vcA3Draw(){
+  var c = vcCv('vc-a3-cv');
+  if(!c) return;
+  var ax = parseInt((vcEl('vc-a3-ax') || {}).value || '0', 10);
+  var ay = parseInt((vcEl('vc-a3-ay') || {}).value || '1', 10);
+  var names = ['첫째 성분', '둘째 성분', '셋째 성분'];
+  var cur = vcA3Cur();
+  var pts = [];
+
+  vcA3Hist.forEach(function(k){
+    if(Math.abs(k - vcA3k) < 1e-9) return;
+    pts.push({ x: VC_A3_BASE[ax] * k, y: VC_A3_BASE[ay] * k,
+               color: vcColor('--muted', '#78726a'), w: 2, alpha: 0.35 });
+  });
+  pts.push({ x: cur[ax], y: cur[ay], color: vcColor('--fg', '#1a1714'), w: 3.4,
+             label: '(' + vcFix(cur[ax], 1) + ', ' + vcFix(cur[ay], 1) + ')' });
+
+  vcPlot(c, { pts: pts, guide: { x: VC_A3_BASE[ax], y: VC_A3_BASE[ay] },
+              axl: names[ax], ayl: names[ay] });
+}
+
+function vcA3Mean(){
+  var sum = [6, 6, 5];
+  var d = parseInt((vcEl('vc-a3-rd') || {}).value || '2', 10);
+  var v = vcV();
+  var m = v ? v.scale(1 / 3, sum) : sum.map(function(x){ return x / 3; });
+  var shown = m.map(function(x){ return vcFix(x, d); });
+  var sc = m[0] - m[1];
+  vcFb('vc-a3-meanfb', true,
+    '평균 벡터 = <b>(1/3)(6, 6, 5) = (' + shown.join(', ') + ')</b> 입니다 ' +
+    '(셋째 성분의 참값은 5/3 = 1.666…, 위 값은 ' +
+      (d === 0 ? '정수로' : '소수 ' + (d === 1 ? '첫째' : '둘째') + ' 자리까지') + ' 반올림한 근삿값입니다). ' +
+    '평균 후기의 감성 점수는 ' + vcFix(sc, 0) + ' → <b>중립</b> — 합 벡터의 판정과 같습니다. ' +
+    '<b>여러 벡터의 합에 1/n을 곱한 것</b>이 평균 벡터입니다.');
+  vcUnlock('a3');
+}
+
+
+/* ═══════════ 활동 ④ 「문장의 크기를 재다」 — 위치벡터와 |a| ═══════════ */
+var VC_A4_BASE = [3, 1, 2];
+var vcA4Vec = VC_A4_BASE.slice();
+var vcA4Try = 0;
+var vcA4Rows = [];
+
+function vcA4Render(){
+  var box = vcEl('vc-a4-comp');
+  if(box){
+    box.innerHTML = ['첫째', '둘째', '셋째'].map(function(nm, i){
+      return '<label style="flex-direction:column;align-items:center;gap:0.15rem;">' +
+        '<span style="font-size:0.72rem;color:var(--muted);">' + nm + ' 성분</span>' +
+        '<input class="vc-in num" id="vc-a4-v' + i + '" type="number" inputmode="numeric" value="' +
+        VC_A4_BASE[i] + '" aria-label="' + nm + ' 성분">' +
+        '</label>';
+    }).join('');
+    [0, 1, 2].forEach(function(i){
+      var el = vcEl('vc-a4-v' + i);
+      if(el) el.addEventListener('input', vcA4Sync);
+    });
+  }
+
+  var q1 = vcEl('vc-a4-q1');
+  if(q1){
+    q1.innerHTML = '<span class="vc-kval">|a| = √(</span>' +
+      '<input class="vc-in num" id="vc-a4-q1a" type="number" inputmode="numeric" aria-label="근호 안의 수">' +
+      '<span class="vc-kval">) ≈</span>' +
+      '<input class="vc-in num" id="vc-a4-q1b" type="number" step="0.01" inputmode="decimal" aria-label="소수 둘째 자리 근삿값">' +
+      '<span class="vc-hint">소수 둘째 자리까지</span>';
+  }
+  var q2 = vcEl('vc-a4-q2');
+  if(q2){
+    q2.innerHTML = '<span class="vc-kval" style="width:100%;">(1) a − b = (</span>' +
+      [0,1,2,3,4].map(function(i){
+        return '<input class="vc-in num" id="vc-a4-q2d' + i + '" type="number" inputmode="numeric" aria-label="' +
+               (i+1) + '번째 성분의 차">';
+      }).join('<span>,</span>') +
+      '<span class="vc-kval">)</span>' +
+      '<span class="vc-kval" style="width:100%;margin-top:0.4rem;">(2) 두 종점 사이의 거리 =</span>' +
+      '<input class="vc-in num" id="vc-a4-q2r" type="number" step="0.01" inputmode="decimal" aria-label="종점 사이의 거리">';
+  }
+  vcA4Sync();
+}
+
+function vcA4Sync(){
+  [0, 1, 2].forEach(function(i){
+    var n = vcVal(vcEl('vc-a4-v' + i));
+    vcA4Vec[i] = (n === null ? 0 : n);
+  });
+  vcA4Steps();
+  vcA4Draw();
+  var v = vcV();
+  var nm = v ? v.norm(vcA4Vec) : { sq: vcA4Vec.reduce(function(s, x){ return s + x * x; }, 0) };
+  var cur = vcEl('vc-a4-cur');
+  if(cur) cur.textContent = 'a = ' + vcTuple(vcA4Vec) + ' 　|a| = ' + vcRad(nm.sq);
+}
+
+/* |a| 계산 3단 — 제곱 → 합 → 근호 */
+function vcA4Steps(){
+  var box = vcEl('vc-a4-steps');
+  if(!box) return;
+  var keep = {};
+  ['s0','s1','s2','sum','apx'].forEach(function(k){
+    var e = vcEl('vc-a4-' + k);
+    if(e) keep[k] = e.value;
+  });
+  box.innerHTML =
+    '<div class="vc-stepline"><span class="st">단계 1 — 각 성분을 제곱합니다</span>' +
+      [0,1,2].map(function(i){
+        return '<span>(' + vcN(vcA4Vec[i]) + ')² =</span>' +
+          '<input class="vc-in num" id="vc-a4-s' + i + '" type="number" inputmode="numeric" aria-label="' +
+          (i+1) + '번째 성분의 제곱">';
+      }).join('') +
+    '</div>' +
+    '<div class="vc-stepline"><span class="st">단계 2 — 제곱을 모두 더합니다</span>' +
+      '<span>제곱의 합 =</span>' +
+      '<input class="vc-in num" id="vc-a4-sum" type="number" inputmode="numeric" aria-label="제곱의 합">' +
+    '</div>' +
+    '<div class="vc-stepline"><span class="st">단계 3 — 근호를 씌우고 소수 둘째 자리까지 어림합니다</span>' +
+      '<span>|a| = √(제곱의 합) ≈</span>' +
+      '<input class="vc-in num" id="vc-a4-apx" type="number" step="0.01" inputmode="decimal" aria-label="크기의 근삿값">' +
+    '</div>';
+  ['s0','s1','s2','sum','apx'].forEach(function(k){
+    var e = vcEl('vc-a4-' + k);
+    if(e && keep[k] != null) e.value = keep[k];
+  });
+}
+
+function vcA4Draw(){
+  var c = vcCv('vc-a4-cv');
+  if(!c) return;
+  var ax = parseInt((vcEl('vc-a4-ax') || {}).value || '0', 10);
+  var ay = parseInt((vcEl('vc-a4-ay') || {}).value || '1', 10);
+  var names = ['첫째 성분', '둘째 성분', '셋째 성분'];
+  vcPlot(c, {
+    pts: [{ x: vcA4Vec[ax], y: vcA4Vec[ay], color: vcColor('--fg', '#1a1714'), w: 3.4,
+            label: 'A(' + vcN(vcA4Vec[ax]) + ', ' + vcN(vcA4Vec[ay]) + ')' }],
+    axl: names[ax], ayl: names[ay]
+  });
+}
+
+function vcA4Preset(kind){
+  var nv;
+  if(kind === 'double')      nv = VC_A4_BASE.map(function(x){ return x * 2; });
+  else if(kind === 'zero')   nv = [VC_A4_BASE[0], VC_A4_BASE[1], 0];
+  else                       nv = VC_A4_BASE.slice();
+  [0, 1, 2].forEach(function(i){
+    var e = vcEl('vc-a4-v' + i);
+    if(e) e.value = String(nv[i]);
+  });
+  ['s0','s1','s2','sum','apx'].forEach(function(k){
+    var e = vcEl('vc-a4-' + k);
+    if(e){ e.value = ''; e.classList.remove('ok','no'); }
+  });
+  vcFbClear('vc-a4-fb');
+  vcA4Try = 0;
+  var sb = vcEl('vc-a4-showbtn');
+  if(sb) sb.disabled = true;
+  vcA4Sync();
+  if(kind === 'zero'){
+    vcFb('vc-a4-fb', true,
+      '셋째 성분을 0으로 만들었습니다. 0이 많은 벡터는 크기가 작아집니다 — ' +
+      '8차시의 <b>희소 벡터</b>를 떠올려 보세요. 다시 3단을 채워 크기가 얼마나 줄었는지 확인해 봅시다.');
+  }
+}
+
+function vcA4Check(){
+  var v = vcV();
+  var nm = v ? v.norm(vcA4Vec) : { sq: vcA4Vec.reduce(function(s, x){ return s + x * x; }, 0) };
+  var all = true, msg = [];
+
+  [0, 1, 2].forEach(function(i){
+    var el = vcEl('vc-a4-s' + i);
+    var ok = (vcVal(el) === vcA4Vec[i] * vcA4Vec[i]);
+    vcMark(el, ok);
+    if(!ok){ all = false; msg.push((i + 1) + '번째 제곱'); }
+  });
+  var se = vcEl('vc-a4-sum');
+  var sok = (vcVal(se) === nm.sq);
+  vcMark(se, sok);
+  if(!sok){ all = false; msg.push('제곱의 합'); }
+
+  var ae = vcEl('vc-a4-apx');
+  var av = vcVal(ae);
+  var exact = Math.sqrt(nm.sq);
+  var aok = (av !== null && Math.abs(av - exact) < 0.005001);
+  vcMark(ae, aok);
+  if(!aok){ all = false; msg.push('근삿값'); }
+
+  if(all){
+    vcFb('vc-a4-fb', true,
+      'a = ' + vcTuple(vcA4Vec) + ' 의 크기는 <b>|a| = ' + vcRad(nm.sq) + '</b> 입니다. ' +
+      '제곱의 합 ' + nm.sq + ' 에 근호를 씌운 값입니다.' +
+      (vcSimp(nm.sq).exact ? ' 근호 안이 완전제곱이라 <b>정수로 깔끔하게</b> 정리되었습니다.' : ''));
+    vcA4Try = 0;
+    var sb = vcEl('vc-a4-showbtn');
+    if(sb) sb.disabled = true;
+    vcA4Log();
+    vcUnlock('a4');
+  }else{
+    vcA4Try++;
+    var hint = '<b>' + msg.join(' · ') + '</b> 칸을 다시 보세요. ';
+    if(msg.indexOf('근삿값') >= 0 && msg.length === 1){
+      hint += '근호를 씌운 뒤 <b>소수 둘째 자리까지</b> 반올림합니다(오차 0.005 이내).';
+    }else{
+      hint += '순서는 <b>제곱 → 합 → 근호</b> 입니다. 음수 성분도 제곱하면 양수가 됩니다.';
+    }
+    if(vcA4Try >= 3){
+      hint += ' 세 번 시도했으니 <b>[계산 과정 보기]</b> 를 열 수 있습니다.';
+      var sb2 = vcEl('vc-a4-showbtn');
+      if(sb2) sb2.disabled = false;
+    }
+    vcFb('vc-a4-fb', false, hint);
+  }
+}
+
+function vcA4Show(){
+  var v = vcV();
+  var nm = v ? v.norm(vcA4Vec) : { sq: vcA4Vec.reduce(function(s, x){ return s + x * x; }, 0) };
+  var sqs = vcA4Vec.map(function(x){ return x * x; });
+  vcFb('vc-a4-fb', true,
+    '<b>계산 과정</b><br>' +
+    '① 제곱 — ' + vcA4Vec.map(function(x, i){ return '(' + vcN(x) + ')² = ' + sqs[i]; }).join(' , ') + '<br>' +
+    '② 합 — ' + sqs.join(' + ') + ' = ' + nm.sq + '<br>' +
+    '③ 근호 — |a| = √' + nm.sq + ' = <b>' + vcRad(nm.sq) + '</b>');
+}
+
+function vcA4Log(entry){
+  var tb = vcEl('vc-a4-logbody');
+  if(!tb) return;
+  var v = vcV();
+  var row = entry || (function(){
+    var nm = v ? v.norm(vcA4Vec) : { sq: vcA4Vec.reduce(function(s, x){ return s + x * x; }, 0) };
+    return { name: 'a = ' + vcTuple(vcA4Vec), sq: nm.sq };
+  })();
+  if(vcA4Rows.some(function(r){ return r.name === row.name; })) return;
+  vcA4Rows.push(row);
+
+  var tr = document.createElement('tr');
+  tr.className = 'drop';
+  tr.innerHTML = '<td class="lb">' + vcEsc(row.name) + '</td><td>' + row.sq + '</td>' +
+    '<td>' + vcRadShort(row.sq) + '</td><td>' + Math.sqrt(row.sq).toFixed(2) + '</td>';
+  tb.appendChild(tr);
+
+  /* |2a| = 2|a| 관계가 표에 갖추어지면 배지를 띄웁니다. */
+  var base = vcA4Rows.filter(function(r){ return r.sq === 14; }).length;
+  var dbl  = vcA4Rows.filter(function(r){ return r.sq === 56; }).length;
+  if(base && dbl){
+    vcFb('vc-a4-logfb', true,
+      '<b>|2a| = 2|a|</b> — √56 = 2√14 이므로 7.48 = 2 × 3.74 입니다. ' +
+      '같은 문장을 두 번 이어 붙이면 <b>크기가 정확히 2배</b>가 됩니다. 방향은 그대로입니다.');
+  }
+}
+
+function vcA4Diff(){
+  var v = vcV();
+  var d = v ? v.sub(VC_A2.a, VC_A2.b) : [7, 3, 0, -3, 3];
+  var nm = v ? v.norm(d) : { sq: 76 };
+  vcA4Log({ name: 'a − b = ' + vcTuple(d), sq: nm.sq });
+  vcFb('vc-a4-logfb', true,
+    '활동 ②의 차 벡터 <b>' + vcTuple(d) + '</b> 의 크기는 ' +
+    '√(49 + 9 + 0 + 9 + 9) = <b>' + vcRad(nm.sq) + '</b> 입니다. ' +
+    '이 값이 다음 시간에 배울 <b>유클리드 유사도 d(a, b)</b> 입니다 — ' +
+    '두 기사가 그만큼 떨어져 있다는 뜻입니다.');
+  vcUnlock('a4');
+}
+
+function vcA4LogClear(){
+  vcA4Rows = [];
+  var tb = vcEl('vc-a4-logbody');
+  if(tb) tb.innerHTML = '';
+  vcFbClear('vc-a4-logfb');
+}
+
+function vcA4Q1(){
+  var a = vcEl('vc-a4-q1a'), b = vcEl('vc-a4-q1b');
+  var okA = (vcVal(a) === 14);
+  var okB = (vcVal(b) !== null && Math.abs(vcVal(b) - Math.sqrt(14)) < 0.005001);
+  vcMark(a, okA); vcMark(b, okB);
+  if(okA && okB){
+    vcFb('vc-a4-q1fb', true,
+      '|a| = √(3² + 1² + 2²) = √(9 + 1 + 4) = <b>√14 ≈ 3.74</b> 입니다. ' +
+      '각 성분을 제곱해 더하고 근호를 씌웁니다.');
+  }else{
+    vcFb('vc-a4-q1fb', false,
+      (okA ? '' : '근호 안의 수를 다시 보세요 — 9 + 1 + 4 입니다. ') +
+      (okB ? '' : '근삿값은 소수 둘째 자리까지 씁니다(√14 는 3.7 과 3.8 사이입니다). ') +
+      '성분을 그냥 더하면 6이 되는데, 그것은 크기가 아닙니다.');
+  }
+}
+
+function vcA4Q2(){
+  var A = [3, 0, 3, 2, 1], B = [1, 1, 0, 1, 2];
+  var v = vcV();
+  var d = v ? v.sub(A, B) : [2, -1, 3, 1, -1];
+  var nm = v ? v.norm(d) : { sq: 16 };
+  var all = true, wrong = [];
+  d.forEach(function(x, i){
+    var el = vcEl('vc-a4-q2d' + i);
+    var ok = (vcVal(el) === x);
+    vcMark(el, ok);
+    if(!ok){ all = false; wrong.push(i + 1); }
+  });
+  var r = vcEl('vc-a4-q2r');
+  var rok = (vcVal(r) !== null && Math.abs(vcVal(r) - Math.sqrt(nm.sq)) < 0.005001);
+  vcMark(r, rok);
+  if(!rok) all = false;
+
+  if(all){
+    vcFb('vc-a4-q2fb', true,
+      '(1) a − b = <b>(2, −1, 3, 1, −1)</b>　(2) 거리 = √(4 + 1 + 9 + 1 + 1) = √16 = <b>4</b> 입니다.<br>' +
+      '근호 안이 16으로 정리되어 거리가 정확히 4입니다. ' +
+      '<b>이 계산 그대로가 다음 차시의 유클리드 유사도 d(a, b)</b> 입니다.');
+    vcUnlock('a4');
+  }else{
+    vcFb('vc-a4-q2fb', false,
+      (wrong.length ? '<b>' + wrong.join(' · ') + '번째 성분</b>의 차를 다시 보세요. ' : '') +
+      (rok ? '' : '거리는 <b>차 벡터의 크기</b>입니다 — 차의 각 성분을 제곱해 더한 뒤 근호를 씌우세요. ') +
+      '음수 성분도 제곱하면 양수가 됩니다.');
+  }
+}
+
+/* ═══════════ STEP 3 — 핵심 질문 답 저장 · 서술형 채점 기준 ═══════════ */
+function vcAnsSave(){
+  var o = {
+    a1: (vcEl('vc-ans1') || {}).value || '',
+    a2: (vcEl('vc-ans2') || {}).value || '',
+    q5: (vcEl('vc-q5') || {}).value || ''
+  };
+  vcLSSet(VC_K_ANS, JSON.stringify(o));
+  var st = vcEl('vc-ans-st');
+  if(st) st.textContent = '저장했습니다. [학습지 인쇄]의 ⑦번 칸에도 함께 실립니다. (이 기기에만 저장)';
+  vcSheetSync();
+}
+function vcAnsLoad(){
+  try{
+    var o = JSON.parse(vcLS(VC_K_ANS, '{}'));
+    if(o && typeof o === 'object'){
+      var e1 = vcEl('vc-ans1'), e2 = vcEl('vc-ans2'), e5 = vcEl('vc-q5');
+      if(e1 && o.a1) e1.value = o.a1;
+      if(e2 && o.a2) e2.value = o.a2;
+      if(e5 && o.q5) e5.value = o.q5;
+    }
+  }catch(e){}
+  vcSheetSync();
+}
+function vcSheetSync(){
+  var box = vcEl('vc-sheet-ans');
+  if(!box) return;
+  var a1 = (vcEl('vc-ans1') || {}).value || '';
+  var a2 = (vcEl('vc-ans2') || {}).value || '';
+  box.textContent = (a1 || a2) ? (a1 + (a1 && a2 ? '\n' : '') + a2) : '';
+}
+
+function vcQ5(){
+  vcFb('vc-q5fb', true,
+    '<b>모범 답안</b> 3a = (6, 15, 9), 감성 점수 = 6 − 15 = <b>−9</b>, 판정은 여전히 <b>부정</b>입니다.<br>' +
+    '<b>해설</b> 실수배는 모든 성분을 k배 하므로 점수도 k배가 됩니다(−3 → −9). ' +
+    '그러나 <b>부호가 바뀌지 않으므로 판정은 그대로</b>입니다. ' +
+    '실수배는 분량을 바꾸고 경향은 바꾸지 않는 연산이라는 것을 수로 확인한 셈입니다.<br>' +
+    '<b>채점 기준</b> ① 3a = (6, 15, 9)를 성분끼리 3배로 정확히 구했는가 (1점) ' +
+    '② 감성 점수 −9를 (첫째 − 둘째)로 구했는가 (1점) ' +
+    '③ “부호가 그대로여서 판정은 바뀌지 않는다”를 근거와 함께 썼는가 (1점)');
+  vcAnsSave();
+}
+
+/* ═══════════ 홈 카드 일러스트 (AIM_ART.vecop) ═══════════ */
+/* 16:9 · 베이지 팔레트 · 외부 이미지 없음. 세 감성 벡터 화살표가 하나로 합쳐지는 그림.
+   뷰 표제부 워터마크(.vc-wm)는 같은 도안을 뷰 안에 별도 인라인 SVG 로 두었습니다. */
+var VC_ART =
+'<svg viewBox="0 0 320 180" role="img" aria-label="세 개의 감성 벡터 화살표가 하나의 합 벡터로 모이는 그림">' +
+  '<rect width="320" height="180" fill="var(--bg)"/>' +
+  '<g stroke="var(--blue)" stroke-width="2.6" fill="none" stroke-linecap="round">' +
+    '<path d="M34 40 L142 86"/><path d="M34 90 L142 90"/><path d="M34 140 L142 94"/></g>' +
+  '<g fill="var(--blue)">' +
+    '<circle cx="34" cy="40" r="5"/><circle cx="34" cy="90" r="5"/><circle cx="34" cy="140" r="5"/></g>' +
+  '<circle cx="148" cy="90" r="10" fill="var(--accent)"/>' +
+  '<text x="148" y="94" font-size="13" font-family="monospace" fill="var(--fg)" text-anchor="middle">+</text>' +
+  '<path d="M162 90 L280 90" stroke="var(--fg)" stroke-width="4" stroke-linecap="round"/>' +
+  '<path d="M292 90 l-16 -8 v16 z" fill="var(--fg)"/>' +
+  '<text x="52" y="34" font-size="10" font-family="monospace" fill="var(--muted)">(3, 0, 2)</text>' +
+  '<text x="52" y="84" font-size="10" font-family="monospace" fill="var(--muted)">(2, 2, 2)</text>' +
+  '<text x="52" y="156" font-size="10" font-family="monospace" fill="var(--muted)">(1, 4, 1)</text>' +
+  '<text x="226" y="80" font-size="12" font-family="monospace" fill="var(--fg)" text-anchor="middle">(6, 6, 5)</text>' +
+  '<text x="160" y="168" font-size="11" font-family="monospace" fill="var(--muted)" text-anchor="middle">' +
+    '더하고 · 늘이고 · 재기</text>' +
+'</svg>';
+
+/* AIM_ART 에 키가 없으면 런타임에 채워 둡니다(정식 편집이 끝나면 아무 일도 하지 않습니다).
+   AIM_LESSONS 는 37차시 재번호가 통합 담당 몫이므로 이 파일에서 건드리지 않습니다 — INTEGRATION.md §2 참조. */
+(function vcArtGuard(){
+  try{
+    if(typeof AIM_ART === 'object' && AIM_ART && !AIM_ART.vecop){
+      AIM_ART.vecop = VC_ART;
+      if(typeof aimBuildHome === 'function') aimBuildHome();
+    }
+  }catch(e){}
+})();
+
+/* ═══════════ 리사이즈 · 초기화 ═══════════ */
+function vcResizeAll(){
+  var root = vcRoot();
+  if(!root || !root.offsetParent) return;
+  try{ vcA3Draw(); }catch(e){}
+  try{ vcA4Draw(); }catch(e){}
+}
+
+(function vecopInit(){
+  var boot = function(){
+    var root = vcEl('v-vecop');
+    if(!root) return;                       /* 뷰가 없어도 core.js 가 죽지 않도록 */
+
+    /* 공통 컴포넌트 — 재사용만 합니다(수정 금지). */
+    if(typeof videoDeck   === 'function'){ try{ videoDeck('vc-videos', 'vecop', VC_VIDEOS); }catch(e){ console.error('vc videoDeck', e); } }
+    if(typeof warmStepper === 'function'){ try{ warmStepper('vc-warm', 'vc', VC_WARM); }catch(e){ console.error('vc warmStepper', e); } }
+    if(typeof quizStepper === 'function'){ try{ quizStepper('vc-quiz', 'vc', VC_QUIZ); }catch(e){ console.error('vc quizStepper', e); } }
+    if(typeof chipDefs    === 'function'){ try{ chipDefs('#v-vecop .vc-keys', VC_DEFS); }catch(e){ console.error('vc chipDefs', e); } }
+    if(typeof wsLinks     === 'function'){ try{ wsLinks('vc-wslinks', 'vecop'); }catch(e){ console.error('vc wsLinks', e); } }
+
+    vcA1Render();
+    vcA2Render();
+    vcA4Render();
+    vcA3Set(1, true);            /* 초기 렌더 — 단계 토글은 잠긴 채로 둡니다 */
+    vcAnsLoad();
+    vcLockGuard();
+
+    ['vc-ans1', 'vc-ans2'].forEach(function(id){
+      var e = vcEl(id);
+      if(e) e.addEventListener('input', vcSheetSync);
+    });
+
+    /* 학급 말뭉치가 없으면 버튼을 미리 비활성화하고 안내합니다. */
+    try{
+      var arr = JSON.parse(vcLS(VC_K_CORP, '[]'));
+      if(!Array.isArray(arr) || !arr.length){
+        var cb = vcEl('vc-a1-corpus');
+        if(cb) cb.title = '7·8차시에서 학급 문장을 모으면 활성화됩니다.';
+      }
+    }catch(e){}
+
+    /* 뷰가 화면에 나타나면 캔버스를 다시 그립니다(go() 수정 없이 지연 init). */
+    try{
+      var mo = new MutationObserver(function(){
+        if(root.classList.contains('active')) setTimeout(vcResizeAll, 30);
+      });
+      mo.observe(root, { attributes:true, attributeFilter:['class'] });
+    }catch(e){}
+    var rt = null;
+    window.addEventListener('resize', function(){
+      clearTimeout(rt);
+      rt = setTimeout(vcResizeAll, 160);
+    });
+    if(root.classList.contains('active')) setTimeout(vcResizeAll, 60);
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+/* ●●● ANCHOR-VECOP ●●● (10차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+
+
+/* ══════════ 37차시 재편 통합 · 15차시 RGB ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RGB (15차시: 컬러 이미지와 세 개의 행렬) — 전역 접두사 rg
+   ---------------------------------------------------------------------------
+   · core.js 의 **맨 끝**에 이 블록을 통째로 붙여 넣습니다.
+   · 공통 컴포넌트(videoDeck · warmStepper · quizStepper · chipDefs · wsPrint ·
+     wsLinks · initToggles · cmnGet · cmnSet · go)는 재사용만 하며 수정하지 않습니다.
+   · 초기화는 맨 아래 IIFE 하나뿐이며, #v-rgb 이 없으면 즉시 반환합니다(null 가드).
+   · 서술 규약(교육과정 준수)
+       - 회전변환·회전행렬·역행렬·행렬식은 화면 어디에도 쓰지 않습니다.
+       - 내적 기호와 조건부확률 기호를 쓰지 않습니다.
+       - '휘도(Luma)'·'채널'은 [참고] 배지를 달아 참고 용어로만 씁니다.
+   · 3단원 공용 계산 유틸(u3*)은 이미 정의돼 있으면 그대로 쓰고, 없을 때만 설치합니다
+     (14·16~20차시 스니펫과 중복 정의로 값이 갈리는 사고를 막습니다).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. 3단원 공용 계산 유틸 설치 가드 ───────────────────────────────────── */
+(function u3Install(){
+  var W = (typeof window !== 'undefined') ? window : null;
+  if(!W) return;
+  if(typeof W.u3Clamp255 !== 'function'){
+    W.u3Clamp255 = function(x){ return Math.min(255, Math.max(0, Math.round(x))); };
+  }
+  if(typeof W.u3GrayMean !== 'function'){
+    W.u3GrayMean = function(r,g,b){ return W.u3Clamp255((r+g+b)/3); };
+  }
+  if(typeof W.u3GrayLuma !== 'function'){
+    W.u3GrayLuma = function(r,g,b){ return W.u3Clamp255(0.299*r + 0.587*g + 0.114*b); };
+  }
+})();
+
+
+/* ── 1. 소도구 ───────────────────────────────────────────────────────────── */
+function rgEl(id){ return document.getElementById(id); }
+function rgEsc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function rgGet(k,d){
+  if(typeof cmnGet === 'function') return cmnGet(k,d);
+  try{ var v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; }
+}
+function rgSet(k,v){
+  if(typeof cmnSet === 'function'){ cmnSet(k,v); return; }
+  try{ localStorage.setItem(k,v); }catch(e){}
+}
+/* 계산은 언제나 공용 유틸을 거칩니다(검증 수치 V15~V21 일치 보장). */
+function rgClamp(x){ return (typeof u3Clamp255 === 'function') ? u3Clamp255(x) : Math.min(255,Math.max(0,Math.round(x))); }
+function rgMean(r,g,b){ return (typeof u3GrayMean === 'function') ? u3GrayMean(r,g,b) : rgClamp((r+g+b)/3); }
+function rgLuma(r,g,b){ return (typeof u3GrayLuma === 'function') ? u3GrayLuma(r,g,b) : rgClamp(0.299*r+0.587*g+0.114*b); }
+function rgHex(r,g,b){
+  var h = function(v){ var s = Number(v).toString(16).toUpperCase(); return s.length < 2 ? '0'+s : s; };
+  return '#' + h(r) + h(g) + h(b);
+}
+function rgCss(r,g,b){ return 'rgb(' + r + ',' + g + ',' + b + ')'; }
+/* 배경색이 어두우면 흰 글자로 — 색 배경 보기 모드의 숫자 병기(색약 배려)에 씁니다. */
+function rgInk(r,g,b){ return (0.299*r + 0.587*g + 0.114*b) < 130 ? '#ffffff' : '#1a1714'; }
+function rgFb(id, ok, html){
+  var el = rgEl(id);
+  if(!el) return;
+  el.className = 'rg-fb ' + (ok ? 'ok' : 'no');
+  el.innerHTML = html;
+}
+function rgNum(id){
+  var el = rgEl(id);
+  if(!el) return NaN;
+  var v = String(el.value).trim();
+  if(v === '') return NaN;
+  return Number(v);
+}
+
+
+/* ── 2. 홈 썸네일 아트 · 차시 매니페스트 안전망 ──────────────────────────── */
+/* 한 장의 컬러 격자 → 화살표 셋 → R·G·B 세 장의 행렬이 겹쳐 쌓인 모습 */
+var RG_ART =
+  '<svg viewBox="0 0 320 180" role="img" aria-label="한 장의 컬러 격자가 화살표 세 개를 지나 R G B 세 장의 행렬로 갈라지는 그림">' +
+  '<rect width="320" height="180" fill="var(--bg)"/>' +
+  '<g>' +
+    '<rect x="16" y="46" width="88" height="88" rx="3" fill="var(--card)" stroke="var(--fg)" stroke-width="2"/>' +
+    '<rect x="20" y="50" width="20" height="20" fill="#d84a3a"/><rect x="40" y="50" width="20" height="20" fill="#f2c14e"/>' +
+    '<rect x="60" y="50" width="20" height="20" fill="#4a6b8a"/><rect x="80" y="50" width="20" height="20" fill="#5a7a5a"/>' +
+    '<rect x="20" y="70" width="20" height="20" fill="#f2c14e"/><rect x="40" y="70" width="20" height="20" fill="#d84a3a"/>' +
+    '<rect x="60" y="70" width="20" height="20" fill="#5a7a5a"/><rect x="80" y="70" width="20" height="20" fill="#4a6b8a"/>' +
+    '<rect x="20" y="90" width="20" height="20" fill="#4a6b8a"/><rect x="40" y="90" width="20" height="20" fill="#5a7a5a"/>' +
+    '<rect x="60" y="90" width="20" height="20" fill="#d84a3a"/><rect x="80" y="90" width="20" height="20" fill="#f2c14e"/>' +
+    '<rect x="20" y="110" width="20" height="20" fill="#5a7a5a"/><rect x="40" y="110" width="20" height="20" fill="#4a6b8a"/>' +
+    '<rect x="60" y="110" width="20" height="20" fill="#f2c14e"/><rect x="80" y="110" width="20" height="20" fill="#d84a3a"/>' +
+  '</g>' +
+  '<g stroke="var(--muted)" stroke-width="2.4" fill="none" stroke-linecap="round">' +
+    '<path d="M110 62 h26 m-7 -6 l7 6 l-7 6"/>' +
+    '<path d="M110 90 h26 m-7 -6 l7 6 l-7 6"/>' +
+    '<path d="M110 118 h26 m-7 -6 l7 6 l-7 6"/>' +
+  '</g>' +
+  '<g stroke-width="2">' +
+    '<rect x="146" y="24" width="70" height="70" rx="3" fill="#d84a3a" fill-opacity="0.28" stroke="var(--fg)"/>' +
+    '<rect x="176" y="54" width="70" height="70" rx="3" fill="#5a7a5a" fill-opacity="0.30" stroke="var(--fg)"/>' +
+    '<rect x="206" y="84" width="70" height="70" rx="3" fill="#4a6b8a" fill-opacity="0.30" stroke="var(--fg)"/>' +
+  '</g>' +
+  '<g font-family="monospace" font-size="17" font-weight="bold" fill="var(--fg)">' +
+    '<text x="154" y="44">R</text><text x="184" y="74">G</text><text x="214" y="104">B</text>' +
+  '</g>' +
+  '<text x="160" y="172" font-size="11" fill="var(--muted)" font-family="monospace" text-anchor="middle">한 장의 컬러 = 세 장의 행렬</text>' +
+  '</svg>';
+
+(function rgManifestGuard(){
+  try{
+    if(typeof AIM_ART !== 'undefined' && AIM_ART && !AIM_ART.rgb) AIM_ART.rgb = RG_ART;
+    if(typeof AIM_LESSONS === 'undefined' || !Array.isArray(AIM_LESSONS)) return;
+    var touched = false;
+    for(var i = 0; i < AIM_LESSONS.length; i++){
+      var row = AIM_LESSONS[i];
+      if(!row || row.n !== '15차시') continue;
+      if(row.v === 'rgb') break;                       /* 통합 시 이미 반영됨 */
+      row.v = 'rgb';
+      row.a = 'rgb';
+      row.t = '컬러 이미지와 세 개의 행렬';
+      row.d = '사진 한 장을 R·G·B 세 행렬로 분해하고 다시 하나로 되돌립니다. 픽셀을 눌러 (r, g, b)를 끝까지 추적하고, 평균법과 가중치 식으로 회색조를 만들어 비교합니다.';
+      touched = true;
+      break;
+    }
+    if(!touched) return;
+    if(typeof aimBuildHome === 'function'){ try{ aimBuildHome(); }catch(e){} }
+    if(typeof aimBuildMarks === 'function'){ try{ aimBuildMarks(); }catch(e){} }
+  }catch(e){}
+})();
+
+
+/* ── 3. 추천 영상 (videoDeck) — 실존 확인된 ID만 (2026-07-31 HEAD 200) ────── */
+/* 0Z5fJHiqzYg 는 같은 채널 임베드 차단 이력이 있어 **새 탭**으로만 엽니다. */
+var RG_VIDEOS = [
+  { id:'Cf3GcLe0fOA',
+    t:'【인공지능수학-미래엔】제6강 이미지 자료의 표현(P44~48)',
+    s:'중구쌤TV · 주 디딤영상' },
+  { id:'0Z5fJHiqzYg',
+    t:'인공지능과 수학교육 3 — 이미지 자료의 수학 (행렬과 RGB 색상)',
+    s:'수학교육학자 김정현 · 새 탭에서 열림 ↗' },
+  { id:'LuLP0AH9N50',
+    t:'R을 활용한 시각화 (29) 이미지 행렬 [심화·선택]',
+    s:'통계파랑' }
+];
+var RG_NEWTAB_IDX = 1;   /* RG_VIDEOS 안에서 링크 전용으로 다룰 카드의 자리 */
+
+/* videoDeck 은 카드를 다시 그릴 때마다 innerHTML 을 갈아 끼우므로,
+   컨테이너에 캡처 단계 리스너를 두어 재렌더에도 살아남게 합니다. */
+function rgVideoPatch(){
+  var box = rgEl('rg-videos');
+  if(!box || box.getAttribute('data-rg-patched') === '1') return;
+  box.setAttribute('data-rg-patched','1');
+
+  var v = RG_VIDEOS[RG_NEWTAB_IDX];
+  var url = 'https://www.youtube.com/watch?v=' + v.id;
+
+  box.addEventListener('click', function(ev){
+    var card = ev.target && ev.target.closest ? ev.target.closest('.cmn-vd-card') : null;
+    if(!card) return;
+    if(ev.target && ev.target.closest && ev.target.closest('.cmn-vd-del')) return;  /* 삭제 버튼은 통과 */
+    var grid = card.parentNode;
+    if(!grid) return;
+    var idx = Array.prototype.indexOf.call(grid.querySelectorAll('.cmn-vd-card'), card);
+    if(idx !== RG_NEWTAB_IDX) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    try{ window.open(url, '_blank', 'noopener'); }catch(e){}
+  }, true);
+
+  var decorate = function(){
+    var grid = box.querySelector('.cmn-vd-grid');
+    if(!grid) return;
+    var cards = grid.querySelectorAll('.cmn-vd-card');
+    var card = cards[RG_NEWTAB_IDX];
+    if(!card || card.getAttribute('data-rg-newtab') === '1') return;
+    card.setAttribute('data-rg-newtab','1');
+    card.title = '제작자 설정으로 이 페이지 안에서는 재생할 수 없습니다. 새 탭에서 열립니다.';
+    var th = card.querySelector('.cmn-vd-thumb');
+    if(th && !th.querySelector('.rg-newtab-bg')){
+      var b = document.createElement('span');
+      b.className = 'cmn-vd-badge rg-newtab-bg';
+      b.textContent = '↗ 새 탭';
+      th.appendChild(b);
+    }
+  };
+  decorate();
+  try{
+    var mo = new MutationObserver(function(){ decorate(); });
+    mo.observe(box, { childList:true, subtree:true });
+  }catch(e){}
+}
+
+
+/* ── 4. 마중 퀴즈 (warmStepper — 순차 공개, 라벨 "질문 N.") ──────────────── */
+var RG_WARM = [
+  { q:'다음 주장이 옳으면 O, 옳지 않으면 X를 고르세요. — "컬러 이미지에서 (R, G, B) = (0, 0, 0)은 흰색을 나타낸다."',
+    opts:['O','X'], answer:1,
+    explain:'(0, 0, 0)은 <b>검은색</b>입니다. 화면은 <b>스스로 빛을 내는 장치</b>입니다. ' +
+      '모니터 전원을 끄면 화면이 검게 되는 것과 같은 이유로, 빛이 하나도 없는 상태가 검은색입니다. ' +
+      '반대로 세 빛을 모두 최대로 켠 (255, 255, 255)가 흰색입니다. ' +
+      '<br>「O」를 고르셨다면 — 물감이라면 맞습니다. 물감은 섞을수록 어두워지고 아무것도 안 칠하면 종이의 흰색이 남습니다. ' +
+      '하지만 화면의 색은 <b>빛</b>이고, 빛은 섞을수록 밝아집니다. ' +
+      '<span class="rg-src">연수교재 합본 p.142 지도 TIP 서술을 재구성</span>' },
+  { q:'해상도가 8 × 8 인 컬러 이미지 한 장을 완전히 표현하려면 0 이상 255 이하의 수가 모두 몇 개 필요할까요?',
+    opts:['8개','64개','192개','256개'], answer:2,
+    explain:'픽셀은 8 × 8 = <b>64개</b>인데, 컬러 픽셀 하나는 <b>세 개의 수</b>를 가지므로 64 × 3 = <b>192개</b>입니다. ' +
+      '회색조라면 64개로 충분하니 <b>컬러는 회색조의 정확히 3배</b>입니다. ' +
+      '<br>「64개」는 <b>픽셀의 개수</b>이고, 「256개」는 한 자리가 가질 수 있는 <b>값의 단계 수</b>입니다. ' +
+      '<span class="rg-src">연수교재 합본 p.138 (4)번 서술을 재구성</span>' },
+  { q:'어떤 픽셀의 색상 정보가 (128, 128, 128) 이었습니다. 이 픽셀은 어떤 색일까요?',
+    opts:['짙은 빨강','중간 밝기의 회색','노랑','알 수 없다'], answer:1,
+    explain:'세 값이 <b>모두 같으면</b> 어느 빛도 다른 빛보다 세지 않으므로 색이 치우치지 않고 <b>회색</b>이 됩니다. ' +
+      '(0,0,0) 검은색 → (128,128,128) 중간 회색 → (255,255,255) 흰색으로 이어집니다. ' +
+      '한 자리만 크거나 두 자리만 클 때 색이 치우칩니다 — <b>세 값이 같다는 점</b>에 주목하세요. ' +
+      '이 규칙이 오늘 활동 ④의 출발점입니다. <b>컬러를 회색조로 바꾸는 일은 곧 세 행렬을 같게 만드는 일</b>입니다. ' +
+      '<span class="rg-src">연수교재 합본 p.136 · 씨마스 교과서 Ⅲ p.91 「특히 R=G=B이면」 서술을 재구성</span>' }
+];
+
+
+/* ── 5. 형성평가 (quizStepper — 문항 1개씩, 총점·복기·다시 풀기) ─────────── */
+var RG_QUIZ = [
+  { q:'[12인수03-01] 해상도가 5 × 4 인 컬러 이미지 한 장을 완전히 표현하려면 0 이상 255 이하의 수가 몇 개 필요한가?',
+    opts:['20개','45개','60개','255개'], answer:2,
+    explain:'행·열의 개수를 곱해 픽셀 수를 먼저 구하고(5 × 4 = 20), 컬러이므로 3을 곱해 <b>20 × 3 = 60개</b>입니다. ' +
+      '회색조라면 20개로 충분합니다. ' +
+      '<span class="rg-src"><button class="btn" type="button" onclick="rgSee(1,\'rg-count\')">활동 ②의 수 세기 배지로 돌아가기</button></span>' },
+  { q:'[12인수03-01] 위 자료의 세 행렬에서 중앙 픽셀 (2, 2)의 색상 정보와 색 이름을 옳게 짝지은 것은?',
+    opts:['(255,255,255) 흰색','(255,255,0) 노란색','(255,0,0) 빨간색','(0,255,255) 청록색'], answer:1,
+    explain:'R의 (2,2) = 255, G의 (2,2) = 255, B의 (2,2) = 0 이므로 <b>(255, 255, 0) 노란색</b>입니다. ' +
+      '세 행렬에서 <b>같은 자리</b>의 성분을 순서대로 읽는 것이 핵심입니다. ' +
+      '빨강 + 초록 = 노랑은 가산 혼합의 대표 사례입니다. ' +
+      '<span class="rg-src">연수교재 합본 p.145 평가 문항 3 자료를 재구성 · ' +
+      '<button class="btn" type="button" onclick="rgSee(1,\'rg-track\')">활동 ②의 픽셀 추적으로</button></span>' },
+  { q:'[12인수03-01] 위 자료에서 (3, 1) 픽셀의 색상 정보는 (128, 0, 0) 이다. 가장 알맞은 설명은?',
+    opts:['회색이다','검은색이다','빨간색보다 어두운, 진한 빨강이다','초록색이다'], answer:2,
+    explain:'G와 B가 0이므로 빨강 계열이고, R이 255가 아니라 128이므로 <b>절반만 켠 상태</b>입니다. ' +
+      '색의 <b>계열</b>은 어느 자리가 살아 있는지로, <b>밝기</b>는 그 값의 크기로 판단합니다.' },
+  { q:'[12인수03-01] 어떤 회색조 이미지를 나타낸 5 × 5 행렬에서 모든 성분의 합이 3,000이고 대각선 (1,1)~(5,5) 성분이 모두 255이다. 나머지 20개 성분의 평균은?',
+    opts:['60','75','86.25','120'], answer:2,
+    explain:'대각선의 합은 255 × 5 = <b>1,275</b>이므로 나머지 20개의 합은 3,000 − 1,275 = <b>1,725</b>이고, ' +
+      '평균은 1,725 ÷ 20 = <b>86.25</b>입니다. ' +
+      '행렬의 성분은 결국 <b>수의 모임</b>이므로 합·평균 같은 계산이 그대로 통합니다. ' +
+      '대각선이 흰색이고 나머지가 평균 86이면 흰 선이 대각선으로 그려진 어두운 이미지입니다. ' +
+      '<span class="rg-src">연수교재 합본 p.145 평가 문항 2를 이식</span>' },
+  { q:'[12인수03-02] 한 픽셀의 색상 정보가 (60, 180, 30) 이다. 평균법과 가중치 식(0.299R + 0.587G + 0.114B)으로 각각 회색조 값을 구하고 옳게 비교한 것은? (반올림)',
+    opts:['평균 90, 가중치 82 → 평균이 더 밝다','평균 90, 가중치 127 → 가중치가 더 밝다',
+          '평균 90, 가중치 90 → 같다','평균 270, 가중치 127 → 평균이 더 밝다'], answer:1,
+    explain:'평균은 (60 + 180 + 30) ÷ 3 = <b>90</b>. 가중치는 17.94 + 105.66 + 3.42 = 127.02 → <b>127</b>입니다. ' +
+      '이 픽셀은 <b>초록이 압도적</b>(180)이고 가중치 식은 초록에 가장 큰 계수 0.587을 주므로 결과가 평균보다 크게 나옵니다. ' +
+      '마지막 선택지를 골랐다면 평균은 <b>합이 아니라 합 ÷ 3</b>임을 확인하세요. ' +
+      '<span class="rg-src"><button class="btn" type="button" onclick="rgSee(3,\'rg-a4-body\')">활동 ④로 돌아가기</button></span>' }
+];
+
+
+/* ── 6. 핵심 개념 칩 상세 설명 (chipDefs) ────────────────────────────────
+   ① 교과서식 정의 ② 구체 예시 ③ 이번 차시 활동 연결(이동 버튼) ④ 앞뒤 차시 연결 */
+var RG_DEFS = {
+
+  '빛의 삼원색':
+    '<p><b>정의</b> — 컴퓨터 화면에서 색은 <b>빛</b>으로 만듭니다. 빨강·초록·파랑 세 가지 빛을 적절한 비율로 섞으면 ' +
+    '사람이 구분할 수 있는 거의 모든 색을 만들 수 있고, 이 세 색을 <b>빛의 삼원색</b>이라 합니다. ' +
+    '각 빛의 세기는 <b>0부터 255까지의 정수</b> 256단계로 나타냅니다. 0은 그 빛을 완전히 끈 상태, 255는 가장 세게 켠 상태입니다.</p>' +
+    '<p><b>예시</b> — 주황 (255, 102, 0) · 보라 (157, 92, 187) · 하늘 (38, 171, 227) / ' +
+    '빨강 (255,0,0) · 노랑 (255,255,0) · 청록 (0,255,255) · 자홍 (255,0,255)</p>' +
+    '<p><b>이번 차시에서는</b> — 활동 ①에서 슬라이더 세 개를 직접 움직여 "내가 좋아하는 색"의 세 수를 찾아 적습니다. ' +
+    '슬라이더를 움직이는 동안 0~255라는 눈금이 곧 <b>빛의 세기</b>임이 손끝으로 이해됩니다.</p>' +
+    '<div class="btn-row"><button class="btn" type="button" onclick="rgSee(0,\'rg-a1-body\')">활동 ①로 이동</button></div>' +
+    '<p class="rg-src">앞뒤 차시 — 14차시에서 회색조 한 장은 0~255 <b>한 개</b>의 수로 픽셀을 나타냈습니다. 오늘은 그 수가 <b>세 개</b>로 늘어납니다. ' +
+    '<a href="#imgop" onclick="go(\'imgop\');return false;">14차시 보기</a></p>' +
+    '<p class="rg-src">근거 — 씨마스 교과서 Ⅲ p.91 · 연수교재 합본 p.135 서술을 재구성</p>',
+
+  '색상 정보':
+    '<p><b>정의</b> — 컬러 이미지에서 제 i행, 제 j열 위치 픽셀이 가진 색을 그 픽셀의 <b>색상 정보</b>라 하고, ' +
+    '빨강·초록·파랑의 세기를 차례로 적어 x<sub>ij</sub> = ( r<sub>ij</sub>, g<sub>ij</sub>, b<sub>ij</sub> ) 와 같은 ' +
+    '<b>순서쌍</b>으로 나타냅니다. 순서쌍이므로 <b>적는 순서가 정해져 있고</b>, (255,0,0)과 (0,0,255)는 서로 다른 색입니다.</p>' +
+    '<p><b>예시</b> — 해상도 2×2에서 R = [[58, 160], [247, 0]], G = [[136, 40], [182, 160]], B = [[201, 20], [86, 0]] 이면 ' +
+    'x<sub>11</sub> = (58, 136, 201), x<sub>12</sub> = (160, 40, 20), x<sub>21</sub> = (247, 182, 86), x<sub>22</sub> = (0, 160, 0) 입니다. ' +
+    'x<sub>22</sub> 는 초록만 중간쯤 켜진 <b>짙은 초록</b>입니다.</p>' +
+    '<p><b>이번 차시에서는</b> — 활동 ②에서 자신이 그린 8×8 그림의 한 픽셀을 짚고, 세 행렬에서 <b>같은 자리</b>의 수를 찾아 ' +
+    '순서쌍으로 적습니다. 한 픽셀을 끝까지 추적하는 것이 오늘의 핵심 동작입니다.</p>' +
+    '<div class="btn-row"><button class="btn" type="button" onclick="rgSee(1,\'rg-track\')">활동 ②의 픽셀 추적으로 이동</button></div>' +
+    '<p class="rg-src">앞뒤 차시 — 18차시의 해밍 거리는 픽셀을 <b>0 또는 1</b> 한 개의 수로 줄여 비교합니다. ' +
+    '세 수를 한 수로 줄이는 첫걸음이 오늘 활동 ④입니다.</p>' +
+    '<p class="rg-src">근거 — 씨마스 교과서 Ⅲ p.91 서술을 재구성</p>',
+
+  '세 행렬':
+    '<p><b>정의</b> — 컬러 이미지 한 장은 <b>같은 꼴의 행렬 세 개</b>로 표현합니다. 빨강의 세기만 모은 R, 초록만 모은 G, ' +
+    '파랑만 모은 B입니다. 세 행렬의 행·열 개수는 모두 이미지의 해상도와 같고, 같은 위치 성분을 순서대로 모으면 그 픽셀의 색상 정보가 됩니다. ' +
+    '이 표현이 편리한 까닭은 <b>행렬의 구조가 이미지의 구조와 정확히 일치</b>하기 때문입니다.</p>' +
+    '<p><b>예시</b> — 8×8 컬러 → 8×8 행렬 3개 → 수 8 × 8 × 3 = <b>192개</b>. ' +
+    '1920 × 1080 사진 → <b>6,220,800개</b>. 사진 한 장이 600만 개가 넘는 수의 모임입니다.</p>' +
+    '<p><b>이번 차시에서는</b> — 활동 ②의 [RGB 행렬 추출]을 누르면 세 행렬이 <b>R → G → B 순서로 하나씩</b> 열립니다. ' +
+    'R만 보면서 "이건 빨간 빛의 세기만 모은 것"이라 확인한 뒤 다음으로 넘어갑니다.</p>' +
+    '<div class="btn-row"><button class="btn" type="button" onclick="rgSee(1,\'rg-btnR\')">활동 ②의 행렬 추출로 이동</button></div>' +
+    '<p class="rg-src">앞뒤 차시 — 16차시에서는 세 행렬 각각에 전치를 적용해 구도를 바꾸고, 17차시에서는 세 행렬 각각에 같은 행렬을 곱해 이미지를 옮깁니다. ' +
+    '<b>컬러 변환은 언제나 "세 행렬에 같은 연산을 세 번"</b>입니다.</p>' +
+    '<p class="rg-src">근거 — 씨마스 교과서 Ⅲ p.91 · 연수교재 합본 pp.137~141 서술을 재구성</p>',
+
+  '가산 혼합':
+    '<p><b>정의</b> — 빛은 섞을수록 <b>밝아집니다</b>. 세 빛을 모두 최대(255)로 켜면 흰색, 모두 끄면(0) 검은색입니다. ' +
+    '이렇게 빛을 더해 색을 만드는 방식을 <b>가산 혼합</b>이라 합니다. 물감을 섞을수록 어두워지는 것과 정반대입니다.</p>' +
+    '<p><b>예시</b> — (255,255,255) 흰색 / (0,0,0) 검은색 / (255,255,0) 노랑(빨강 + 초록). ' +
+    '모니터 전원을 끄면 화면이 검게 되는 것과 같은 이유입니다.</p>' +
+    '<p><b>이번 차시에서는</b> — 마중 퀴즈 1에서 "0은 흰색인가 검은색인가"를 먼저 판단하고, ' +
+    '활동 ①의 [세 개 다 끝까지] 버튼으로 세 슬라이더가 모두 오른쪽 끝까지 밀려 <b>흰색이 만들어지는 장면</b>을 확인합니다.</p>' +
+    '<div class="btn-row"><button class="btn" type="button" onclick="rgSee(0,\'rg-swatch\')">활동 ①의 색 견본으로 이동</button></div>' +
+    '<p class="rg-src">앞뒤 차시 — 14차시에서 모든 성분에 같은 수를 더해 밝게 만든 것은 곧 <b>세 전구를 한꺼번에 더 세게 켜는 일</b>입니다. ' +
+    '<a href="#imgop" onclick="go(\'imgop\');return false;">14차시 보기</a></p>' +
+    '<p class="rg-src">근거 — 연수교재 합본 pp.136·142 지도 TIP 서술을 재구성</p>',
+
+  '회색조와 휘도':
+    '<p><b>정의</b> — R = G = B, 즉 세 행렬이 완전히 같으면 모든 픽셀이 회색 계열이 되어 <b>회색조 이미지</b>가 됩니다. ' +
+    '컬러를 회색조로 바꾸는 가장 간단한 방법은 세 성분의 <b>평균</b>입니다. ' +
+    '그런데 사람의 눈은 초록에 민감하고 파랑에 둔감하므로, 평균 대신 자리마다 다른 무게를 주기도 합니다. ' +
+    '이때 얻는 밝기 정보를 <b>휘도(Luma)</b> <span class="rg-badge ref">참고</span> 라 합니다.</p>' +
+    '<div class="rg-fml">m = 0.299 R + 0.587 G + 0.114 B　　(세 계수의 합은 1)</div>' +
+    '<p><b>예시</b> — (118, 209, 117) → 평균 444 ÷ 3 = <b>148</b>, 가중치 0.299×118 + 0.587×209 + 0.114×117 = 171.303 → <b>171</b>. ' +
+    '초록이 많은 픽셀은 가중치 쪽이 <b>더 밝게</b> 나옵니다.</p>' +
+    '<p><b>이번 차시에서는</b> — 활동 ④에서 같은 사진을 두 방법으로 회색조로 바꾸어 나란히 놓고 봅니다. ' +
+    '어느 쪽이 자연스러운가는 정답이 있는 문제가 아니라 <b>목적에 맞게 사람이 고르는 문제</b>입니다.</p>' +
+    '<div class="btn-row"><button class="btn" type="button" onclick="rgSee(3,\'rg-a4-body\')">활동 ④로 이동</button></div>' +
+    '<p class="rg-src">⚠️ 주의 — 「휘도」·「Luma」·「채널」은 교육과정 고시 용어가 아니라 <b>참고 용어</b>입니다. ' +
+    '계수 0.299 / 0.587 / 0.114를 외울 필요는 없습니다. 시험에서는 식이 주어진 상태에서 <b>계산하고 해석할 수 있는지</b>만 묻습니다.</p>' +
+    '<p class="rg-src">앞뒤 차시 — 14차시의 회색조 표현을 오늘은 컬러에서 <b>직접 만들어</b> 봅니다. 이 변환은 18차시 이진화의 바로 앞 단계입니다.</p>' +
+    '<p class="rg-src">근거 — 동아 교과서 Ⅲ p.94 §4 · 씨마스 교과서 Ⅲ p.91 · 연수교재 합본 pp.156~159 서술을 재구성</p>'
+};
+
+
+/* ── 7. 탭 전환 · 활동으로 이동 ─────────────────────────────────────────── */
+function rgTab(n, el){
+  var view = rgEl('v-rgb');
+  if(!view) return;
+  view.querySelectorAll('.tabs .tab').forEach(function(t){ t.classList.remove('on'); });
+  if(el) el.classList.add('on');
+  view.querySelectorAll('.tpanel').forEach(function(p){ p.classList.remove('on'); });
+  var pn = rgEl('rg' + n);
+  if(pn) pn.classList.add('on');
+  if(n === 3){ try{ rgRenderA4(); }catch(e){} }
+}
+
+/* 움직임 최소화 설정 여부 */
+function rgReduced(){
+  try{ return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  catch(e){ return false; }
+}
+
+/* 칩 정의·본문에서 해당 활동으로 이동합니다. tab 은 STEP 2 탭 번호(0~3), id 는 스크롤 목표. */
+function rgSee(tab, id){
+  var view = rgEl('v-rgb');
+  if(!view) return;
+  var tabs = view.querySelectorAll('.tabs .tab');
+  if(typeof tab === 'number' && tabs[tab]) tabs[tab].click();
+  var target = (id && rgEl(id)) || tabs[tab] || null;
+  if(target && target.scrollIntoView){
+    try{ target.scrollIntoView({ behavior: rgReduced() ? 'auto' : 'smooth', block:'center' }); }
+    catch(e){ try{ target.scrollIntoView(); }catch(e2){} }
+  }
+}
+
+
+/* ── 8. 원본 이미지 — 기본 그림(자체 생성) · 사진 업로드 ────────────────── */
+var RG_MAX = 240;                 /* 최대 변 길이(다운샘플) */
+var rgSrcW = 240, rgSrcH = 180;
+var rgSrcData = null;             /* Uint8ClampedArray (RGBA) */
+
+/* 외부 자산 없이 페이지가 직접 그리는 기본 그림.
+   하늘(파랑) · 해(빨강+초록) · 잎과 풀(초록) · 꽃잎(빨강) · 연못(파랑) 으로
+   세 채널의 차이가 뚜렷하게 드러나도록 구성했습니다. */
+function rgDrawSample(ctx, w, h){
+  var gsky = ctx.createLinearGradient(0, 0, 0, h * 0.62);
+  gsky.addColorStop(0, '#2f7fc4');
+  gsky.addColorStop(1, '#bfe3f4');
+  ctx.fillStyle = gsky;
+  ctx.fillRect(0, 0, w, h * 0.64);
+
+  ctx.fillStyle = '#f5cf4d';                                  /* 해 */
+  ctx.beginPath(); ctx.arc(w * 0.79, h * 0.17, w * 0.075, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = '#eef4f7';                                  /* 구름 */
+  ctx.beginPath();
+  ctx.arc(w * 0.24, h * 0.20, w * 0.055, 0, Math.PI * 2);
+  ctx.arc(w * 0.31, h * 0.17, w * 0.070, 0, Math.PI * 2);
+  ctx.arc(w * 0.39, h * 0.21, w * 0.050, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#4b8a3c';                                  /* 먼 언덕 */
+  ctx.beginPath(); ctx.ellipse(w * 0.22, h * 0.66, w * 0.34, h * 0.17, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#5fa04a';
+  ctx.beginPath(); ctx.ellipse(w * 0.78, h * 0.68, w * 0.32, h * 0.15, 0, 0, Math.PI * 2); ctx.fill();
+
+  var ggr = ctx.createLinearGradient(0, h * 0.62, 0, h);      /* 풀밭 */
+  ggr.addColorStop(0, '#74b355');
+  ggr.addColorStop(1, '#4c8438');
+  ctx.fillStyle = ggr;
+  ctx.fillRect(0, h * 0.64, w, h * 0.36);
+
+  ctx.fillStyle = '#2f74a8';                                  /* 연못 */
+  ctx.beginPath(); ctx.ellipse(w * 0.76, h * 0.88, w * 0.20, h * 0.085, 0, 0, Math.PI * 2); ctx.fill();
+
+  ctx.strokeStyle = '#3d7a30'; ctx.lineWidth = Math.max(2, w * 0.012);
+  ctx.beginPath(); ctx.moveTo(w * 0.30, h * 0.92); ctx.lineTo(w * 0.30, h * 0.52); ctx.stroke();
+  ctx.fillStyle = '#57a13f';                                  /* 잎 */
+  ctx.beginPath(); ctx.ellipse(w * 0.235, h * 0.74, w * 0.065, h * 0.032, -0.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(w * 0.365, h * 0.68, w * 0.060, h * 0.030, 0.5, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = '#d33f2e';                                  /* 꽃잎 */
+  var cx = w * 0.30, cy = h * 0.46, pr = w * 0.055;
+  for(var k = 0; k < 6; k++){
+    var a = k * Math.PI / 3;
+    ctx.beginPath();
+    ctx.arc(cx + Math.cos(a) * pr * 1.15, cy + Math.sin(a) * pr * 1.15, pr, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = '#f2c14e';                                  /* 꽃 가운데 */
+  ctx.beginPath(); ctx.arc(cx, cy, pr * 0.75, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = '#9b4fbf';                                  /* 작은 보라 꽃 */
+  ctx.beginPath(); ctx.arc(w * 0.56, h * 0.80, w * 0.030, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#e0e6ea';                                  /* 작은 흰 꽃 */
+  ctx.beginPath(); ctx.arc(w * 0.46, h * 0.87, w * 0.024, 0, Math.PI * 2); ctx.fill();
+}
+
+function rgMakeSample(){
+  var off = document.createElement('canvas');
+  rgSrcW = 240; rgSrcH = 180;
+  off.width = rgSrcW; off.height = rgSrcH;
+  var ctx = off.getContext('2d');
+  if(!ctx) return;
+  rgDrawSample(ctx, rgSrcW, rgSrcH);
+  try{ rgSrcData = ctx.getImageData(0, 0, rgSrcW, rgSrcH).data; }catch(e){ rgSrcData = null; }
+}
+
+/* 캔버스 하나에 원본 또는 채널/회색조 결과를 그립니다.
+   mode: 'src' | 'R' | 'G' | 'B' | 'mean' | 'luma' | 'weight' */
+function rgPaint(id, mode){
+  var cv = rgEl(id);
+  if(!cv || !rgSrcData) return;
+  cv.width = rgSrcW; cv.height = rgSrcH;
+  var ctx = cv.getContext('2d');
+  if(!ctx) return;
+  var img = ctx.createImageData(rgSrcW, rgSrcH);
+  var s = rgSrcData, d = img.data, i, r, g, b, v;
+  var wr = 1, wg = 1, wb = 1, gray = false;
+  if(mode === 'weight'){
+    wr = Number(rgEl('rg-wr') ? rgEl('rg-wr').value : 1);
+    wg = Number(rgEl('rg-wg') ? rgEl('rg-wg').value : 1);
+    wb = Number(rgEl('rg-wb') ? rgEl('rg-wb').value : 1);
+    gray = !!(rgEl('rg-gray') && rgEl('rg-gray').checked);
+  }
+  for(i = 0; i < s.length; i += 4){
+    r = s[i]; g = s[i+1]; b = s[i+2];
+    if(mode === 'src'){ d[i] = r; d[i+1] = g; d[i+2] = b; }
+    else if(mode === 'R'){ d[i] = d[i+1] = d[i+2] = r; }
+    else if(mode === 'G'){ d[i] = d[i+1] = d[i+2] = g; }
+    else if(mode === 'B'){ d[i] = d[i+1] = d[i+2] = b; }
+    else if(mode === 'mean'){ v = rgMean(r,g,b); d[i] = d[i+1] = d[i+2] = v; }
+    else if(mode === 'luma'){ v = rgLuma(r,g,b); d[i] = d[i+1] = d[i+2] = v; }
+    else if(mode === 'weight'){
+      if(gray){ v = rgClamp(wr * rgLuma(r,g,b)); d[i] = d[i+1] = d[i+2] = v; }
+      else { d[i] = rgClamp(wr*r); d[i+1] = rgClamp(wg*g); d[i+2] = rgClamp(wb*b); }
+    }
+    d[i+3] = 255;
+  }
+  /* 차이 강조 — 평균과 가중치의 결과가 12 이상 벌어지는 픽셀을 붉게 칠합니다. */
+  if(rgDiffOn && (mode === 'mean' || mode === 'luma')){
+    for(i = 0; i < s.length; i += 4){
+      if(Math.abs(rgMean(s[i],s[i+1],s[i+2]) - rgLuma(s[i],s[i+1],s[i+2])) >= 12){
+        d[i] = 224; d[i+1] = 70; d[i+2] = 56;
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+var rgDiffOn = false;
+
+function rgRenderIntro(){
+  rgPaint('rg-i0','src'); rgPaint('rg-iR','R'); rgPaint('rg-iG','G'); rgPaint('rg-iB','B');
+}
+function rgRenderA4(){
+  rgPaint('rg-c0','src'); rgPaint('rg-cM','mean'); rgPaint('rg-cL','luma'); rgPaint('rg-cW','weight');
+  rgWMats();
+}
+function rgRenderAll(){ rgRenderIntro(); rgRenderA4(); }
+
+function rgResetPhoto(){
+  rgMakeSample();
+  rgRenderAll();
+  var st = rgEl('rg-file-st');
+  if(st) st.textContent = '기본 그림으로 되돌렸습니다.';
+}
+
+function rgLoadPhoto(file){
+  if(!file) return;
+  var st = rgEl('rg-file-st');
+  var url = URL.createObjectURL(file);
+  var im = new Image();
+  im.onload = function(){
+    var sc = Math.min(1, RG_MAX / Math.max(im.naturalWidth || 1, im.naturalHeight || 1));
+    rgSrcW = Math.max(1, Math.round((im.naturalWidth || 1) * sc));
+    rgSrcH = Math.max(1, Math.round((im.naturalHeight || 1) * sc));
+    var off = document.createElement('canvas');
+    off.width = rgSrcW; off.height = rgSrcH;
+    var ctx = off.getContext('2d');
+    try{
+      ctx.drawImage(im, 0, 0, rgSrcW, rgSrcH);
+      rgSrcData = ctx.getImageData(0, 0, rgSrcW, rgSrcH).data;
+      rgRenderAll();
+      if(st) st.textContent = '사진을 불러왔습니다 — ' + rgSrcW + ' × ' + rgSrcH + ' 로 줄여 처리합니다. 이 기기 밖으로 전송되지 않습니다.';
+    }catch(e){
+      if(st) st.textContent = '사진을 읽지 못했습니다. 다른 파일로 시도해 보세요.';
+    }
+    URL.revokeObjectURL(url);
+  };
+  im.onerror = function(){
+    if(st) st.textContent = '사진을 읽지 못했습니다. 다른 파일로 시도해 보세요.';
+    URL.revokeObjectURL(url);
+  };
+  im.src = url;
+}
+
+function rgDiffToggle(btn){
+  rgDiffOn = !rgDiffOn;
+  if(btn) btn.textContent = rgDiffOn ? '차이 강조 끄기' : '차이 강조 켜기';
+  var st = rgEl('rg-diff-st');
+  if(st) st.textContent = rgDiffOn
+    ? '붉은 부분은 두 방법의 결과가 12 이상 벌어지는 픽셀입니다 — 대개 초록이나 파랑이 많은 곳입니다.'
+    : '원본 사진은 STEP 1에서 바꾼 사진을 그대로 씁니다.';
+  rgPaint('rg-cM','mean'); rgPaint('rg-cL','luma');
+}
+
+/* 캔버스를 눌렀을 때 그 픽셀의 계산 과정을 펼칩니다. */
+function rgCanvasClick(ev){
+  var cv = ev.currentTarget;
+  if(!cv || !rgSrcData) return;
+  var rect = cv.getBoundingClientRect();
+  if(!rect.width || !rect.height) return;
+  var x = Math.floor((ev.clientX - rect.left) / rect.width * rgSrcW);
+  var y = Math.floor((ev.clientY - rect.top) / rect.height * rgSrcH);
+  x = Math.max(0, Math.min(rgSrcW - 1, x));
+  y = Math.max(0, Math.min(rgSrcH - 1, y));
+  var i = (y * rgSrcW + x) * 4;
+  var r = rgSrcData[i], g = rgSrcData[i+1], b = rgSrcData[i+2];
+  var m = rgMean(r,g,b), l = rgLuma(r,g,b);
+  var p1 = (0.299*r), p2 = (0.587*g), p3 = (0.114*b);
+  var box = rgEl('rg-pixcalc');
+  if(!box) return;
+  box.innerHTML =
+    '<b>선택한 픽셀 : ' + (y+1) + '행 ' + (x+1) + '열</b>' +
+    '<span class="sw" style="background:' + rgCss(r,g,b) + ';"></span><br>' +
+    '색상 정보 = ( ' + r + ', ' + g + ', ' + b + ' )<br>' +
+    '평균　 : ( ' + r + ' + ' + g + ' + ' + b + ' ) ÷ 3 = ' + (r+g+b) + ' ÷ 3 = <b>' + m + '</b><br>' +
+    '가중치 : 0.299×' + r + ' + 0.587×' + g + ' + 0.114×' + b + '<br>' +
+    '　　　 = ' + p1.toFixed(3) + ' + ' + p2.toFixed(3) + ' + ' + p3.toFixed(3) +
+    ' = ' + (p1+p2+p3).toFixed(3) + ' → <b>' + l + '</b><br>' +
+    '⇒ ' + (l > m ? '가중치 쪽이 더 밝습니다 (' + m + ' → ' + l + ') — 초록이 많은 픽셀입니다.'
+                  : (l < m ? '가중치 쪽이 더 어둡습니다 (' + m + ' → ' + l + ') — 파랑이 많은 픽셀입니다.'
+                           : '두 값이 같습니다 (' + m + ') — 세 성분이 고른 픽셀입니다.'));
+}
+
+
+/* ── 9. 활동 ① — 색을 세 수로 ───────────────────────────────────────────── */
+var RG_PRESETS = [
+  ['빨강',255,0,0], ['초록',0,255,0], ['파랑',0,0,255],
+  ['노랑',255,255,0], ['자홍',255,0,255], ['청록',0,255,255],
+  ['흰색',255,255,255], ['검은색',0,0,0], ['회색',128,128,128]
+];
+var RG_TBLA = [
+  { v:[255,255,0], a:'노란색' },
+  { v:[0,255,255], a:'청록색' },
+  { v:[255,0,255], a:'자홍색' },
+  { v:[128,128,128], a:'회색' }
+];
+var RG_TBLA_OPTS = ['노란색','청록색','자홍색','회색','주황색','하늘색'];
+var RG_TBLB = [
+  { n:'빨간색', v:[255,0,0] },
+  { n:'주황색', v:[255,128,0] },
+  { n:'청록색', v:[0,102,102] },
+  { n:'보라색', v:[204,0,204] },
+  { n:'검정색', v:[0,0,0] }
+];
+var rgMade = [];
+
+function rgRGB(){
+  return [
+    Number(rgEl('rg-sr') ? rgEl('rg-sr').value : 0),
+    Number(rgEl('rg-sg') ? rgEl('rg-sg').value : 0),
+    Number(rgEl('rg-sb') ? rgEl('rg-sb').value : 0)
+  ];
+}
+function rgMix(){
+  var c = rgRGB();
+  var sw = rgEl('rg-swatch');
+  if(sw) sw.style.background = rgCss(c[0], c[1], c[2]);
+  var t = rgEl('rg-swtxt');
+  if(t) t.firstChild.nodeValue = '(' + c[0] + ', ' + c[1] + ', ' + c[2] + ')';
+  var hx = rgEl('rg-swhex');
+  if(hx) hx.textContent = rgHex(c[0], c[1], c[2]);
+  ['r','g','b'].forEach(function(k, i){
+    var v = rgEl('rg-v' + k);
+    if(v) v.textContent = c[i];
+  });
+  var pal = rgEl('rg-pal2');
+  if(pal){
+    var cur = pal.querySelector('.rg-curcolor');
+    if(cur) cur.style.background = rgCss(c[0], c[1], c[2]);
+  }
+}
+function rgSetRGB(r, g, b){
+  if(rgEl('rg-sr')) rgEl('rg-sr').value = r;
+  if(rgEl('rg-sg')) rgEl('rg-sg').value = g;
+  if(rgEl('rg-sb')) rgEl('rg-sb').value = b;
+  rgMix();
+}
+function rgA1Open(){
+  var box = rgEl('rg-a1-body');
+  if(box) box.classList.remove('rg-veil');
+  var v = rgEl('rg-a1-guess') ? rgEl('rg-a1-guess').value.trim() : '';
+  rgFb('rg-a1-fb0', true,
+    (v ? '기록했습니다 — “' + rgEsc(v) + '”<br>' : '') +
+    '이제 슬라이더 세 개를 움직여 확인해 봅시다.' +
+    '<span class="x">말로 하는 색 이름은 사람마다 떠올리는 색이 다릅니다. ' +
+    '컴퓨터에게는 <b>세 개의 수를 정해진 순서로</b> 적어 주어야 정확히 같은 색이 됩니다.</span>');
+  rgSee(0, 'rg-a1-body');
+}
+var rgAllStep = 0;
+function rgAllUp(){
+  /* 움직임 최소화 설정에서는 애니메이션 대신 '한 번에 한 단계' 버튼으로 진행합니다(§9-7). */
+  if(rgReduced()){
+    var stops = [[0,0,0,'세 빛을 모두 끄면 검은색입니다.'],
+                 [128,128,128,'세 빛을 절반씩 켜면 중간 회색입니다.'],
+                 [255,255,255,'세 빛을 모두 끝까지 켜면 흰색입니다 — 가산 혼합.'],
+                 [255,102,0,'원래 색으로 돌아왔습니다. 버튼을 다시 누르면 처음부터 진행합니다.']];
+    var s = stops[rgAllStep % stops.length];
+    rgSetRGB(s[0], s[1], s[2]);
+    var st = rgEl('rg-a1-st');
+    if(st) st.innerHTML = '단계 ' + ((rgAllStep % stops.length) + 1) + ' / 4 — ' + s[3];
+    rgAllStep++;
+    return;
+  }
+  var step = 0;
+  var seq = [0, 32, 64, 96, 128, 160, 192, 224, 255];
+  var up = true;
+  var timer = setInterval(function(){
+    var v = seq[step];
+    rgSetRGB(v, v, v);
+    step++;
+    if(step >= seq.length){
+      if(up){ up = false; step = 0; seq = seq.slice().reverse(); }
+      else { clearInterval(timer); rgSetRGB(255, 102, 0); }
+    }
+  }, 90);
+}
+function rgKeepColor(){
+  var c = rgRGB();
+  rgMade.push(c);
+  if(rgMade.length > 24) rgMade.shift();
+  var box = rgEl('rg-made');
+  if(!box) return;
+  box.innerHTML = rgMade.map(function(x){
+    return '<i title="(' + x[0] + ', ' + x[1] + ', ' + x[2] + ')" style="background:' + rgCss(x[0],x[1],x[2]) + ';"></i>';
+  }).join('');
+}
+function rgBuildA1(){
+  var pres = rgEl('rg-presets');
+  if(pres){
+    pres.innerHTML = '';
+    RG_PRESETS.forEach(function(p){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip';
+      b.textContent = p[0];
+      b.addEventListener('click', function(){
+        pres.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+        b.classList.add('on');
+        rgSetRGB(p[1], p[2], p[3]);
+      });
+      pres.appendChild(b);
+    });
+  }
+
+  var ta = rgEl('rg-tblA');
+  if(ta){
+    var h = '<tr><th>세 수</th><th>색 견본</th><th>색 이름 고르기</th><th>판정</th></tr>';
+    RG_TBLA.forEach(function(row, i){
+      var opt = RG_TBLA_OPTS.map(function(o){ return '<option value="' + rgEsc(o) + '">' + rgEsc(o) + '</option>'; }).join('');
+      h += '<tr><td style="font-family:var(--mono);">(' + row.v.join(', ') + ')</td>' +
+           '<td><span style="display:inline-block;width:2.2rem;height:1.3rem;border-radius:0.25rem;border:1px solid var(--border);background:' +
+             rgCss(row.v[0], row.v[1], row.v[2]) + ';"></span></td>' +
+           '<td><select class="rg-in" id="rg-ta-' + i + '" onchange="rgTblA(' + i + ')" aria-label="색 이름 고르기">' +
+             '<option value="">— 고르세요 —</option>' + opt + '</select></td>' +
+           '<td id="rg-ta-fb-' + i + '" style="font-weight:700;">·</td></tr>';
+    });
+    ta.innerHTML = h;
+  }
+
+  var tb = rgEl('rg-tblB');
+  if(tb){
+    var h2 = '<tr><th>색 이름</th><th>내가 맞춘 값</th><th>기록</th><th>판정</th></tr>';
+    RG_TBLB.forEach(function(row, i){
+      h2 += '<tr><td>' + rgEsc(row.n) + '</td>' +
+            '<td id="rg-tb-v-' + i + '" style="font-family:var(--mono);">—</td>' +
+            '<td><button class="btn" type="button" onclick="rgTblB(' + i + ')">이 색으로 기록</button></td>' +
+            '<td id="rg-tb-fb-' + i + '" style="font-weight:700;">·</td></tr>';
+    });
+    tb.innerHTML = h2;
+  }
+
+  rgOpts('rg-a1-q1', ['(40, 40, 40)','(200, 200, 200)','(200, 200, 40)','(0, 0, 0)'], 2, function(ok){
+    rgFb('rg-a1-fb1', ok,
+      (ok ? '✓ 정답입니다. ' : '✗ 다시 생각해 봅시다. ') +
+      '정답은 <b>(200, 200, 40)</b> 입니다.' +
+      '<span class="x">회색은 <b>세 값이 모두 같을 때</b>만 나옵니다. (200, 200, 40)은 파랑만 유난히 작아 ' +
+      '노란 기가 도는 색이 됩니다. 나머지 셋은 세 값이 같으므로 어두운 회색·밝은 회색·검은색입니다.</span>');
+  });
+  rgOpts('rg-a1-q2', ['같은 색이다','다른 색이다'], 1, function(ok){
+    rgFb('rg-a1-fb2', ok,
+      (ok ? '✓ 정답입니다. ' : '✗ 다시 생각해 봅시다. ') +
+      '정답은 <b>다른 색이다</b> 입니다.' +
+      '<span class="x">색상 정보는 <b>순서쌍</b>입니다. 앞의 (255, 128, 0)은 빨강이 가장 세므로 <b>주황</b>, ' +
+      '뒤의 (0, 128, 255)는 파랑이 가장 세므로 <b>하늘색 계열</b>입니다. 같은 수를 써도 <b>순서가 다르면 다른 색</b>입니다.</span>');
+  });
+}
+function rgTblA(i){
+  var sel = rgEl('rg-ta-' + i);
+  var fb = rgEl('rg-ta-fb-' + i);
+  if(!sel || !fb) return;
+  if(!sel.value){ fb.textContent = '·'; fb.style.color = ''; return; }
+  var ok = (sel.value === RG_TBLA[i].a);
+  fb.textContent = ok ? '✓ 맞습니다' : '✗ 정답은 ' + RG_TBLA[i].a;
+  fb.style.color = ok ? 'var(--green)' : 'var(--red)';
+}
+function rgTblB(i){
+  var c = rgRGB();
+  var t = RG_TBLB[i].v;
+  var cell = rgEl('rg-tb-v-' + i);
+  var fb = rgEl('rg-tb-fb-' + i);
+  if(cell) cell.textContent = '(' + c.join(', ') + ')';
+  if(!fb) return;
+  var ok = Math.abs(c[0]-t[0]) <= 25 && Math.abs(c[1]-t[1]) <= 25 && Math.abs(c[2]-t[2]) <= 25;
+  fb.textContent = ok ? '✓ 통과 (±25 이내)' : '✗ 예시 답 (' + t.join(', ') + ')';
+  fb.style.color = ok ? 'var(--green)' : 'var(--red)';
+}
+
+/* 선택형 판정 문제 공용 — 보기 버튼을 만들고 한 번만 채점합니다. */
+function rgOpts(cid, labels, ansIdx, done){
+  var box = rgEl(cid);
+  if(!box) return;
+  box.innerHTML = '';
+  labels.forEach(function(txt, k){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn cmn-opt';
+    b.textContent = txt;
+    b.addEventListener('click', function(){
+      box.querySelectorAll('button').forEach(function(x, j){
+        x.disabled = true;
+        if(j === ansIdx) x.classList.add('ans');
+      });
+      b.classList.add('pick');
+      if(typeof done === 'function') done(k === ansIdx, k);
+    });
+    box.appendChild(b);
+  });
+}
+
+
+/* ── 10. 활동 ② — 그림 → 세 행렬 (주력 위젯) ────────────────────────────── */
+var RG_GW = 8, RG_GH = 8;
+var rgGrid = [];              /* [행][열] = [r, g, b] */
+var rgHist = [];              /* 되돌리기 스택 */
+var rgPaintColor = [216, 63, 46];
+var rgSel = null;             /* {i, j} — 1부터 세는 행·열 */
+var rgShown = 0;              /* 0 없음 · 1 R · 2 R,G · 3 R,G,B · 4 나란히 */
+var rgColorMode = false;      /* false 숫자 보기 · true 색 배경 보기(숫자 병기) */
+var rgTraceOnly = false;
+var rgPainting = false;
+var RG_PAL = [
+  [0,0,0], [255,255,255], [216,63,46], [242,193,78], [90,160,72], [58,120,180],
+  [155,79,191], [255,128,0], [0,170,170], [128,128,128], [200,200,200], [120,72,40]
+];
+
+function rgBlank(w, h){
+  var a = [], i, j, row;
+  for(i = 0; i < h; i++){
+    row = [];
+    for(j = 0; j < w; j++) row.push([255,255,255]);
+    a.push(row);
+  }
+  return a;
+}
+function rgSnap(){
+  rgHist.push(JSON.stringify(rgGrid));
+  if(rgHist.length > 40) rgHist.shift();
+}
+function rgUndo(){
+  if(!rgHist.length) return;
+  try{ rgGrid = JSON.parse(rgHist.pop()); }catch(e){ return; }
+  rgDrawGrid(); rgMats();
+}
+function rgClearGrid(){
+  rgSnap();
+  rgGrid = rgBlank(RG_GW, RG_GH);
+  rgDrawGrid(); rgMats();
+}
+function rgResize(){
+  var w = Math.max(4, Math.min(12, Math.round(rgNum('rg-gw') || 8)));
+  var h = Math.max(4, Math.min(12, Math.round(rgNum('rg-gh') || 8)));
+  if(rgEl('rg-gw')) rgEl('rg-gw').value = w;
+  if(rgEl('rg-gh')) rgEl('rg-gh').value = h;
+  var old = rgGrid, i, j;
+  RG_GW = w; RG_GH = h;
+  rgGrid = rgBlank(w, h);
+  for(i = 0; i < h; i++) for(j = 0; j < w; j++){
+    if(old[i] && old[i][j]) rgGrid[i][j] = old[i][j].slice();
+  }
+  rgSel = null;
+  rgDrawGrid(); rgMats(); rgCount();
+}
+function rgCount(){
+  var el = rgEl('rg-count');
+  if(el) el.textContent = '가로 ' + RG_GW + ' × 세로 ' + RG_GH + ' × 3채널 = ' + (RG_GW * RG_GH * 3) + '개';
+}
+function rgPickEraser(){ rgPaintColor = [255,255,255]; rgPalMark(); }
+function rgFromA1(){
+  rgPaintColor = rgRGB();
+  rgPalMark();
+  var fb = rgEl('rg-reveal-fb');
+  if(fb){ fb.className = 'rg-fb ok'; fb.innerHTML = '활동 ①에서 만든 색 (' + rgPaintColor.join(', ') + ') 을 붓에 담았습니다.'; }
+}
+function rgPalMark(){
+  var pal = rgEl('rg-pal2');
+  if(!pal) return;
+  pal.querySelectorAll('button').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-c') === rgPaintColor.join(','));
+  });
+  var cur = pal.querySelector('.rg-curcolor');
+  if(cur) cur.style.background = rgCss(rgPaintColor[0], rgPaintColor[1], rgPaintColor[2]);
+}
+function rgBuildPal(){
+  var pal = rgEl('rg-pal2');
+  if(!pal) return;
+  pal.innerHTML = '';
+  RG_PAL.forEach(function(c){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('data-c', c.join(','));
+    b.setAttribute('aria-label', '색 (' + c.join(', ') + ') 고르기');
+    b.title = '(' + c.join(', ') + ')';
+    b.style.background = rgCss(c[0], c[1], c[2]);
+    b.addEventListener('click', function(){ rgPaintColor = c.slice(); rgPalMark(); });
+    pal.appendChild(b);
+  });
+  var cur = document.createElement('span');
+  cur.className = 'rg-curcolor';
+  cur.style.cssText = 'display:inline-block;width:2.4rem;height:2.4rem;border-radius:0.5rem;border:2px dashed var(--fg);';
+  cur.title = '지금 붓에 담긴 색';
+  pal.appendChild(cur);
+  rgPalMark();
+}
+function rgCellPaint(i, j){
+  if(rgTraceOnly){ rgSelect(i, j); return; }
+  rgGrid[i][j] = rgPaintColor.slice();
+  rgDrawCell(i, j);
+  rgMats();
+  rgSelect(i, j);
+}
+function rgDrawCell(i, j){
+  var b = rgEl('rg-c-' + i + '-' + j);
+  if(!b) return;
+  var c = rgGrid[i][j];
+  b.style.background = rgCss(c[0], c[1], c[2]);
+  b.setAttribute('aria-label', (i+1) + '행 ' + (j+1) + '열, 값 (' + c.join(', ') + ')');
+}
+function rgDrawGrid(){
+  var box = rgEl('rg-cells');
+  if(!box) return;
+  box.style.gridTemplateColumns = 'repeat(' + RG_GW + ', auto)';
+  box.innerHTML = '';
+  var i, j;
+  for(i = 0; i < RG_GH; i++){
+    for(j = 0; j < RG_GW; j++){
+      (function(i, j){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'rg-cell';
+        b.id = 'rg-c-' + i + '-' + j;
+        b.setAttribute('role', 'gridcell');
+        b.setAttribute('data-i', i);
+        b.setAttribute('data-j', j);
+        b.addEventListener('pointerdown', function(ev){
+          ev.preventDefault();
+          rgSnap();
+          rgPainting = true;
+          rgCellPaint(i, j);
+        });
+        b.addEventListener('pointerenter', function(){ if(rgPainting) rgCellPaint(i, j); });
+        b.addEventListener('keydown', function(ev){
+          var ni = i, nj = j, moved = true;
+          if(ev.key === 'ArrowRight') nj = Math.min(RG_GW - 1, j + 1);
+          else if(ev.key === 'ArrowLeft') nj = Math.max(0, j - 1);
+          else if(ev.key === 'ArrowDown') ni = Math.min(RG_GH - 1, i + 1);
+          else if(ev.key === 'ArrowUp') ni = Math.max(0, i - 1);
+          else if(ev.key === ' ' || ev.key === 'Enter'){ ev.preventDefault(); rgSnap(); rgCellPaint(i, j); return; }
+          else moved = false;
+          if(moved){
+            ev.preventDefault();
+            var t = rgEl('rg-c-' + ni + '-' + nj);
+            if(t) t.focus();
+          }
+        });
+        box.appendChild(b);
+        rgDrawCell(i, j);
+      })(i, j);
+    }
+  }
+  rgCount();
+}
+function rgSelect(i, j){
+  rgSel = { i: i, j: j };
+  var box = rgEl('rg-cells');
+  if(box) box.querySelectorAll('.rg-cell').forEach(function(b){ b.classList.remove('sel'); });
+  var b = rgEl('rg-c-' + i + '-' + j);
+  if(b) b.classList.add('sel');
+  rgHighlight();
+  rgTrack();
+}
+function rgTrack(){
+  var box = rgEl('rg-track');
+  if(!box) return;
+  if(!rgSel){ box.innerHTML = '격자의 칸을 하나 눌러 보세요.'; return; }
+  var c = rgGrid[rgSel.i][rgSel.j];
+  var r = rgSel.i + 1, k = rgSel.j + 1;
+  var name = rgColorName(c);
+  box.innerHTML =
+    '<b>선택 위치 : ' + r + '행 ' + k + '열</b><br>' +
+    'R의 (' + r + ',' + k + ') = ' + c[0] + '　　G의 (' + r + ',' + k + ') = ' + c[1] + '　　B의 (' + r + ',' + k + ') = ' + c[2] + '<br>' +
+    '⇒ x<sub>' + r + k + '</sub> = ( ' + c[0] + ', ' + c[1] + ', ' + c[2] + ' ) ⇒ <b>' + name + '</b>' +
+    '<span class="sw" style="background:' + rgCss(c[0], c[1], c[2]) + ';"></span>';
+}
+function rgColorName(c){
+  var r = c[0], g = c[1], b = c[2];
+  if(r === g && g === b) return r === 0 ? '검은색' : (r === 255 ? '흰색' : '회색 (' + r + ')');
+  var mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+  if(mx - mn < 30) return '거의 회색';
+  if(r === mx && g === mx && b === mn) return '노란 계열';
+  if(r === mx && b === mx && g === mn) return '자홍 계열';
+  if(g === mx && b === mx && r === mn) return '청록 계열';
+  if(r === mx) return (g > b) ? '주황·빨강 계열' : '빨강·분홍 계열';
+  if(g === mx) return '초록 계열';
+  return '파랑 계열';
+}
+function rgMatHTML(ch){
+  var i, j, h = '', c, v;
+  for(i = 0; i < RG_GH; i++){
+    h += '<tr>';
+    for(j = 0; j < RG_GW; j++){
+      c = rgGrid[i][j];
+      v = c[ch];
+      if(rgColorMode){
+        var bg = (ch === 0) ? rgCss(v, 0, 0) : (ch === 1 ? rgCss(0, v, 0) : rgCss(0, 0, v));
+        h += '<td id="rg-m' + ch + '-' + i + '-' + j + '" style="background:' + bg + ';color:' +
+             rgInk(ch === 0 ? v : 0, ch === 1 ? v : 0, ch === 2 ? v : 0) + ';">' + v + '</td>';
+      }else{
+        h += '<td id="rg-m' + ch + '-' + i + '-' + j + '">' + v + '</td>';
+      }
+    }
+    h += '</tr>';
+  }
+  return h;
+}
+function rgMats(){
+  var ids = ['rg-matR','rg-matG','rg-matB'];
+  var k;
+  for(k = 0; k < 3; k++){
+    var t = rgEl(ids[k]);
+    if(t) t.innerHTML = rgMatHTML(k);
+  }
+  rgHighlight();
+}
+function rgHighlight(){
+  var view = rgEl('v-rgb');
+  if(!view) return;
+  view.querySelectorAll('#rg-matR td, #rg-matG td, #rg-matB td').forEach(function(td){ td.classList.remove('hi'); });
+  if(!rgSel) return;
+  var k;
+  for(k = 0; k < 3; k++){
+    var td = rgEl('rg-m' + k + '-' + rgSel.i + '-' + rgSel.j);
+    if(td) td.classList.add('hi');
+  }
+}
+function rgToggleMode(){
+  rgColorMode = !rgColorMode;
+  var b = rgEl('rg-modebtn');
+  if(b) b.textContent = rgColorMode ? '숫자만 보기' : '색 배경 보기';
+  rgMats();
+}
+function rgReveal(n){
+  rgShown = Math.max(rgShown, n);
+  var show = function(id, on){ var e = rgEl(id); if(e) e.classList.toggle('hide', !on); };
+  show('rg-boxR', rgShown >= 1);
+  show('rg-boxG', rgShown >= 2);
+  show('rg-boxB', rgShown >= 3);
+  if(rgEl('rg-btnG')) rgEl('rg-btnG').disabled = (rgShown < 1);
+  if(rgEl('rg-btnB')) rgEl('rg-btnB').disabled = (rgShown < 2);
+  if(rgEl('rg-btnAll')) rgEl('rg-btnAll').disabled = (rgShown < 3);
+  rgMats();
+  var msg = '';
+  if(n === 1) msg = '이건 <b>빨간 빛의 세기만</b> 모은 것입니다. 그림에서 빨간 부분만 큰 수가 되어 있는지 확인해 보세요.';
+  else if(n === 2) msg = 'G는 <b>초록 빛의 세기만</b> 모은 것입니다. R과 어디가 다른가요?';
+  else if(n === 3) msg = 'B는 <b>파란 빛의 세기만</b> 모은 것입니다. 이제 세 행렬이 모두 열렸습니다.';
+  else msg = '세 행렬을 나란히 놓았습니다. 격자의 칸을 눌러 <b>같은 자리</b>의 세 수를 확인해 보세요.';
+  rgFb('rg-reveal-fb', true, msg);
+  if(n === 4) rgSee(1, 'rg-track');
+}
+function rgPredict(){
+  var pr = rgNum('rg-pr'), pg = rgNum('rg-pg'), pb = rgNum('rg-pb');
+  if(!isFinite(pr) || !isFinite(pg) || !isFinite(pb)){
+    rgFb('rg-pred-fb', false, '세 칸을 모두 채워 주세요.');
+    return;
+  }
+  var ok = (pr === 255 && pg === 0 && pb === 0);
+  rgFb('rg-pred-fb', ok,
+    (ok ? '✓ 정확합니다. ' : '✗ 다시 생각해 봅시다. ') +
+    '빨간색은 <b>(255, 0, 0)</b> 이므로 R의 (2,3) = <b>255</b>, G의 (2,3) = <b>0</b>, B의 (2,3) = <b>0</b> 입니다.' +
+    '<span class="x">빨간색은 <b>빨간 빛만 최대로 켜고 나머지 두 빛은 완전히 끈</b> 상태입니다. ' +
+    '이제 격자의 2행 3열을 빨간색으로 칠하고 [RGB 행렬 추출]을 눌러 직접 확인해 보세요.</span>');
+}
+
+/* 프리셋 그림 — 8×8 기준 도안. 격자 크기가 다르면 가운데에 맞춰 그립니다. */
+var RG_SHAPES = {
+  heart: { c:[216,63,46], m:[
+    '01100110','11111111','11111111','11111111','01111110','00111100','00011000','00000000'] },
+  star: { c:[242,193,78], m:[
+    '00011000','00011000','00111100','11111111','01111110','00111100','01100110','11000011'] },
+  smile: { c:[242,193,78], m:[
+    '00111100','01111110','11011011','11111111','11111111','11011011','01100110','00111100'] },
+  apple: { c:[216,63,46], m:[
+    '00011000','00110000','01111110','11111111','11111111','11111111','01111110','00111100'] }
+};
+function rgShape(key){
+  var s = RG_SHAPES[key];
+  if(!s) return;
+  rgSnap();
+  rgGrid = rgBlank(RG_GW, RG_GH);
+  var offI = Math.floor((RG_GH - 8) / 2), offJ = Math.floor((RG_GW - 8) / 2), i, j, ci, cj;
+  for(i = 0; i < 8; i++) for(j = 0; j < 8; j++){
+    if(s.m[i].charAt(j) !== '1') continue;
+    ci = i + offI; cj = j + offJ;
+    if(ci < 0 || cj < 0 || ci >= RG_GH || cj >= RG_GW) continue;
+    rgGrid[ci][cj] = s.c.slice();
+  }
+  if(key === 'smile'){                       /* 눈은 검은색으로 */
+    [[2,2],[2,5]].forEach(function(p){
+      var a = p[0] + offI, b = p[1] + offJ;
+      if(a >= 0 && b >= 0 && a < RG_GH && b < RG_GW) rgGrid[a][b] = [0,0,0];
+    });
+  }
+  if(key === 'apple'){                       /* 꼭지는 초록색으로 */
+    [[0,3],[1,2]].forEach(function(p){
+      var a = p[0] + offI, b = p[1] + offJ;
+      if(a >= 0 && b >= 0 && a < RG_GH && b < RG_GW) rgGrid[a][b] = [90,160,72];
+    });
+  }
+  rgDrawGrid(); rgMats();
+}
+
+/* 판정 문제 3 — 3×3 세 행렬에서 자홍색 자리 찾기 */
+var RG_Q3 = {
+  R: [[255,0,255],[0,255,0],[255,0,0]],
+  G: [[0,0,0],[255,255,0],[0,0,255]],
+  B: [[255,0,255],[0,0,255],[0,255,0]],
+  ans: ['1,1','1,3']
+};
+var rgQ3Pick = {};
+function rgBuildQ3(){
+  ['R','G','B'].forEach(function(ch){
+    var t = rgEl('rg-q3' + ch);
+    if(!t) return;
+    var m = RG_Q3[ch], h = '', i, j;
+    for(i = 0; i < 3; i++){
+      h += '<tr>';
+      for(j = 0; j < 3; j++) h += '<td>' + m[i][j] + '</td>';
+      h += '</tr>';
+    }
+    t.innerHTML = h;
+  });
+  var box = rgEl('rg-q3-cells');
+  if(!box) return;
+  box.innerHTML = '';
+  rgQ3Pick = {};
+  var i, j;
+  for(i = 1; i <= 3; i++) for(j = 1; j <= 3; j++){
+    (function(i, j){
+      var key = i + ',' + j;
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn';
+      b.textContent = '(' + i + ', ' + j + ')';
+      b.addEventListener('click', function(){
+        rgQ3Pick[key] = !rgQ3Pick[key];
+        b.classList.toggle('pri', !!rgQ3Pick[key]);
+      });
+      box.appendChild(b);
+    })(i, j);
+  }
+}
+function rgQ3Check(){
+  var picked = Object.keys(rgQ3Pick).filter(function(k){ return rgQ3Pick[k]; }).sort();
+  var ok = (picked.join('|') === RG_Q3.ans.slice().sort().join('|'));
+  rgFb('rg-a2-fb3', ok,
+    (ok ? '✓ 정답입니다. ' : '✗ 다시 확인해 봅시다. ') +
+    '자홍색 (255, 0, 255) 인 자리는 <b>(1, 1)</b> 과 <b>(1, 3)</b> 두 곳입니다.' +
+    '<span class="x">세 행렬에서 <b>같은 자리</b>의 값을 차례로 읽어 (R, G, B) 순서쌍을 만든 뒤 (255, 0, 255)와 견줍니다. ' +
+    '고른 자리 : ' + (picked.length ? picked.map(function(p){ return '(' + p.replace(',', ', ') + ')'; }).join(' ') : '없음') + '</span>');
+}
+function rgBuildA2Q(){
+  rgOpts('rg-a2-q1', ['2,073,600개','6,220,800개','1,920개','518,400개'], 1, function(ok){
+    rgFb('rg-a2-fb1', ok,
+      (ok ? '✓ 정답입니다. ' : '✗ 다시 계산해 봅시다. ') +
+      '정답은 <b>6,220,800개</b> 입니다.' +
+      '<span class="x">1920 × 1080 = 2,073,600개가 <b>픽셀의 수</b>이고, 컬러이므로 여기에 3을 곱해 ' +
+      '<b>1920 × 1080 × 3 = 6,220,800</b>개(약 620만 개)입니다. 사진 한 장이 600만 개가 넘는 수의 모임인 셈입니다.</span>');
+  });
+  rgOpts('rg-a2-q2', ['모두 흰색','모두 검은색','회색조 이미지','알 수 없다'], 2, function(ok){
+    rgFb('rg-a2-fb2', ok,
+      (ok ? '✓ 정답입니다. ' : '✗ 다시 생각해 봅시다. ') +
+      '정답은 <b>회색조 이미지</b> 입니다.' +
+      '<span class="x">R = G = B 이면 <b>모든 픽셀에서 세 빛의 세기가 같으므로</b> 색이 치우치지 않습니다. ' +
+      '값이 0이면 검정, 255면 흰색, 그 사이면 회색이므로 전체가 <b>회색 계열</b>이 됩니다.</span>');
+  });
+  rgBuildQ3();
+}
+
+
+/* ── 11. 활동 ③ — 세 행렬 → 그림 ────────────────────────────────────────── */
+var RG_N3 = 6;
+var rgIn = { R: null, G: null, B: null };
+
+function rgA3Build(){
+  ['R','G','B'].forEach(function(ch){
+    var t = rgEl('rg-in' + ch);
+    if(!t) return;
+    var h = '', i, j;
+    for(i = 0; i < RG_N3; i++){
+      h += '<tr>';
+      for(j = 0; j < RG_N3; j++){
+        h += '<td><input type="number" min="0" max="255" step="1" value="0" ' +
+             'id="rg-e' + ch + '-' + i + '-' + j + '" ' +
+             'aria-label="' + ch + ' 격자 ' + (i+1) + '행 ' + (j+1) + '열" ' +
+             'oninput="rgA3Render()"></td>';
+      }
+      h += '</tr>';
+    }
+    t.innerHTML = h;
+  });
+  rgOpts('rg-a3-q0', ['전체가 붉은 그림','전체가 초록 그림','전체가 흰 그림','아무것도 안 보인다'], 0, function(ok){
+    rgFb('rg-a3-fb0', ok,
+      (ok ? '✓ 좋은 예상입니다. ' : '✗ 다시 생각해 봅시다. ') +
+      '정답은 <b>전체가 붉은 그림</b> 입니다.' +
+      '<span class="x">R에만 큰 수가 있고 G·B가 0이면 <b>빨간 빛만 켜진 상태</b>이므로 붉은 그림이 됩니다. ' +
+      '아래 격자에서 직접 확인해 보세요.</span>');
+  });
+  rgA3Preset('rainbow');
+}
+function rgA3Get(ch, i, j){
+  var el = rgEl('rg-e' + ch + '-' + i + '-' + j);
+  if(!el) return 0;
+  var v = Math.round(Number(el.value));
+  if(!isFinite(v)) v = 0;
+  return Math.max(0, Math.min(255, v));
+}
+function rgA3Set(ch, i, j, v){
+  var el = rgEl('rg-e' + ch + '-' + i + '-' + j);
+  if(el) el.value = Math.max(0, Math.min(255, Math.round(v)));
+}
+function rgA3Preset(kind){
+  var i, j, r, g, b;
+  var band = [[255,0,0],[255,128,0],[255,255,0],[0,180,60],[0,80,220],[140,0,180]];
+  for(i = 0; i < RG_N3; i++) for(j = 0; j < RG_N3; j++){
+    if(kind === 'rainbow'){ r = band[i][0]; g = band[i][1]; b = band[i][2]; }
+    else if(kind === 'leaf'){ r = 40 + j * 10; g = 120 + i * 20; b = 40 + ((i + j) % 3) * 10; }
+    else if(kind === 'sunset'){ r = 230 + Math.min(25, j * 5); g = 190 - i * 30; b = 120 - i * 22; }
+    else { r = 0; g = 0; b = 0; }
+    rgA3Set('R', i, j, r); rgA3Set('G', i, j, Math.max(0, g)); rgA3Set('B', i, j, Math.max(0, b));
+  }
+  rgA3Render();
+}
+function rgA3SameAll(){
+  var i, j, v;
+  for(i = 0; i < RG_N3; i++) for(j = 0; j < RG_N3; j++){
+    v = rgA3Get('R', i, j);
+    rgA3Set('G', i, j, v); rgA3Set('B', i, j, v);
+  }
+  rgA3Render();
+  rgFb('rg-a3-fb1', true,
+    'G와 B를 R과 똑같이 만들었습니다 — 결과가 <b>회색조로 변했습니다.</b>' +
+    '<span class="x">R = G = B 이면 언제나 회색조입니다. 활동 ④에서는 <b>반대로</b> 컬러에서 출발해 ' +
+    '세 행렬을 같게 만드는 계산을 해 봅니다.</span>');
+}
+function rgA3Fill(){
+  var v = rgNum('rg-a3-fill');
+  if(!isFinite(v)) return;
+  var ch = rgEl('rg-a3-target') ? rgEl('rg-a3-target').value : 'R';
+  var i, j;
+  for(i = 0; i < RG_N3; i++) for(j = 0; j < RG_N3; j++) rgA3Set(ch, i, j, v);
+  rgA3Render();
+}
+function rgA3Render(){
+  var pairs = [['rg-o0','all'], ['rg-oR','R'], ['rg-oG','G'], ['rg-oB','B']];
+  pairs.forEach(function(p){
+    var cv = rgEl(p[0]);
+    if(!cv) return;
+    var ctx = cv.getContext('2d');
+    if(!ctx) return;
+    var cell = cv.width / RG_N3, i, j, r, g, b;
+    for(i = 0; i < RG_N3; i++) for(j = 0; j < RG_N3; j++){
+      r = rgA3Get('R', i, j); g = rgA3Get('G', i, j); b = rgA3Get('B', i, j);
+      if(p[1] === 'R') ctx.fillStyle = rgCss(r, r, r);
+      else if(p[1] === 'G') ctx.fillStyle = rgCss(g, g, g);
+      else if(p[1] === 'B') ctx.fillStyle = rgCss(b, b, b);
+      else ctx.fillStyle = rgCss(r, g, b);
+      ctx.fillRect(j * cell, i * cell, cell, cell);
+    }
+    ctx.strokeStyle = 'rgba(26,23,20,0.18)';
+    ctx.lineWidth = 1;
+    for(i = 1; i < RG_N3; i++){
+      ctx.beginPath(); ctx.moveTo(i * cell, 0); ctx.lineTo(i * cell, cv.height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i * cell); ctx.lineTo(cv.width, i * cell); ctx.stroke();
+    }
+  });
+}
+
+
+/* ── 12. 활동 ④ — 세 행렬 → 한 행렬 ─────────────────────────────────────── */
+var RG_A4_POLL = [
+  ['평균 (r + g + b) ÷ 3', '가장 많이 나오는 답. 세 수를 공평하게 봅니다.', '148'],
+  ['가장 큰 값 (최댓값)', '가장 밝은 빛에 맞춥니다. 전체가 밝아집니다.', '209'],
+  ['가운데 값 (중간값)', '치우친 값에 덜 흔들립니다.', '118']
+];
+
+function rgA4Open(){
+  var box = rgEl('rg-a4-body');
+  if(box) box.classList.remove('rg-veil');
+  var n = rgNum('rg-a4-num');
+  var why = rgEl('rg-a4-why') ? rgEl('rg-a4-why').value.trim() : '';
+  rgFb('rg-a4-fb0', true,
+    (isFinite(n) ? '내가 정한 수 : <b>' + n + '</b>　' : '') + (why ? '이유 : ' + rgEsc(why) : '') +
+    '<span class="x">정답이 하나로 정해진 문제가 아닙니다. 아래에서 학급에서 자주 나오는 세 가지 답을 보고, ' +
+    '그 가운데 <b>평균</b>과 <b>가중치 반영</b> 두 가지를 실제 사진으로 계산해 비교합니다.</span>');
+  var poll = rgEl('rg-a4-poll');
+  if(poll){
+    poll.style.display = 'block';
+    var t = rgEl('rg-a4-polltbl');
+    if(t){
+      var h = '<tr><th>자주 나오는 답</th><th>까닭</th><th>(118, 209, 117)의 결과</th></tr>';
+      RG_A4_POLL.forEach(function(p){
+        h += '<tr><td class="l"><b>' + rgEsc(p[0]) + '</b></td><td class="l">' + rgEsc(p[1]) + '</td><td>' + p[2] + '</td></tr>';
+      });
+      t.innerHTML = h;
+    }
+  }
+  rgRenderA4();
+  rgSee(3, 'rg-a4-body');
+}
+
+var rgWRaf = 0;
+function rgWeight(){
+  var gray = !!(rgEl('rg-gray') && rgEl('rg-gray').checked);
+  if(gray){
+    var v = rgEl('rg-wr') ? rgEl('rg-wr').value : 1;
+    if(rgEl('rg-wg')) rgEl('rg-wg').value = v;
+    if(rgEl('rg-wb')) rgEl('rg-wb').value = v;
+  }
+  ['r','g','b'].forEach(function(k){
+    var s = rgEl('rg-w' + k), o = rgEl('rg-w' + k + 'v');
+    if(s && o) o.textContent = Number(s.value).toFixed(1);
+  });
+  if(rgEl('rg-wg')) rgEl('rg-wg').disabled = gray;
+  if(rgEl('rg-wb')) rgEl('rg-wb').disabled = gray;
+  if(rgWRaf) return;
+  rgWRaf = requestAnimationFrame(function(){
+    rgWRaf = 0;
+    rgPaint('rg-cW', 'weight');
+    rgWMats();
+  });
+}
+function rgWPre(r, g, b, el){
+  if(rgEl('rg-gray')) rgEl('rg-gray').checked = false;
+  if(rgEl('rg-wr')) rgEl('rg-wr').value = r;
+  if(rgEl('rg-wg')) rgEl('rg-wg').value = g;
+  if(rgEl('rg-wb')) rgEl('rg-wb').value = b;
+  var box = rgEl('rg-wpre');
+  if(box) box.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+  if(el) el.classList.add('on');
+  rgWeight();
+}
+/* 조절 결과의 왼쪽 위 3×3 성분 — [흑백 전환] 시 세 표가 완전히 같아지는지 눈으로 확인 */
+function rgWMats(){
+  if(!rgSrcData) return;
+  var wr = Number(rgEl('rg-wr') ? rgEl('rg-wr').value : 1);
+  var wg = Number(rgEl('rg-wg') ? rgEl('rg-wg').value : 1);
+  var wb = Number(rgEl('rg-wb') ? rgEl('rg-wb').value : 1);
+  var gray = !!(rgEl('rg-gray') && rgEl('rg-gray').checked);
+  var ids = ['rg-wR','rg-wG','rg-wB'], k, i, j, h, idx, r, g, b, v;
+  for(k = 0; k < 3; k++){
+    var t = rgEl(ids[k]);
+    if(!t) continue;
+    h = '';
+    for(i = 0; i < 3; i++){
+      h += '<tr>';
+      for(j = 0; j < 3; j++){
+        idx = ((i * Math.floor(rgSrcH / 4) + Math.floor(rgSrcH / 3)) * rgSrcW +
+               (j * Math.floor(rgSrcW / 4) + Math.floor(rgSrcW / 4))) * 4;
+        idx = Math.max(0, Math.min(idx, (rgSrcW * rgSrcH - 1) * 4));   /* 아주 작은 그림 대비 */
+        r = rgSrcData[idx]; g = rgSrcData[idx+1]; b = rgSrcData[idx+2];
+        if(gray) v = rgClamp(wr * rgLuma(r, g, b));
+        else v = rgClamp((k === 0 ? wr * r : (k === 1 ? wg * g : wb * b)));
+        h += '<td>' + v + '</td>';
+      }
+      h += '</tr>';
+    }
+    t.innerHTML = h;
+  }
+}
+function rgCoef(){
+  var cr = rgNum('rg-cr'), cg = rgNum('rg-cg'), cb = rgNum('rg-cb');
+  if(!isFinite(cr)) cr = 0; if(!isFinite(cg)) cg = 0; if(!isFinite(cb)) cb = 0;
+  var s = cr + cg + cb;
+  var box = rgEl('rg-coefsum');
+  if(box){
+    var near = Math.abs(s - 1) < 0.0005;
+    box.className = 'rg-fb ' + (near ? 'ok' : 'no');
+    box.innerHTML = cr.toFixed(3) + ' + ' + cg.toFixed(3) + ' + ' + cb.toFixed(3) + ' = <b>' + s.toFixed(3) + '</b>　' +
+      (near ? '✓ 계수의 합이 1입니다.'
+            : '⚠️ 합이 1이 아니면 전체 밝기가 함께 변합니다 — ' +
+              (s > 1 ? '사진 전체가 <b>밝아지고</b> 255를 넘는 값이 잘립니다.' : '사진 전체가 <b>어두워집니다.</b>'));
+  }
+  var v = rgEl('rg-coefval');
+  if(v) v.textContent = rgClamp(cr * 118 + cg * 209 + cb * 117);
+}
+function rgCoefReset(){
+  if(rgEl('rg-cr')) rgEl('rg-cr').value = 0.299;
+  if(rgEl('rg-cg')) rgEl('rg-cg').value = 0.587;
+  if(rgEl('rg-cb')) rgEl('rg-cb').value = 0.114;
+  rgCoef();
+}
+
+/* 판정 문제 — 동아 교과서 Ⅲ p.94 문제 4 (검증 수치 V18) */
+var RG_Q4 = {
+  R: [[102,55],[63,82]],
+  G: [[136,233],[112,212]],
+  B: [[32,66],[21,24]]
+};
+function rgQ4Ans(kind, i, j){
+  var r = RG_Q4.R[i][j], g = RG_Q4.G[i][j], b = RG_Q4.B[i][j];
+  return (kind === 'mean') ? rgMean(r, g, b) : rgLuma(r, g, b);
+}
+function rgBuildQ4(){
+  ['R','G','B'].forEach(function(ch){
+    var t = rgEl('rg-q4' + ch);
+    if(!t) return;
+    var m = RG_Q4[ch], h = '', i, j;
+    for(i = 0; i < 2; i++){
+      h += '<tr>';
+      for(j = 0; j < 2; j++) h += '<td>' + m[i][j] + '</td>';
+      h += '</tr>';
+    }
+    t.innerHTML = h;
+  });
+  [['rg-q4-mean','mean'], ['rg-q4-luma','luma']].forEach(function(p){
+    var t = rgEl(p[0]);
+    if(!t) return;
+    var h = '', i, j;
+    for(i = 0; i < 2; i++){
+      h += '<tr>';
+      for(j = 0; j < 2; j++){
+        h += '<td><input class="rg-in num" type="number" min="0" max="255" ' +
+             'id="rg-q4-' + p[1] + '-' + i + '-' + j + '" placeholder="?" ' +
+             'aria-label="' + (p[1] === 'mean' ? '평균법' : '가중치') + ' 결과 ' + (i+1) + '행 ' + (j+1) + '열">' +
+             '<span id="rg-q4-fb-' + p[1] + '-' + i + '-' + j + '" style="font-weight:700;margin-left:0.2rem;"></span></td>';
+      }
+      h += '</tr>';
+    }
+    t.innerHTML = h;
+  });
+}
+function rgQ4Clear(){
+  ['mean','luma'].forEach(function(kind){
+    var i, j;
+    for(i = 0; i < 2; i++) for(j = 0; j < 2; j++){
+      var el = rgEl('rg-q4-' + kind + '-' + i + '-' + j);
+      if(el) el.value = '';
+      var fb = rgEl('rg-q4-fb-' + kind + '-' + i + '-' + j);
+      if(fb) fb.textContent = '';
+    }
+  });
+  var st = rgEl('rg-q4-steps');
+  if(st) st.innerHTML = '';
+  var f = rgEl('rg-q4-fb');
+  if(f){ f.className = 'rg-fb'; f.innerHTML = ''; }
+}
+function rgQ4Check(){
+  var wrong = [], n = 0, i, j;
+  ['mean','luma'].forEach(function(kind){
+    for(i = 0; i < 2; i++) for(j = 0; j < 2; j++){
+      var el = rgEl('rg-q4-' + kind + '-' + i + '-' + j);
+      var fb = rgEl('rg-q4-fb-' + kind + '-' + i + '-' + j);
+      if(!el || !fb) continue;
+      var want = rgQ4Ans(kind, i, j);
+      var got = String(el.value).trim() === '' ? null : Math.round(Number(el.value));
+      if(got === want){ fb.textContent = '✓'; fb.style.color = 'var(--green)'; n++; }
+      else { fb.textContent = '✗'; fb.style.color = 'var(--red)'; wrong.push([kind, i, j]); }
+    }
+  });
+  var ok = (wrong.length === 0);
+  rgFb('rg-q4-fb', ok,
+    (ok ? '✓ 여덟 칸 모두 정답입니다. ' : '✗ 맞은 칸 ' + n + ' / 8. ') +
+    '평균법 [[90, 118], [65, 106]] · 가중치 [[114, 161], [87, 152]]' +
+    (ok ? '<span class="x">두 결과를 견주어 보세요. <b>가중치 쪽이 네 성분 모두 더 큽니다.</b> 아래 (3)번에 그 까닭을 적어 봅시다.</span>'
+        : '<span class="x">틀린 칸의 계산 과정만 아래에 펼쳤습니다.</span>'));
+
+  var st = rgEl('rg-q4-steps');
+  if(!st) return;
+  if(ok){ st.innerHTML = ''; return; }
+  var h = '';
+  wrong.forEach(function(w){
+    var kind = w[0], a = w[1], b = w[2];
+    var r = RG_Q4.R[a][b], g = RG_Q4.G[a][b], bb = RG_Q4.B[a][b];
+    if(kind === 'mean'){
+      h += '<div class="rg-track">(' + (a+1) + ', ' + (b+1) + ') <b>평균법</b> : (' + r + ' + ' + g + ' + ' + bb + ') ÷ 3 = ' +
+           (r+g+bb) + ' ÷ 3 = ' + ((r+g+bb)/3).toFixed(2) + ' → <b>' + rgMean(r,g,bb) + '</b></div>';
+    }else{
+      var p1 = 0.299*r, p2 = 0.587*g, p3 = 0.114*bb;
+      h += '<div class="rg-track">(' + (a+1) + ', ' + (b+1) + ') <b>가중치</b> : 0.299×' + r + ' + 0.587×' + g + ' + 0.114×' + bb +
+           ' = ' + p1.toFixed(3) + ' + ' + p2.toFixed(3) + ' + ' + p3.toFixed(3) + ' = ' + (p1+p2+p3).toFixed(3) +
+           ' → <b>' + rgLuma(r,g,bb) + '</b></div>';
+    }
+  });
+  st.innerHTML = h;
+}
+function rgQ4Why(){
+  var v = rgEl('rg-q4-why') ? rgEl('rg-q4-why').value.trim() : '';
+  var hit = /초록|G|0\.587|녹색/.test(v);
+  rgFb('rg-q4-whyfb', hit,
+    '<b>채점 기준</b> — "네 픽셀 모두 <b>초록(G) 값이 가장 크고</b>, 가중치 식은 초록에 가장 큰 계수 0.587을 주기 때문"이라는 요지가 있으면 정답입니다.' +
+    '<span class="x">' + (v ? '내가 쓴 문장 : ' + rgEsc(v) + '<br>' : '') +
+    (hit ? '초록에 주목한 점이 좋습니다. ' : '초록(G)의 값과 계수에 주목해 다시 써 보세요. ') +
+    'R = [[102, 55], [63, 82]] 보다 G = [[136, 233], [112, 212]] 가 네 자리 모두 크고, ' +
+    '평균은 세 수에 각각 약 0.333씩을 주는 것과 같은데 가중치 식은 초록에만 0.587을 주므로 결과가 커집니다.</span>');
+}
+
+
+/* ── 13. 형성평가 자료 행렬 (문항 2·3 공통) ─────────────────────────────── */
+var RG_QZ = {
+  R: [[0,255,255],[255,255,0],[128,0,255]],
+  G: [[0,255,255],[0,255,0],[0,0,255]],
+  B: [[0,0,255],[0,0,0],[0,0,255]]
+};
+function rgBuildQuizData(){
+  ['R','G','B'].forEach(function(ch){
+    var t = rgEl('rg-qz' + ch);
+    if(!t) return;
+    var m = RG_QZ[ch], h = '', i, j;
+    for(i = 0; i < 3; i++){
+      h += '<tr>';
+      for(j = 0; j < 3; j++) h += '<td>' + m[i][j] + '</td>';
+      h += '</tr>';
+    }
+    t.innerHTML = h;
+  });
+}
+
+
+/* ── 14. 참고 자료 — 교사가 추가한 링크(이 기기에만 저장) ───────────────── */
+var RG_REF_KEY = 'aimath.rgb.refs';
+var rgRefCache = null;
+function rgRefLoad(){
+  if(rgRefCache) return rgRefCache;
+  try{
+    var raw = rgGet(RG_REF_KEY, '[]');
+    var arr = JSON.parse(raw);
+    rgRefCache = Array.isArray(arr) ? arr : [];
+  }catch(e){ rgRefCache = []; }
+  return rgRefCache;
+}
+function rgRefSave(){ rgSet(RG_REF_KEY, JSON.stringify(rgRefLoad())); }
+function rgRefRender(){
+  var box = rgEl('rg-ref-custom');
+  if(!box) return;
+  box.innerHTML = rgRefLoad().map(function(r, i){
+    return '<div class="rg-refwrap">' +
+      '<a class="rg-ref" href="' + rgEsc(r.u) + '" target="_blank" rel="noopener">' +
+        '<span class="th"><span class="bg">추가 자료</span>🔗</span>' +
+        '<span class="bd"><span class="tt">' + rgEsc(r.t) + '</span>' +
+        '<span class="ds">' + rgEsc(r.u) + '</span></span></a>' +
+      '<button class="rm" type="button" title="이 자료 삭제" aria-label="이 자료 삭제" onclick="rgRefDel(' + i + ')">×</button>' +
+      '</div>';
+  }).join('');
+}
+function rgRefAdd(){
+  var iu = rgEl('rg-ref-url'), it = rgEl('rg-ref-tt'), st = rgEl('rg-ref-st');
+  if(!iu) return;
+  var u = iu.value.trim();
+  if(!/^https?:\/\//i.test(u)){
+    if(st) st.textContent = 'http 또는 https 로 시작하는 전체 주소를 붙여넣어 주세요.';
+    return;
+  }
+  var t = (it && it.value.trim()) || u.replace(/^https?:\/\//i, '').split('/')[0];
+  rgRefLoad().push({ u: u, t: t });
+  rgRefSave();
+  iu.value = ''; if(it) it.value = '';
+  if(st) st.textContent = '자료를 추가했습니다. 이 기기에만 저장됩니다.';
+  rgRefRender();
+}
+function rgRefDel(i){
+  var list = rgRefLoad();
+  if(i < 0 || i >= list.length) return;
+  list.splice(i, 1);
+  rgRefSave();
+  var st = rgEl('rg-ref-st');
+  if(st) st.textContent = '자료를 삭제했습니다.';
+  rgRefRender();
+}
+
+
+/* ── 15. 초기화 (IIFE 하나) ─────────────────────────────────────────────── */
+(function rgbInit(){
+  var boot = function(){
+    var root = rgEl('v-rgb');
+    if(!root) return;                       /* 뷰가 없어도 core.js 가 죽지 않도록 가드 */
+
+    /* 공통 컴포넌트 */
+    if(typeof videoDeck   === 'function'){ try{ videoDeck('rg-videos','rgb',RG_VIDEOS); }catch(e){ console.error('rg videoDeck', e); } }
+    try{ rgVideoPatch(); }catch(e){}
+    if(typeof warmStepper === 'function'){ try{ warmStepper('rg-warm','rg',RG_WARM); }catch(e){ console.error('rg warmStepper', e); } }
+    if(typeof quizStepper === 'function'){ try{ quizStepper('rg-quiz','rg',RG_QUIZ); }catch(e){ console.error('rg quizStepper', e); } }
+    if(typeof chipDefs    === 'function'){ try{ chipDefs('#v-rgb .rg-keys', RG_DEFS); }catch(e){ console.error('rg chipDefs', e); } }
+    if(typeof wsLinks     === 'function'){ try{ wsLinks('rg-wslinks','rgb'); }catch(e){} }
+
+    /* 원본 이미지 · 도입 4분할 */
+    try{ rgMakeSample(); }catch(e){}
+    try{ rgRenderIntro(); }catch(e){}
+    var fi = rgEl('rg-file');
+    if(fi) fi.addEventListener('change', function(){ if(fi.files && fi.files[0]) rgLoadPhoto(fi.files[0]); });
+
+    /* 활동 ① */
+    try{ rgBuildA1(); rgMix(); }catch(e){ console.error('rg A1', e); }
+
+    /* 활동 ② */
+    try{
+      rgGrid = rgBlank(RG_GW, RG_GH);
+      rgBuildPal();
+      rgShape('heart');
+      rgBuildA2Q();
+    }catch(e){ console.error('rg A2', e); }
+    /* 드래그로 연속 칠하기 — 격자 밖에서 손을 떼도 풀리도록 */
+    document.addEventListener('pointerup', function(){ rgPainting = false; });
+    document.addEventListener('pointercancel', function(){ rgPainting = false; });
+    var tb = rgEl('rg-modebtn');
+    if(tb && !rgEl('rg-tracebtn')){
+      var t2 = document.createElement('button');
+      t2.type = 'button'; t2.className = 'btn'; t2.id = 'rg-tracebtn';
+      t2.textContent = '🔍 추적만 하기';
+      t2.addEventListener('click', function(){
+        rgTraceOnly = !rgTraceOnly;
+        t2.textContent = rgTraceOnly ? '✏️ 다시 그리기' : '🔍 추적만 하기';
+        t2.classList.toggle('pri', rgTraceOnly);
+      });
+      if(tb.parentNode) tb.parentNode.appendChild(t2);
+    }
+
+    /* 활동 ③ */
+    try{ rgA3Build(); }catch(e){ console.error('rg A3', e); }
+
+    /* 활동 ④ */
+    try{ rgBuildQ4(); rgCoef(); rgWeight(); rgRenderA4(); }catch(e){ console.error('rg A4', e); }
+    ['rg-c0','rg-cM','rg-cL','rg-cW'].forEach(function(id){
+      var cv = rgEl(id);
+      if(cv){ cv.style.cursor = 'crosshair'; cv.addEventListener('click', rgCanvasClick); }
+    });
+
+    /* 형성평가 자료 · 참고 자료 */
+    try{ rgBuildQuizData(); }catch(e){}
+    try{ rgRefRender(); }catch(e){}
+
+    if(typeof initToggles === 'function'){ try{ initToggles(root); }catch(e){} }
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+
+/* ══════════ 37차시 재편 통합 · 16차시 TRANSPOSE · 17차시 MATMUL ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3단원 16·17차시 추가 블록 — core.js 의 **맨 끝**에 그대로 이어 붙입니다.
+   기존 core.js 코드는 한 줄도 고치지 않습니다.
+
+   · 전역 접두사 : 16차시 = tsp / TSP_ , 17차시 = mm / MM_   (설계서 §0-3 예약 접두사)
+   · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint /
+     wsLinks / cmnGet / cmnSet / cmnEsc / go)는 **호출만** 하고 수정하지 않습니다.
+   · 뷰가 없으면 조용히 빠져나오는 null 가드 + IIFE 초기화(go() 수정 불필요).
+   · 사진 표본은 외부 파일 없이 전부 canvas 로 생성합니다(오프라인 안전).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ═════════ 3단원 공용 계산 유틸 (u3*) — 설계서 §9-3 · 멱등 설치 ═════════
+   14~20차시 어느 블록이 먼저 붙어도 한 번만 정의됩니다(중복 구현 금지).      */
+(function u3UtilInstall(){
+  var G = (typeof window !== 'undefined') ? window : this;
+  function def(name, fn){ if(typeof G[name] !== 'function') G[name] = fn; }
+
+  def('u3Clamp255', function(x){ return Math.min(255, Math.max(0, Math.round(x))); });
+  def('u3GrayMean', function(r,g,b){ return G.u3Clamp255((r+g+b)/3); });
+  def('u3GrayLuma', function(r,g,b){ return G.u3Clamp255(0.299*r + 0.587*g + 0.114*b); });
+  def('u3Bin', function(v, th){ return (v >= th) ? 1 : 0; });          /* 경계는 "이상이면 1" */
+
+  def('u3Hamming', function(a,b){
+    if(!a || !b || a.length !== b.length) return null;
+    var d = 0, i;
+    for(i = 0; i < a.length; i++){ if(a[i] !== b[i]) d++; }
+    return d;
+  });
+
+  def('u3Transpose', function(A){
+    if(!A || !A.length || !A[0]) return [];
+    return A[0].map(function(_, j){ return A.map(function(r){ return r[j]; }); });
+  });
+
+  def('u3MatMul', function(A, B){                                     /* l×m · m×n → l×n */
+    if(!A || !B || !A.length || !B.length) return null;
+    var l = A.length, m = A[0].length, n = B[0].length, i, j, k, s, R = [];
+    if(B.length !== m) return null;                                    /* 조건 불일치 → null */
+    for(i = 0; i < l; i++){
+      R[i] = [];
+      for(j = 0; j < n; j++){
+        s = 0;
+        for(k = 0; k < m; k++) s += A[i][k] * B[k][j];
+        R[i][j] = s;
+      }
+    }
+    return R;
+  });
+
+  def('u3Hadamard', function(A, B){
+    if(!A || !B || A.length !== B.length || A[0].length !== B[0].length) return null;
+    return A.map(function(r, i){ return r.map(function(v, j){ return v * B[i][j]; }); });
+  });
+
+  def('u3Conv', function(A, K){                                       /* (m−k+1)×(n−k+1) */
+    if(!A || !K || !A.length || !K.length) return null;
+    var m = A.length, n = A[0].length, k = K.length, kk = K[0].length;
+    if(m < k || n < kk) return null;
+    var R = [], i, j, di, dj, s;
+    for(i = 0; i + k <= m; i++){
+      R[i] = [];
+      for(j = 0; j + kk <= n; j++){
+        s = 0;
+        for(di = 0; di < k; di++) for(dj = 0; dj < kk; dj++) s += A[i+di][j+dj] * K[di][dj];
+        R[i][j] = s;
+      }
+    }
+    return R;
+  });
+
+  def('u3MaxPool2', function(S){                                      /* 2×2, 겹치지 않음 */
+    if(!S || !S.length) return null;
+    var R = [], i, j;
+    for(i = 0; i + 1 < S.length; i += 2){
+      var row = [];
+      for(j = 0; j + 1 < S[0].length; j += 2){
+        row.push(Math.max(S[i][j], S[i][j+1], S[i+1][j], S[i+1][j+1]));
+      }
+      R.push(row);
+    }
+    return R;
+  });
+
+  def('u3Blend',  function(a, b, al){ return G.u3Clamp255(al * a + (1 - al) * b); });
+  def('u3Invert', function(v){ return G.u3Clamp255(255 - v); });
+
+  /* 16·17차시가 함께 쓰는 보조 유틸 */
+  def('u3Eye', function(n){                                           /* 곱해도 그대로인 행렬 */
+    var R = [], i, j;
+    for(i = 0; i < n; i++){ R[i] = []; for(j = 0; j < n; j++) R[i][j] = (i === j) ? 1 : 0; }
+    return R;
+  });
+  def('u3Zeros', function(r, c){
+    var R = [], i, j;
+    for(i = 0; i < r; i++){ R[i] = []; for(j = 0; j < c; j++) R[i][j] = 0; }
+    return R;
+  });
+  def('u3MatEq', function(A, B){
+    if(!A || !B || A.length !== B.length) return false;
+    for(var i = 0; i < A.length; i++){
+      if(A[i].length !== B[i].length) return false;
+      for(var j = 0; j < A[i].length; j++){ if(A[i][j] !== B[i][j]) return false; }
+    }
+    return true;
+  });
+  def('u3Clone', function(A){ return A.map(function(r){ return r.slice(); }); });
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   16차시 TRANSPOSE — 「전치행렬로 사진의 구도를 바꾸다」  (접두사 tsp / TSP_)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. 데이터 ────────────────────────────────────────────────────────── */
+
+/* 홈 카드 썸네일 · 표제부 워터마크로 함께 쓰는 16:9 인라인 SVG */
+const TSP_ART = `<svg viewBox="0 0 320 180" role="img" aria-label="대각선을 기준으로 F 무늬가 뒤집히는 그림">
+    <rect width="320" height="180" fill="var(--bg)"/>
+    <rect x="16" y="26" width="120" height="120" fill="none" stroke="var(--fg)" stroke-width="3"/>
+    <path d="M16 26 L136 146" stroke="var(--red)" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <path d="M40 46 h68 v14 h-52 v22 h40 v14 h-40 v30 h-16 z" fill="var(--fg)"/>
+    <path d="M156 86 h36 m-11 -9 l11 9 l-11 9" stroke="var(--fg)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <text x="174" y="72" font-size="15" font-family="monospace" text-anchor="middle" fill="var(--fg)">Aᵀ</text>
+    <rect x="200" y="26" width="120" height="120" fill="none" stroke="var(--fg)" stroke-width="3"/>
+    <path d="M200 26 L320 146" stroke="var(--red)" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <path d="M220 46 h14 v68 h14 v-52 h22 v40 h14 v-40 h30 v-16 h-94 z" fill="var(--blue)"/>
+    <text x="160" y="172" font-size="11" font-family="monospace" text-anchor="middle" fill="var(--muted)">값이 아니라 자리를 바꾼다</text>
+  </svg>`;
+
+/* STEP 1 추천 영상 (2026-07-31 img.youtube.com HTTP 200 재확인 완료) */
+const TSP_VIDEOS = [
+  { id:'K_BTZG2l_4M', t:'【인공지능수학-미래엔】제7강 이미지 자료의 처리', s:'중구쌤TV · 주 디딤영상' },
+  { id:'YS8s4enYiTk', t:'(공통수학1) 행렬 [개념강의 part2]',                s:'쪄니쌤의 수학교실 · 성분·꼴 되짚기' },
+  { id:'2J-JP-McA30', t:'전치행렬(Transpose Matrix) [심화·선택]',            s:'엔지니어퓽스 · 앞부분 정의까지만' }
+];
+
+/* 마중 퀴즈 — "질문 N." 순차 공개 */
+const TSP_WARM = [
+  { q:'3 × 4 행렬(3행 4열)의 전치행렬은 몇 행 몇 열일까요?',
+    opts:['3행 4열','4행 3열','4행 4열','3행 3열'], answer:1,
+    explain:'전치는 (i, j) 성분을 (j, i) 성분으로 옮기므로 <b>행의 개수와 열의 개수가 서로 바뀝니다.</b> ' +
+            '정사각행렬일 때만 꼴이 그대로 유지됩니다. 값이 그대로 남는 것과 <b>꼴이 그대로인 것</b>은 다릅니다. ' +
+            '<span style="color:var(--muted);">(씨마스 지도서 Ⅲ p.174 확인하기 7 풀이 서술을 재구성)</span>' },
+  { q:'다음 주장이 옳으면 O, 옳지 않으면 X — "행렬을 전치하면 대각선 위의 성분(a11, a22, a33, …)도 다른 자리로 옮겨 간다."',
+    opts:['O','X'], answer:1,
+    explain:'대각선 성분은 행 번호와 열 번호가 같습니다(i = j). 그래서 (i, j) → (j, i) 로 옮겨도 <b>제자리</b>입니다. ' +
+            '이미지로 보면 <b>대각선은 전치해도 변하지 않는 선</b>입니다. ' +
+            '"행과 열이 바뀐다"는 말에 이끌려 모든 성분이 움직인다고 생각하기 쉽지만, i = j 인 성분은 바꿀 것이 없습니다. ' +
+            '<span style="color:var(--muted);">(씨마스 교과서 Ⅲ p.102 여백 서술을 재구성)</span>' },
+  { q:'도입 실자료의 세로 사진을 보고 판단하세요. 다음 두 문장 중 옳은 것은?',
+    opts:['전치행렬로 변환한 결과는 이미지를 90도 회전한 것과 같다',
+          '전치행렬로 변환한 결과는 회전이 아니다. 대각선을 기준으로 대칭시킨 것이다'], answer:1,
+    explain:'전치는 원본의 <b>위쪽 모서리를 왼쪽 모서리로</b>, <b>왼쪽 모서리를 위쪽 모서리로</b> 보냅니다. ' +
+            '즉 두 모서리가 <b>서로 자리를 바꿉니다.</b> 회전이라면 모든 모서리가 <b>같은 방향으로 한 칸씩</b> 돌아가야 합니다. ' +
+            '결정적인 차이는 <b>대각선 무늬</b>입니다 — 전치해도 전혀 변하지 않지만, 회전하면 반드시 변합니다.' }
+];
+
+/* 형성평가 5문항 */
+const TSP_QUIZ = [
+  { q:'[12인수03-02 필수 용어] A = [[255,255,0,0],[128,128,0,0],[128,255,255,128],[255,255,128,255]] 일 때, ' +
+       '전치행렬 Aᵀ 의 (2, 4) 성분은? (0 = 검정, 128 = 회색, 255 = 흰색)',
+    opts:['0','128','255','알 수 없다'], answer:2,
+    explain:'Aᵀ 의 (2, 4) 성분 = A 의 (4, 2) 성분 = <b>255</b> 입니다. ' +
+            '전치행렬의 성분을 물으면 <b>행 번호와 열 번호를 맞바꾸어 원본에서 찾으면</b> 됩니다. 전체를 다 전치할 필요가 없습니다. ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="tspSee(0,\'tsp-act1\')">활동 ①로 돌아가기</button></div>' +
+            '<span style="color:var(--muted);">(연수교재 합본 p.177 평가 문항 1의 자료를 재구성)</span>' },
+  { q:'[12인수03-02] 2 × 5 행렬 A 와 5 × 2 행렬 B 에 대하여 옳은 것은?',
+    opts:['Aᵀ 는 2행 5열이다','Aᵀ 는 5행 2열이므로 B와 꼴이 같다','Bᵀ 는 5행 2열이다','Aᵀ 와 Bᵀ 는 꼴이 같다'], answer:1,
+    explain:'m × n → <b>n × m</b> 이므로 Aᵀ 는 5행 2열, Bᵀ 는 2행 5열입니다. ' +
+            '꼴을 먼저 정하고 성분을 채우는 습관을 들이면 실수가 줄어듭니다. ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="tspSee(1,\'tsp-act2\')">활동 ②로 돌아가기</button></div>' +
+            '<span style="color:var(--muted);">(씨마스 교과서 Ⅲ p.102 확인하기 7 유형)</span>' },
+  { q:'[12인수03-02] A = [[3, x, 6], [4, 1, y], [z, 8, 2]] 에 대하여 A = Aᵀ 일 때 x + y + z 의 값은?',
+    opts:['12','14','18','20'], answer:2,
+    explain:'(1,2) = (2,1) 이므로 x = 4, (1,3) = (3,1) 이므로 z = 6, (2,3) = (3,2) 이므로 y = 8. ' +
+            '따라서 4 + 8 + 6 = <b>18</b> 입니다. 대각선 성분(3, 1, 2)은 조건에 관여하지 않습니다. ' +
+            '<b>대각선을 축으로 마주 보는 두 성분끼리</b> 같아야 한다는 것이 A = Aᵀ 의 뜻입니다. ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="tspSee(1,\'tsp-act2\')">활동 ② 심화로</button></div>' +
+            '<span style="color:var(--muted);">(씨마스 교과서 Ⅲ p.102 확인하기 8 유형)</span>' },
+  { q:'[12인수03-02] (Aᵀ)ᵀ 가 나타내는 이미지에 대한 설명으로 옳은 것은?',
+    opts:['원본을 두 번 대칭시켰으므로 좌우가 뒤집힌 이미지다','원본과 완전히 같은 이미지다',
+          '원본을 180도 돌린 이미지다','밝기가 두 배가 된 이미지다'], answer:1,
+    explain:'성분이 (i, j) → (j, i) → (i, j) 로 되돌아옵니다. <b>대각선 대칭을 두 번 적용하면 원래 이미지</b>입니다. ' +
+            '마지막 선택지는 값 변환과 위치 변환을 혼동한 것으로, 전치는 성분의 값을 전혀 바꾸지 않습니다. ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="tspSee(1,\'tsp-act2\')">활동 ②의 3단 격자로</button></div>' +
+            '<span style="color:var(--muted);">(연수교재 합본 p.177 평가 문항 1-(3) 이식)</span>' },
+  { q:'[12인수03-02] 다음 중 전치행렬로 만들 수 없는 이미지 변환은?',
+    opts:['위쪽 절반이 검은 이미지를 왼쪽 절반이 검은 이미지로 바꾸기','가로 줄무늬를 세로 줄무늬로 바꾸기',
+          '세로로 긴 사진을 가로로 긴 사진으로 바꾸기','이미지를 전체적으로 더 밝게 만들기'], answer:3,
+    explain:'밝기는 성분의 <b>값</b>에 관한 것이므로 덧셈이나 실수배가 필요합니다(14차시). ' +
+            '오늘의 한 줄 요약이 그대로 답입니다 — <b>전치는 값이 아니라 자리를 바꿉니다.</b> ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="go(\'imgop\')">14차시 다시 보기</button></div>' }
+];
+
+/* 핵심 개념 칩 상세 (정의 → 예시 → 이번 차시 활동 연결 → 앞뒤 차시 연결) */
+const TSP_DEFS = {
+  '전치행렬 Aᵀ':
+    '<h4>전치행렬 Aᵀ</h4>' +
+    '<p><b>정의.</b> 행렬 A 의 (i, j) 성분을 (j, i) 성분으로 하는 행렬을 A 의 <b>전치행렬</b>이라 하고 <b>Aᵀ</b> 로 나타냅니다. ' +
+    '즉 A = (a<sub>ij</sub>) 일 때 Aᵀ = (a<sub>ji</sub>) 입니다. m × n 행렬의 전치행렬은 <b>n × m 행렬</b>이 됩니다. ' +
+    'A 의 제 i 행은 Aᵀ 의 제 i 열이 되고, A 의 제 j 열은 Aᵀ 의 제 j 행이 됩니다.</p>' +
+    '<p><b>예시.</b> [[1,2],[3,4]] → [[1,3],[2,4]] (2×2 → 2×2) / [[1,2,3],[4,5,6]] → [[1,4],[2,5],[3,6]] ' +
+    '(<b>2×3 → 3×2</b>, 꼴이 바뀝니다) / (1 2 3 4) → 세로 한 줄 (4×1)</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ②에서 이 세 예시를 직접 손으로 채웁니다. 특히 <b>정사각행렬이 아닌 경우</b>에 ' +
+    '행·열의 개수가 뒤바뀌는 것을 반드시 확인합니다. 활동 ③에서 세로로 긴 사진을 전치하면 <b>가로로 긴 사진이 되는</b> 장면이 바로 이 성질입니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="tspSee(1,\'tsp-act2\')">활동 ②로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'imgop\')">14차시</button>' +
+    '<button class="btn" type="button" onclick="go(\'matmul\')">17차시</button></div>' +
+    '<p style="background:var(--card-h);border-radius:0.5rem;padding:0.5rem 0.7rem;">✅ <b>이 용어는 교육과정이 지정한 필수 용어·기호입니다.</b> ' +
+    '[12인수03-02] 적용 시 고려 사항에 "이미지 데이터 처리 영역에서는 용어와 기호로 \'행렬, 전치행렬\'을 다룬다"고 명시되어 있습니다.</p>' +
+    '<p class="tsp-src">동아 교과서 Ⅲ p.97 · 씨마스 교과서 Ⅲ p.102 · 천재 교과서 Ⅲ p.93 · 미래엔 교과서 Ⅲ p.98 · 연수교재 합본 p.170 서술을 재구성</p>',
+
+  '(i, j) → (j, i)':
+    '<h4>(i, j) → (j, i)</h4>' +
+    '<p><b>정의.</b> 전치는 "행과 열을 바꾸는 조작"이라고 외우기 쉽지만, 정확한 뜻은 ' +
+    '<b>성분 하나하나가 (i, j) 자리에서 (j, i) 자리로 옮겨 앉는다</b>는 것입니다. ' +
+    '행 번호와 열 번호를 서로 맞바꾸는 것이 원리이고, "행과 열이 바뀐다"는 말은 그 <b>결과</b>입니다.</p>' +
+    '<p><b>예시.</b> 2행 3열 → <b>3행 2열</b> / 1행 4열 → <b>4행 1열</b> / 3행 3열 → <b>제자리</b>(i = j 이면 (i,j) = (j,i))</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ①에서 F 무늬의 한 칸을 클릭하면 전치 후 그 값이 <b>어디로 날아가는지</b> 궤적으로 보여 줍니다. ' +
+    '"(2, 3)에 있던 값은 어디로 갔나요?"에 스스로 답할 수 있게 되는 것이 오늘 목표의 절반입니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="tspSee(0,\'tsp-act1\')">활동 ①로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'rgb\')">15차시</button>' +
+    '<button class="btn" type="button" onclick="go(\'fclayer\')">19차시</button></div>' +
+    '<p class="tsp-src">씨마스 교과서 Ⅲ p.102 · 연수교재 합본 p.164 평가 유의 사항 · p.176 교사용 안내 서술을 재구성</p>',
+
+  '대각선 대칭':
+    '<h4>대각선 대칭</h4>' +
+    '<p><b>정의.</b> 이미지를 나타낸 정사각행렬에 전치를 적용하면, 이미지가 <b>왼쪽 위에서 오른쪽 아래로 ' +
+    '내려오는 대각선을 기준으로 대칭</b>이 됩니다. 원본의 <b>위쪽 모서리가 결과의 왼쪽 모서리로</b>, ' +
+    '원본의 <b>왼쪽 모서리가 위쪽 모서리로</b> 자리를 바꿉니다. 대각선 위 성분(a<sub>ii</sub>)은 자리가 바뀌지 않으므로 ' +
+    '<b>대각선은 그대로 남습니다.</b></p>' +
+    '<p><b>예시.</b> 위쪽 절반이 검고 아래쪽 절반이 흰 이미지 → <b>왼쪽 절반이 검고 오른쪽 절반이 흰</b> 이미지 / ' +
+    '대각선에 흰 선이 그려진 이미지 → <b>그대로</b></p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ③에서 사진에 전치를 적용하고, 겹쳐 표시되는 점선 대각선을 기준으로 좌우가 맞바뀌는 것을 확인합니다. ' +
+    '그리고 "이건 회전이 아니다"라는 판단을 스스로 내려 봅니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="tspSee(2,\'tsp-act3\')">활동 ③으로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'matmul\')">17차시 — 좌우·상하 반전</button></div>' +
+    '<p>17차시에서는 <b>좌우 반전</b>과 <b>상하 반전</b>을 행렬의 곱셈으로 만듭니다. 대각선 대칭(전치)과 좌우 반전은 <b>서로 다른 변환</b>입니다.</p>' +
+    '<p class="tsp-src">씨마스 교과서 Ⅲ p.103 확인하기 9 · 연수교재 합본 p.171 (1)번 예시 답안 서술을 재구성</p>',
+
+  '(Aᵀ)ᵀ = A':
+    '<h4>(Aᵀ)ᵀ = A</h4>' +
+    '<p><b>정의.</b> 전치를 <b>두 번</b> 적용하면 원래 행렬로 돌아옵니다. (i,j) → (j,i) → (i,j) 이므로 모든 성분이 ' +
+    '제자리로 되돌아오기 때문입니다. 이미지로 말하면 <b>대각선 대칭을 두 번 하면 원래 사진</b>입니다. ' +
+    '같은 방법으로 (A + B)ᵀ = Aᵀ + Bᵀ 도 성립합니다.</p>' +
+    '<p><b>예시.</b> [[1,2,3],[4,5,6]] → [[1,4],[2,5],[3,6]] → 다시 [[1,2,3],[4,5,6]] / ' +
+    '세로로 찍은 사진을 전치하면 가로가 되고, 다시 전치하면 <b>원래 세로</b>로 돌아옵니다.</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ②의 마지막 단계에서 A → Aᵀ → (Aᵀ)ᵀ 를 세 번 연속 격자에 그립니다. ' +
+    '활동 ③에서는 [한 번 더 전치]로 사진이 원래대로 돌아오는 것을 확인합니다. ' +
+    '되돌릴 수 있다는 것은 <b>정보를 잃지 않는 변환</b>이라는 뜻입니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="tspSee(1,\'tsp-act2\')">활동 ②로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'imgop\')">14차시 — 반전</button>' +
+    '<button class="btn" type="button" onclick="go(\'rgb\')">15차시 — 회색조</button></div>' +
+    '<p>14차시의 색상 반전 255J − A 도 두 번 하면 원래대로 돌아왔습니다. 반전과 전치는 <b>되돌릴 수 있는 변환</b>이고, ' +
+    '15차시의 회색조 변환은 <b>되돌릴 수 없는 변환</b>이었습니다. 변환을 배울 때는 늘 "되돌릴 수 있는가"를 함께 물어야 합니다.</p>' +
+    '<p><span class="tsp-bd soft">참고</span> 세 번째 성질 (AB)ᵀ = BᵀAᵀ 도 성립하지만, 행렬의 곱셈은 다음 시간(17차시)에 배우므로 오늘은 다루지 않습니다.</p>' +
+    '<p class="tsp-src">씨마스 지도서 Ⅲ p.174 교수·학습 도움 자료 · 연수교재 합본 p.171 지도 TIP · p.177 평가 문항 1-(3) 서술을 재구성</p>',
+
+  '구도':
+    '<h4>구도</h4>' +
+    '<p><b>정의.</b> 사진에서 <b>구도</b>란 화면 안에 무엇이 어디에 놓이는지, 즉 <b>배치</b>를 뜻합니다. ' +
+    '밝기·색상·선명도가 픽셀의 <b>값</b>에 관한 성질이라면, 구도는 픽셀의 <b>위치</b>에 관한 성질입니다. ' +
+    '성취기준 해설이 열거한 다섯 요소(<b>구도</b>·색상·휘도·밝기·선명도) 중에서 <b>구도를 담당하는 연산이 바로 전치</b>입니다.</p>' +
+    '<p><b>예시.</b> 값 변환(구도 유지) — 밝기 A + tJ, 반전 255J − A, 회색조 변환 : 사물의 <b>자리는 그대로</b> / ' +
+    '위치 변환(구도 변경) — 전치 Aᵀ, 평행이동·반전(17차시) : 사물의 <b>자리가 바뀜</b></p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ③의 판정 문제에서 "다음 중 구도가 바뀌는 변환을 모두 고르시오"를 풉니다. ' +
+    '14·15차시의 변환과 오늘의 변환을 <b>값 / 위치</b>로 갈라 정리하면 3단원의 지도가 한눈에 들어옵니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="tspSee(2,\'tsp-act3\')">활동 ③으로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'cnn\')">20차시 — 합성곱·풀링</button></div>' +
+    '<p class="tsp-src">천재 교과서 Ⅲ p.93 「이미지의 구도는 어떻게 바꾸나요?」 · 미래엔 교과서 Ⅲ p.98 서술을 재구성</p>'
+};
+
+
+/* ── 2. 공용 소도구 ───────────────────────────────────────────────────── */
+
+function tspEl(id){ return document.getElementById(id); }
+
+function tspFb(id, ok, html){
+  const el = tspEl(id);
+  if(!el) return;
+  el.className = 'tsp-fb ' + (ok ? 'ok' : 'no');
+  el.innerHTML = (ok ? '✓ ' : '✗ ') + html;
+}
+function tspFbNeutral(id, html){
+  const el = tspEl(id);
+  if(!el) return;
+  el.className = 'tsp-fb';
+  el.innerHTML = html;
+}
+
+/* 탭 전환 */
+function tspTab(n, el){
+  document.querySelectorAll('#v-transpose .tabs .tab').forEach(function(t){ t.classList.remove('on'); });
+  if(el) el.classList.add('on');
+  document.querySelectorAll('#v-transpose .tpanel').forEach(function(p){ p.classList.remove('on'); });
+  const pn = tspEl('tsp' + n);
+  if(pn) pn.classList.add('on');
+}
+
+/* 칩·해설에서 특정 활동으로 이동 */
+function tspSee(n, id){
+  const tabs = document.querySelectorAll('#v-transpose .tabs .tab');
+  if(tabs[n]) tspTab(n, tabs[n]);
+  const el = tspEl(id);
+  if(el) setTimeout(function(){ el.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+}
+
+/* 칩 하나만 켜기 */
+function tspOnly(el){
+  if(!el || !el.parentNode) return;
+  el.parentNode.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
+  el.classList.add('on');
+}
+
+/* 회색값 → 셀 스타일 (색약 배려: 언제나 숫자 병기) */
+function tspGrayStyle(v){
+  const c = (v > 140) ? '#2a2620' : '#e8e2d8';
+  return 'background:rgb(' + v + ',' + v + ',' + v + ');color:' + c + ';';
+}
+
+/* 격자 렌더러
+   mode : 'bin'(0/1) · 'gray'(0~255) · 'input'(수 입력) · 'binput'(눌러서 0↔1)  */
+function tspGrid(el, M, opt){
+  if(!el) return;
+  opt = opt || {};
+  const n = M.length, m = (M[0] ? M[0].length : 0);
+  el.style.gridTemplateColumns = 'repeat(' + m + ', auto)';
+  el.innerHTML = '';
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < m; j++){
+      const v = M[i][j];
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'c';
+      b.setAttribute('role', 'gridcell');
+      b.dataset.i = i; b.dataset.j = j;
+      if(opt.mode === 'input'){
+        b.innerHTML = '<input type="number" min="0" max="255" step="1" ' +
+          'aria-label="' + (i+1) + '행 ' + (j+1) + '열" value="' + (v === null ? '' : v) + '">';
+        const inp = b.querySelector('input');
+        inp.addEventListener('input', function(){
+          const x = parseInt(inp.value, 10);
+          if(isNaN(x)){ b.removeAttribute('style'); b.classList.remove('on','off'); return; }
+          b.setAttribute('style', tspGrayStyle(u3Clamp255(x)));
+        });
+        if(v !== null && v !== '') b.setAttribute('style', tspGrayStyle(u3Clamp255(v)));
+      }else if(v === null){
+        b.textContent = '';
+      }else if(opt.mode === 'gray'){
+        b.textContent = v;
+        b.setAttribute('style', tspGrayStyle(v));
+        b.setAttribute('aria-label', (i+1) + '행 ' + (j+1) + '열, 값 ' + v);
+      }else{
+        b.textContent = v;
+        b.classList.add(v === 1 ? 'on' : 'off');
+        b.setAttribute('aria-label', (i+1) + '행 ' + (j+1) + '열, 값 ' + v);
+      }
+      if(typeof opt.onCell === 'function'){
+        b.addEventListener('click', function(){ opt.onCell(i, j, b); });
+      }else{
+        b.style.cursor = 'default';
+      }
+      el.appendChild(b);
+    }
+  }
+}
+
+/* 격자에서 값 읽기 (input 모드) */
+function tspReadGrid(el, rows, cols){
+  const out = [];
+  const cells = el.querySelectorAll('.c');
+  for(let i = 0; i < rows; i++){
+    const r = [];
+    for(let j = 0; j < cols; j++){
+      const c = cells[i * cols + j];
+      const inp = c ? c.querySelector('input') : null;
+      const v = inp ? parseInt(inp.value, 10) : NaN;
+      r.push(isNaN(v) ? null : v);
+    }
+    out.push(r);
+  }
+  return out;
+}
+
+/* 행렬 → 캔버스 (nearest neighbor 확대, 오프라인 안전) */
+function tspDrawMat(cv, M, maxSide){
+  if(!cv || !M || !M.length) return 1;
+  const h = M.length, w = M[0].length;
+  const s = Math.max(1, Math.round((maxSide || 170) / Math.max(w, h)));
+  cv.width = w * s; cv.height = h * s;
+  const off = document.createElement('canvas');
+  off.width = w; off.height = h;
+  const og = off.getContext('2d');
+  const im = og.createImageData(w, h);
+  for(let y = 0; y < h; y++){
+    for(let x = 0; x < w; x++){
+      const v = u3Clamp255(M[y][x]), k = (y * w + x) * 4;
+      im.data[k] = v; im.data[k+1] = v; im.data[k+2] = v; im.data[k+3] = 255;
+    }
+  }
+  og.putImageData(im, 0, 0);
+  const g = cv.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  g.clearRect(0, 0, cv.width, cv.height);
+  g.drawImage(off, 0, 0, cv.width, cv.height);
+  cv.dataset.scale = s;
+  return s;
+}
+
+/* 대각선·모서리 겹쳐 그리기 */
+function tspOverlay(cv, showDiag, showCorner){
+  if(!cv) return;
+  const g = cv.getContext('2d');
+  if(showDiag){
+    const d = Math.min(cv.width, cv.height);
+    g.save();
+    g.strokeStyle = 'rgba(180,65,51,0.9)';
+    g.lineWidth = 2; g.setLineDash([6, 5]);
+    g.beginPath(); g.moveTo(0, 0); g.lineTo(d, d); g.stroke();
+    g.restore();
+  }
+  if(showCorner){
+    g.save();
+    g.font = 'bold 11px monospace';
+    g.fillStyle = 'rgba(74,107,138,0.95)';
+    g.fillRect(0, 0, 34, 14);           g.fillRect(cv.width - 26, 0, 26, 14);
+    g.fillRect(0, cv.height - 14, 40, 14); g.fillRect(cv.width - 26, cv.height - 14, 26, 14);
+    g.fillStyle = '#fff';
+    g.fillText('↖ 위', 2, 11);
+    g.fillText('↗', cv.width - 20, 11);
+    g.fillText('↙ 왼쪽', 2, cv.height - 3);
+    g.fillText('↘', cv.width - 20, cv.height - 3);
+    g.restore();
+  }
+}
+
+
+/* ── 3. 표본 이미지 생성 (외부 파일 없이 canvas 로) ──────────────────── */
+
+function tspGenSquare(){                 /* 40 × 40 정사각 풍경 */
+  const n = 40, M = [];
+  for(let y = 0; y < n; y++){
+    const row = [];
+    for(let x = 0; x < n; x++){
+      let v = 232 - Math.round(y * 2.4);
+      if(y > 26) v = 96 + ((x * 3 + y * 5) % 4) * 7;                 /* 땅 */
+      if(y > 26 && (x + y) % 11 === 0) v = 74;                        /* 이랑 */
+      const dx = x - 30, dy = y - 8;
+      if(dx * dx + dy * dy <= 20) v = 252;                            /* 오른쪽 위 달 */
+      if(x >= 6 && x <= 12 && y >= 18 && y <= 27) v = 58;             /* 왼쪽 아래 집 */
+      row.push(u3Clamp255(v));
+    }
+    M.push(row);
+  }
+  return M;
+}
+
+function tspGenPortrait(){               /* 24(가로) × 40(세로) — 세로로 긴 사진 */
+  const w = 24, h = 40, M = [];
+  for(let y = 0; y < h; y++){
+    const row = [];
+    for(let x = 0; x < w; x++){
+      let v = 236 - Math.round(y * 2.2);
+      if(y > 29) v = 92 + ((x + y) % 3) * 9;
+      if(x >= 10 && x <= 13 && y >= 8 && y <= 29) v = 56;             /* 탑 기둥 */
+      if(x >= 9 && x <= 14 && y >= 6 && y <= 8) v = 38;               /* 탑 지붕 */
+      const dx = x - 5, dy = y - 6;
+      if(dx * dx + dy * dy <= 6) v = 252;                             /* 왼쪽 위 해 */
+      row.push(u3Clamp255(v));
+    }
+    M.push(row);
+  }
+  return M;
+}
+
+function tspGenText(){                   /* 40 × 40 — 글자 F 와 AI */
+  const n = 40;
+  const cv = document.createElement('canvas');
+  cv.width = n; cv.height = n;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#1e1a16'; g.fillRect(0, 0, n, n);
+  g.fillStyle = '#f4f0e8';
+  g.textBaseline = 'top';
+  g.font = 'bold 24px monospace'; g.fillText('F', 4, 1);
+  g.font = 'bold 16px monospace'; g.fillText('AI', 6, 24);
+  const d = g.getImageData(0, 0, n, n).data, M = [];
+  for(let y = 0; y < n; y++){
+    const r = [];
+    for(let x = 0; x < n; x++){ const k = (y * n + x) * 4; r.push(u3GrayMean(d[k], d[k+1], d[k+2])); }
+    M.push(r);
+  }
+  return M;
+}
+
+function tspGenPattern(){                /* 활동 ②의 무늬형 B 를 8배로 */
+  const B = [[0,0,240],[120,120,0],[120,240,120]], s = 8, M = [];
+  for(let y = 0; y < 3 * s; y++){
+    const r = [];
+    for(let x = 0; x < 3 * s; x++) r.push(B[Math.floor(y / s)][Math.floor(x / s)]);
+    M.push(r);
+  }
+  return M;
+}
+
+
+/* ── 4. 활동 ① 성분 추적 ────────────────────────────────────────────── */
+
+const TSP_PATS = {
+  F : [[1,1,1,1],[1,0,0,0],[1,1,1,0],[1,0,0,0]],
+  AR: [[0,0,1,1],[0,1,0,1],[1,0,0,1],[0,0,0,0]],
+  DG: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],
+  MY: [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+};
+const TSP_A1Q = [{ i:1, j:4 }, { i:2, j:3 }, { i:3, j:1 }];
+
+let tspA1Key  = 'F';
+let tspA1Src  = u3Clone(TSP_PATS.F);
+let tspA1Dst  = null;
+let tspA1Gs   = null;
+let tspA1Dg   = false;
+let tspA1Qi   = 0;
+let tspA1Log  = [];
+
+function tspA1Blank(){ return [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]]; }
+
+function tspA1Render(){
+  const es = tspEl('tsp-a1-src'), eg = tspEl('tsp-a1-guess'), ed = tspEl('tsp-a1-dst');
+  if(!es) return;
+  tspGrid(es, tspA1Src, { mode:'bin', onCell: tspA1Cell });
+  tspGrid(eg, tspA1Gs,  { mode:'bin', onCell: function(i, j){ tspA1Gs[i][j] = tspA1Gs[i][j] ? 0 : 1; tspA1Render(); } });
+  tspGrid(ed, tspA1Dst, { mode:'bin', onCell: tspA1Answer });
+  es.classList.toggle('diag', tspA1Dg);
+  ed.classList.toggle('diag', tspA1Dg);
+  const lg = tspEl('tsp-a1-log');
+  if(lg) lg.innerHTML = tspA1Log.length ? tspA1Log.join('<br>') : '추적 로그가 여기에 쌓입니다.';
+}
+
+/* 성분 하나 이동 — 곡선 궤적 애니메이션 (prefers-reduced-motion 시 즉시 이동) */
+function tspA1Fly(i, j){
+  const es = tspEl('tsp-a1-src'), ed = tspEl('tsp-a1-dst');
+  if(!es || !ed) return;
+  const from = es.querySelectorAll('.c')[i * 4 + j];
+  const to   = ed.querySelectorAll('.c')[j * 4 + i];
+  if(!from || !to) return;
+  const v = tspA1Src[i][j];
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const r1 = from.getBoundingClientRect(), r2 = to.getBoundingClientRect();
+  const fly = document.createElement('div');
+  fly.className = 'tsp-fly';
+  fly.textContent = v;
+  fly.style.left = r1.left + 'px';
+  fly.style.top  = r1.top + 'px';
+  fly.style.width = r1.width + 'px';
+  fly.style.height = r1.height + 'px';
+  document.body.appendChild(fly);
+  from.classList.add('hi');
+  const finish = function(){
+    if(fly.parentNode) fly.parentNode.removeChild(fly);
+    tspA1Dst[j][i] = v;
+    tspA1Render();
+    const cells = tspEl('tsp-a1-dst').querySelectorAll('.c');
+    if(cells[j * 4 + i]) cells[j * 4 + i].classList.add('moved');
+  };
+  if(reduce){ setTimeout(finish, 20); return; }
+  requestAnimationFrame(function(){
+    fly.style.transform = 'translate(' + (r2.left - r1.left) + 'px,' + (r2.top - r1.top) + 'px)';
+    setTimeout(finish, 430);
+  });
+}
+
+function tspA1Cell(i, j){
+  const v = tspA1Src[i][j];
+  tspEl('tsp-a1-st').innerHTML = 'A 의 (' + (i+1) + ', ' + (j+1) + ') 성분 = ' + v +
+    ' → Aᵀ 의 (' + (j+1) + ', ' + (i+1) + ') 자리로 갑니다.';
+  tspA1Log.unshift('A의 (' + (i+1) + ',' + (j+1) + ') = ' + v + ' → Aᵀ의 (' + (j+1) + ',' + (i+1) + ') = ' + v);
+  if(tspA1Log.length > 12) tspA1Log.pop();
+  tspA1Fly(i, j);
+}
+
+function tspA1All(){
+  const T = u3Transpose(tspA1Src);
+  let k = 0;
+  for(let i = 0; i < 4; i++){
+    for(let j = 0; j < 4; j++){
+      (function(a, b, delay){
+        setTimeout(function(){
+          tspA1Dst[b][a] = tspA1Src[a][b];
+          tspA1Render();
+        }, delay);
+      })(i, j, k * 40);
+      k++;
+    }
+  }
+  setTimeout(function(){
+    tspA1Dst = T;
+    tspA1Render();
+    const same = u3MatEq(tspA1Src, T);
+    tspEl('tsp-a1-st').innerHTML = same
+      ? '<b>전치했는데 원본과 똑같습니다.</b> 이 무늬는 대각선을 기준으로 이미 대칭입니다 — 회전이라면 반드시 달라졌을 것입니다.'
+      : '열여섯 개 성분이 모두 (i, j) → (j, i) 로 옮겨 앉았습니다.';
+  }, 16 * 40 + 60);
+}
+
+function tspA1Diag(){ tspA1Dg = !tspA1Dg; tspA1Render(); }
+function tspA1Clear(){ tspA1Dst = tspA1Blank(); tspA1Log = []; tspA1Render(); tspEl('tsp-a1-st').textContent = '원본 격자의 칸을 눌러 보세요.'; }
+
+function tspA1Pat(key, el){
+  tspOnly(el);
+  tspA1Key = key;
+  tspA1Src = u3Clone(TSP_PATS[key]);
+  tspA1Dst = tspA1Blank();
+  tspA1Gs  = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+  tspA1Log = [];
+  tspA1Render();
+  const st = tspEl('tsp-a1-st');
+  if(key === 'MY') st.innerHTML = '<b>원본 격자를 눌러 직접 무늬를 그리세요.</b> 누를 때마다 값이 0 ↔ 1 로 바뀝니다.';
+  else if(key === 'DG') st.innerHTML = '<b>필수 체험 항목.</b> [한꺼번에 옮기기]를 눌러 이 무늬가 전치 후 어떻게 되는지 확인하세요.';
+  else st.textContent = '원본 격자의 칸을 눌러 보세요.';
+  if(key === 'MY'){
+    tspGrid(tspEl('tsp-a1-src'), tspA1Src, { mode:'bin', onCell: function(i, j){ tspA1Src[i][j] = tspA1Src[i][j] ? 0 : 1; tspA1Render(); } });
+  }
+  tspA1QzReset();
+}
+
+function tspA1Submit(){
+  const T = u3Transpose(tspA1Src);
+  let wrong = 0;
+  const cells = tspEl('tsp-a1-guess').querySelectorAll('.c');
+  for(let i = 0; i < 4; i++){
+    for(let j = 0; j < 4; j++){
+      const c = cells[i * 4 + j];
+      c.classList.remove('wrong');
+      if(tspA1Gs[i][j] !== T[i][j]){ c.classList.add('wrong'); wrong++; }
+    }
+  }
+  if(wrong === 0){
+    tspFb('tsp-a1-gfb', true, '열여섯 칸을 모두 맞혔습니다. <span class="x">규칙 (i, j) → (j, i) 를 정확히 적용했습니다. ' +
+      '이제 [한꺼번에 옮기기]로 성분이 실제로 어떻게 이동하는지 확인해 보세요.</span>');
+  }else{
+    tspFb('tsp-a1-gfb', false, '<b>' + wrong + '칸</b>이 다릅니다. 노란 테두리 칸을 확인하세요. ' +
+      '<span class="x">헷갈릴 때는 원본의 한 칸을 눌러 <b>그 값 하나만</b> 따라가 보세요. ' +
+      '(i, j) 자리의 값이 (j, i) 자리로 옮겨 앉습니다. [다시 예상]으로 무제한 다시 풀 수 있습니다.</span>');
+  }
+  tspGrid(tspEl('tsp-a1-dst'), T, { mode:'bin', onCell: tspA1Answer });
+  tspA1Dst = T;
+  if(tspA1Dg) tspEl('tsp-a1-dst').classList.add('diag');
+}
+
+function tspA1GuessReset(){
+  tspA1Gs = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+  tspFbNeutral('tsp-a1-gfb', '');
+  tspEl('tsp-a1-gfb').innerHTML = '';
+  tspA1Render();
+}
+
+/* 좌표 퀴즈 3연발 — 결과 격자의 정답 칸을 눌러 답합니다 */
+function tspA1QzReset(){
+  tspA1Qi = 0;
+  const q = tspEl('tsp-a1-qz');
+  if(q) q.innerHTML = '퀴즈 1 / 3 · A의 (' + TSP_A1Q[0].i + ', ' + TSP_A1Q[0].j + ')에 있던 값은 어디로 갔나요?';
+  const fb = tspEl('tsp-a1-qfb');
+  if(fb){ fb.className = 'tsp-fb'; fb.innerHTML = ''; }
+}
+
+function tspA1Answer(i, j){
+  if(tspA1Qi >= TSP_A1Q.length) return;
+  const q = TSP_A1Q[tspA1Qi];
+  const ok = ((i + 1) === q.j && (j + 1) === q.i);
+  if(ok){
+    tspFb('tsp-a1-qfb', true, '정답입니다 — (' + q.j + ', ' + q.i + ').' +
+      '<span class="x">행 번호와 열 번호를 맞바꾸면 됩니다. (' + q.i + ', ' + q.j + ') → (' + q.j + ', ' + q.i + ')</span>');
+    tspA1Qi++;
+    const el = tspEl('tsp-a1-qz');
+    if(tspA1Qi < TSP_A1Q.length){
+      el.innerHTML = '퀴즈 ' + (tspA1Qi + 1) + ' / 3 · A의 (' + TSP_A1Q[tspA1Qi].i + ', ' + TSP_A1Q[tspA1Qi].j + ')에 있던 값은 어디로 갔나요?';
+    }else{
+      el.innerHTML = '<b>퀴즈 3 / 3 완료.</b> 좌표를 맞바꾸는 규칙이 손에 익었습니다.';
+    }
+  }else{
+    tspFb('tsp-a1-qfb', false, '(' + (i+1) + ', ' + (j+1) + ') 는 아닙니다.' +
+      '<span class="x">묻는 자리는 A의 (' + q.i + ', ' + q.j + ') 입니다. ' +
+      '전치는 <b>행 번호와 열 번호를 서로 맞바꿉니다.</b> 다시 눌러 보세요.</span>');
+  }
+}
+
+/* 판정 문제 */
+function tspA1J(n, k, el){
+  tspOnly(el);
+  if(n === 1){
+    tspFb('tsp-a1-j1', k === 1, k === 1
+      ? '정답 — <b>3행 5열</b>. <span class="x">m × n → n × m 이므로 5 × 3 은 3 × 5 가 됩니다.</span>'
+      : '정답은 <b>3행 5열</b>입니다. <span class="x">전치는 행의 개수와 열의 개수를 맞바꿉니다. 5 × 3 → 3 × 5.</span>');
+  }else{
+    tspFb('tsp-a1-j2', k === 1, k === 1
+      ? '정답 — <b>행의 개수와 열의 개수가 같다(정사각행렬)</b>. ' +
+        '<span class="x">꼴이 유지되려면 m = n 이어야 합니다. 하지만 <b>꼴이 유지되는 것</b>과 <b>행렬이 같아지는 것</b>은 다릅니다 — ' +
+        '성분은 얼마든지 달라질 수 있습니다.</span>'
+      : '정답은 <b>행의 개수와 열의 개수가 같다(정사각행렬)</b> 입니다. ' +
+        '<span class="x">"모든 성분이 같다"는 A = Aᵀ 인 경우(심화)에만 해당하고, 꼴만 같아지는 조건은 아닙니다.</span>');
+  }
+}
+
+
+/* ── 5. 활동 ② 손으로 전치하기 ──────────────────────────────────────── */
+
+const TSP_Q1  = [[1,2],[3,4]];
+const TSP_Q1A = [[1,3],[2,4]];
+const TSP_Q2  = [[1,3],[2,4],[5,6]];
+const TSP_Q2A = [[1,2,5],[3,4,6]];
+const TSP_Q3  = [[2,5,7],[1,3,6],[3,2,5]];
+const TSP_Q3A = [[2,1,3],[5,3,2],[7,6,5]];
+
+const TSP_TRI = [
+  { A:[[0,0,0],[120,120,120],[255,255,255]], cap:'A (가로 3줄 무늬)' },
+  { A:[[0,0,240],[120,120,0],[120,240,120]], cap:'B (무늬형)' }
+];
+let tspA2Shp = '';
+let tspA2Si  = 0;
+let tspA2TDg = false;
+
+function tspA2Init(){
+  tspGrid(tspEl('tsp-a2-q1s'), TSP_Q1, { mode:'gray' });
+  tspGrid(tspEl('tsp-a2-q1a'), [[null,null],[null,null]], { mode:'input' });
+  tspGrid(tspEl('tsp-a2-q2s'), TSP_Q2, { mode:'gray' });
+  tspEl('tsp-a2-q2a').innerHTML = '';
+  tspGrid(tspEl('tsp-a2-q3s'), TSP_Q3, { mode:'gray' });
+  tspGrid(tspEl('tsp-a2-q3a'), [[null,null,null],[null,null,null],[null,null,null]], { mode:'input' });
+  tspA2Set(0, null);
+}
+
+function tspA2Shape(kind, el){
+  tspOnly(el);
+  tspA2Shp = kind;
+  const rc = kind.split('x').map(Number);
+  const blank = u3Zeros(rc[0], rc[1]).map(function(r){ return r.map(function(){ return null; }); });
+  tspGrid(tspEl('tsp-a2-q2a'), blank, { mode:'input' });
+  tspEl('tsp-a2-q2c').textContent = '내 답 Bᵀ — ' + rc[0] + '행 ' + rc[1] + '열';
+}
+
+function tspA2Check(n){
+  if(n === 1){
+    const got = tspReadGrid(tspEl('tsp-a2-q1a'), 2, 2);
+    tspA2Mark('tsp-a2-q1a', got, TSP_Q1A, 'tsp-a2-f1', TSP_Q1, 2, 2);
+  }else if(n === 2){
+    if(!tspA2Shp){ tspFb('tsp-a2-f2', false, '<b>답의 꼴을 먼저 고르세요.</b> <span class="x">B 는 3행 2열이므로 Bᵀ 는 몇 행 몇 열일까요?</span>'); return; }
+    if(tspA2Shp !== '2x3'){
+      tspFb('tsp-a2-f2', false, '꼴이 맞지 않습니다. <span class="x">B 는 <b>3 × 2</b> 이므로 Bᵀ 는 <b>2행 3열</b>이어야 합니다. ' +
+        'm × n → n × m 을 기억하세요. 꼴을 다시 고른 뒤 채점하세요.</span>');
+      return;
+    }
+    const got = tspReadGrid(tspEl('tsp-a2-q2a'), 2, 3);
+    tspA2Mark('tsp-a2-q2a', got, TSP_Q2A, 'tsp-a2-f2', TSP_Q2, 2, 3);
+  }else{
+    const got = tspReadGrid(tspEl('tsp-a2-q3a'), 3, 3);
+    tspA2Mark('tsp-a2-q3a', got, TSP_Q3A, 'tsp-a2-f3', TSP_Q3, 3, 3);
+  }
+}
+
+/* 오답 칸에 "이 칸은 A의 (j, i) 에서 옵니다" 안내 */
+function tspA2Mark(gridId, got, ans, fbId, src, rows, cols){
+  const cells = tspEl(gridId).querySelectorAll('.c');
+  let wrong = 0, first = null;
+  for(let i = 0; i < rows; i++){
+    for(let j = 0; j < cols; j++){
+      const c = cells[i * cols + j];
+      c.classList.remove('wrong');
+      if(got[i][j] !== ans[i][j]){
+        c.classList.add('wrong'); wrong++;
+        if(!first) first = { i:i, j:j };
+      }
+    }
+  }
+  if(wrong === 0){
+    tspFb(fbId, true, '모두 맞혔습니다. <span class="x">' + rows + ' × ' + cols +
+      ' 꼴과 성분이 모두 정확합니다. 값은 하나도 바뀌지 않고 자리만 옮겨 갔음을 확인하세요.</span>');
+  }else{
+    tspFb(fbId, false, '<b>' + wrong + '칸</b>이 다릅니다. ' +
+      '<span class="x">노란 테두리 칸을 보세요. 예를 들어 결과의 (' + (first.i + 1) + ', ' + (first.j + 1) + ') 칸은 ' +
+      '<b>A 의 (' + (first.j + 1) + ', ' + (first.i + 1) + ')</b> 에서 옵니다 — 값은 ' + src[first.j][first.i] + ' 입니다.</span>');
+  }
+}
+
+function tspA2SQ(n, k, el){
+  tspOnly(el);
+  if(n === 1){
+    tspFb('tsp-a2-sq1', k === 1, k === 1
+      ? '정답 — <b>4행 3열</b>. <span class="x">3 × 4 → 4 × 3.</span>'
+      : '정답은 <b>4행 3열</b>입니다. <span class="x">m × n 행렬의 전치행렬은 n × m 행렬입니다.</span>');
+  }else{
+    tspFb('tsp-a2-sq2', k === 1, k === 1
+      ? '정답 — <b>2행 4열</b>. <span class="x">4 × 2 → 2 × 4.</span>'
+      : '정답은 <b>2행 4열</b>입니다. <span class="x">행의 개수와 열의 개수가 서로 바뀝니다.</span>');
+  }
+}
+
+/* 3단 격자 A → Aᵀ → (Aᵀ)ᵀ */
+function tspA2Set(n, el){
+  if(el) tspOnly(el);
+  tspA2Si = n;
+  const A = TSP_TRI[n].A;
+  tspGrid(tspEl('tsp-a2-t0'), A, { mode:'gray' });
+  tspGrid(tspEl('tsp-a2-t1'), [[null,null,null],[null,null,null],[null,null,null]], { mode:'input' });
+  tspGrid(tspEl('tsp-a2-t2'), [[null,null,null],[null,null,null],[null,null,null]], { mode:'input' });
+  tspEl('tsp-a2-t0c').textContent = TSP_TRI[n].cap;
+  const fb = tspEl('tsp-a2-tfb'); if(fb){ fb.className = 'tsp-fb'; fb.innerHTML = ''; }
+  tspA2TDg = false;
+  ['tsp-a2-t0','tsp-a2-t1','tsp-a2-t2'].forEach(function(id){ const e = tspEl(id); if(e) e.classList.remove('diag'); });
+}
+
+function tspA2TriDiag(){
+  tspA2TDg = !tspA2TDg;
+  ['tsp-a2-t0','tsp-a2-t1','tsp-a2-t2'].forEach(function(id){
+    const e = tspEl(id); if(e) e.classList.toggle('diag', tspA2TDg);
+  });
+  tspEl('tsp-a2-tst').innerHTML = tspA2TDg
+    ? '대각선 성분은 세 격자에서 <b>모두 같은 자리</b>에 있습니다 — i = j 이므로 옮길 것이 없기 때문입니다.'
+    : '세 격자 모두에 점선 대각선을 겹치면, 대각선 성분이 세 번 모두 같은 자리임을 확인할 수 있습니다.';
+}
+
+function tspA2TriClear(){ tspA2Set(tspA2Si, null); }
+
+function tspA2TriCheck(){
+  const A  = TSP_TRI[tspA2Si].A;
+  const T  = u3Transpose(A);
+  const g1 = tspReadGrid(tspEl('tsp-a2-t1'), 3, 3);
+  const g2 = tspReadGrid(tspEl('tsp-a2-t2'), 3, 3);
+  const c1 = tspEl('tsp-a2-t1').querySelectorAll('.c');
+  const c2 = tspEl('tsp-a2-t2').querySelectorAll('.c');
+  let w1 = 0, w2 = 0;
+  for(let i = 0; i < 3; i++){
+    for(let j = 0; j < 3; j++){
+      c1[i * 3 + j].classList.remove('wrong'); c2[i * 3 + j].classList.remove('wrong');
+      if(g1[i][j] !== T[i][j]){ c1[i * 3 + j].classList.add('wrong'); w1++; }
+      if(g2[i][j] !== A[i][j]){ c2[i * 3 + j].classList.add('wrong'); w2++; }
+    }
+  }
+  if(w1 === 0 && w2 === 0){
+    tspFb('tsp-a2-tfb', true,
+      '두 격자 모두 정확합니다. <b>(Aᵀ)ᵀ 와 A 가 완전히 같습니다 ✓</b>' +
+      '<span class="x">' + (tspA2Si === 0
+        ? '이미지로 보면 <b>가로 3줄 무늬가 세로 3줄 무늬로</b> 바뀌었다가, 다시 가로 3줄로 돌아왔습니다. '
+        : '무늬가 대각선을 기준으로 접힌 뒤, 한 번 더 접혀 원래대로 돌아왔습니다. ') +
+      '전치는 <b>되돌릴 수 있는 변환</b>입니다. 성분의 합도 세 격자에서 모두 같습니다 — 값은 하나도 바뀌지 않았기 때문입니다.</span>');
+  }else{
+    tspFb('tsp-a2-tfb', false,
+      'Aᵀ 에서 <b>' + w1 + '칸</b>, (Aᵀ)ᵀ 에서 <b>' + w2 + '칸</b>이 다릅니다.' +
+      '<span class="x">노란 테두리 칸을 보세요. Aᵀ 의 (i, j) 칸에는 <b>A 의 (j, i) 값</b>을 적습니다. ' +
+      '[대각선 강조]를 눌러 어느 성분이 제자리인지 먼저 확인하면 쉽습니다.</span>');
+  }
+}
+
+function tspA2J(n, k, el){
+  tspOnly(el);
+  tspFb('tsp-a2-j1', k === 1, k === 1
+    ? '정답 — <b>둘 다 3 × 2 이고 서로 같습니다.</b>' +
+      '<span class="x">A + B = [[2,3,4],[6,7,8]] 이므로 (A+B)ᵀ = [[2,6],[3,7],[4,8]] 이고, Aᵀ + Bᵀ 도 같은 값입니다. ' +
+      '이것이 성질 ② <b>(A + B)ᵀ = Aᵀ + Bᵀ</b> 입니다.</span>'
+    : '정답은 <b>둘 다 3 × 2 이고 서로 같습니다.</b>' +
+      '<span class="x">A + B = [[2,3,4],[6,7,8]]. 2 × 3 행렬의 전치이므로 결과는 <b>3 × 2</b> 이고, ' +
+      '두 계산 결과는 모두 [[2,6],[3,7],[4,8]] 로 같습니다.</span>');
+}
+
+function tspA2J2(){
+  const v = (tspEl('tsp-a2-j2in').value || '').replace(/\s+/g, '');
+  const ok = /같|동일|원본/.test(v) && v.length >= 3;
+  tspFbNeutral('tsp-a2-j2',
+    '<b>채점 기준</b> — "원본과 완전히 같다" 또는 "대각선 대칭을 두 번 하면 원래 이미지로 돌아온다"는 요지가 있으면 정답입니다.' +
+    '<span class="x">' + (ok ? '작성한 문장에 핵심 낱말이 들어 있습니다. ' : '작성한 문장을 기준과 견주어 보세요. ') +
+    '성분이 (i, j) → (j, i) → (i, j) 로 되돌아오기 때문입니다.</span>');
+}
+
+function tspA2Sym(){
+  const a = parseInt((tspEl('tsp-sym-a') || {}).value, 10);
+  const b = parseInt((tspEl('tsp-sym-b') || {}).value, 10);
+  const c = parseInt((tspEl('tsp-sym-c') || {}).value, 10);
+  const ok = (a === 1 && b === 7 && c === 5);
+  tspFb('tsp-sym-fb', ok, ok
+    ? '정답 — <b>a = 1, b = 7, c = 5</b>.' +
+      '<span class="x">Aᵀ = [[2,1,c],[a,3,7],[5,b,4]] 이므로 A = Aᵀ 이려면 (1,2)와 (2,1), (1,3)과 (3,1), (2,3)과 (3,2) 가 각각 같아야 합니다.</span>'
+    : '다시 확인해 보세요. 정답은 <b>a = 1, b = 7, c = 5</b> 입니다.' +
+      '<span class="x">대각선(2, 3, 4)은 조건에 관여하지 않습니다. <b>대각선을 축으로 마주 보는 두 성분끼리</b> 같아야 합니다 — ' +
+      'a 는 (1,2) 자리이므로 (2,1) 의 값 1 과 같아야 합니다.</span>');
+}
+
+
+/* ── 6. 활동 ③ 사진의 구도 바꾸기 ───────────────────────────────────── */
+
+const TSP_A3SRC = [[0,0,0,0,0],[0,0,0,0,0],[1,1,0,1,1],[1,1,0,1,1],[1,1,0,1,1]];
+let tspA3G   = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+let tspA3M   = null;        /* 원본 행렬(회색조) */
+let tspA3R   = null;        /* 결과 행렬 */
+let tspA3St  = 'none';      /* none · t · tt */
+let tspA3Dg  = true;
+let tspA3Cn  = false;
+
+function tspA3Init(){
+  tspGrid(tspEl('tsp-a3-src'), TSP_A3SRC, { mode:'bin' });
+  tspGrid(tspEl('tsp-a3-guess'), tspA3G, { mode:'bin', onCell: function(i, j){ tspA3G[i][j] = tspA3G[i][j] ? 0 : 1; tspA3Init(); } });
+  tspGrid(tspEl('tsp-a3-ans'), [[null,null,null,null,null],[null,null,null,null,null],[null,null,null,null,null],
+                                [null,null,null,null,null],[null,null,null,null,null]], { mode:'bin' });
+}
+
+function tspA3Submit(){
+  const T = u3Transpose(TSP_A3SRC);
+  const cells = tspEl('tsp-a3-guess').querySelectorAll('.c');
+  let wrong = 0;
+  for(let i = 0; i < 5; i++){
+    for(let j = 0; j < 5; j++){
+      const c = cells[i * 5 + j];
+      c.classList.remove('wrong');
+      if(tspA3G[i][j] !== T[i][j]){ c.classList.add('wrong'); wrong++; }
+    }
+  }
+  tspGrid(tspEl('tsp-a3-ans'), T, { mode:'bin' });
+  if(wrong === 0){
+    tspFb('tsp-a3-gfb', true, '스물다섯 칸을 모두 맞혔습니다.' +
+      '<span class="x">아래쪽에 있던 흰 영역이 <b>오른쪽으로</b>, 세로로 지나가던 검은 줄이 <b>가로로</b> 바뀌었습니다. ' +
+      '자리가 바뀌었을 뿐 값(0과 1)의 개수는 그대로입니다.</span>');
+  }else{
+    tspFb('tsp-a3-gfb', false, '<b>' + wrong + '칸</b>이 다릅니다.' +
+      '<span class="x">A 의 <b>3행</b>이 Aᵀ 의 <b>3열</b>이 됩니다. 한 줄씩 옮겨 적어 보세요. ' +
+      '가로로 놓인 것은 세로로, 세로로 놓인 것은 가로로 바뀝니다.</span>');
+  }
+}
+
+function tspA3GuessReset(){
+  tspA3G = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+  const fb = tspEl('tsp-a3-gfb'); if(fb){ fb.className = 'tsp-fb'; fb.innerHTML = ''; }
+  tspA3Init();
+}
+
+function tspA3Pick(kind, el){
+  tspOnly(el);
+  if(kind === 'square')        tspA3M = tspGenSquare();
+  else if(kind === 'portrait') tspA3M = tspGenPortrait();
+  else if(kind === 'text')     tspA3M = tspGenText();
+  else                         tspA3M = tspGenPattern();
+  tspA3St = 'none';
+  tspA3R  = null;
+  tspA3Paint();
+  tspEl('tsp-a3-capb').textContent = '결과 — 버튼을 눌러 보세요';
+  tspEl('tsp-a3-shape').textContent = '꼴 — ' + tspA3M.length + ' × ' + tspA3M[0].length + ' (행 × 열)';
+  tspEl('tsp-a3-same').style.display = 'none';
+  tspEl('tsp-a3-probe').textContent = '사진의 한 점을 클릭해 보세요.';
+  tspGrid(tspEl('tsp-a3-p5a'), u3Zeros(5,5).map(function(r){ return r.map(function(){ return null; }); }), {});
+  tspGrid(tspEl('tsp-a3-p5b'), u3Zeros(5,5).map(function(r){ return r.map(function(){ return null; }); }), {});
+}
+
+function tspA3Upload(input){
+  const f = input && input.files && input.files[0];
+  if(!f) return;
+  const img = new Image();
+  img.onload = function(){
+    const maxSide = 56;                                   /* 브라우저 안에서만 처리 · 다운샘플 */
+    const s = Math.min(1, maxSide / Math.max(img.width, img.height));
+    const w = Math.max(4, Math.round(img.width * s)), h = Math.max(4, Math.round(img.height * s));
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const g = cv.getContext('2d');
+    g.drawImage(img, 0, 0, w, h);
+    const d = g.getImageData(0, 0, w, h).data, M = [];
+    for(let y = 0; y < h; y++){
+      const r = [];
+      for(let x = 0; x < w; x++){ const k = (y * w + x) * 4; r.push(u3GrayLuma(d[k], d[k+1], d[k+2])); }
+      M.push(r);
+    }
+    tspA3M = M; tspA3St = 'none'; tspA3R = null;
+    tspA3Paint();
+    tspEl('tsp-a3-shape').textContent = '꼴 — ' + h + ' × ' + w + ' (원본 ' + img.height + ' × ' + img.width + ' 를 축소)';
+    tspEl('tsp-a3-capb').textContent = '결과 — 버튼을 눌러 보세요';
+    URL.revokeObjectURL(img.src);
+  };
+  img.src = URL.createObjectURL(f);
+}
+
+function tspA3Paint(){
+  if(!tspA3M) return;
+  tspDrawMat(tspEl('tsp-a3-cva'), tspA3M, 168);
+  tspOverlay(tspEl('tsp-a3-cva'), tspA3Dg, tspA3Cn);
+  tspEl('tsp-a3-capa').textContent = '(' + tspA3M.length + ' × ' + tspA3M[0].length + ')';
+  const cb = tspEl('tsp-a3-cvb');
+  if(tspA3R){
+    tspDrawMat(cb, tspA3R, 168);
+    tspOverlay(cb, tspA3Dg, tspA3Cn);
+  }else{
+    cb.width = 168; cb.height = 168;
+    const g = cb.getContext('2d');
+    g.clearRect(0, 0, cb.width, cb.height);
+    g.fillStyle = 'rgba(120,114,106,0.18)'; g.fillRect(0, 0, cb.width, cb.height);
+  }
+}
+
+function tspA3Run(){
+  if(!tspA3M){ tspFbNeutral('tsp-a3-blfb', '먼저 사진을 고르세요.'); return; }
+  tspA3R  = u3Transpose(tspA3M);
+  tspA3St = 't';
+  tspA3Paint();
+  const h = tspA3M.length, w = tspA3M[0].length;
+  tspEl('tsp-a3-capb').textContent = 'Aᵀ (' + w + ' × ' + h + ')';
+  let msg = '꼴 — ' + h + ' × ' + w + ' → <b>' + w + ' × ' + h + '</b>';
+  if(h > w) msg += ' · 세로 사진 → 가로 사진 (실제 사진이라면 1080 × 1920 → 1920 × 1080)';
+  tspEl('tsp-a3-shape').innerHTML = msg;
+  tspEl('tsp-a3-same').style.display = u3MatEq(tspA3M, tspA3R) ? 'inline-block' : 'none';
+  if(u3MatEq(tspA3M, tspA3R)) tspEl('tsp-a3-same').textContent = '전치해도 원본과 똑같습니다 ✓ (대각선 대칭 이미지)';
+}
+
+function tspA3Again(){
+  if(!tspA3R){ tspA3Run(); return; }
+  tspA3R  = u3Transpose(tspA3R);
+  tspA3St = (tspA3St === 't') ? 'tt' : 't';
+  tspA3Paint();
+  const same = u3MatEq(tspA3M, tspA3R);
+  tspEl('tsp-a3-capb').textContent = (tspA3St === 'tt' ? '(Aᵀ)ᵀ' : 'Aᵀ') +
+    ' (' + tspA3R.length + ' × ' + tspA3R[0].length + ')';
+  tspEl('tsp-a3-same').style.display = same ? 'inline-block' : 'none';
+  tspEl('tsp-a3-same').textContent = '원본과 일치 ✓';
+  tspEl('tsp-a3-shape').innerHTML = '꼴 — ' + tspA3M.length + ' × ' + tspA3M[0].length +
+    ' → ' + tspA3R.length + ' × ' + tspA3R[0].length + (same ? ' · <b>원래 꼴로 돌아왔습니다</b>' : '');
+}
+
+function tspA3Diag(){ tspA3Dg = !tspA3Dg; tspA3Paint(); }
+function tspA3Corner(){ tspA3Cn = !tspA3Cn; tspA3Paint(); }
+
+/* 픽셀 클릭 → 5 × 5 값 비교 */
+function tspA3Probe(ev){
+  if(!tspA3M) return;
+  const cv = ev.currentTarget;
+  const s  = parseInt(cv.dataset.scale || '1', 10);
+  const rect = cv.getBoundingClientRect();
+  if(!rect.width || !rect.height) return;          /* 탭이 숨겨져 있으면 좌표를 계산하지 않습니다 */
+  const px = Math.floor((ev.clientX - rect.left) * (cv.width / rect.width) / s);
+  const py = Math.floor((ev.clientY - rect.top) * (cv.height / rect.height) / s);
+  let ra, ca;                                            /* 원본 A 안의 (행, 열) */
+  if(cv.id === 'tsp-a3-cva'){ ra = py; ca = px; }
+  else if(tspA3St === 't'){ ra = px; ca = py; }          /* 결과가 Aᵀ 이면 좌표를 되돌립니다 */
+  else { ra = py; ca = px; }
+  const win = function(M, r, c){
+    const out = [];
+    for(let i = -2; i <= 2; i++){
+      const row = [];
+      for(let j = -2; j <= 2; j++){
+        const y = r + i, x = c + j;
+        row.push((M && M[y] && M[y][x] !== undefined) ? M[y][x] : null);
+      }
+      out.push(row);
+    }
+    return out;
+  };
+  tspGrid(tspEl('tsp-a3-p5a'), win(tspA3M, ra, ca), { mode:'gray' });
+  const rb = (tspA3St === 't') ? ca : ra, cb2 = (tspA3St === 't') ? ra : ca;
+  tspGrid(tspEl('tsp-a3-p5b'), win(tspA3R, rb, cb2), { mode:'gray' });
+  const v = (tspA3M[ra] && tspA3M[ra][ca] !== undefined) ? tspA3M[ra][ca] : '–';
+  tspEl('tsp-a3-probe').innerHTML = tspA3R
+    ? '원본의 (' + (ra + 1) + ', ' + (ca + 1) + ') = <b>' + v + '</b> → ' +
+      (tspA3St === 't' ? '전치 결과의 (' + (ca + 1) + ', ' + (ra + 1) + ')' : '결과의 (' + (ra + 1) + ', ' + (ca + 1) + ')') +
+      ' = <b>' + v + '</b> · <b>값은 그대로, 자리만 바뀌었습니다.</b>'
+    : '원본의 (' + (ra + 1) + ', ' + (ca + 1) + ') = <b>' + v + '</b> · [전치 실행 Aᵀ] 을 눌러 결과와 비교해 보세요.';
+}
+
+function tspA3Blank(){
+  const b1 = (tspEl('tsp-a3-bl1').value || '').replace(/\s+/g, '');
+  const b2 = (tspEl('tsp-a3-bl2').value || '').replace(/\s+/g, '');
+  const ok = /자리/.test(b1) && /회전/.test(b2);
+  tspFb('tsp-a3-blfb', ok, ok
+    ? '정답 — <b>자리 / 회전</b>.' +
+      '<span class="x">전치는 위쪽 모서리와 왼쪽 모서리가 <b>서로 자리를 바꾸는</b> 변환이므로, ' +
+      '모든 모서리가 같은 방향으로 돌아가는 <b>회전</b>이 아닙니다.</span>'
+    : '정답은 <b>자리 / 회전</b> 입니다.' +
+      '<span class="x">[모서리 표시]를 켜고 다시 확인해 보세요 — <b>위 모서리 ↔ 왼쪽 모서리</b> 가 맞바뀝니다. ' +
+      '회전이라면 네 모서리가 모두 같은 방향으로 한 칸씩 돌아가야 합니다.</span>');
+}
+
+function tspA3J(n, k, el){
+  tspOnly(el);
+  if(n === 1){
+    tspFb('tsp-a3-j1', k === 1, k === 1
+      ? '정답 — <b>ㄴ. 전치행렬을 구한다</b>.' +
+        '<span class="x">ㄱ·ㄷ·ㄹ은 값만 바뀌므로 사물의 자리는 그대로입니다. 구도를 바꾸는 것은 <b>위치 변환</b>뿐입니다.</span>'
+      : '정답은 <b>ㄴ. 전치행렬을 구한다</b> 입니다.' +
+        '<span class="x">덧셈(ㄱ)·뺄셈(ㄷ)·실수배(ㄹ)는 모두 성분의 <b>값</b>을 바꿉니다. 사물이 놓인 자리는 그대로이므로 구도는 변하지 않습니다.</span>');
+  }else if(n === 2){
+    tspFb('tsp-a3-j2', k === 1, k === 1
+      ? '정답 — <b>1920 × 1080</b>. <span class="x">m × n → n × m. 세로로 긴 사진이 가로로 긴 사진이 됩니다.</span>'
+      : '정답은 <b>1920 × 1080</b> 입니다. <span class="x">전치는 행의 개수와 열의 개수를 맞바꿉니다. 활동 ③에서 세로 사진으로 직접 확인해 보세요.</span>');
+  }else{
+    tspFb('tsp-a3-j3', k === 1, k === 1
+      ? '정답 — <b>다른 변환입니다.</b>' +
+        '<span class="x">좌우 반전은 각 행의 순서를 뒤집는 것이어서 <b>행과 열의 역할이 그대로</b>입니다. ' +
+        '전치는 행과 열의 역할 자체를 맞바꿉니다. 좌우 반전을 만드는 방법은 다음 시간(17차시)에 <b>행렬의 곱셈</b>으로 배웁니다.</span>' +
+        '<div class="btn-row"><button class="btn" type="button" onclick="go(\'matmul\')">17차시로 이동</button></div>'
+      : '정답은 <b>다른 변환입니다.</b>' +
+        '<span class="x">결정적인 증거는 <b>대각선 무늬</b>입니다. 전치하면 변하지 않지만, 좌우 반전하면 반드시 변합니다. ' +
+        '(미래엔 교과서 Ⅲ p.98 좌우 대칭이동 서술 참고)</span>');
+  }
+}
+
+function tspA3J4(){
+  const v = (tspEl('tsp-a3-j4in').value || '').replace(/\s+/g, '');
+  const ok = /대각선/.test(v) && /대칭/.test(v);
+  tspFbNeutral('tsp-a3-j4',
+    '<b>채점 기준</b> — "대각선을 기준으로 이미 대칭인 이미지"라는 요지가 있으면 정답입니다.' +
+    '<span class="x">' + (ok ? '작성한 문장에 <b>대각선</b>과 <b>대칭</b>이 모두 들어 있습니다. ' : '작성한 문장에 <b>대각선</b>과 <b>대칭</b>을 넣어 다시 써 보세요. ') +
+    '식으로 쓰면 <b>A = Aᵀ</b> 입니다. 활동 ①의 <b>대각선 줄</b> 무늬가 바로 그런 경우였습니다.</span>');
+}
+
+
+/* ── 7. 참고 자료 교사 추가 슬롯 ────────────────────────────────────── */
+
+function tspRefLoad(){ try{ const a = JSON.parse(cmnGet('aimath.transpose.refs', '[]')); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+function tspRefSave(a){ cmnSet('aimath.transpose.refs', JSON.stringify(a)); }
+
+function tspRefRender(){
+  const box = tspEl('tsp-ref-custom');
+  if(!box) return;
+  const arr = tspRefLoad();
+  box.innerHTML = '';
+  arr.forEach(function(it, i){
+    const a = document.createElement('a');
+    a.className = 'tsp-ref';
+    a.href = it.u; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = '<span class="th"><span class="bg">선생님 추가</span>🔗</span>' +
+      '<span class="bd"><span class="tt">' + cmnEsc(it.t || it.u) + '</span>' +
+      '<span class="ds">선생님이 추가한 자료입니다.</span></span>';
+    const x = document.createElement('button');
+    x.type = 'button'; x.textContent = '✕'; x.title = '삭제';
+    x.style.cssText = 'position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);color:#fff;border-radius:9999px;width:1.7rem;height:1.7rem;cursor:pointer;z-index:2;';
+    x.addEventListener('click', function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      const c = tspRefLoad(); c.splice(i, 1); tspRefSave(c); tspRefRender();
+    });
+    a.appendChild(x);
+    box.appendChild(a);
+  });
+}
+
+function tspRefAdd(){
+  const u = (tspEl('tsp-ref-url').value || '').trim();
+  const t = (tspEl('tsp-ref-tt').value || '').trim();
+  const st = tspEl('tsp-ref-st');
+  if(!/^https?:\/\//i.test(u)){ st.textContent = 'http 또는 https 로 시작하는 주소를 입력해 주세요.'; return; }
+  const a = tspRefLoad(); a.push({ u:u, t:t }); tspRefSave(a);
+  tspEl('tsp-ref-url').value = ''; tspEl('tsp-ref-tt').value = '';
+  tspRefRender();
+  st.textContent = '자료를 추가했습니다. 이 기기에만 저장됩니다.';
+}
+
+
+/* ── 8. 매니페스트 안전망 ────────────────────────────────────────────
+   정식 설치는 INTEGRATION.md §1 대로 AIM_LESSONS·AIM_ART 를 직접 고치는 것입니다.
+   그 편집을 빠뜨린 채 배포되어도 nav·홈 카드가 비지 않도록 한 번 더 보강합니다. */
+(function tspManifestGuard(){
+  try{
+    if(typeof AIM_LESSONS === 'undefined' || !Array.isArray(AIM_LESSONS)) return;
+    let found = false;
+    for(let i = 0; i < AIM_LESSONS.length; i++){
+      if(AIM_LESSONS[i] && AIM_LESSONS[i].v === 'transpose'){ found = true; break; }
+    }
+    if(typeof AIM_ART !== 'undefined' && AIM_ART && !AIM_ART.transpose) AIM_ART.transpose = TSP_ART;
+    if(found) return;
+    let at = AIM_LESSONS.length;
+    for(let i = 0; i < AIM_LESSONS.length; i++){
+      if(AIM_LESSONS[i] && AIM_LESSONS[i].n === '17차시'){ at = i; break; }
+    }
+    AIM_LESSONS.splice(at, 0, {
+      u:2, n:'16차시', t:'전치행렬로 사진의 구도를 바꾸다', v:'transpose', a:'transpose',
+      d:'값은 그대로 두고 자리만 바꿉니다. 성분 하나가 (i, j)에서 (j, i)로 날아가는 궤적을 눈으로 따라가고, 세로 사진을 전치해 가로 사진으로 바꾸며 "전치는 회전이 아니다"를 스스로 판단합니다.'
+    });
+    const redraw = function(){
+      if(!document.getElementById('v-transpose')) return;
+      try{ if(typeof aimBuildHome === 'function') aimBuildHome(); }catch(e){}
+      try{ if(typeof aimBuildMarks === 'function') aimBuildMarks(); }catch(e){}
+    };
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', redraw);
+    else redraw();
+  }catch(e){}
+})();
+
+
+/* ── 9. 초기화 (IIFE + null 가드 + MutationObserver) ─────────────────── */
+(function tspBoot(){
+  const boot = function(){
+    const root = document.getElementById('v-transpose');
+    if(!root) return;
+
+    /* 공통 컴포넌트 */
+    try{ if(typeof videoDeck   === 'function') videoDeck('tsp-videos', 'transpose', TSP_VIDEOS); }catch(e){ console.error('tsp videoDeck', e); }
+    try{ if(typeof warmStepper === 'function') warmStepper('tsp-warm', 'tsp', TSP_WARM); }catch(e){ console.error('tsp warmStepper', e); }
+    try{ if(typeof quizStepper === 'function') quizStepper('tsp-quiz', 'tsp', TSP_QUIZ); }catch(e){ console.error('tsp quizStepper', e); }
+    try{ if(typeof chipDefs    === 'function') chipDefs('#v-transpose .tsp-keys', TSP_DEFS); }catch(e){ console.error('tsp chipDefs', e); }
+    try{ if(typeof wsLinks     === 'function') wsLinks('tsp-wslinks', 'transpose'); }catch(e){ console.error('tsp wsLinks', e); }
+
+    /* 도입 실자료 — 세로 사진과 그 전치 */
+    try{
+      const P = tspGenPortrait();
+      tspDrawMat(document.getElementById('tsp-hook-a'), P, 150);
+      tspDrawMat(document.getElementById('tsp-hook-b'), u3Transpose(P), 150);
+      tspOverlay(document.getElementById('tsp-hook-a'), true, false);
+      tspOverlay(document.getElementById('tsp-hook-b'), true, false);
+    }catch(e){ console.error('tsp hook', e); }
+
+    /* 활동 ① */
+    tspA1Gs  = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+    tspA1Dst = tspA1Blank();
+    tspA1Render();
+    tspA1QzReset();
+
+    /* 활동 ② · ③ */
+    tspA2Init();
+    tspA3Init();
+    const firstSrc = document.querySelector('#tsp-a3-src-pick .chip');
+    tspA3Pick('square', firstSrc);
+
+    tspRefRender();
+
+    /* 뷰가 화면에 나타날 때 캔버스를 다시 그립니다(go() 수정 없이 지연 init) */
+    try{
+      const mo = new MutationObserver(function(){
+        if(root.classList.contains('active')) setTimeout(function(){ try{ tspA3Paint(); }catch(e){} }, 50);
+      });
+      mo.observe(root, { attributes:true, attributeFilter:['class'] });
+    }catch(e){}
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+/* ●●● ANCHOR-TRANSPOSE ●●● (16차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   17차시 MATMUL — 「행렬의 곱셈: 이미지를 옮기고 뒤집다」  (접두사 mm / MM_)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. 데이터 ────────────────────────────────────────────────────────── */
+
+const MM_ART = `<svg viewBox="0 0 320 180" role="img" aria-label="0과 1로 된 행렬을 곱해 그림이 한 칸 옮겨지는 그림">
+    <rect width="320" height="180" fill="var(--bg)"/>
+    <rect x="10" y="30" width="96" height="96" fill="none" stroke="var(--fg)" stroke-width="3"/>
+    <g fill="var(--fg)"><rect x="22" y="42" width="20" height="72"/><rect x="46" y="66" width="20" height="48"/><rect x="70" y="90" width="20" height="24"/></g>
+    <text x="122" y="90" font-size="24" font-family="monospace" fill="var(--muted)">×</text>
+    <rect x="144" y="48" width="60" height="60" fill="none" stroke="var(--blue)" stroke-width="2.5"/>
+    <g fill="var(--blue)"><rect x="159" y="48" width="15" height="15"/><rect x="174" y="63" width="15" height="15"/><rect x="189" y="78" width="15" height="15"/></g>
+    <text x="216" y="90" font-size="22" font-family="monospace" fill="var(--muted)">=</text>
+    <rect x="236" y="30" width="96" height="96" fill="none" stroke="var(--fg)" stroke-width="3"/>
+    <g fill="var(--green)"><rect x="272" y="42" width="20" height="72"/><rect x="296" y="66" width="20" height="48"/></g>
+    <text x="58" y="146" font-size="12" font-family="monospace" text-anchor="middle" fill="var(--muted)">A</text>
+    <text x="174" y="146" font-size="12" font-family="monospace" text-anchor="middle" fill="var(--muted)">B</text>
+    <text x="284" y="146" font-size="12" font-family="monospace" text-anchor="middle" fill="var(--muted)">AB</text>
+    <text x="160" y="172" font-size="11" font-family="monospace" text-anchor="middle" fill="var(--muted)">0과 1 행렬을 곱하면 그림이 옮겨진다</text>
+  </svg>`;
+
+/* STEP 1 추천 영상 (2026-07-31 img.youtube.com HTTP 200 재확인 완료) */
+const MM_VIDEOS = [
+  { id:'RYRAheRiugI', t:'[공통수학1] 52강 행렬의 곱셈',                                 s:'수학 맛집 · 주 디딤영상' },
+  { id:'xTax61wFpWM', t:'9. 이미지 자료의 처리 (2) — 행렬의 곱셈(평행이동·대칭이동)',     s:'mathT야나수 · 활동 ②③ 예습' },
+  { id:'NkHcWm7o_HM', t:'[진짜 수학, AI 1편] 수학책 맨 뒤 행렬, 엔비디아의 영업비밀',      s:'동기 유발 · 큰 그림' },
+  { id:'DmOdYauHdK0', t:'고등학교 신설 교과목 『인공지능 수학』 [심화·선택]',              s:'이상엽Math · 과목 조망' }
+];
+
+const MM_WARM = [
+  { q:'2 × 3 행렬 A 와 3 × 2 행렬 B 에 대하여 옳은 것은?',
+    opts:['AB 도 BA 도 계산할 수 없다','AB 만 계산할 수 있다','BA 만 계산할 수 있다',
+          'AB 와 BA 를 모두 계산할 수 있고, 두 결과의 꼴은 서로 다르다'], answer:3,
+    explain:'AB 는 <b>2 × 2</b>, BA 는 <b>3 × 3</b> 입니다. 둘 다 되지만 결과의 꼴이 다릅니다. ' +
+            '이것이 행렬의 곱셈에서 <b>순서가 중요한</b> 첫 번째 이유입니다. ' +
+            '조건은 <b>앞 행렬의 열의 개수 = 뒤 행렬의 행의 개수</b> 하나뿐이고, 두 경우 모두 만족합니다. ' +
+            '<span style="color:var(--muted);">(씨마스 교과서 Ⅲ p.115 · 지도서 p.187 서술을 재구성)</span>' },
+  { q:'다음 주장이 옳으면 O, 옳지 않으면 X — "두 행렬 A, B 에 대하여 AB 와 BA 가 모두 계산될 때 두 결과는 항상 같다."',
+    opts:['O','X'], answer:1,
+    explain:'행렬의 곱셈에서는 <b>일반적으로 교환법칙이 성립하지 않습니다.</b> ' +
+            '오늘 볼 예를 미리 말하면, 같은 행렬 B 를 사진의 <b>오른쪽</b>에 곱하면 사진이 오른쪽으로 가고, ' +
+            '<b>왼쪽</b>에 곱하면 <b>위쪽</b>으로 갑니다. 수의 곱셈 습관이 그대로 옮겨 오면 틀리기 쉽습니다. ' +
+            '특별한 경우(곱해도 그대로인 행렬)에는 같아질 수 있지만 <b>일반적으로는 다릅니다.</b> ' +
+            '<span style="color:var(--muted);">(동아 교과서 Ⅲ p.96 여백 서술을 재구성)</span>' },
+  { q:'이미지를 나타낸 정사각행렬 A 를 오른쪽으로 한 칸 옮기려면 알맞은 행렬을 어느 쪽에 곱해야 할까요?',
+    opts:['왼쪽','오른쪽','어느 쪽이든 같다','곱셈으로는 옮길 수 없다'], answer:1,
+    explain:'좌우로 옮기는 것은 <b>열</b>의 자리를 바꾸는 일이고, 위아래로 옮기는 것은 <b>행</b>의 자리를 바꾸는 일입니다. ' +
+            '뒤에 곱한 행렬은 <b>열</b>에, 앞에 곱한 행렬은 <b>행</b>에 작용합니다. ' +
+            '놀랍게도 <b>0과 1로만 된 행렬 하나</b>로 충분합니다. ' +
+            '<span style="color:var(--muted);">(동아 교과서 Ⅲ p.96 정리 표 · 활동지 「활동6」 빈칸 문항을 재구성)</span>' }
+];
+
+const MM_QUIZ = [
+  { q:'[12인수03-02] [[1,0,2],[0,1,1],[1,1,0]] · [[0,1,0],[0,0,1],[1,0,0]] 의 (1, 1) 성분은?',
+    opts:['0','1','2','3'], answer:2,
+    explain:'A 의 제1행 (1 0 2) 과 B 의 제1열 (0, 0, 1) 을 차례로 곱하여 더하면 1·0 + 0·0 + 2·1 = <b>2</b> 입니다. ' +
+            '한 칸만 물으면 <b>그 칸에 해당하는 한 행과 한 열만</b> 보면 됩니다. 전체를 계산할 필요가 없습니다. ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="mmSee(0,\'mm-act1\')">활동 ①로 돌아가기</button></div>' +
+            '<span style="color:var(--muted);">(활동지 「활동6」 [1~2]번 재구성)</span>' },
+  { q:'[12인수03-02] B = [[0,1,0,0],[0,0,1,0],[0,0,0,1],[0,0,0,0]] 일 때 곱 BA 가 나타내는 이미지는?',
+    opts:['오른쪽으로 한 픽셀 평행이동','왼쪽으로 한 픽셀 평행이동','위쪽으로 한 픽셀 평행이동','아래쪽으로 한 픽셀 평행이동'], answer:2,
+    explain:'B 를 A 의 <b>왼쪽</b>에 곱했으므로 <b>행</b>이 움직이고, 1 이 대각선 위쪽 한 줄에 있으므로 <b>위로</b> 한 칸입니다. ' +
+            '두 가지를 순서대로 판단하세요 — ㉠ <b>어느 쪽에 곱했나</b>(왼쪽이면 상하) ㉡ <b>1이 대각선의 위인가 아래인가</b>(위면 위쪽 이동). ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="mmSee(1,\'mm-act2\')">활동 ②의 정리 표로</button></div>' +
+            '<span style="color:var(--muted);">(동아 교과서 Ⅲ p.96 정리 표 재구성)</span>' },
+  { q:'[12인수03-02] B = [[0,1,0],[0,0,1],[0,0,0]], C = [[0,0,1],[0,1,0],[1,0,0]] 라 할 때 옳게 짝지은 것은?',
+    opts:['AB = 좌우 반전, AC = 오른쪽 평행이동','AB = 오른쪽으로 평행이동, AC = 좌우 반전',
+          'AB = 위쪽 평행이동, AC = 상하 반전','AB = 상하 반전, AC = 왼쪽 평행이동'], answer:1,
+    explain:'B 는 1이 <b>대각선 위 한 줄</b>(평행이동형), C 는 <b>반대 대각선</b>(반전형)입니다. ' +
+            '둘 다 오른쪽에 곱했으므로 <b>열</b>이 움직입니다. ' +
+            '행렬의 <b>모양</b>으로 변환의 종류(이동/반전)를, 곱하는 <b>위치</b>로 방향(좌우/상하)을 판단합니다. ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="mmSee(2,\'mm-act3\')">활동 ③으로</button></div>' +
+            '<span style="color:var(--muted);">(동아 교과서 Ⅲ p.102 「스스로 해결하기」 문항 재구성)</span>' },
+  { q:'[12인수03-02] A = [[0,0,0],[0,1,0],[1,1,0]] 이다. 곱 AB 가 좌우가 반전된 이미지일 때 B 는?',
+    opts:['[[0,1,0],[0,0,1],[0,0,0]]','[[1,0,0],[0,1,0],[0,0,1]]','[[0,0,1],[0,1,0],[1,0,0]]','[[0,0,0],[1,0,0],[0,1,0]]'], answer:2,
+    explain:'n = 3 이므로 <b>i + j = 4</b> 인 자리 (1,3) (2,2) (3,1) 에 1 을 놓습니다. ' +
+            '좌우 반전 행렬은 <b>왼쪽 아래에서 오른쪽 위로 올라가는 대각선</b>에 1 이 놓입니다. ' +
+            '두 번째 선택지는 곱해도 그대로인 행렬, 첫째·넷째는 평행이동 행렬입니다. ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="mmSee(2,\'mm-act3\')">활동 ③의 판정 문제로</button></div>' +
+            '<span style="color:var(--muted);">(동아 교과서 Ⅲ p.97 문제 6 이식)</span>' },
+  { q:'[12인수03-02] 다음 중 옳지 않은 것은?',
+    opts:['2 × 3 과 3 × 2 의 곱은 2 × 2 행렬이다','곱해도 그대로인 행렬을 곱하면 이미지가 변하지 않는다',
+          '행렬의 곱셈에서는 일반적으로 교환법칙이 성립하지 않는다',
+          '행렬 A 의 오른쪽에 알맞은 행렬을 곱하면 이미지를 위쪽으로 평행이동할 수 있다'], answer:3,
+    explain:'오른쪽에 곱하면 <b>열</b>이 움직이므로 좌우 이동·좌우 반전만 만들 수 있습니다. ' +
+            '위쪽 이동은 <b>왼쪽</b>에 곱해야 합니다. 오늘의 핵심 규칙 ②가 그대로 답입니다 — ' +
+            '<b>오른쪽 = 열 = 좌우 / 왼쪽 = 행 = 상하.</b> ' +
+            '<div class="btn-row"><button class="btn" type="button" onclick="mmSee(1,\'mm-act2\')">활동 ②의 정리 표로</button></div>' }
+];
+
+const MM_DEFS = {
+  '행렬의 곱셈 AB':
+    '<h4>행렬의 곱셈 AB</h4>' +
+    '<p><b>정의.</b> 두 행렬 A, B 에 대하여 A 의 <b>열의 개수</b>와 B 의 <b>행의 개수</b>가 같을 때, ' +
+    'A 의 <b>제 i 행</b>의 성분과 B 의 <b>제 j 열</b>의 성분을 각각 차례로 곱하여 더한 값을 (i, j) 성분으로 하는 행렬을 ' +
+    '두 행렬의 <b>곱</b>이라 하고 <b>AB</b> 로 나타냅니다. l × m 행렬과 m × n 행렬의 곱은 <b>l × n 행렬</b>입니다.</p>' +
+    '<p><b>예시.</b> 1 × 3 행렬 (1 0 1) 과 3 × 1 행렬 (1, 3, 6)을 세로로 쓴 것의 곱은 1×1 + 0×3 + 1×6 = 7 → <b>1 × 1 행렬 (7)</b> / ' +
+    '[[1,2],[3,4]] · [[0,1],[1,0]] = <b>[[2,1],[4,3]]</b></p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ①에서 "제 i 행 × 제 j 열"이라는 규칙을 <b>손가락으로 짚어 가며</b> 확인합니다. ' +
+    '화면이 계산 중인 행과 열을 동시에 강조해 주므로 곱셈이 "가로 한 줄과 세로 한 줄의 만남"이라는 것이 눈에 들어옵니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="mmSee(0,\'mm-act1\')">활동 ①로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'fclayer\')">19차시</button>' +
+    '<button class="btn" type="button" onclick="go(\'cnn\')">20차시</button></div>' +
+    '<p>〈공통수학1〉의 곱셈을 오늘 3 × 3 · 4 × 4 로 넓힙니다. 20차시의 <b>합성곱</b>은 이것과 <b>다른 연산</b>입니다. ' +
+    '19차시에서는 이 곱셈이 신경망의 층 계산 그 자체가 됩니다.</p>' +
+    '<p class="mm-src">씨마스 교과서 Ⅲ p.115 · 동아 교과서 Ⅲ p.95 「배웠어요! 공통수학1」 · 활동지 「활동6」 정의 박스 서술을 재구성</p>',
+
+  '곱이 정의되는 조건':
+    '<h4>곱이 정의되는 조건</h4>' +
+    '<p><b>정의.</b> 모든 두 행렬을 곱할 수 있는 것은 아닙니다. <b>앞 행렬의 열의 개수 = 뒤 행렬의 행의 개수</b> 일 때만 ' +
+    '곱을 정의합니다. 곱셈이 "앞 행렬의 한 <b>행</b>과 뒤 행렬의 한 <b>열</b>을 짝지어 곱한다"는 규칙이므로 ' +
+    '짝지을 수의 개수가 맞아야 하기 때문입니다.</p>' +
+    '<p><b>예시.</b> 2 × 3 과 3 × 4 → 3 = 3 이므로 곱할 수 있고 결과는 <b>2 × 4</b> / 2 × 3 과 2 × 3 → 3 ≠ 2 이므로 <b>곱할 수 없음</b> / ' +
+    '1 × n 과 n × 1 → <b>1 × 1</b>, 순서를 바꾼 n × 1 과 1 × n → <b>n × n</b></p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ①의 <b>[꼴 판별 게임]</b>에서 여러 조합을 보고 "곱할 수 있는가 / 결과는 무슨 꼴인가"를 빠르게 판단합니다. ' +
+    '이미지 변환에서는 항상 <b>정사각행렬끼리</b> 곱하므로 조건이 자동으로 만족되지만, ' +
+    '19차시의 신경망에서는 이 조건이 <b>층의 크기를 정하는 규칙</b>이 됩니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="mmSee(0,\'mm-act1\')">활동 ①로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'transpose\')">16차시 — 꼴의 변화</button></div>' +
+    '<p>16차시에서 m × n 행렬의 전치가 n × m 이 되는 것을 확인했습니다. 꼴을 먼저 따지는 습관이 그때부터 이어집니다.</p>' +
+    '<p><span class="mm-bd soft">참고</span> 1 × n 행렬을 <b>행벡터</b>, n × 1 행렬을 <b>열벡터</b>라고 부르기도 합니다(고시 용어 아님).</p>' +
+    '<p class="mm-src">씨마스 교과서 Ⅲ p.115 · 씨마스 지도서 Ⅲ p.187 지도 TIP 서술을 재구성</p>',
+
+  '평행이동 행렬':
+    '<h4>평행이동 행렬</h4>' +
+    '<p><b>정의.</b> 검은색 0, 흰색 1 로 이미지를 나타낸 <b>정사각행렬</b> A 가 있을 때, ' +
+    '성분이 0과 1로만 이루어진 알맞은 정사각행렬을 곱하면 이미지를 <b>한 픽셀만큼 평행이동</b>할 수 있습니다. ' +
+    '곱하는 행렬은 <b>대각선 바로 옆 한 줄에만 1이 있고 나머지는 모두 0</b>인 모양이며, ' +
+    '<b>어느 쪽에 곱하는지가 방향을 정합니다.</b></p>' +
+    '<p>A 의 <b>오른쪽</b>에 곱하면 → <b>오른쪽 또는 왼쪽</b>으로 평행이동(열이 움직임) / ' +
+    'A 의 <b>왼쪽</b>에 곱하면 → <b>위쪽 또는 아래쪽</b>으로 평행이동(행이 움직임)</p>' +
+    '<p><b>예시.</b> B = [[0,1,0,0],[0,0,1,0],[0,0,0,1],[0,0,0,0]] 에서 AB = 오른쪽 한 칸, BA = <b>위쪽</b> 한 칸 / ' +
+    'C = [[0,0,0,0],[1,0,0,0],[0,1,0,0],[0,0,1,0]] 에서 AC = 왼쪽 한 칸, CA = <b>아래쪽</b> 한 칸</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ②에서 네 개의 프리셋 버튼을 눌러 보고 <b>버튼이 만드는 행렬의 모양과 곱하는 위치</b>를 표에 정리합니다. ' +
+    '예상 → 계산 → 확인 순서입니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="mmSee(1,\'mm-act2\')">활동 ②로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'imgop\')">14차시</button>' +
+    '<button class="btn" type="button" onclick="go(\'transpose\')">16차시</button></div>' +
+    '<p class="mm-src">동아 교과서 Ⅲ pp.95~96 §5 서술을 재구성</p>',
+
+  '반전 행렬':
+    '<h4>반전 행렬</h4>' +
+    '<p><b>정의.</b> <b>왼쪽 아래에서 오른쪽 위로 올라가는 대각선</b>에 해당하는 성분만 모두 1 이고 나머지는 0 인 ' +
+    '정사각행렬을 곱하면 이미지가 <b>좌우 또는 상하로 반전</b>됩니다. ' +
+    'n × n 행렬에서 그 자리는 <b>i + j = n + 1</b> 을 만족하는 (i, j) 입니다.</p>' +
+    '<p><b>예시.</b> 4 × 4 에서 D = [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0]] 일 때 ' +
+    'AD = <b>좌우 반전</b>(오른쪽에 곱 → 열의 순서가 뒤집힘), DA = <b>상하 반전</b>(왼쪽에 곱 → 행의 순서가 뒤집힘) / ' +
+    'n = 3 이면 (1,3) (2,2) (3,1), n = 5 이면 (1,5) (2,4) (3,3) (4,2) (5,1)</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ③에서 D 를 직접 만들어 봅니다(빈 격자에서 1 을 놓아야 할 자리를 스스로 찾기). ' +
+    '그리고 16차시에서 남겨 둔 질문 — "좌우 반전은 어떤 연산인가" — 에 답합니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="mmSee(2,\'mm-act3\')">활동 ③으로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'transpose\')">16차시 읽기 자료</button></div>' +
+    '<p>16차시 읽기 자료의 "90도 회전 = 전치 + 좌우 반전" 중 2단계가 바로 이 AD 입니다. ' +
+    '단, <b>회전 자체는 교육과정 범위 밖</b>이므로 오늘도 조합의 결과만 언급합니다.</p>' +
+    '<p class="mm-src">동아 교과서 Ⅲ p.97 · 미래엔 교과서 Ⅲ p.98 서술을 재구성</p>',
+
+  'AB ≠ BA':
+    '<h4>AB ≠ BA</h4>' +
+    '<p><b>정의.</b> 수의 곱셈에서는 2 × 3 = 3 × 2 이지만, <b>행렬의 곱셈에서는 일반적으로 교환법칙이 성립하지 않습니다.</b> ' +
+    'AB 와 BA 는 결과가 다를 수 있고, 심지어 한쪽만 곱이 정의될 수도 있습니다.</p>' +
+    '<p><b>예시.</b> 같은 B 를 곱해도 AB 는 이미지를 <b>오른쪽</b>으로, BA 는 <b>위쪽</b>으로 옮깁니다 / ' +
+    '2 × 3 행렬 A 와 3 × 2 행렬 B 에서 AB 는 2 × 2, BA 는 3 × 3 — 결과의 <b>꼴조차</b> 다릅니다.</p>' +
+    '<p><b>이번 차시에서는.</b> 활동 ④에서 같은 두 행렬로 AB 와 BA 를 나란히 계산하고 두 결과 이미지를 <b>좌우로 붙여</b> 봅니다. ' +
+    '"곱하는 순서를 바꾸면 그림이 다른 방향으로 간다"가 가장 선명한 증거입니다.</p>' +
+    '<div class="btn-row"><button class="btn pri" type="button" onclick="mmSee(3,\'mm-act4\')">활동 ④로 이동</button>' +
+    '<button class="btn" type="button" onclick="go(\'cnn\')">20차시</button>' +
+    '<button class="btn" type="button" onclick="go(\'fclayer\')">19차시</button></div>' +
+    '<p><span class="mm-bd soft">참고</span> 20차시의 <b>아다마르 곱</b>(같은 자리끼리 곱하기 — 고시 용어 아님)은 반대로 <b>교환법칙이 성립합니다.</b> ' +
+    '두 \'곱\'의 성질 차이가 19차시에서 다시 중요해집니다.</p>' +
+    '<p class="mm-src">동아 교과서 Ⅲ p.96 여백 · 씨마스 지도서 Ⅲ p.188 서술을 재구성</p>'
+};
+
+
+/* ── 2. 공용 소도구 ───────────────────────────────────────────────────── */
+
+function mmEl(id){ return document.getElementById(id); }
+
+function mmFb(id, ok, html){
+  const el = mmEl(id);
+  if(!el) return;
+  el.className = 'mm-fb ' + (ok ? 'ok' : 'no');
+  el.innerHTML = (ok ? '✓ ' : '✗ ') + html;
+}
+function mmFbN(id, html){
+  const el = mmEl(id);
+  if(!el) return;
+  el.className = 'mm-fb';
+  el.innerHTML = html;
+}
+
+function mmTab(n, el){
+  document.querySelectorAll('#v-matmul .tabs .tab').forEach(function(t){ t.classList.remove('on'); });
+  if(el) el.classList.add('on');
+  document.querySelectorAll('#v-matmul .tpanel').forEach(function(p){ p.classList.remove('on'); });
+  const pn = mmEl('mm' + n);
+  if(pn) pn.classList.add('on');
+}
+
+function mmSee(n, id){
+  const tabs = document.querySelectorAll('#v-matmul .tabs .tab');
+  if(tabs[n]) mmTab(n, tabs[n]);
+  const el = mmEl(id);
+  if(el) setTimeout(function(){ el.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+}
+
+function mmOnly(el){
+  if(!el || !el.parentNode) return;
+  el.parentNode.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
+  el.classList.add('on');
+}
+
+/* 0/1 격자 렌더러 — mode: 'bin' | 'num' | 'blank' */
+function mmGrid(el, M, opt){
+  if(!el) return;
+  opt = opt || {};
+  const n = M.length, m = (M[0] ? M[0].length : 0);
+  el.style.gridTemplateColumns = 'repeat(' + m + ', auto)';
+  el.innerHTML = '';
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < m; j++){
+      const v = M[i][j];
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'c';
+      b.setAttribute('role', 'gridcell');
+      b.dataset.i = i; b.dataset.j = j;
+      if(v === null){
+        b.textContent = '';
+      }else{
+        b.textContent = v;
+        if(opt.mode === 'num'){
+          const g = (v > 0) ? Math.min(255, 200 + v * 12) : 40;
+          b.setAttribute('style', 'background:rgb(' + g + ',' + g + ',' + g + ');color:' + (g > 140 ? '#2a2620' : '#e8e2d8') + ';');
+        }else{
+          b.classList.add(v >= 1 ? 'on' : 'off');
+        }
+        b.setAttribute('aria-label', (i+1) + '행 ' + (j+1) + '열, 값 ' + v);
+      }
+      if(typeof opt.onCell === 'function') b.addEventListener('click', function(){ opt.onCell(i, j, b); });
+      else b.style.cursor = 'default';
+      el.appendChild(b);
+    }
+  }
+}
+
+/* .mat 표(대괄호 포함) HTML 생성 — 행/열 강조 클래스 지원 */
+function mmMatHTML(M, hi){
+  hi = hi || {};
+  let s = '<span class="mat"><table>';
+  for(let i = 0; i < M.length; i++){
+    s += '<tr>';
+    for(let j = 0; j < M[i].length; j++){
+      let cls = '';
+      const r = (hi.row === i), c = (hi.col === j);
+      if(r && c) cls = 'both'; else if(r) cls = 'rhi'; else if(c) cls = 'chi';
+      s += '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + M[i][j] + '</td>';
+    }
+    s += '</tr>';
+  }
+  return s + '</table></span>';
+}
+
+/* 행렬 → 캔버스 */
+function mmDrawMat(cv, M, maxSide){
+  if(!cv || !M || !M.length) return 1;
+  const h = M.length, w = M[0].length;
+  const s = Math.max(1, Math.round((maxSide || 150) / Math.max(w, h)));
+  cv.width = w * s; cv.height = h * s;
+  const off = document.createElement('canvas');
+  off.width = w; off.height = h;
+  const og = off.getContext('2d');
+  const im = og.createImageData(w, h);
+  for(let y = 0; y < h; y++){
+    for(let x = 0; x < w; x++){
+      const v = u3Clamp255(M[y][x]), k = (y * w + x) * 4;
+      im.data[k] = v; im.data[k+1] = v; im.data[k+2] = v; im.data[k+3] = 255;
+    }
+  }
+  og.putImageData(im, 0, 0);
+  const g = cv.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  g.clearRect(0, 0, cv.width, cv.height);
+  g.drawImage(off, 0, 0, cv.width, cv.height);
+  return s;
+}
+
+/* 0/1 행렬을 회색조로 (0 → 검정, 1 → 흰색) */
+function mmBinGray(M){ return M.map(function(r){ return r.map(function(v){ return v >= 1 ? 240 : 40; }); }); }
+
+
+/* ── 3. 도입 실자료 「섞여 버린 사진」 ──────────────────────────────── */
+
+/* 10 × 10 픽셀화 사진 (외부 파일 없이 생성) */
+function mmGenPhoto(){
+  const n = 10, M = [];
+  for(let y = 0; y < n; y++){
+    const r = [];
+    for(let x = 0; x < n; x++){
+      let v = 228 - y * 9;                       /* 하늘 */
+      if(y >= 7) v = 104 + ((x + y) % 3) * 10;   /* 땅 */
+      if(x >= 2 && x <= 6 && y >= 4 && y <= 7) v = 62;      /* 집 몸통 */
+      if(x >= 1 && x <= 7 && y === 3) v = 34;               /* 지붕 */
+      if(x === 4 && y >= 6 && y <= 7) v = 200;              /* 문 */
+      if(x === 8 && y === 1) v = 252;                       /* 해 */
+      r.push(u3Clamp255(v));
+    }
+    M.push(r);
+  }
+  return M;
+}
+const MM_PHOTO = mmGenPhoto();
+const MM_SWAPS = [[0,1],[3,6],[5,7]];            /* 1행↔2행, 4행↔7행, 6행↔8행 (0-based) */
+
+function mmSwapRows(M, swaps){
+  const R = u3Clone(M);
+  swaps.forEach(function(p){ const t = R[p[0]]; R[p[0]] = R[p[1]]; R[p[1]] = t; });
+  return R;
+}
+function mmSwapCols(M, swaps){
+  const R = u3Clone(M);
+  swaps.forEach(function(p){
+    for(let i = 0; i < R.length; i++){ const t = R[i][p[0]]; R[i][p[0]] = R[i][p[1]]; R[i][p[1]] = t; }
+  });
+  return R;
+}
+
+function mmHookMix(){
+  mmDrawMat(mmEl('mm-hook-b'), mmSwapRows(MM_PHOTO, MM_SWAPS), 170);
+  const c = mmEl('mm-hook-cap');
+  if(c) c.innerHTML = '<b>행 3쌍이 뒤바뀐 사진</b> (1↔2, 4↔7, 6↔8)';
+}
+function mmHookReset(){
+  mmDrawMat(mmEl('mm-hook-b'), MM_PHOTO, 170);
+  const c = mmEl('mm-hook-cap');
+  if(c) c.textContent = '섞기 전';
+}
+
+
+/* ── 4. 활동 ① 곱셈의 규칙 ─────────────────────────────────────────── */
+
+let mmA1X    = [1, 0, 1];
+let mmA1W    = [1, 3, 6];
+let mmA1Sw   = false;          /* true → W × X (3×1 · 1×3) */
+let mmA1Stp  = 0;
+let mmA1N    = 3;
+let mmA1A    = [[1,0,2],[0,1,1],[1,1,0]];
+let mmA1B    = [[0,1,0],[0,0,1],[1,0,0]];
+let mmA1C    = null;
+let mmA1Poll = [0, 0, 0];
+
+function mmA1Guess(k, el){
+  mmOnly(el);
+  mmA1Poll[k]++;
+  const tot = mmA1Poll[0] + mmA1Poll[1] + mmA1Poll[2];
+  const names = ['성분끼리 곱해 더한다', '그냥 더한다', '모르겠음'];
+  let html = '<p class="mm-lab" style="text-align:left;">우리 반 응답 (' + tot + '명)</p>';
+  for(let i = 0; i < 3; i++){
+    const w = Math.round(mmA1Poll[i] / tot * 100);
+    html += '<div style="display:flex;align-items:center;gap:0.5rem;margin:0.3rem 0;">' +
+      '<span style="font-size:0.9rem;width:9.5rem;flex-shrink:0;">' + names[i] + '</span>' +
+      '<span style="flex:1;min-width:3rem;height:1.1rem;background:var(--bg);border:1px solid var(--border);border-radius:9999px;overflow:hidden;">' +
+      '<span style="display:block;height:100%;width:' + w + '%;background:' + (i === 0 ? 'var(--green)' : 'var(--accent)') + ';"></span></span>' +
+      '<span style="font-family:var(--mono);font-size:0.85rem;width:3rem;text-align:right;">' + mmA1Poll[i] + '명</span></div>';
+  }
+  mmEl('mm-a1-poll').innerHTML = html;
+  mmFb('mm-a1-gfb', k === 0, k === 0
+    ? '맞습니다 — <b>짝지어 곱한 뒤 모두 더합니다.</b>' +
+      '<span class="x">1×1 + 0×3 + 1×6 = <b>7</b>. 아래 계산기에서 [한 단계씩]을 눌러 확인해 보세요.</span>'
+    : '아직 답을 확정하지 않아도 좋습니다.' +
+      '<span class="x">아래 계산기에서 <b>[한 단계씩]</b>을 눌러 보세요. 짝지어지는 성분이 동시에 강조되며 식이 한 항씩 늘어납니다.</span>');
+  mmA1Draw();
+}
+
+function mmA1Draw(){
+  const ex = mmEl('mm-a1-x'), ew = mmEl('mm-a1-w'), er = mmEl('mm-a1-r');
+  if(!ex) return;
+  const hiK = (mmA1Stp > 0 && mmA1Stp <= 3) ? (mmA1Stp - 1) : -1;
+  if(!mmA1Sw){
+    ex.innerHTML = mmMatHTML([mmA1X], { col: hiK });
+    ew.innerHTML = mmMatHTML(mmA1W.map(function(v){ return [v]; }), { row: hiK });
+    const R = u3MatMul([mmA1X], mmA1W.map(function(v){ return [v]; }));
+    er.innerHTML = mmMatHTML(R);
+    mmEl('mm-a1-rc').textContent = '결과 (1 × 1)';
+  }else{
+    ex.innerHTML = mmMatHTML(mmA1W.map(function(v){ return [v]; }));
+    ew.innerHTML = mmMatHTML([mmA1X]);
+    const R = u3MatMul(mmA1W.map(function(v){ return [v]; }), [mmA1X]);
+    er.innerHTML = mmMatHTML(R);
+    mmEl('mm-a1-rc').textContent = '결과 (3 × 3)';
+  }
+  /* 슬라이더 */
+  const sl = mmEl('mm-a1-sliders');
+  if(sl && !sl.dataset.done){
+    let h = '';
+    for(let i = 0; i < 3; i++){
+      h += '<div style="display:flex;align-items:center;gap:0.6rem;margin:0.35rem 0;flex-wrap:wrap;">' +
+        '<span style="font-family:var(--mono);font-size:0.85rem;width:3.4rem;">x' + (i+1) + ' = <b id="mm-sx' + i + '">' + mmA1X[i] + '</b></span>' +
+        '<input type="range" min="0" max="5" step="1" value="' + mmA1X[i] + '" style="flex:1 1 8rem;min-width:6rem;" ' +
+        'aria-label="X의 ' + (i+1) + '번째 성분" oninput="mmA1Slide(0,' + i + ',this.value)">' +
+        '<span style="font-family:var(--mono);font-size:0.85rem;width:3.4rem;">w' + (i+1) + ' = <b id="mm-sw' + i + '">' + mmA1W[i] + '</b></span>' +
+        '<input type="range" min="0" max="9" step="1" value="' + mmA1W[i] + '" style="flex:1 1 8rem;min-width:6rem;" ' +
+        'aria-label="W의 ' + (i+1) + '번째 성분" oninput="mmA1Slide(1,' + i + ',this.value)"></div>';
+    }
+    sl.innerHTML = h;
+    sl.dataset.done = '1';
+  }
+  mmA1CalcText();
+}
+
+function mmA1Slide(which, i, v){
+  const n = parseInt(v, 10);
+  if(which === 0){ mmA1X[i] = n; const e = mmEl('mm-sx' + i); if(e) e.textContent = n; }
+  else           { mmA1W[i] = n; const e = mmEl('mm-sw' + i); if(e) e.textContent = n; }
+  mmA1Draw();
+}
+
+function mmA1CalcText(){
+  const box = mmEl('mm-a1-calc');
+  if(!box) return;
+  if(mmA1Sw){
+    box.textContent = 'W × X 는 3 × 1 과 1 × 3 의 곱입니다.\n결과는 3 × 3 행렬 — 아홉 칸이 모두 채워집니다.\n같은 두 행렬인데 결과의 꼴이 1 × 1 에서 3 × 3 으로 바뀌었습니다.';
+    return;
+  }
+  if(mmA1Stp === 0){ box.textContent = ''; return; }
+  let lines = [], sum = 0, expr = [];
+  for(let k = 0; k < mmA1Stp; k++){
+    sum += mmA1X[k] * mmA1W[k];
+    expr.push(mmA1X[k] + ' × ' + mmA1W[k]);
+    lines.push(expr.join(' + ').padEnd(24, ' ') + ' = ' + sum);
+  }
+  box.textContent = lines.join('\n');
+}
+
+function mmA1Step(){
+  if(mmA1Sw){ mmA1Sw = false; mmEl('mm-a1-swfb').innerHTML = ''; mmEl('mm-a1-swfb').className = 'mm-fb'; }
+  mmA1Stp = Math.min(3, mmA1Stp + 1);
+  mmA1Draw();
+}
+function mmA1StepReset(){ mmA1Stp = 0; mmA1Sw = false; mmEl('mm-a1-swfb').innerHTML = ''; mmA1Draw(); }
+
+function mmA1Swap(){
+  mmA1Sw = !mmA1Sw;
+  mmA1Stp = 0;
+  mmA1Draw();
+  if(mmA1Sw){
+    mmFb('mm-a1-swfb', true, '<b>같은 두 행렬인데 결과의 꼴이 1 × 1 에서 3 × 3 으로 바뀌었습니다.</b>' +
+      '<span class="x">1 × n 과 n × 1 을 이 순서로 곱하면 수 하나(1 × 1)가 되고, ' +
+      'n × 1 과 1 × n 을 이 순서로 곱하면 n × n 이 됩니다. <b>순서 하나로 결과의 크기가 완전히 달라집니다.</b> ' +
+      '19차시에서 이 사실이 신경망의 층 크기를 정하는 규칙이 됩니다.</span>');
+  }else{
+    mmEl('mm-a1-swfb').innerHTML = ''; mmEl('mm-a1-swfb').className = 'mm-fb';
+  }
+}
+
+/* 2단계 — 일반 곱셈 */
+function mmA1Size(n, el){
+  mmOnly(el);
+  mmA1N = n;
+  const mk = function(){
+    const M = [];
+    for(let i = 0; i < n; i++){ const r = []; for(let j = 0; j < n; j++) r.push(0); M.push(r); }
+    return M;
+  };
+  if(n === 3){ mmA1A = [[1,0,2],[0,1,1],[1,1,0]]; mmA1B = [[0,1,0],[0,0,1],[1,0,0]]; }
+  else if(n === 2){ mmA1A = [[1,2],[3,4]]; mmA1B = [[0,1],[1,0]]; }
+  else { mmA1A = [[1,0,0,1],[0,1,1,0],[1,1,0,0],[0,0,1,1]]; mmA1B = [[0,1,0,0],[0,0,1,0],[0,0,0,1],[1,0,0,0]]; }
+  mmA1C = null;
+  mmA1Draw2();
+}
+
+function mmA1Draw2(hi){
+  hi = hi || {};
+  const eA = mmEl('mm-a1-A'), eB = mmEl('mm-a1-B'), eC = mmEl('mm-a1-C');
+  if(!eA) return;
+  eA.innerHTML = mmMatHTML(mmA1A, { row: (hi.i !== undefined ? hi.i : -1) });
+  eB.innerHTML = mmMatHTML(mmA1B, { col: (hi.j !== undefined ? hi.j : -1) });
+  const blank = mmA1A.map(function(r){ return mmA1B[0].map(function(){ return null; }); });
+  const show  = mmA1C ? mmA1C : blank;
+  let s = '<span class="mat"><table>';
+  for(let i = 0; i < show.length; i++){
+    s += '<tr>';
+    for(let j = 0; j < show[i].length; j++){
+      const on = (hi.i === i && hi.j === j);
+      s += '<td class="' + (on ? 'both' : '') + '" style="cursor:pointer;" onclick="mmA1Cell(' + i + ',' + j + ')">' +
+        (show[i][j] === null ? '·' : show[i][j]) + '</td>';
+    }
+    s += '</tr>';
+  }
+  eC.innerHTML = s + '</table></span>';
+  /* A·B 칸을 눌러 값 순환 */
+  eA.querySelectorAll('td').forEach(function(td, k){
+    td.style.cursor = 'pointer';
+    td.addEventListener('click', function(){
+      const i = Math.floor(k / mmA1A[0].length), j = k % mmA1A[0].length;
+      mmA1A[i][j] = (mmA1A[i][j] + 1) % 3; mmA1C = null; mmA1Draw2();
+    });
+  });
+  eB.querySelectorAll('td').forEach(function(td, k){
+    td.style.cursor = 'pointer';
+    td.addEventListener('click', function(){
+      const i = Math.floor(k / mmA1B[0].length), j = k % mmA1B[0].length;
+      mmA1B[i][j] = (mmA1B[i][j] + 1) % 3; mmA1C = null; mmA1Draw2();
+    });
+  });
+}
+
+function mmA1Cell(i, j){
+  const R = u3MatMul(mmA1A, mmA1B);
+  if(!R){ mmEl('mm-a1-calc2').textContent = '곱할 수 없습니다 — A 의 열의 개수와 B 의 행의 개수가 다릅니다.'; return; }
+  if(!mmA1C) mmA1C = mmA1A.map(function(r){ return mmA1B[0].map(function(){ return null; }); });
+  mmA1C[i][j] = R[i][j];
+  mmA1Draw2({ i:i, j:j });
+  const arow = mmA1A[i], bcol = mmA1B.map(function(r){ return r[j]; });
+  const terms = arow.map(function(v, k){ return v + '×' + bcol[k]; }).join(' + ');
+  const nums  = arow.map(function(v, k){ return v * bcol[k]; }).join(' + ');
+  mmEl('mm-a1-calc2').textContent =
+    '결과의 (' + (i+1) + ', ' + (j+1) + ') 성분\n' +
+    '= A의 제' + (i+1) + '행 (' + arow.join('  ') + ') 와 B의 제' + (j+1) + '열 (' + bcol.join(', ') + ') 을 차례로 곱하여 더한 값\n' +
+    '= ' + terms + ' = ' + nums + ' = ' + R[i][j];
+}
+
+function mmA1All(){
+  const R = u3MatMul(mmA1A, mmA1B);
+  if(!R) return;
+  mmA1C = mmA1A.map(function(r){ return mmA1B[0].map(function(){ return null; }); });
+  let k = 0;
+  for(let i = 0; i < R.length; i++){
+    for(let j = 0; j < R[0].length; j++){
+      (function(a, b, d){ setTimeout(function(){ mmA1C[a][b] = R[a][b]; mmA1Draw2(); }, d); })(i, j, k * 120);
+      k++;
+    }
+  }
+}
+function mmA1Clear(){ mmA1C = null; mmEl('mm-a1-calc2').textContent = ''; mmA1Draw2(); }
+function mmA1Rand(){
+  const n = mmA1N;
+  mmA1A = []; mmA1B = [];
+  for(let i = 0; i < n; i++){
+    const ra = [], rb = [];
+    for(let j = 0; j < n; j++){ ra.push(Math.floor(Math.random() * 3)); rb.push(Math.floor(Math.random() * 2)); }
+    mmA1A.push(ra); mmA1B.push(rb);
+  }
+  mmA1C = null; mmEl('mm-a1-calc2').textContent = ''; mmA1Draw2();
+}
+
+/* 꼴 판별 게임 — 60초 6문항 */
+const MM_GAME = [
+  { q:'2 × 3 과 3 × 4 — 곱할 수 있나? 결과의 꼴은?', opts:['곱할 수 없다','2 × 4','3 × 3','4 × 2'], a:1 },
+  { q:'2 × 3 과 2 × 3 — 곱할 수 있나?',              opts:['2 × 3','3 × 3','곱할 수 없다','2 × 2'], a:2 },
+  { q:'1 × 5 와 5 × 1 — 결과의 꼴은?',               opts:['1 × 1','5 × 5','1 × 5','곱할 수 없다'], a:0 },
+  { q:'5 × 1 과 1 × 5 — 결과의 꼴은?',               opts:['1 × 1','5 × 5','5 × 1','곱할 수 없다'], a:1 },
+  { q:'4 × 4 와 4 × 4 — 결과의 꼴은?',               opts:['4 × 4','8 × 8','16 × 16','곱할 수 없다'], a:0 },
+  { q:'3 × 2 와 2 × 5 — 결과의 꼴은?',               opts:['2 × 2','3 × 5','5 × 3','곱할 수 없다'], a:1 }
+];
+let mmGi = 0, mmGs = 0, mmGt = null, mmGleft = 60;
+
+function mmA1Game(){
+  clearInterval(mmGt);
+  mmGi = 0; mmGs = 0; mmGleft = 60;
+  mmEl('mm-a1-score').textContent = '0 / 6';
+  mmGt = setInterval(function(){
+    mmGleft--;
+    mmEl('mm-a1-timer').textContent = mmGleft + '초';
+    if(mmGleft <= 0){ clearInterval(mmGt); mmA1GameEnd(); }
+  }, 1000);
+  mmA1GameQ();
+}
+
+function mmA1GameQ(){
+  if(mmGi >= MM_GAME.length){ clearInterval(mmGt); mmA1GameEnd(); return; }
+  const g = MM_GAME[mmGi];
+  mmEl('mm-a1-gq').innerHTML = '문항 ' + (mmGi + 1) + ' / 6 · ' + g.q;
+  const box = mmEl('mm-a1-gopts');
+  box.innerHTML = '';
+  g.opts.forEach(function(o, k){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = o;
+    b.addEventListener('click', function(){ mmA1GameAns(k); });
+    box.appendChild(b);
+  });
+}
+
+function mmA1GameAns(k){
+  const g = MM_GAME[mmGi];
+  const ok = (k === g.a);
+  if(ok) mmGs++;
+  mmFb('mm-a1-gfb2', ok, ok
+    ? '정답 — <b>' + g.opts[g.a] + '</b>.'
+    : '정답은 <b>' + g.opts[g.a] + '</b> 입니다.' +
+      '<span class="x">조건은 하나뿐입니다 — <b>앞 행렬의 열의 개수 = 뒤 행렬의 행의 개수.</b> ' +
+      '결과의 행의 개수는 앞 행렬이, 열의 개수는 뒤 행렬이 정합니다.</span>');
+  mmEl('mm-a1-score').textContent = mmGs + ' / 6';
+  mmGi++;
+  setTimeout(mmA1GameQ, 700);
+}
+
+function mmA1GameEnd(){
+  mmEl('mm-a1-gq').innerHTML = '<b>게임 종료 — ' + mmGs + ' / 6</b>';
+  mmEl('mm-a1-gopts').innerHTML = '';
+  mmEl('mm-a1-timer').textContent = '60초';
+}
+
+/* 손계산 2문항 */
+const MM_H1 = [[2,1],[4,3]];
+const MM_H2 = [[2,1,0],[1,0,1],[0,1,1]];
+
+function mmHandGrid(el, n, m){
+  if(!el) return;
+  el.style.gridTemplateColumns = 'repeat(' + m + ', auto)';
+  el.innerHTML = '';
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < m; j++){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'c';
+      b.innerHTML = '<input type="number" step="1" aria-label="' + (i+1) + '행 ' + (j+1) + '열">';
+      el.appendChild(b);
+    }
+  }
+}
+function mmHandRead(el, n, m){
+  const cells = el.querySelectorAll('.c'), out = [];
+  for(let i = 0; i < n; i++){
+    const r = [];
+    for(let j = 0; j < m; j++){
+      const inp = cells[i * m + j].querySelector('input');
+      const v = parseInt(inp.value, 10);
+      r.push(isNaN(v) ? null : v);
+    }
+    out.push(r);
+  }
+  return out;
+}
+function mmHandMark(el, got, ans, fbId, hint){
+  const n = ans.length, m = ans[0].length;
+  const cells = el.querySelectorAll('.c');
+  let wrong = 0, first = null;
+  for(let i = 0; i < n; i++){
+    for(let j = 0; j < m; j++){
+      const c = cells[i * m + j];
+      c.classList.remove('wrong');
+      if(got[i][j] !== ans[i][j]){ c.classList.add('wrong'); wrong++; if(!first) first = { i:i, j:j }; }
+    }
+  }
+  if(wrong === 0) mmFb(fbId, true, '모두 맞혔습니다. <span class="x">' + hint + '</span>');
+  else mmFb(fbId, false, '<b>' + wrong + '칸</b>이 다릅니다.' +
+    '<span class="x">(' + (first.i + 1) + ', ' + (first.j + 1) + ') 칸을 다시 계산해 보세요 — ' +
+    '<b>A 의 제' + (first.i + 1) + '행</b>과 <b>B 의 제' + (first.j + 1) + '열</b>만 보면 됩니다. ' + hint + '</span>');
+}
+
+function mmA1Hand(n){
+  if(n === 1){
+    mmHandMark(mmEl('mm-a1-h1'), mmHandRead(mmEl('mm-a1-h1'), 2, 2), MM_H1, 'mm-a1-h1fb',
+      '(1,1) = 1×0 + 2×1 = 2, (1,2) = 1×1 + 2×0 = 1, (2,1) = 3×0 + 4×1 = 4, (2,2) = 3×1 + 4×0 = 3.');
+  }else{
+    mmHandMark(mmEl('mm-a1-h2'), mmHandRead(mmEl('mm-a1-h2'), 3, 3), MM_H2, 'mm-a1-h2fb',
+      '1행: 1·0+0·0+2·1 = 2, 1·1+0·0+2·0 = 1, 1·0+0·1+2·0 = 0 → (2, 1, 0). 2행 → (1, 0, 1). 3행 → (0, 1, 1).');
+  }
+}
+
+function mmA1J(n, k, el){
+  mmOnly(el);
+  if(n === 1){
+    mmFb('mm-a1-j1', k === 0, k === 0
+      ? '정답 — <b>4행 2열</b>. <span class="x">l × m · m × n → l × n. 행은 앞에서, 열은 뒤에서 옵니다.</span>'
+      : '정답은 <b>4행 2열</b>입니다. <span class="x">4 × 5 와 5 × 2 는 5 = 5 이므로 곱할 수 있고, 결과는 4 × 2 입니다.</span>');
+  }else if(n === 2){
+    mmFb('mm-a1-j2', k === 2, k === 2
+      ? '정답 — <b>ㄷ. 3 × 2 · 3 × 2</b>. <span class="x">앞의 열 2 와 뒤의 행 3 이 다르므로 곱할 수 없습니다.</span>'
+      : '정답은 <b>ㄷ. 3 × 2 · 3 × 2</b> 입니다. <span class="x">조건은 <b>앞 행렬의 열의 개수 = 뒤 행렬의 행의 개수</b> 입니다. ' +
+        'ㄱ(2 = 2), ㄴ(2 = 2), ㄹ(4 = 4) 은 모두 만족합니다.</span>');
+  }else{
+    mmFb('mm-a1-j3', k === 2, k === 2
+      ? '정답 — <b>8</b>. <span class="x">2·1 + 1·0 + 3·2 = 2 + 0 + 6 = 8. 결과는 1 × 1 행렬 (8) 입니다.</span>'
+      : '정답은 <b>8</b> 입니다. <span class="x">2·1 + 1·0 + 3·2 = 2 + 0 + 6 = 8. 성분을 <b>차례로 곱하여 더합니다.</b></span>');
+  }
+}
+
+
+/* ── 5. 활동 ② 한 칸 옮기기 ────────────────────────────────────────── */
+
+const MM_A2A4 = [[1,0,0,0],[1,1,0,0],[1,1,1,0],[1,0,0,0]];      /* 동아 Ⅲ p.95 이미지 A */
+const MM_A2B4 = [[0,1,0,0],[0,0,1,0],[0,0,0,1],[0,0,0,0]];
+const MM_A2AB = [[0,1,0,0],[0,1,1,0],[0,1,1,1],[0,1,0,0]];      /* V30 */
+
+let mmA2N    = 4;
+let mmA2A    = u3Clone(MM_A2A4);
+let mmA2T    = u3Clone(MM_A2B4);
+let mmA2Left = false;
+let mmA2R    = null;
+let mmA2Vw   = 2;                 /* 0 숫자 · 1 그림 · 2 숫자+그림 */
+let mmA2Pg   = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+let mmA2Rows = [];
+
+function mmA2BaseA(n){
+  if(n === 3) return [[0,1,0],[1,0,1],[0,1,0]];
+  if(n === 5) return [[1,0,0,0,0],[1,1,0,0,0],[1,1,1,0,0],[1,1,0,0,0],[1,0,0,0,0]];
+  return u3Clone(MM_A2A4);
+}
+function mmA2Shift(n, dir){        /* dir: 'up'(대각선 위 한 줄) · 'down' */
+  const M = u3Zeros(n, n);
+  for(let i = 0; i < n; i++){
+    if(dir === 'up' && i + 1 < n) M[i][i+1] = 1;
+    if(dir === 'down' && i - 1 >= 0) M[i][i-1] = 1;
+  }
+  return M;
+}
+
+function mmA2Render(){
+  const stage = mmEl('mm-a2-stage');
+  if(!stage) return;
+  stage.innerHTML =
+    '<div class="mm-gcol"><div class="mg" id="mm-a2-g1"></div><p class="mg-cap" id="mm-a2-c1"></p></div>' +
+    '<div class="mm-eq">×</div>' +
+    '<div class="mm-gcol"><div class="mg" id="mm-a2-g2"></div><p class="mg-cap" id="mm-a2-c2"></p></div>' +
+    '<div class="mm-eq">=</div>' +
+    '<div class="mm-gcol"><div class="mg" id="mm-a2-g3"></div><p class="mg-cap">결과 R</p></div>';
+  const gA = { mode:'bin' };
+  const gT = { mode:'bin', onCell: function(i, j){ mmA2T[i][j] = mmA2T[i][j] ? 0 : 1; mmA2R = null; mmA2Render(); } };
+  const first  = mmA2Left ? mmA2T : mmA2A;
+  const second = mmA2Left ? mmA2A : mmA2T;
+  mmGrid(mmEl('mm-a2-g1'), first,  mmA2Left ? gT : gA);
+  mmGrid(mmEl('mm-a2-g2'), second, mmA2Left ? gA : gT);
+  mmEl('mm-a2-c1').textContent = mmA2Left ? '변환 행렬 T (누르면 0↔1)' : '입력 행렬 A';
+  mmEl('mm-a2-c2').textContent = mmA2Left ? '입력 행렬 A' : '변환 행렬 T (누르면 0↔1)';
+  const blank = u3Zeros(mmA2N, mmA2N).map(function(r){ return r.map(function(){ return null; }); });
+  mmGrid(mmEl('mm-a2-g3'), mmA2R || blank, { mode:'bin' });
+  mmEl('mm-a2-eqlab').textContent = mmA2Left ? 'T × A = R' : 'A × T = R';
+  mmA2ApplyView();
+}
+
+function mmA2ApplyView(){
+  ['mm-a2-g1','mm-a2-g2','mm-a2-g3'].forEach(function(id){
+    const g = mmEl(id);
+    if(!g) return;
+    g.querySelectorAll('.c').forEach(function(c){
+      if(mmA2Vw === 1){ c.dataset.txt = c.textContent; c.textContent = ''; }
+      else if(mmA2Vw === 0){ c.classList.remove('on','off'); c.style.background = 'var(--bg)'; c.style.color = 'var(--fg)'; }
+    });
+  });
+}
+
+function mmA2View(){
+  mmA2Vw = (mmA2Vw + 1) % 3;
+  mmA2Render();
+  const names = ['숫자만 보기', '그림만 보기', '숫자 + 그림'];
+  mmFbN('mm-a2-fb', '표시 전환 — <b>' + names[mmA2Vw] + '</b>' +
+    '<span class="x">색만으로 정보를 전하지 않도록, 기본은 <b>숫자 + 그림</b> 입니다.</span>');
+}
+
+function mmA2Size(n, el){
+  mmOnly(el);
+  mmA2N = n;
+  mmA2A = mmA2BaseA(n);
+  mmA2T = mmA2Shift(n, 'up');
+  mmA2Left = false;
+  mmA2R = null;
+  mmA2Render();
+}
+
+function mmA2Preset(k, el){
+  mmOnly(el);
+  const n = mmA2N;
+  let label = '', dirTxt = '', axis = '', matName = '';
+  if(k === 'R'){ mmA2T = mmA2Shift(n, 'up');   mmA2Left = false; matName = 'B'; dirTxt = '오른쪽으로 한 칸'; axis = '열'; }
+  else if(k === 'L'){ mmA2T = mmA2Shift(n, 'down'); mmA2Left = false; matName = 'C'; dirTxt = '왼쪽으로 한 칸'; axis = '열'; }
+  else if(k === 'U'){ mmA2T = mmA2Shift(n, 'up');   mmA2Left = true;  matName = 'B'; dirTxt = '위쪽으로 한 칸'; axis = '행'; }
+  else if(k === 'D'){ mmA2T = mmA2Shift(n, 'down'); mmA2Left = true;  matName = 'C'; dirTxt = '아래쪽으로 한 칸'; axis = '행'; }
+  else { mmA2T = u3Eye(n); matName = '곱해도 그대로인 행렬'; dirTxt = '변하지 않음'; axis = '없음'; }
+  mmA2R = null;
+  mmA2Render();
+  label = mmA2Left ? ('A의 왼쪽 (' + matName + 'A)') : ('A의 오른쪽 (A' + matName + ')');
+  mmA2AddRow(matName, label, dirTxt, axis);
+  if(k === 'U' || k === 'D'){
+    mmFb('mm-a2-fb', true, '수식 표시가 <b>T × A = R</b> 로 바뀌었습니다.' +
+      '<span class="x">위아래로 옮기는 것은 <b>행</b>의 자리를 바꾸는 일이므로, 변환 행렬을 <b>A의 왼쪽</b>에 곱해야 합니다. ' +
+      '곱하는 위치가 방향을 정합니다.</span>');
+  }else if(k === 'I'){
+    mmFb('mm-a2-fb', true, '<b>곱해도 그대로인 행렬</b>을 골랐습니다.' +
+      '<span class="x">대각선에만 1 이 있는 행렬입니다. [곱셈 실행]을 누르면 결과가 A 와 완전히 같습니다.</span>');
+  }else{
+    mmFbN('mm-a2-fb', '<b>A × T = R</b> — 좌우로 옮기는 것은 <b>열</b>의 자리를 바꾸는 일입니다.' +
+      '<span class="x">[곱셈 실행]을 눌러 결과를 확인하고, 아래 정리 표에 한 행이 채워지는 것을 보세요.</span>');
+  }
+}
+
+function mmA2Swap(){
+  mmA2Left = !mmA2Left;
+  mmA2R = null;
+  mmA2Render();
+  mmFbN('mm-a2-fb', '곱하는 위치를 <b>' + (mmA2Left ? 'T × A' : 'A × T') + '</b> 로 바꿨습니다.' +
+    '<span class="x">활동지 「활동6」의 <b>[역할 뒤집기 활용]</b> 항목과 같은 조작입니다. ' +
+    '같은 T 인데 결과가 어떻게 달라지는지 [곱셈 실행]으로 확인하세요.</span>');
+}
+
+function mmA2Run(){
+  const R = mmA2Left ? u3MatMul(mmA2T, mmA2A) : u3MatMul(mmA2A, mmA2T);
+  if(!R){ mmFb('mm-a2-fb', false, '곱할 수 없습니다. <span class="x">두 행렬의 크기를 확인하세요.</span>'); return; }
+  mmA2R = R.map(function(r){ return r.map(function(v){ return Math.min(1, v); }); });
+  mmA2Render();
+  const g3 = mmEl('mm-a2-g3');
+  const cells = g3.querySelectorAll('.c');
+  cells.forEach(function(c, k){
+    c.style.opacity = '0';
+    setTimeout(function(){ c.style.opacity = '1'; }, k * 25);
+  });
+  const A = mmA2A, T = mmA2T;
+  const i = 0, j = 0;
+  const arow = mmA2Left ? T[i] : A[i];
+  const bcol = (mmA2Left ? A : T).map(function(r){ return r[j]; });
+  mmEl('mm-a2-calc').textContent =
+    (mmA2Left ? 'T × A' : 'A × T') + ' 의 (1, 1) 성분\n' +
+    '= (' + arow.join('  ') + ') 와 (' + bcol.join(', ') + ') 을 차례로 곱하여 더한 값\n' +
+    '= ' + arow.map(function(v, k){ return v + '×' + bcol[k]; }).join(' + ') + ' = ' + mmA2R[0][0];
+}
+
+function mmA2AddRow(name, pos, res, axis){
+  const tbl = mmEl('mm-a2-tbl');
+  if(!tbl) return;
+  const key = name + '|' + pos;
+  if(mmA2Rows.indexOf(key) >= 0) return;
+  mmA2Rows.push(key);
+  const tr = document.createElement('tr');
+  tr.className = 'newrow';
+  tr.innerHTML = '<td>' + name + '</td><td>' + pos + '</td><td>' + res + '</td><td><b>' + axis + '</b></td>';
+  tbl.appendChild(tr);
+  setTimeout(function(){ tr.classList.remove('newrow'); }, 1200);
+}
+
+function mmA2CSV(){
+  const rows = [];
+  rows.push('# 17차시 활동 ② — ' + (mmA2Left ? 'T × A = R' : 'A × T = R'));
+  const dump = function(name, M){
+    rows.push(name);
+    M.forEach(function(r){ rows.push(r.join(',')); });
+    rows.push('');
+  };
+  dump('A', mmA2A);
+  dump('T', mmA2T);
+  if(mmA2R) dump('R', mmA2R);
+  const blob = new Blob(['﻿' + rows.join('\n')], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'matmul_17차시_결과.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 400);
+}
+
+/* 예측 문제 */
+function mmA2PredInit(){
+  mmGrid(mmEl('mm-a2-psrc'), MM_A2A4, { mode:'bin' });
+  mmGrid(mmEl('mm-a2-pguess'), mmA2Pg, { mode:'bin', onCell: function(i, j){ mmA2Pg[i][j] = mmA2Pg[i][j] ? 0 : 1; mmA2PredInit(); } });
+  mmGrid(mmEl('mm-a2-pans'), [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]], { mode:'bin' });
+}
+function mmA2PredSubmit(){
+  const cells = mmEl('mm-a2-pguess').querySelectorAll('.c');
+  let wrong = 0;
+  for(let i = 0; i < 4; i++){
+    for(let j = 0; j < 4; j++){
+      const c = cells[i * 4 + j];
+      c.classList.remove('wrong');
+      if(mmA2Pg[i][j] !== MM_A2AB[i][j]){ c.classList.add('wrong'); wrong++; }
+    }
+  }
+  mmGrid(mmEl('mm-a2-pans'), MM_A2AB, { mode:'bin' });
+  if(wrong === 0){
+    mmFb('mm-a2-pfb', true, '열여섯 칸을 모두 맞혔습니다.' +
+      '<span class="x">AB 는 이미지 A 를 <b>오른쪽으로 한 픽셀 평행이동</b>한 것입니다. ' +
+      '왼쪽 끝에 빈 줄이 생기고, 오른쪽 끝에 있던 줄은 사라졌습니다.</span>');
+  }else{
+    mmFb('mm-a2-pfb', false, '<b>' + wrong + '칸</b>이 다릅니다.' +
+      '<span class="x">B 는 1 이 <b>대각선 위쪽 한 줄</b>에 있습니다. AB 의 제 j 열은 A 의 제 (j−1) 열이 되어 ' +
+      '그림 전체가 <b>오른쪽으로</b> 한 칸 밀립니다. 아래 위젯에서 [오른쪽 이동] 프리셋을 눌러 확인해 보세요.</span>');
+  }
+}
+function mmA2PredReset(){
+  mmA2Pg = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+  const fb = mmEl('mm-a2-pfb'); if(fb){ fb.className = 'mm-fb'; fb.innerHTML = ''; }
+  mmA2PredInit();
+}
+
+/* 손계산 — 동아 문제 5 */
+const MM_A2H1 = [[0,0,1],[0,1,0],[0,0,1]];       /* AB (V32) */
+const MM_A2H2 = [[0,0,0],[0,1,0],[1,0,1]];       /* CA (V32) */
+
+function mmA2Hand(n){
+  if(n === 1){
+    mmHandMark(mmEl('mm-a2-h1'), mmHandRead(mmEl('mm-a2-h1'), 3, 3), MM_A2H1, 'mm-a2-h1fb',
+      'B 를 오른쪽에 곱했으므로 <b>열</b>이 오른쪽으로 한 칸 밀립니다. 결과는 [[0,0,1],[0,1,0],[0,0,1]].');
+  }else{
+    mmHandMark(mmEl('mm-a2-h2'), mmHandRead(mmEl('mm-a2-h2'), 3, 3), MM_A2H2, 'mm-a2-h2fb',
+      'C 를 왼쪽에 곱했으므로 <b>행</b>이 아래쪽으로 한 칸 밀립니다. 결과는 [[0,0,0],[0,1,0],[1,0,1]].');
+  }
+}
+
+function mmA2Blank(){
+  const b1 = (mmEl('mm-a2-bl1').value || '').replace(/\s+/g, '');
+  const b2 = (mmEl('mm-a2-bl2').value || '').replace(/\s+/g, '');
+  const ok = /열/.test(b1) && /행/.test(b2);
+  mmFb('mm-a2-blfb', ok, ok
+    ? '정답 — <b>열 / 행</b>.' +
+      '<span class="x">A × T 에서 T 는 <b>열을 골라 오는 역할</b>을, T × A 에서 T 는 <b>행을 골라 오는 역할</b>을 합니다.</span>'
+    : '정답은 <b>열 / 행</b> 입니다.' +
+      '<span class="x">AB 의 (i, j) 성분은 A 의 제 i <b>행</b>과 B 의 제 j <b>열</b>로 만들어집니다. ' +
+      '뒤에 곱한 행렬은 열에, 앞에 곱한 행렬은 행에 작용합니다.</span>');
+}
+
+function mmA2J(n, k, el){
+  mmOnly(el);
+  if(n === 1){
+    mmFb('mm-a2-j1', k === 0, k === 0
+      ? '정답 — <b>A의 오른쪽에 C 를 곱합니다(AC).</b>' +
+        '<span class="x">C 는 1 이 대각선 <b>아래</b> 한 줄에 있는 행렬입니다. 오른쪽에 곱했으므로 <b>열</b>이 움직입니다.</span>'
+      : '정답은 <b>AC</b> 입니다.' +
+        '<span class="x">"오른쪽에 곱한다"는 <b>좌우로 움직인다</b>는 뜻이지 "오른쪽 방향으로 간다"는 뜻이 아닙니다. ' +
+        '방향은 1 이 대각선의 위인가 아래인가가 정합니다.</span>');
+  }else if(n === 2){
+    mmFb('mm-a2-j2', k === 1, k === 1
+      ? '정답 — <b>BA</b>. <span class="x">왼쪽에 곱했으므로 <b>행</b>이 움직이고, 1 이 대각선 위쪽이므로 <b>위로</b> 갑니다.</span>'
+      : '정답은 <b>BA</b> 입니다. <span class="x">㉠ 어느 쪽에 곱했나 → 왼쪽이면 상하 ㉡ 1 이 대각선의 위인가 아래인가 → 위면 위쪽 이동.</span>');
+  }else{
+    mmFb('mm-a2-j3', k === 0, k === 0
+      ? '정답 — <b>변하지 않습니다.</b> <span class="x">대각선에만 1 이 있는 행렬은 각 줄을 제자리에서 골라 옵니다.</span>'
+      : '정답은 <b>변하지 않습니다.</b> <span class="x">프리셋에서 [곱해도 그대로인 행렬]을 눌러 직접 확인해 보세요.</span>');
+  }
+}
+
+
+/* ── 6. 활동 ③ 뒤집기 (좌우·상하 반전) ─────────────────────────────── */
+
+let mmA3N    = 4;
+let mmA3D    = u3Zeros(4, 4);
+let mmA3A    = u3Clone(MM_A2A4);
+let mmA3Hn   = 0;
+let mmA3Rows = [];
+
+function mmA3BaseA(n){
+  if(n === 3) return [[0,0,0],[0,1,0],[1,1,0]];                       /* 동아 Ⅲ p.97 문제 6 */
+  if(n === 5) return [[1,0,0,0,0],[1,1,0,0,0],[1,1,1,0,0],[1,1,0,0,0],[1,0,0,0,0]];
+  return u3Clone(MM_A2A4);
+}
+function mmA3Ans(n){                                                  /* i + j = n + 1 */
+  const D = u3Zeros(n, n);
+  for(let i = 0; i < n; i++) D[i][n - 1 - i] = 1;
+  return D;
+}
+
+function mmA3Render(){
+  mmGrid(mmEl('mm-a3-D'), mmA3D, { mode:'bin', onCell: function(i, j){ mmA3D[i][j] = mmA3D[i][j] ? 0 : 1; mmA3Render(); } });
+  mmGrid(mmEl('mm-a3-A'), mmA3A, { mode:'bin' });
+}
+
+function mmA3Size(n, el){
+  mmOnly(el);
+  mmA3N = n;
+  mmA3D = u3Zeros(n, n);
+  mmA3A = mmA3BaseA(n);
+  mmA3Hn = 0;
+  mmA3Render();
+  mmGrid(mmEl('mm-a3-R'), u3Zeros(n, n).map(function(r){ return r.map(function(){ return null; }); }), { mode:'bin' });
+  mmEl('mm-a3-rc').textContent = '결과';
+  mmEl('mm-a3-calc').textContent = '';
+  const fb = mmEl('mm-a3-fb'); if(fb){ fb.className = 'mm-fb'; fb.innerHTML = ''; }
+}
+
+function mmA3Clear(){ mmA3D = u3Zeros(mmA3N, mmA3N); mmA3Render(); }
+function mmA3Sol(){ mmA3D = mmA3Ans(mmA3N); mmA3Render(); mmA3Try(); }
+
+function mmA3Try(){
+  const n = mmA3N, ans = mmA3Ans(n);
+  if(u3MatEq(mmA3D, ans)){
+    const coords = [], sums = [];
+    for(let i = 0; i < n; i++){ coords.push('(' + (i+1) + ',' + (n-i) + ')'); sums.push(n + 1); }
+    mmA3AddRow(n, coords.join(' '), sums.join(' '));
+    mmFb('mm-a3-fb', true, '<b>통과 — 좌우 반전 행렬입니다.</b>' +
+      '<span class="x">1 이 <b>왼쪽 아래에서 오른쪽 위로 올라가는 대각선</b>에 놓였습니다. ' +
+      'n = ' + n + ' 이므로 그 자리는 모두 <b>i + j = ' + (n + 1) + '</b> 을 만족합니다. ' +
+      '이제 [AD 실행] 과 [DA 실행] 을 눌러 결과를 비교해 보세요.</span>');
+  }else{
+    let ones = 0;
+    for(let i = 0; i < n; i++) for(let j = 0; j < n; j++) ones += mmA3D[i][j];
+    mmFb('mm-a3-fb', false, '아직 좌우 반전 행렬이 아닙니다 (놓은 1 의 개수 <b>' + ones + '개</b>, 필요한 개수 <b>' + n + '개</b>).' +
+      '<span class="x">[힌트 보기]를 눌러 단계적으로 확인하세요.</span>');
+  }
+}
+
+function mmA3Hint(){
+  mmA3Hn++;
+  if(mmA3Hn === 1){
+    mmFbN('mm-a3-fb', '<b>힌트 1단계</b> — 네 개(또는 n 개)의 1 이 <b>한 줄</b>로 놓입니다.' +
+      '<span class="x">평행이동 행렬은 1 이 대각선 <b>옆</b>에 줄지어 있었습니다. 반전이라면 어떤 줄일까요?</span>');
+  }else if(mmA3Hn === 2){
+    mmFbN('mm-a3-fb', '<b>힌트 2단계</b> — 그 줄은 <b>대각선</b>입니다. 어느 대각선일까요?' +
+      '<span class="x">왼쪽 위 → 오른쪽 아래 대각선은 <b>곱해도 그대로인 행렬</b>이 됩니다. 반전이라면 <b>반대 대각선</b>이어야 합니다.</span>');
+  }else{
+    mmFbN('mm-a3-fb', '<b>힌트 3단계</b> — <b>i + j = n + 1</b> 인 자리에 1 을 놓습니다.' +
+      '<span class="x">n = ' + mmA3N + ' 이면 i + j = ' + (mmA3N + 1) + '. ' +
+      '[정답 D 채우기]를 눌러 확인한 뒤, 다른 크기에서 스스로 다시 만들어 보세요.</span>');
+  }
+}
+
+function mmA3AddRow(n, coords, sums){
+  const tbl = mmEl('mm-a3-tbl');
+  if(!tbl) return;
+  if(mmA3Rows.indexOf(n) >= 0) return;
+  mmA3Rows.push(n);
+  const tr = document.createElement('tr');
+  tr.className = 'newrow';
+  tr.innerHTML = '<td><b>' + n + '</b></td><td>' + coords + '</td><td><b>' + sums + '</b></td>';
+  tbl.appendChild(tr);
+  setTimeout(function(){ tr.classList.remove('newrow'); }, 1200);
+}
+
+function mmA3Run(which){
+  const n = mmA3N, D = mmA3D;
+  const R = (which === 'AD') ? u3MatMul(mmA3A, D) : u3MatMul(D, mmA3A);
+  if(!R){ mmFb('mm-a3-fb', false, '곱할 수 없습니다.'); return; }
+  const Rb = R.map(function(r){ return r.map(function(v){ return Math.min(1, v); }); });
+  mmGrid(mmEl('mm-a3-R'), Rb, { mode:'bin' });
+  const okD = u3MatEq(D, mmA3Ans(n));
+  mmEl('mm-a3-rc').textContent = which + (okD ? (which === 'AD' ? ' — 좌우 반전' : ' — 상하 반전') : ' (D 가 아직 반전 행렬이 아닙니다)');
+  mmEl('mm-a3-calc').textContent =
+    which + ' 의 (1, 1) 성분\n' +
+    (which === 'AD'
+      ? '= A의 제1행 (' + mmA3A[0].join('  ') + ') 와 D의 제1열 (' + D.map(function(r){ return r[0]; }).join(', ') + ') 을 차례로 곱하여 더한 값 = ' + R[0][0]
+      : '= D의 제1행 (' + D[0].join('  ') + ') 와 A의 제1열 (' + mmA3A.map(function(r){ return r[0]; }).join(', ') + ') 을 차례로 곱하여 더한 값 = ' + R[0][0]) +
+    '\n' + (which === 'AD' ? '오른쪽에 곱했으므로 열의 순서가 뒤집힙니다.' : '왼쪽에 곱했으므로 행의 순서가 뒤집힙니다.');
+}
+
+/* 전치 · 좌우 반전 · 상하 반전 3분할 비교 (글자 이미지) */
+function mmA3Cmp(){
+  const M = (typeof tspGenText === 'function') ? tspGenText() : mmBinGray(mmA3A);
+  const n = M.length;
+  const D = mmA3Ans(n);
+  const bin = M.map(function(r){ return r.map(function(v){ return v > 128 ? 1 : 0; }); });
+  const AD = u3MatMul(bin, D), DA = u3MatMul(D, bin);
+  mmDrawMat(mmEl('mm-a3-c0'), M, 116);
+  mmDrawMat(mmEl('mm-a3-c1'), u3Transpose(M), 116);
+  mmDrawMat(mmEl('mm-a3-c2'), mmBinGray(AD), 116);
+  mmDrawMat(mmEl('mm-a3-c3'), mmBinGray(DA), 116);
+  mmFbN('mm-a3-fb', '<b>세 결과를 나란히 놓았습니다.</b>' +
+    '<span class="x">전치 Aᵀ 는 글자가 <b>대각선을 기준으로</b> 접히고, AD 는 <b>좌우로</b>, DA 는 <b>상하로</b> 뒤집힙니다. ' +
+    '세 결과가 모두 다릅니다 — 전치와 반전은 <b>서로 다른 변환</b>입니다.</span>');
+}
+
+function mmA3Blank(){
+  const b4 = parseInt(mmEl('mm-a3-b4').value, 10);
+  const b5 = parseInt(mmEl('mm-a3-b5').value, 10);
+  const ok = (b4 === 5 && b5 === 6);
+  mmFb('mm-a3-blfb', ok, ok
+    ? '정답 — n = 4 일 때 <b>5</b>, n = 5 일 때 <b>6</b>.' +
+      '<span class="x">일반 규칙은 <b>i + j = n + 1</b> 입니다.</span>'
+    : '정답은 n = 4 일 때 <b>5</b>, n = 5 일 때 <b>6</b> 입니다.' +
+      '<span class="x">위 표를 보세요 — 1 을 놓은 자리의 i + j 는 항상 <b>n + 1</b> 로 일정합니다. ' +
+      '크기를 바꿔 가며 D 를 직접 만들어 확인해 보세요.</span>');
+}
+
+function mmA3J(n, k, el){
+  mmOnly(el);
+  if(n === 1){
+    mmFb('mm-a3-j1', k === 2, k === 2
+      ? '정답 — <b>[[0,0,1],[0,1,0],[1,0,0]]</b>.' +
+        '<span class="x">n = 3 이므로 i + j = 4 인 자리 (1,3) (2,2) (3,1) 에 1 을 놓습니다. ' +
+        'AB = [[0,0,0],[0,1,0],[0,1,1]] 로 좌우가 뒤집힙니다.</span>'
+      : '정답은 <b>[[0,0,1],[0,1,0],[1,0,0]]</b> 입니다.' +
+        '<span class="x">좌우 반전 행렬은 <b>왼쪽 아래 → 오른쪽 위</b> 대각선에 1 이 놓입니다(i + j = n + 1). ' +
+        '두 번째 선택지는 곱해도 그대로인 행렬, 첫째·넷째는 평행이동 행렬입니다.</span>');
+  }else{
+    mmFb('mm-a3-j2', k === 1, k === 1
+      ? '정답 — <b>상하가 반전된 이미지</b>. BA = [[1,1,0],[0,1,0],[0,0,0]].' +
+        '<span class="x">같은 B 인데 곱하는 위치에 따라 좌우 반전과 상하 반전으로 갈립니다. <b>AB ≠ BA</b> 의 가장 선명한 증거입니다.</span>'
+      : '정답은 <b>상하가 반전된 이미지</b> 입니다. BA = [[1,1,0],[0,1,0],[0,0,0]].' +
+        '<span class="x">왼쪽에 곱했으므로 <b>행</b>의 순서가 뒤집힙니다. 위 위젯에서 [DA 실행] 으로 직접 확인해 보세요.</span>');
+  }
+}
+
+
+/* ── 7. 활동 ④ AB ≠ BA · 복구 퍼즐 ─────────────────────────────────── */
+
+let mmA4Side_  = '';                     /* 'L' | 'R' */
+let mmA4Kind   = 'row';
+let mmA4T      = u3Zeros(10, 10);
+let mmA4Fail   = 0;
+let mmA4Mixed  = mmSwapRows(MM_PHOTO, MM_SWAPS);
+
+function mmA4Render(){
+  mmGrid(mmEl('mm-a4-T'), mmA4T, { mode:'bin', onCell: function(i, j){ mmA4T[i][j] = mmA4T[i][j] ? 0 : 1; mmA4Render(); } });
+  mmA4Check();
+}
+
+function mmA4Check(){
+  const warn = mmEl('mm-a4-warn');
+  if(!warn) return;
+  const bad = [];
+  for(let i = 0; i < 10; i++){
+    let s = 0;
+    for(let j = 0; j < 10; j++) s += mmA4T[i][j];
+    if(s !== 1) bad.push('행 ' + (i + 1) + ': 1이 ' + s + '개');
+  }
+  warn.innerHTML = bad.length ? ('⚠ ' + bad.join(' · ') + ' — 각 행에 1 이 정확히 하나씩 있어야 합니다.') : '';
+}
+
+function mmA4Side(v, el){
+  mmOnly(el);
+  mmA4Side_ = v;
+  mmEl('mm-a4-panel').style.display = 'block';
+  if(v === 'L'){
+    mmFb('mm-a4-sfb', true, '맞습니다 — <b>왼쪽(T × A)</b> 입니다.' +
+      '<span class="x">사진은 <b>행</b>이 섞였습니다. 행을 골라 오는 것은 <b>앞에 곱한 행렬</b>이므로 T 를 A 의 왼쪽에 곱해야 합니다.</span>');
+  }else{
+    mmFb('mm-a4-sfb', false, '오른쪽에 곱하면 <b>열</b>이 재배치됩니다.' +
+      '<span class="x">사진은 <b>행</b>이 섞였으므로 이대로 실행하면 결과가 <b>열 방향으로 뒤섞입니다.</b> ' +
+      '직접 실행해 확인한 뒤 위치를 바꿔 보세요 — 실패도 배움이 됩니다.</span>');
+  }
+  mmDrawMat(mmEl('mm-a4-cvs'), mmA4Mixed, 148);
+  mmA4Render();
+}
+
+function mmA4Mix(kind, el){
+  mmOnly(el);
+  mmA4Kind = kind;
+  mmA4Mixed = (kind === 'row') ? mmSwapRows(MM_PHOTO, MM_SWAPS) : mmSwapCols(MM_PHOTO, MM_SWAPS);
+  mmDrawMat(mmEl('mm-a4-cvs'), mmA4Mixed, 148);
+  mmEl('mm-a4-st').innerHTML = (kind === 'row')
+    ? '<b>행 섞기</b> — 1행↔2행, 4행↔7행, 6행↔8행 이 뒤바뀌었습니다. T 를 <b>왼쪽</b>에 곱해야 합니다.'
+    : '<b>열 섞기</b> — 1열↔2열, 4열↔7열, 6열↔8열 이 뒤바뀌었습니다. 이번에는 T 를 <b>오른쪽</b>에 곱해야 합니다.';
+}
+
+function mmA4Ident(){ mmA4T = u3Eye(10); mmA4Render(); }
+function mmA4Zero(){ mmA4T = u3Zeros(10, 10); mmA4Render(); }
+
+function mmA4Run(){
+  const R = (mmA4Side_ === 'L') ? u3MatMul(mmA4T, mmA4Mixed) : u3MatMul(mmA4Mixed, mmA4T);
+  if(!R){ mmFb('mm-a4-fb', false, '곱할 수 없습니다.'); return; }
+  const clipped = R.map(function(r){ return r.map(function(v){ return u3Clamp255(v); }); });
+  mmDrawMat(mmEl('mm-a4-cvr'), clipped, 148);
+  let same = 0;
+  for(let i = 0; i < 10; i++) for(let j = 0; j < 10; j++) if(clipped[i][j] === MM_PHOTO[i][j]) same++;
+  const pct = Math.round(same / 100 * 1000) / 10;
+  mmEl('mm-a4-rcap').innerHTML = '결과 · 원본과 일치율 <b>' + pct + '%</b>';
+  if(pct === 100){
+    mmFb('mm-a4-fb', true, '<b>축하합니다 — 사진을 완전히 복구했습니다 (100%).</b>' +
+      '<span class="x">T 의 각 행에 1 이 정확히 하나씩 있고, 그 1 이 <b>원래 있어야 할 행</b>을 가리켰습니다. ' +
+      '곱셈은 곧 <b>재배치의 언어</b>입니다.</span>');
+  }else{
+    mmA4Fail++;
+    if(mmA4Fail >= 3){
+      const b = mmEl('mm-a4-autobtn');
+      if(b){ b.disabled = false; b.textContent = '자동 풀이 보기'; }
+    }
+    mmFb('mm-a4-fb', false, '일치율 <b>' + pct + '%</b> — 아직 완전하지 않습니다. (시도 ' + mmA4Fail + '회)' +
+      '<span class="x">' + (mmA4Side_ === 'R'
+        ? '<b>오른쪽에 곱했기 때문에 열이 재배치되었습니다.</b> 행이 섞인 사진은 왼쪽(T × A)에 곱해야 합니다. '
+        : '한 행에 1 이 둘이면 <b>두 줄이 겹쳐 더해져</b> 흐릿해지고, 하나도 없으면 그 줄이 검게 빕니다. ') +
+      '[곱해도 그대로인 행렬로 시작]을 누른 뒤 필요한 두 줄만 바꿔 끼우면 쉽습니다. ' +
+      (mmA4Fail >= 3 ? '<b>[자동 풀이 보기]</b> 가 열렸습니다.' : '3회 실패 후 [자동 풀이 보기]가 열립니다.') + '</span>');
+  }
+}
+
+function mmA4Auto(){
+  const T = u3Eye(10);
+  MM_SWAPS.forEach(function(p){
+    T[p[0]][p[0]] = 0; T[p[1]][p[1]] = 0;
+    T[p[0]][p[1]] = 1; T[p[1]][p[0]] = 1;
+  });
+  let k = 0;
+  for(let i = 0; i < 10; i++){
+    (function(row, d){
+      setTimeout(function(){
+        mmA4T[row] = T[row].slice();
+        mmA4Render();
+      }, d);
+    })(i, k * 120);
+    k++;
+  }
+  setTimeout(function(){
+    mmFbN('mm-a4-fb', '<b>자동 풀이</b> — 2행에 1 을 1열에 놓으면 T × A 의 2행은 A 의 1행이 됩니다.' +
+      '<span class="x">일반 규칙: <b>T 의 i 행 j 열에 1</b> 을 놓으면 결과의 <b>i 행</b>에 원본의 <b>j 행</b>이 옵니다. ' +
+      '섞인 짝(1↔2, 4↔7, 6↔8)만 서로 바꿔 끼우고 나머지는 대각선 그대로 두면 됩니다. ' +
+      '[연산 실행]을 눌러 100% 를 확인하세요.</span>');
+  }, 10 * 120 + 80);
+}
+
+/* AB vs BA 나란히 */
+let mmA4A = u3Clone(MM_A2A4);
+
+function mmA4Cmp(){
+  const B = MM_A2B4;
+  const AB = u3MatMul(mmA4A, B), BA = u3MatMul(B, mmA4A);
+  mmGrid(mmEl('mm-a4-ab'), AB.map(function(r){ return r.map(function(v){ return Math.min(1, v); }); }), { mode:'bin' });
+  mmGrid(mmEl('mm-a4-ba'), BA.map(function(r){ return r.map(function(v){ return Math.min(1, v); }); }), { mode:'bin' });
+  return u3MatEq(AB, BA);
+}
+
+function mmA4Shuffle(){
+  mmA4A = [];
+  for(let i = 0; i < 4; i++){
+    const r = [];
+    for(let j = 0; j < 4; j++) r.push(Math.random() < 0.45 ? 1 : 0);
+    mmA4A.push(r);
+  }
+  const same = mmA4Cmp();
+  mmFb('mm-a4-cfb', false, same
+    ? '이번에는 우연히 두 결과가 같아졌습니다 — <b>드문 예외</b>입니다.'
+    : '<b>또 다릅니다.</b> AB 는 오른쪽으로, BA 는 위쪽으로 갑니다.' +
+      '<span class="x">무늬를 아무리 바꾸어도 방향이 달라지는 것은 변하지 않습니다. ' +
+      '뒤에 곱한 행렬은 <b>열</b>에, 앞에 곱한 행렬은 <b>행</b>에 작용하기 때문입니다.</span>');
+  if(same) mmEl('mm-a4-cfb').className = 'mm-fb ok';
+}
+
+function mmA4Except(){
+  const I = u3Eye(4);
+  const AI = u3MatMul(mmA4A, I), IA = u3MatMul(I, mmA4A);
+  mmGrid(mmEl('mm-a4-ab'), AI, { mode:'bin' });
+  mmGrid(mmEl('mm-a4-ba'), IA, { mode:'bin' });
+  mmFb('mm-a4-cfb', true, '<b>곱해도 그대로인 행렬</b>을 넣으면 AB = BA 입니다.' +
+    '<span class="x">"<b>일반적으로</b> 성립하지 않는다"는 말은 \'절대 같지 않다\'는 뜻이 아닙니다. ' +
+    '<b>성립하지 않는 것이 규칙이고, 성립하는 것이 예외</b>입니다. ' +
+    '[A의 무늬 바꾸기]로 돌아가면 다시 달라집니다.</span>');
+}
+
+function mmA4Think(){
+  const v = (mmEl('mm-a4-think').value || '').replace(/\s+/g, '');
+  const ok = /열/.test(v) && /행/.test(v);
+  mmFbN('mm-a4-tfb',
+    '<b>채점 기준</b> — "A × T 는 A 의 <b>열</b>을 골라 새 열을 만들고, T × A 는 A 의 <b>행</b>을 골라 새 행을 만들기 때문에 ' +
+    '성분이 옮겨 가는 방향이 달라진다"는 요지가 있으면 정답입니다.' +
+    '<span class="x">' + (ok ? '작성한 문장에 <b>행</b>과 <b>열</b>이 모두 들어 있습니다. ' : '작성한 문장에 <b>행</b>과 <b>열</b>을 모두 넣어 다시 써 보세요. ') +
+    'AB 의 (i, j) 성분은 A 의 제 i 행과 B 의 제 j 열로 만들어집니다.</span>');
+}
+
+function mmA4J(n, k, el){
+  mmOnly(el);
+  mmFb('mm-a4-j1', k === 1, k === 1
+    ? '정답 — <b>AB 와 BA 는 모두 3 × 3 행렬이다.</b>' +
+      '<span class="x">꼴은 같지만 <b>성분은 다를 수 있습니다.</b> 3 × 3 · 3 × 3 → 3 × 3 이므로 두 곱 모두 정의되고 꼴이 같습니다.</span>'
+    : '정답은 <b>AB 와 BA 는 모두 3 × 3 행렬이다</b> 입니다.' +
+      '<span class="x">정사각행렬끼리는 두 곱이 모두 정의되고 꼴도 같지만, <b>성분은 일반적으로 다릅니다.</b></span>');
+}
+
+function mmA4J2(){
+  const v = (mmEl('mm-a4-j2in').value || '').replace(/\s+/g, '');
+  const ok = /하나|1개|한개/.test(v) && /행/.test(v);
+  mmFbN('mm-a4-j2',
+    '<b>채점 기준</b> — "각 행에 1 이 <b>정확히 하나씩</b> 있고, 그 1 의 위치가 <b>원래 있어야 할 행</b>을 가리킨다"는 요지가 있으면 정답입니다.' +
+    '<span class="x">' + (ok ? '작성한 문장에 핵심 조건이 들어 있습니다. ' : '"각 행에 1 이 하나씩"이라는 조건을 넣어 다시 써 보세요. ') +
+    '1 이 둘이면 두 줄이 겹쳐 더해지고, 없으면 그 줄이 비게 됩니다.</span>');
+}
+
+
+/* ── 8. 활동 ⑤ [선택 심화 · 평가 제외] 좌표 이동과 크기 바꾸기 ─────── */
+
+let mmA5M  = 0, mmA5Nn = 0, mmA5W = 1, mmA5H = 1, mmA5Ip = true;
+let mmA5Src = null;
+
+function mmA5Init(){
+  mmA5Src = mmGenA5();
+  const sl = mmEl('mm-a5-sliders');
+  if(sl && !sl.dataset.done){
+    sl.innerHTML =
+      mmA5Slider('m', 'x축 평행이동 m', -20, 20, 0) +
+      mmA5Slider('n', 'y축 평행이동 n', -20, 20, 0) +
+      mmA5Slider('w', 'x축 배율 W (÷10)', 3, 20, 10) +
+      mmA5Slider('h', 'y축 배율 H (÷10)', 3, 20, 10);
+    sl.dataset.done = '1';
+  }
+  mmDrawMat(mmEl('mm-a5-c0'), mmA5Src, 148);
+  mmA5Apply();
+}
+function mmA5Slider(key, label, mn, mx, val){
+  return '<div style="display:flex;align-items:center;gap:0.6rem;margin:0.4rem 0;flex-wrap:wrap;">' +
+    '<span style="font-family:var(--mono);font-size:0.88rem;width:11rem;">' + label + ' = <b id="mm-a5-v' + key + '">' + val + '</b></span>' +
+    '<input type="range" min="' + mn + '" max="' + mx + '" step="1" value="' + val + '" style="flex:1 1 10rem;min-width:7rem;" ' +
+    'aria-label="' + label + '" oninput="mmA5Set(\'' + key + '\', this.value)"></div>';
+}
+function mmA5Set(key, v){
+  const n = parseInt(v, 10);
+  const e = mmEl('mm-a5-v' + key); if(e) e.textContent = n;
+  if(key === 'm') mmA5M = n;
+  else if(key === 'n') mmA5Nn = n;
+  else if(key === 'w') mmA5W = n / 10;
+  else mmA5H = n / 10;
+  mmA5Apply();
+}
+function mmA5Reset(){
+  mmA5M = 0; mmA5Nn = 0; mmA5W = 1; mmA5H = 1;
+  const sl = mmEl('mm-a5-sliders');
+  if(sl){ sl.innerHTML = ''; delete sl.dataset.done; }
+  mmA5Init();
+}
+function mmA5Interp(){
+  mmA5Ip = !mmA5Ip;
+  mmA5Apply();
+}
+function mmGenA5(){
+  const n = 48, M = [];
+  for(let y = 0; y < n; y++){
+    const r = [];
+    for(let x = 0; x < n; x++){
+      let v = 226 - Math.round(y * 2.4);
+      if(y > 34) v = 100 + ((x + y) % 4) * 8;
+      if(x >= 14 && x <= 22 && y >= 16 && y <= 34) v = 60;
+      if(x >= 26 && x <= 34 && y >= 22 && y <= 34) v = 150;
+      const dx = x - 38, dy = y - 8;
+      if(dx * dx + dy * dy <= 24) v = 250;
+      r.push(u3Clamp255(v));
+    }
+    M.push(r);
+  }
+  return M;
+}
+function mmA5Apply(){
+  if(!mmA5Src) return;
+  const n = mmA5Src.length, out = [];
+  const samp = function(x, y){
+    if(!mmA5Ip){
+      const xi = Math.round(x), yi = Math.round(y);
+      if(xi < 0 || yi < 0 || xi >= n || yi >= n) return 22;
+      return mmA5Src[yi][xi];
+    }
+    const x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+    const g = function(a, b){ return (a >= 0 && b >= 0 && a < n && b < n) ? mmA5Src[b][a] : 22; };
+    return (g(x0,y0)*(1-fx)+g(x0+1,y0)*fx)*(1-fy) + (g(x0,y0+1)*(1-fx)+g(x0+1,y0+1)*fx)*fy;
+  };
+  for(let y = 0; y < n; y++){
+    const r = [];
+    for(let x = 0; x < n; x++) r.push(u3Clamp255(samp((x - mmA5M) / mmA5W, (y - mmA5Nn) / mmA5H)));
+    out.push(r);
+  }
+  mmDrawMat(mmEl('mm-a5-c1'), out, 148);
+  mmEl('mm-a5-cap').textContent = 'x′ = ' + mmA5W + 'x + ' + mmA5M + ' , y′ = ' + mmA5H + 'y + ' + mmA5Nn;
+  mmEl('mm-a5-st').innerHTML = '보간법 <b>' + (mmA5Ip ? '켜짐' : '꺼짐') + '</b> — ' +
+    (mmA5Ip ? '새로 생긴 자리의 색을 주변 픽셀 정보로 정합니다(부드러움).'
+            : '가장 가까운 픽셀을 그대로 씁니다 — <b>계단 현상</b>이 보입니다.');
+}
+function mmA5J(k, el){
+  mmOnly(el);
+  mmFb('mm-a5-fb', k === 1, k === 1
+    ? '정답 — <b>가로 0.7배 · 세로 0.3배로 납작해지고, 오른쪽으로 10 · 아래로 20 이동합니다.</b>' +
+      '<span class="x">세로가 더 많이 줄어드므로 납작해집니다. 이미지 좌표계는 <b>아래 방향이 y축</b>이므로 +20 은 아래로 이동입니다.</span>'
+    : '정답은 <b>가로 0.7배 · 세로 0.3배로 납작해지고, 오른쪽으로 10 · 아래로 20 이동</b> 입니다.' +
+      '<span class="x">대각선의 두 수가 배율, 더해지는 두 수가 이동량입니다. ' +
+      '이미지 좌표계는 <b>아래 방향이 y축</b>이라는 점에 주의하세요.</span>');
+}
+
+
+/* ── 9. 참고 자료 교사 추가 슬롯 ───────────────────────────────────── */
+
+function mmRefLoad(){ try{ const a = JSON.parse(cmnGet('aimath.matmul.refs', '[]')); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+function mmRefSave(a){ cmnSet('aimath.matmul.refs', JSON.stringify(a)); }
+
+function mmRefRender(){
+  const box = mmEl('mm-ref-custom');
+  if(!box) return;
+  const arr = mmRefLoad();
+  box.innerHTML = '';
+  arr.forEach(function(it, i){
+    const a = document.createElement('a');
+    a.className = 'mm-ref';
+    a.href = it.u; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = '<span class="th"><span class="bg">선생님 추가</span>🔗</span>' +
+      '<span class="bd"><span class="tt">' + cmnEsc(it.t || it.u) + '</span>' +
+      '<span class="ds">선생님이 추가한 자료입니다.</span></span>';
+    const x = document.createElement('button');
+    x.type = 'button'; x.textContent = '✕'; x.title = '삭제';
+    x.style.cssText = 'position:absolute;right:0.35rem;top:0.35rem;border:none;background:rgba(26,23,20,0.55);color:#fff;border-radius:9999px;width:1.7rem;height:1.7rem;cursor:pointer;z-index:2;';
+    x.addEventListener('click', function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      const c = mmRefLoad(); c.splice(i, 1); mmRefSave(c); mmRefRender();
+    });
+    a.appendChild(x);
+    box.appendChild(a);
+  });
+}
+
+function mmRefAdd(){
+  const u = (mmEl('mm-ref-url').value || '').trim();
+  const t = (mmEl('mm-ref-tt').value || '').trim();
+  const st = mmEl('mm-ref-st');
+  if(!/^https?:\/\//i.test(u)){ st.textContent = 'http 또는 https 로 시작하는 주소를 입력해 주세요.'; return; }
+  const a = mmRefLoad(); a.push({ u:u, t:t }); mmRefSave(a);
+  mmEl('mm-ref-url').value = ''; mmEl('mm-ref-tt').value = '';
+  mmRefRender();
+  st.textContent = '자료를 추가했습니다. 이 기기에만 저장됩니다.';
+}
+
+
+/* ── 10. 매니페스트 안전망 ─────────────────────────────────────────── */
+(function mmManifestGuard(){
+  try{
+    if(typeof AIM_LESSONS === 'undefined' || !Array.isArray(AIM_LESSONS)) return;
+    let found = false;
+    for(let i = 0; i < AIM_LESSONS.length; i++){
+      if(AIM_LESSONS[i] && AIM_LESSONS[i].v === 'matmul'){ found = true; break; }
+    }
+    if(typeof AIM_ART !== 'undefined' && AIM_ART && !AIM_ART.matmul) AIM_ART.matmul = MM_ART;
+    if(found) return;
+    let at = AIM_LESSONS.length;
+    for(let i = 0; i < AIM_LESSONS.length; i++){
+      if(AIM_LESSONS[i] && AIM_LESSONS[i].n === '18차시'){ at = i; break; }
+    }
+    AIM_LESSONS.splice(at, 0, {
+      u:2, n:'17차시', t:'행렬의 곱셈 — 이미지를 옮기고 뒤집다', v:'matmul', a:'matmul',
+      d:'0과 1로만 된 행렬을 하나 곱해 사진을 한 칸 옮기고 좌우로 뒤집습니다. 어느 쪽에 곱하느냐가 방향을 정한다는 규칙을 표로 채워 가며 발견하고, 섞여 버린 사진을 변환 행렬로 되돌립니다.'
+    });
+    const redraw = function(){
+      if(!document.getElementById('v-matmul')) return;
+      try{ if(typeof aimBuildHome === 'function') aimBuildHome(); }catch(e){}
+      try{ if(typeof aimBuildMarks === 'function') aimBuildMarks(); }catch(e){}
+    };
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', redraw);
+    else redraw();
+  }catch(e){}
+})();
+
+
+/* ── 11. 초기화 (IIFE + null 가드 + MutationObserver) ────────────────── */
+(function mmBoot(){
+  const boot = function(){
+    const root = document.getElementById('v-matmul');
+    if(!root) return;
+
+    try{ if(typeof videoDeck   === 'function') videoDeck('mm-videos', 'matmul', MM_VIDEOS); }catch(e){ console.error('mm videoDeck', e); }
+    try{ if(typeof warmStepper === 'function') warmStepper('mm-warm', 'mm', MM_WARM); }catch(e){ console.error('mm warmStepper', e); }
+    try{ if(typeof quizStepper === 'function') quizStepper('mm-quiz', 'mm', MM_QUIZ); }catch(e){ console.error('mm quizStepper', e); }
+    try{ if(typeof chipDefs    === 'function') chipDefs('#v-matmul .mm-keys', MM_DEFS); }catch(e){ console.error('mm chipDefs', e); }
+    try{ if(typeof wsLinks     === 'function') wsLinks('mm-wslinks', 'matmul'); }catch(e){ console.error('mm wsLinks', e); }
+
+    /* 도입 실자료 */
+    try{
+      mmDrawMat(document.getElementById('mm-hook-a'), MM_PHOTO, 170);
+      mmHookReset();
+    }catch(e){ console.error('mm hook', e); }
+
+    /* 활동 ① */
+    mmA1Draw();
+    mmA1Draw2();
+
+    /* 손계산 격자 */
+    mmHandGrid(mmEl('mm-a1-h1'), 2, 2);
+    mmHandGrid(mmEl('mm-a1-h2'), 3, 3);
+    mmHandGrid(mmEl('mm-a2-h1'), 3, 3);
+    mmHandGrid(mmEl('mm-a2-h2'), 3, 3);
+
+    /* 활동 ② */
+    mmA2PredInit();
+    mmA2Render();
+
+    /* 활동 ③ */
+    mmA3Render();
+    mmGrid(mmEl('mm-a3-R'), u3Zeros(4, 4).map(function(r){ return r.map(function(){ return null; }); }), { mode:'bin' });
+
+    /* 활동 ④ */
+    mmA4Render();
+    mmA4Cmp();
+    try{ mmDrawMat(mmEl('mm-a4-cvs'), mmA4Mixed, 148); }catch(e){}
+
+    /* 활동 ⑤ */
+    try{ mmA5Init(); }catch(e){ console.error('mm a5', e); }
+
+    mmRefRender();
+
+    try{
+      const mo = new MutationObserver(function(){
+        if(root.classList.contains('active')){
+          setTimeout(function(){
+            try{
+              mmDrawMat(document.getElementById('mm-hook-a'), MM_PHOTO, 170);
+              mmDrawMat(mmEl('mm-a4-cvs'), mmA4Mixed, 148);
+              mmA5Apply();
+            }catch(e){}
+          }, 50);
+        }
+      });
+      mo.observe(root, { attributes:true, attributeFilter:['class'] });
+    }catch(e){}
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+/* ●●● ANCHOR-MATMUL ●●● (17차시 보강 코드는 이 줄 바로 위에 붙입니다) */
+
+
+/* ══════════ 37차시 재편 통합 · 18차시 IMGCLS(통합 래퍼) ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   18차시 · IMGCLS 「손글씨 인식과 해밍 거리 분류」 (views/imgcls.html)
+   래퍼 접두사 ic / IC_   ·  core.js 맨 끝에 통째로 붙입니다.
+   ───────────────────────────────────────────────────────────────────────────
+   · 이 뷰는 구 12차시 도입(quickdraw) · 12차시 활동 3(mnist 데이터셋·flatten) ·
+     13차시 전체(hamming)의 통합본입니다.
+     이식 위젯의 계산 코드·DOM id·검증 수치는 core.js 의 기존 블록을 그대로 재사용합니다
+     (mnx* · mn* · hbx* · htab · hbxSee · qd*).
+     view.html 안의 #v-hamming · #v-mnist · #v-quickdraw 래퍼가 그 로직의 스코프 루트입니다.
+   · 이 스니펫은 「래퍼 층」만 새로 만듭니다 — 2단 탭 전환 · 폐지 슬러그 리다이렉트 ·
+     매니페스트 안전망.
+   · 새 전역은 전부 ic 접두사 두 글자만 씁니다(기존 it/io/ic 계열과 충돌 없음 — 검사 완료).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. 홈 카드·표제부 워터마크용 16:9 아트 (AIM_ART.imgcls) ─────────────── */
+const IC_ART = '<svg viewBox="0 0 320 180" role="img" aria-label="손으로 쓴 숫자가 0과 1의 격자로 바뀌고, 참조 숫자와 다른 자리를 세어 거리를 재는 그림">' +
+  '<rect width="320" height="180" fill="var(--bg)"/>' +
+  '<g stroke="var(--border)" stroke-width="1" fill="var(--card)">' +
+  '<rect x="16" y="34" width="78" height="78"/>' +
+  '</g>' +
+  '<path d="M40 100 C40 62 66 50 66 76 C66 96 48 96 48 78" fill="none" stroke="var(--fg)" stroke-width="4" stroke-linecap="round"/>' +
+  '<text x="55" y="128" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">내 손글씨</text>' +
+  '<path d="M100 73h16" stroke="var(--fg)" stroke-width="1.8"/><path d="M112 68l6 5-6 5" fill="none" stroke="var(--fg)" stroke-width="1.8"/>' +
+  '<g font-family="monospace" font-size="11" fill="var(--fg)">' +
+  '<text x="128" y="52">0 1 1 0</text><text x="128" y="70">1 0 0 1</text>' +
+  '<text x="128" y="88">1 0 0 1</text><text x="128" y="106">0 1 1 0</text>' +
+  '</g>' +
+  '<text x="150" y="128" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">이진행렬</text>' +
+  '<path d="M198 73h16" stroke="var(--fg)" stroke-width="1.8"/><path d="M210 68l6 5-6 5" fill="none" stroke="var(--fg)" stroke-width="1.8"/>' +
+  '<g font-family="monospace" font-size="12">' +
+  '<text x="228" y="52" fill="var(--muted)">0 → d=6</text>' +
+  '<text x="228" y="74" fill="var(--red)">8 → d=2</text>' +
+  '<text x="228" y="96" fill="var(--muted)">9 → d=5</text>' +
+  '</g>' +
+  '<text x="262" y="128" font-size="10" fill="var(--red)" font-family="monospace" text-anchor="middle">가장 가까운 것</text>' +
+  '<path d="M16 146h288" stroke="var(--border)" stroke-width="1"/>' +
+  '<text x="160" y="164" font-size="10" fill="var(--muted)" font-family="monospace" text-anchor="middle">다른 자리의 개수를 세면 거리가 됩니다</text>' +
+  '</svg>';
+
+/* ── 2. 소도구 ───────────────────────────────────────────────────────────── */
+function icEl(id){ return document.getElementById(id); }
+
+/* ── 3. 2단 탭 ───────────────────────────────────────────────────────────
+   .ic-tab / .ic-pane 만 다룹니다 — hamming 의 htab() 은 '#v-hamming .tab' 과
+   '.tpanel' 을 보므로 서로 건드리지 않습니다. */
+let icCur = 0;
+function icTab(n, el){
+  const root = icEl('v-imgcls');
+  if(!root) return;
+  n = (n === 1) ? 1 : 0;
+  icCur = n;
+  const btns = root.querySelectorAll('#ic-tabs .ic-tab');
+  btns.forEach(function(b, i){
+    const on = (i === n);
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  if(el && el.classList){ el.classList.add('on'); }
+  ['ic-p0', 'ic-p1'].forEach(function(id, i){
+    const p = icEl(id);
+    if(p) p.classList.toggle('on', i === n);
+  });
+  /* 탭 ① 은 캔버스 위젯이라 보일 때 다시 그려 줍니다. */
+  if(n === 0){
+    setTimeout(function(){
+      try{ if(typeof mnxA3Render === 'function') mnxA3Render(); }catch(e){}
+      try{ if(typeof mnxA3Lock === 'function') mnxA3Lock(); }catch(e){}
+      try{ if(typeof mnRefresh === 'function') mnRefresh(); }catch(e){}
+    }, 20);
+  }else{
+    setTimeout(function(){ try{ if(typeof hbxRun === 'function') hbxRun(); }catch(e){} }, 20);
+  }
+  try{ localStorage.setItem('aimath.imgcls.tab', String(n)); }catch(e){}
+}
+
+/* 탭을 열고 그 안의 앵커로 스크롤합니다(표제부 목표 → 활동 이동 버튼용). */
+function icSee(anchorId){
+  const t = icEl(anchorId);
+  if(t) setTimeout(function(){
+    try{ t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }catch(e){}
+  }, 60);
+}
+
+/* ── 4. 폐지 슬러그 리다이렉트 ───────────────────────────────────────────
+   구 해시 #quickdraw · #mnist · #hamming 으로 들어오면 #imgcls 로 바꾸고
+   해당 탭을 연 뒤 상단에 안내 배지를 1회 노출합니다. */
+const IC_REDIR = {
+  quickdraw: { tab: 0, msg: '구 12차시 도입 화면 「Quick, Draw!」는 <b>18차시 STEP 1 도입</b>으로 편입되었습니다.' },
+  mnist:     { tab: 0, msg: '구 12차시 「이미지는 행렬이다」는 <b>14차시 imgop</b>(픽셀·이진행렬·회색조)와 <b>18차시 탭 ①</b>(데이터셋·flatten)으로 나뉘어 통합되었습니다.' },
+  hamming:   { tab: 1, msg: '구 13차시 「이진화·XOR·해밍 거리」는 <b>18차시 탭 ②</b>로 통합되었습니다.' }
+};
+
+function icNotice(html){
+  const root = icEl('v-imgcls');
+  if(!root || icEl('ic-redir-note')) return;
+  const d = document.createElement('div');
+  d.className = 'info';
+  d.id = 'ic-redir-note';
+  d.setAttribute('data-no-toggle', '1');
+  d.setAttribute('role', 'status');
+  d.innerHTML = '<strong>안내 — 이 차시는 통합되었습니다</strong>' +
+    '<p class="desc" style="margin-top:0.4rem;">' + html +
+    ' 예전 주소로 들어오셨어도 같은 내용을 그대로 보실 수 있습니다.</p>';
+  root.insertBefore(d, root.firstChild);
+  setTimeout(function(){ try{ d.scrollIntoView({ block: 'start' }); }catch(e){} }, 60);
+}
+
+const IC_BOOT_HASH = (typeof location !== 'undefined' && location.hash) ? location.hash.replace('#', '') : '';
+
+function icRoute(raw){
+  const slug = String(raw || '').split('/')[0];
+  if(!Object.prototype.hasOwnProperty.call(IC_REDIR, slug)) return false;
+  const r = IC_REDIR[slug];
+  if(typeof go === 'function') go('imgcls', false);
+  icTab(r.tab, null);
+  icNotice(r.msg);
+  return true;
+}
+
+/* go('quickdraw') / go('mnist') / go('hamming') 직접 호출도 받아 넘깁니다
+   (core.js 안 옛 버튼들 — qdEcho 의 「도입 화면으로 돌아가기」 등). */
+(function icWrapGo(){
+  const prev = (typeof window !== 'undefined') ? window.go : null;
+  if(typeof prev !== 'function' || prev.__ic) return;
+  const wrapped = function(v, push){
+    if(v && Object.prototype.hasOwnProperty.call(IC_REDIR, v)){
+      const r = IC_REDIR[v];
+      const out = prev.call(this, 'imgcls', push);
+      try{ icTab(r.tab, null); }catch(e){}
+      return out;
+    }
+    return prev.apply(this, arguments);
+  };
+  wrapped.__ic = 1;
+  window.go = wrapped;
+})();
+
+/* ── 5. 매니페스트 안전망 (AIM_LESSONS / AIM_ART 정식 편집이 빠졌을 때만) ── */
+(function icManifestGuard(){
+  const boot = function(){
+    if(typeof AIM_ART === 'object' && AIM_ART && !AIM_ART.imgcls) AIM_ART.imgcls = IC_ART;
+    if(typeof AIM_LESSONS === 'undefined' || !Array.isArray(AIM_LESSONS)) return;
+    for(let i = 0; i < AIM_LESSONS.length; i++){ if(AIM_LESSONS[i] && AIM_LESSONS[i].v === 'imgcls') return; }
+    let at = AIM_LESSONS.length;
+    for(let i = 0; i < AIM_LESSONS.length; i++){
+      if(AIM_LESSONS[i] && AIM_LESSONS[i].n === '19차시'){ at = i; break; }
+    }
+    AIM_LESSONS.splice(at, 0, {
+      u: 2, n: '18차시', t: '손글씨 인식과 해밍 거리 분류', v: 'imgcls', a: 'imgcls',
+      d: '내 손글씨를 28×28로 모아 라벨을 붙이고 784개의 수로 펼칩니다. 이진화한 두 그림에서 다른 자리의 개수를 세어 거리를 재고, 참조 숫자 0~9 가운데 가장 가까운 것으로 분류한 뒤, 그림을 한 칸만 밀어 분류가 무너지는 장면을 직접 만들어 봅니다.'
+    });
+    try{ if(typeof aimBuildHome === 'function') aimBuildHome(); }catch(e){}
+    try{ if(typeof aimBuildMarks === 'function') aimBuildMarks(); }catch(e){}
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+/* ── 6. 초기화 ───────────────────────────────────────────────────────────── */
+let icInited = false;
+function icInit(){
+  const root = icEl('v-imgcls');
+  if(!root || icInited) return;
+  icInited = true;
+
+  let saved = 0;
+  try{ saved = (localStorage.getItem('aimath.imgcls.tab') === '1') ? 1 : 0; }catch(e){}
+  icTab(saved, null);
+
+  if(typeof initToggles === 'function'){ try{ initToggles(root); }catch(e){} }
+
+  if(typeof MutationObserver === 'function'){
+    const vo = new MutationObserver(function(){
+      if(root.classList.contains('active')){
+        setTimeout(function(){
+          try{ if(icCur === 0 && typeof mnxA3Lock === 'function') mnxA3Lock(); }catch(e){}
+          try{ if(icCur === 1 && typeof hbxRun === 'function') hbxRun(); }catch(e){}
+        }, 30);
+      }
+    });
+    vo.observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
+}
+
+(function icBoot(){
+  const boot = function(){
+    try{ icInit(); }catch(e){ console.error('icInit', e); }
+    setTimeout(function(){ try{ icRoute(IC_BOOT_HASH); }catch(e){ console.error('icRoute', e); } }, 0);
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.addEventListener('popstate', function(){
+    try{
+      const raw = (location.hash || '').replace('#', '');
+      if(/^(quickdraw|mnist|hamming)$/.test(raw)) icRoute(raw);
+    }catch(e){}
+  });
+})();
+
+/* ●●● ANCHOR-IMGCLS (18차시) ●●● */
+
+
+/* ══════════ 37차시 재편 통합 · 20차시 CNN(통합 래퍼) ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   20차시 · CNN 종합 — 합성곱에서 객체 탐지까지 (views/cnn.html)
+   래퍼 접두사 cn / CN_   ·  core.js 맨 끝(startRouter IIFE 뒤)에 통째로 붙입니다.
+   ───────────────────────────────────────────────────────────────────────────
+   · 이 뷰는 구 15~19차시(conv · filter · pool · pipeline · detect) 5뷰의 통합본입니다.
+     이식 위젯의 계산 코드·DOM id·검증 수치는 core.js 의 기존 블록을 그대로 재사용합니다
+     (cvx · flx · px/p* · cnnx · detx · 그리고 접두사 없는 a* / m* / f* / p* 위젯).
+     view.html 안의 <div id="v-conv"> … <div id="v-detect"> 래퍼가 그 로직의 스코프 루트입니다.
+   · 이 스니펫은 「래퍼 층」만 새로 만듭니다 —
+     탭 전환 · 추천 영상 · 마중 퀴즈 · 핵심 개념 칩 · 형성평가 2벌 · 3단원 한 장 정리 ·
+     판정 문제 · 학습지 슬롯 · 폐지 슬러그 리다이렉트.
+   · 공용 계산 유틸 u3* 는 3단원 7차시가 함께 씁니다(중복 정의 방지 가드 포함).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. 3단원 공용 계산 유틸 (u3*) — 이미 정의돼 있으면 건드리지 않습니다 ── */
+(function u3Utils(){
+  var W = (typeof window !== 'undefined') ? window : this;
+  function def(name, fn){ if(typeof W[name] !== 'function') W[name] = fn; }
+
+  def('u3Clamp255', function(x){ return Math.min(255, Math.max(0, Math.round(x))); });
+  def('u3GrayMean', function(r, g, b){ return W.u3Clamp255((r + g + b) / 3); });
+  def('u3GrayLuma', function(r, g, b){ return W.u3Clamp255(0.299 * r + 0.587 * g + 0.114 * b); });
+  def('u3Bin', function(v, th){ return (v >= th) ? 1 : 0; });          // 경계는 "이상이면 1"
+  def('u3Hamming', function(a, b){
+    if(!a || !b || a.length !== b.length) return null;
+    var n = 0, i;
+    for(i = 0; i < a.length; i++){ if(a[i] !== b[i]) n++; }
+    return n;
+  });
+  def('u3Transpose', function(A){
+    if(!A || !A.length) return null;
+    return A[0].map(function(_, j){ return A.map(function(r){ return r[j]; }); });
+  });
+  def('u3MatMul', function(A, B){                                      // l×m · m×n → l×n
+    if(!A || !B || !A.length || !B.length) return null;
+    if(A[0].length !== B.length) return null;
+    var l = A.length, m = B.length, n = B[0].length, R = [], i, j, k, s;
+    for(i = 0; i < l; i++){
+      R.push([]);
+      for(j = 0; j < n; j++){
+        s = 0;
+        for(k = 0; k < m; k++) s += A[i][k] * B[k][j];
+        R[i].push(s);
+      }
+    }
+    return R;
+  });
+  def('u3Hadamard', function(A, B){                                    // 꼴이 다르면 null
+    if(!A || !B || A.length !== B.length || A[0].length !== B[0].length) return null;
+    return A.map(function(row, i){ return row.map(function(v, j){ return v * B[i][j]; }); });
+  });
+  def('u3Conv', function(A, K){                                        // (m−k+1)×(n−k+1)
+    if(!A || !K || !A.length || !K.length) return null;
+    var m = A.length, n = A[0].length, p = K.length, q = K[0].length;
+    if(p > m || q > n) return null;
+    var R = [], i, j, a, b, s;
+    for(i = 0; i + p <= m; i++){
+      R.push([]);
+      for(j = 0; j + q <= n; j++){
+        s = 0;
+        for(a = 0; a < p; a++) for(b = 0; b < q; b++) s += A[i + a][j + b] * K[a][b];
+        R[i].push(s);
+      }
+    }
+    return R;
+  });
+  def('u3MaxPool2', function(S){                                       // 2×2, 겹치지 않음
+    if(!S || !S.length) return null;
+    var m = Math.floor(S.length / 2), n = Math.floor(S[0].length / 2), R = [], i, j;
+    for(i = 0; i < m; i++){
+      R.push([]);
+      for(j = 0; j < n; j++){
+        R[i].push(Math.max(S[2 * i][2 * j], S[2 * i][2 * j + 1], S[2 * i + 1][2 * j], S[2 * i + 1][2 * j + 1]));
+      }
+    }
+    return R;
+  });
+  def('u3Blend', function(a, b, alpha){ return W.u3Clamp255(alpha * a + (1 - alpha) * b); });
+  def('u3Invert', function(a){ return W.u3Clamp255(255 - a); });
+})();
+
+
+/* ── 1. 추천 영상 (videoDeck) — 2026-07-31 썸네일 HTTP 200 재확인 완료 ──────
+   3열 × 2줄 = 6칸 고정. 추천 5칸 + 교사 추가 슬롯 정확히 1칸(videoDeck 이 보장).
+   나머지 5종(qPid2UFj4kU · Ld59WN2f7FE · yUPRprrewhY · Oox-rGyxqgs 등)은 참고 자료 표로 내렸습니다. */
+const CN_VIDEOS = [
+  { id: '8HQKOjcLJtc', t: 'CNN 행렬 합성곱을 이용한 이미지 필터 처리 — 공개수업 실황(28:35)', s: '림팔라의 수상한 수학부 · 전반부는 탭 ①, 후반부는 탭 ②' },
+  { id: 'WCS3J3hnnVA', t: '인공지능 09-02 / 합성곱과 이미지', s: 'Dr. Bean의 코딩교실 · 커널과 특징 맵의 기초' },
+  { id: 'MYMk8usJzCY', t: '선택 AI 4. CNN을 활용한 이미지 데이터 인식의 이해', s: '공학도서관 · 고교 「선택 인공지능」 눈높이' },
+  { id: 'lDqn1UNwgrY', t: '[Deep Learning 101] 합성곱신경망 CNN', s: '신박Ai · 층의 구성과 순서를 그림으로' },
+  { id: '1WZkMaYupcU', t: 'CNN 객체검출 및 R-CNN 적용 사례', s: '[데이터로 세상보기] · 분류에서 탐지로(탭 ⑤ 예고)' }
+];
+
+/* ── 2. 마중 퀴즈 (warmStepper — 라벨 "질문 N.", 순차 공개) ───────────────── */
+const CN_WARM = [
+  {
+    q: '5 × 5 이미지에 3 × 3 커널을 한 칸씩 옮기며 합성곱을 하면 결과는 몇 행 몇 열일까요?',
+    opts: ['5행 5열', '4행 4열', '3행 3열', '2행 2열'],
+    answer: 2,
+    explain: '커널이 놓일 수 있는 자리는 가로로 5 − 3 + 1 = 3곳, 세로로도 3곳입니다. ' +
+      '일반적으로 m × n 입력에 k × k 커널이면 결과는 (m−k+1) × (n−k+1) 입니다. ' +
+      '「5행 5열」을 고르셨다면 — 합성곱은 커널이 <b>완전히 들어가는 자리</b>에서만 계산합니다. 그래서 가장자리만큼 결과가 줄어듭니다.'
+  },
+  {
+    q: '4 × 4 특징 맵에 2 × 2 맥스 풀링을 하면 결과의 크기는? 그리고 무엇을 남길까요?',
+    opts: ['4 × 4, 평균값', '2 × 2, 최댓값', '2 × 2, 최솟값', '8 × 8, 최댓값'],
+    answer: 1,
+    explain: '겹치지 않는 2 × 2 구역 네 개로 나누어 각 구역의 <b>최댓값 하나</b>만 남기므로 크기가 절반이 됩니다. ' +
+      '“최댓값을 남긴다”는 것은 <b>그 구역에서 특징이 가장 강했던 정도만 기억한다</b>는 뜻입니다. ' +
+      '그래서 특징의 정확한 위치가 조금 달라져도 결과가 잘 변하지 않습니다.'
+  },
+  {
+    q: '“이 사진은 강아지 사진이다”와 “이 사진의 (120, 80) 자리에 강아지가 있다”는 각각 무엇이라 부를까요?',
+    opts: ['둘 다 분류', '둘 다 탐지', '앞은 분류, 뒤는 탐지', '앞은 탐지, 뒤는 분류'],
+    answer: 2,
+    explain: '<b>분류</b>는 “무엇인가”만 답하고, <b>탐지</b>는 “무엇이 <b>어디에</b>”까지 답합니다. ' +
+      '탐지는 위치를 네 개의 수(바운딩 박스)로 나타냅니다.'
+  }
+];
+
+/* ── 3. 형성평가 (quizStepper) — 일반 5문항 ───────────────────────────────── */
+const CN_QUIZ = [
+  {
+    q: '[12인수03-02] 6 × 6 이미지에 3 × 3 커널을 한 칸씩 옮기며 합성곱을 하면 특징 맵의 크기는?',
+    opts: ['6 × 6', '5 × 5', '4 × 4', '3 × 3'],
+    answer: 2,
+    explain: '6 − 3 + 1 = 4 이므로 가로·세로 모두 4곳, 결과는 4 × 4 입니다. ' +
+      '커널이 <b>완전히 들어가는 자리</b>에서만 계산하므로 가장자리만큼 줄어듭니다. → 탭 ①의 활동 ①-2로 돌아가 확인해 보세요.'
+  },
+  {
+    q: '[12인수03-02] 입력 [[0,0,0,0,0],[0,1,1,1,0],[0,1,0,1,0],[0,1,1,1,0],[0,0,0,0,0]] 에 필터 [[1,0,1],[0,1,0],[1,0,1]] 을 적용할 때 <b>왼쪽 위 첫 칸</b>의 출력값은?',
+    opts: ['0', '1', '2', '4'],
+    answer: 1,
+    explain: '왼쪽 위 3 × 3 창은 [[0,0,0],[0,1,1],[0,1,0]] 입니다. 필터값이 1인 다섯 자리와 곱해 더하면 0 + 0 + 0 + 1 + 0 = <b>1</b>. ' +
+      '필터값이 0인 자리는 계산에 기여하지 않으므로 <b>진한 색으로 표시된 다섯 자리만</b> 보면 됩니다. → 탭 ①의 활동 ①-2 「커널이 지나간 자리」로 돌아가 보세요.'
+  },
+  {
+    q: '[12인수03-02] 3 × 3 평균 필터에서 결과를 <b>9로 나누는</b> 까닭으로 가장 알맞은 것은?',
+    opts: ['계산을 빠르게 하려고', '아홉 칸을 그냥 더하면 값이 최대 9배로 커져 밝기가 달라지므로',
+           '커널의 크기가 3이므로', '결과를 정수로 만들려고'],
+    answer: 1,
+    explain: '커널 성분의 합이 1이 되도록 맞추어 <b>전체 밝기를 유지</b>하는 것입니다. ' +
+      '나누지 않으면 값이 255를 크게 넘어 <b>클리핑</b>이 일어나 정보가 잘립니다(14차시). → 탭 ②의 활동 ②-2 「왜 1/9인가」로 돌아가 보세요.'
+  },
+  {
+    q: '[12인수03-02] 4 × 4 특징 맵 [[1,3,2,4],[5,6,1,2],[7,2,9,3],[1,4,2,8]] 에 2 × 2 맥스 풀링을 하면?',
+    opts: ['[[1,2],[1,2]]', '[[6,4],[7,9]]', '[[6,9],[7,4]]', '[[3,4],[4,8]]'],
+    answer: 1,
+    explain: '왼쪽 위 {1,3,5,6} → <b>6</b>, 오른쪽 위 {2,4,1,2} → <b>4</b>, 왼쪽 아래 {7,2,1,4} → <b>7</b>, 오른쪽 아래 {9,3,2,8} → <b>9</b>. ' +
+      '겹치지 않는 네 구역으로 나누고 각 구역의 <b>최댓값 하나</b>만 남깁니다. 첫 번째 보기는 최솟값을 고른 것입니다. → 탭 ③의 활동 ③-1로 돌아가 보세요.'
+  },
+  {
+    q: '[12인수03-03] 객체 탐지에서 <b>신뢰도 기준선을 낮추면</b> 일어나는 일로 옳은 것은?',
+    opts: ['놓치는 물체가 늘고 잘못 찾는 것도 는다', '놓치는 물체는 줄고 잘못 찾는 것은 는다',
+           '놓치는 물체도 잘못 찾는 것도 준다', '아무 변화가 없다'],
+    answer: 1,
+    explain: '기준선을 낮추면 더 많은 후보가 통과하므로 <b>놓치는 것(미탐)은 줄고 잘못 찾는 것(오탐)은 늘어납니다.</b> ' +
+      '두 가지 잘못은 <b>동시에 줄일 수 없고 맞바꿀 뿐</b>입니다. 그래서 “어느 잘못이 더 위험한가”를 사람이 판단해 기준선을 정해야 합니다. ' +
+      '5차시의 정확도·혼동행렬과 같은 구조입니다. → 탭 ⑤의 활동 ⑤-2로 돌아가 보세요.'
+  }
+];
+
+/* ── 4. 3단원 종합 형성평가 (별도 총점) — 구 detect 뷰 세트를 14~20 지도로 갱신 ── */
+const CN_QUIZ_U3 = [
+  {
+    q: '[14차시] 28 × 28 회색조 이미지 한 장을 행렬로 나타낼 때 성분의 개수와 값의 범위는?',
+    opts: ['784개, 0~1', '784개, 0~255', '56개, 0~255', '2,352개, 0~255'],
+    answer: 1,
+    explain: '28 × 28 = 784개의 성분이고, 회색조 밝기는 0(검정)부터 255(흰색)까지의 정수입니다. [12인수03-01]'
+  },
+  {
+    q: '[15차시] 8 × 8 컬러(RGB) 이미지 한 장을 나타내는 데 필요한 수는 모두 몇 개인가?',
+    opts: ['64개', '128개', '192개', '256개'],
+    answer: 2,
+    explain: '가로 8 × 세로 8 × 세 채널(R, G, B) = <b>192</b>개입니다. 컬러 이미지는 <b>같은 꼴의 행렬 세 장</b>으로 표현합니다. [12인수03-01]'
+  },
+  {
+    q: '[16·17차시] 1080 × 1920 사진 행렬 A 의 전치행렬 Aᵀ 의 꼴과, A 의 <b>오른쪽</b>에 변환행렬을 곱했을 때 움직이는 방향을 바르게 짝지은 것은?',
+    opts: ['1080 × 1920 · 상하', '1920 × 1080 · 좌우', '1920 × 1080 · 상하', '1080 × 1920 · 좌우'],
+    answer: 1,
+    explain: 'm × n 행렬의 전치는 <b>n × m</b> 이므로 1920 × 1080 입니다. ' +
+      '변환행렬을 <b>오른쪽</b>에 곱하면 <b>열</b>이 움직이므로 좌우 방향, <b>왼쪽</b>에 곱하면 <b>행</b>이 움직여 상하 방향입니다. [12인수03-02]'
+  },
+  {
+    q: '[18차시] 두 이진 행렬 사이의 해밍 거리를 구하는 방법으로 옳은 것은?',
+    opts: ['두 행렬을 더한다', '자리별로 XOR 한 뒤 1의 개수를 센다', '두 행렬을 곱한다', '255에서 뺀다'],
+    answer: 1,
+    explain: 'XOR 는 두 값이 서로 다를 때만 1이므로, XOR 결과의 1의 개수가 곧 서로 다른 자리의 수 — 즉 해밍 거리입니다. [12인수03-03]'
+  },
+  {
+    q: '[19·20차시] 입력 X 가 1 × 784, 출력 Y 가 1 × 10 인 분류기에서 가중치 행렬 W 의 꼴과, 객체 탐지 결과에 함께 나오는 <b>네 개의 수</b>를 바르게 짝지은 것은?',
+    opts: ['784 × 10 · (x, y, w, h)', '10 × 784 · (x, y, w, h)', '784 × 10 · (R, G, B, A)', '10 × 784 · (r, θ, w, h)'],
+    answer: 0,
+    explain: 'XW = Y 에서 (1 × 784)(784 × 10) = (1 × 10) 이므로 W 는 <b>784 × 10</b> 입니다(성분 7,840개). ' +
+      '탐지는 위치를 <b>바운딩 박스 (x, y, w, h)</b> 네 수로 나타내고 신뢰도를 함께 내놓습니다. [12인수03-03]'
+  }
+];
+
+/* ── 5. 핵심 개념 칩 상세 설명 (chipDefs — 정의 → 예시 → 이번 차시 → 앞뒤 차시 → 출처) ── */
+const CN_DEFS = {
+  '아다마르 곱': '<h4>아다마르 곱 ⊙ 과 합성곱 ⊛</h4>' +
+    '<p><b>정의</b> <b>아다마르 곱</b>은 <b>같은 크기</b>의 두 행렬에서 <b>같은 위치의 성분끼리</b> 곱하는 연산입니다' +
+    '(결과의 꼴은 그대로이고 교환법칙이 성립합니다). <b>합성곱</b>은 이미지의 <b>작은 창</b>과 같은 크기의 <b>커널</b>을 ' +
+    '아다마르 곱한 뒤 <b>그 성분을 모두 더해 한 수</b>로 만들고, 창을 한 칸씩 옮기며 이를 반복하는 연산입니다.</p>' +
+    '<p><b>예시</b> [[1,2],[3,4]] ⊙ [[5,6],[7,8]] = <b>[[5,12],[21,32]]</b> · 5 × 5 입력에 3 × 3 커널을 한 칸씩 옮기면 결과는 <b>3 × 3</b> 특징 맵입니다.</p>' +
+    '<p><b>이번 차시에서는</b> 탭 ①에서 커널이 지나가는 자리마다 어떤 성분이 곱해지고 더해지는지 한 단계씩 확인하고, 4 × 4 ⊛ 3 × 3 을 직접 손으로 채웁니다.</p>' +
+    '<p><b>앞뒤 차시 연결</b> 17차시의 행렬의 곱셈과는 <b>다른 연산</b>입니다. 19차시에서 두 곱의 성질을 표로 비교했습니다.</p>' +
+    '<p class="cn-src">출처 — 씨마스 「인공지능 수학」 Ⅲ p.117 · 하진수 강의 자료 서술을 재구성</p>' +
+    '<p><button class="btn pri" type="button" onclick="cnTab(0)">탭 ①로 이동 →</button> ' +
+    '<button class="btn" type="button" onclick="go(\'matmul\')">17차시 행렬의 곱셈</button> ' +
+    '<button class="btn" type="button" onclick="go(\'fclayer\')">19차시 두 가지 곱</button></p>',
+
+  '커널과 특징 맵': '<h4>커널과 특징 맵</h4>' +
+    '<p><b>정의</b> 합성곱에 쓰는 작은 행렬을 <b>커널(필터)</b> 이라 하고, 커널을 옮겨 가며 얻은 결과 행렬을 <b>특징 맵</b>이라 합니다. ' +
+    '커널의 값에 따라 가장자리·가로선·세로선·대각선 등 <b>찾아내는 무늬가 달라집니다.</b></p>' +
+    '<p><b>예시</b> 3 × 3 커널의 아홉 개 수를 바꾸면 같은 사진에서 전혀 다른 무늬가 드러납니다. ' +
+    'm × n 입력에 k × k 커널을 한 칸씩 옮기면 특징 맵은 <b>(m−k+1) × (n−k+1)</b> 입니다.</p>' +
+    '<p><b>이번 차시에서는</b> 탭 ②의 커널 실험실에서 아홉 개의 수를 직접 고쳐 가며 사진이 어떻게 달라지는지 봅니다.</p>' +
+    '<p><b>앞뒤 차시 연결</b> 18차시의 해밍 거리는 <b>자리를 그대로</b> 견주었지만, 합성곱은 <b>창을 옮겨 가며</b> 견주므로 위치가 조금 달라도 무늬를 찾아냅니다.</p>' +
+    '<p class="cn-src">출처 — 동아출판 「인공지능 수학」 Ⅲ · 씨마스 「인공지능 수학」 Ⅲ p.117 서술을 재구성</p>' +
+    '<p><button class="btn pri" type="button" onclick="cnTab(1)">탭 ②로 이동 →</button> ' +
+    '<button class="btn" type="button" onclick="go(\'imgcls\')">18차시 해밍 거리</button></p>',
+
+  '정규화 계수': '<h4>정규화 계수</h4>' +
+    '<p><b>정의</b> 커널의 성분을 모두 더한 값이 1이 아니면 합성곱 결과의 <b>전체 밝기가 함께 변합니다.</b> ' +
+    '그래서 평균 필터처럼 아홉 칸이 모두 같은 값일 때는 <b>1/9</b> 을 곱해(또는 결과를 9로 나누어) 밝기를 유지합니다. 이때 곱하는 수를 정규화 계수라 합니다.</p>' +
+    '<p><b>예시</b> 1/9 평균 필터 → 흐림(블러)이면서 밝기는 그대로. 나누는 수를 5로 바꾸면 전체가 밝아지고, 20으로 바꾸면 어두워집니다.</p>' +
+    '<p><b>이번 차시에서는</b> 탭 ②의 「왜 1/9인가」에서 나누는 수를 슬라이더로 움직이며 밝기가 어떻게 변하는지 확인합니다.</p>' +
+    '<p><b>앞뒤 차시 연결</b> 14차시의 클리핑을 떠올려 보세요. 계산 결과가 0~255를 벗어나면 잘리므로, 정규화는 <b>정보를 지키는 장치</b>이기도 합니다.</p>' +
+    '<p class="cn-src">출처 — 동아출판 「인공지능 수학」 Ⅲ · 씨마스 지도서 Ⅲ 서술을 재구성</p>' +
+    '<p><button class="btn pri" type="button" onclick="cnTab(1)">탭 ②로 이동 →</button> ' +
+    '<button class="btn" type="button" onclick="go(\'imgop\')">14차시 클리핑</button></p>',
+
+  '맥스 풀링': '<h4>맥스 풀링과 X / 255</h4>' +
+    '<p><b>정의</b> <b>맥스 풀링</b>은 특징 맵을 겹치지 않는 2 × 2 구역으로 나누고 각 구역의 <b>최댓값 하나만 남기는</b> 연산입니다 — ' +
+    'P(i, j) = max { S(2i, 2j), S(2i, 2j+1), S(2i+1, 2j), S(2i+1, 2j+1) }. ' +
+    '크기가 절반으로 줄고, 특징의 위치가 조금 달라져도 결과가 잘 변하지 않습니다(<b>이동 불변성</b>). ' +
+    '한편 <b>정규화 X / 255</b> 는 0~255의 값을 0~1로 옮기는 <b>실수배</b>입니다.</p>' +
+    '<p><b>예시</b> 4 × 4 특징 맵 → 맥스 풀링 → <b>2 × 2</b> · [0, 128, 255] → X/255 → [0, 0.502, 1]</p>' +
+    '<p><b>이번 차시에서는</b> 탭 ③에서 한 구역씩 최댓값을 직접 골라 보고, 특징을 한 칸 옮겨도 결과가 같은지 확인합니다.</p>' +
+    '<p><b>앞뒤 차시 연결</b> 18차시 활동 ④에서 <b>한 칸 이동에 무너지던</b> 해밍 거리를 떠올려 보세요. 풀링은 바로 그 문제에 대한 답 중 하나입니다.</p>' +
+    '<p class="cn-src">출처 — 씨마스 지도서 최대 풀링 식 · 동아출판 「인공지능 수학」 Ⅲ 서술을 재구성</p>' +
+    '<p><button class="btn pri" type="button" onclick="cnTab(2)">탭 ③으로 이동 →</button> ' +
+    '<button class="btn" type="button" onclick="go(\'imgcls\')">18차시 해밍 거리의 한계</button></p>',
+
+  '바운딩 박스': '<h4>바운딩 박스와 신뢰도</h4>' +
+    '<p><b>정의</b> 사진 속 물체의 위치를 <b>네 개의 수</b>(왼쪽 위 x, y 와 너비, 높이)로 나타낸 직사각형을 <b>바운딩 박스</b>라 합니다. ' +
+    '모델은 각 상자에 “이것이 그 물체일 가능성”을 <b>신뢰도</b>로 함께 내놓고, 사람이 정한 <b>기준선(임계값)</b> 보다 큰 것만 화면에 표시합니다.</p>' +
+    '<p><b>예시</b> (120, 80, 60, 90) — 왼쪽 위 (120, 80)에서 가로 60, 세로 90인 상자. 기준선 0.5 → 신뢰도 0.48인 탐지는 표시되지 않습니다.</p>' +
+    '<p><b>이번 차시에서는</b> 탭 ⑤에서 좌표를 넣어 상자를 그려 보고, 기준선을 옮기며 <b>놓치는 것과 잘못 찾는 것</b>이 어떻게 맞바뀌는지 관찰합니다.</p>' +
+    '<p><b>앞뒤 차시 연결</b> 5차시의 정확도·혼동행렬과 같은 구조입니다. <b>기준선을 정하는 일은 곧 책임을 정하는 일</b>입니다.</p>' +
+    '<p class="cn-src">출처 — 씨마스 「인공지능 수학」 Ⅲ 분류·탐지 서술 · 동아출판 「인공지능 수학」 Ⅲ 서술을 재구성</p>' +
+    '<p><button class="btn pri" type="button" onclick="cnTab(4)">탭 ⑤로 이동 →</button> ' +
+    '<button class="btn" type="button" onclick="go(\'bias\')">5차시 혼동행렬</button></p>'
+};
+
+/* ── 6. 3단원 한 장 정리 (14~20차시) — 구 detect 뷰의 12~19 판을 전면 갱신 ── */
+const CN_U3MAP = [
+  { n: '14차시', t: '이미지는 행렬이다', v: 'imgop',     d: '픽셀 0~255 · A + tJ · kA' },
+  { n: '15차시', t: '컬러와 세 행렬',   v: 'rgb',       d: 'R · G · B 세 장, 8×8×3 = 192' },
+  { n: '16차시', t: '전치행렬',         v: 'transpose', d: 'Aᵀ — 성분의 자리를 바꾼다' },
+  { n: '17차시', t: '행렬의 곱셈',      v: 'matmul',    d: '평행이동과 좌우·상하 반전' },
+  { n: '18차시', t: '해밍 거리 분류',   v: 'imgcls',    d: 'XOR 로 세는 다름의 개수' },
+  { n: '19차시', t: '완전연결층',       v: 'fclayer',   d: 'XW = Y — 행렬 곱으로 분류' },
+  { n: '20차시', t: 'CNN 종합 (오늘)',  v: '',          d: '합성곱 ⊛ · 풀링 · 바운딩 박스' }
+];
+
+/* ── 7. 판정 문제 데이터 ─────────────────────────────────────────────────── */
+const CN_JUDGE = {
+  j1: { a: 2, ok: '✓ 정답입니다. 7 − 3 + 1 = <b>5</b> 이므로 출력은 <b>5 × 5</b> 입니다.',
+        no: '✗ 다시 봅시다. 커널이 <b>완전히 들어가는 자리</b>만 셉니다. 7 − 3 + 1 = 5 → 정답은 <b>5 × 5</b> 입니다.' },
+  j2: { a: 1, ok: '✓ 정답입니다. 아홉 칸의 합을 9로 나눈 값 — 곧 <b>주변 아홉 칸의 평균</b>이므로 사진이 흐려집니다(밝기는 유지).',
+        no: '✗ 성분이 모두 같고 합이 1이 되도록 맞춘 커널입니다. 결과는 <b>평균</b>, 즉 <b>흐림</b>입니다. 윤곽선만 남기는 것은 성분의 합이 0인 커널입니다.' },
+  j3: { a: 2, ok: '✓ 정답입니다. 8 × 8 → 4 × 4 → <b>2 × 2</b>. 한 번마다 가로·세로가 절반이 되므로 칸의 개수는 1/4씩 줄어듭니다.',
+        no: '✗ 한 번 할 때마다 가로·세로가 <b>각각 절반</b>이 됩니다. 8 → 4 → 2 이므로 정답은 <b>2 × 2</b> 입니다.' },
+  j4: { a: 1, ok: '✓ 정답입니다. 합성곱 결과에는 음수가 섞여 있습니다. 음수를 0으로 눌러 “특징 있음 / 없음”으로 단순하게 만든 <b>뒤</b>에 최댓값을 고릅니다.',
+        no: '✗ ReLU 는 합성곱의 <b>뒤</b>입니다. 아직 아무 특징도 뽑지 않은 상태에서 음수를 없애 봐야 뜻이 없습니다. 순서는 합성곱 → ReLU → 풀링입니다.' },
+  j5: { a: 1, ok: '✓ 정답입니다. 기준선을 낮추면 더 많은 후보가 통과하므로 <b>오탐이 늘고 미탐은 줄어듭니다.</b> 둘은 맞바뀔 뿐 동시에 줄지 않습니다.',
+        no: '✗ 기준선을 낮추면 문턱이 낮아져 <b>더 많이 표시</b>됩니다. 따라서 놓침(미탐)은 줄고 <b>잘못 찾는 것(오탐)이 늘어납니다.</b>' }
+};
+
+/* ── 8. 탭 전환 · 지연 초기화 ───────────────────────────────────────────── */
+let cnCur = 0;
+let cnFilterReady = false;
+
+function cnTab(n, el){
+  n = Math.max(0, Math.min(4, parseInt(n, 10) || 0));
+  cnCur = n;
+  const root = document.getElementById('v-cnn');
+  if(!root) return;
+  const tabs = root.querySelectorAll('#cn-tabs .tab');
+  tabs.forEach(function(t, i){ t.classList.toggle('on', i === n); });
+  if(el && el.classList) el.classList.add('on');
+  root.querySelectorAll(':scope > .tpanel').forEach(function(p){ p.classList.remove('on'); });
+  const pn = document.getElementById('cn' + n);
+  if(pn) pn.classList.add('on');
+  cnTabBoot(n);
+  try{ history.replaceState({ view: 'cnn' }, '', '#cnn/' + (n + 1)); }catch(e){}
+}
+
+/* 무거운 렌더는 그 탭이 열릴 때 처음 한 번만 (spec §9-2 지연 init) */
+function cnTabBoot(n){
+  if(n === 1 && !cnFilterReady){
+    // 구 go('filter') 분기가 하던 일 — 기본 도형 이미지를 깔아 둡니다.
+    cnFilterReady = true;
+    try{
+      if(typeof srcImg === 'undefined' || !srcImg){
+        if(typeof createDefImg === 'function') createDefImg();
+        if(typeof applyF === 'function') applyF();
+      }
+      const st = document.getElementById('up-status');
+      if(st && st.textContent.trim() === '') st.textContent = '기본 도형 이미지가 적용되었습니다. 직접 업로드하여 변경할 수 있습니다.';
+    }catch(e){ console.error('cn filter boot', e); }
+  }
+  if(n === 2){ try{ if(typeof pRst === 'function') pRst(); }catch(e){} }
+  if(n === 0){
+    // 눈 vs CNN 캔버스는 details 가 열릴 때 맞춥니다(닫혀 있으면 폭이 0).
+    requestAnimationFrame(function(){
+      try{ if(typeof ecFitCanvas === 'function'){ ecFitCanvas('eye'); ecFitCanvas('cnn'); } }catch(e){}
+    });
+  }
+}
+
+/* 칩·지도에서 특정 카드로 보내기 */
+function cnGo(anchorId){
+  const el = document.getElementById(anchorId);
+  if(!el) return;
+  const panel = el.closest ? el.closest('.tpanel') : null;
+  if(panel && /^cn[0-4]$/.test(panel.id)) cnTab(parseInt(panel.id.slice(2), 10));
+  const d = el.closest ? el.closest('details') : null;
+  if(d) d.open = true;
+  requestAnimationFrame(function(){ try{ el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }catch(e){ el.scrollIntoView(); } });
+}
+
+/* ── 9. 판정 문제 · 메모 저장 ───────────────────────────────────────────── */
+function cnJudge(key, i, el){
+  const d = CN_JUDGE[key];
+  if(!d) return;
+  const wrap = document.getElementById('cn-' + key + '-opts');
+  if(wrap) wrap.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
+  if(el) el.classList.add('on');
+  const fb = document.getElementById('cn-' + key + '-fb');
+  if(!fb) return;
+  const ok = (i === d.a);
+  fb.className = 'cn-fb ' + (ok ? 'ok' : 'no');
+  fb.innerHTML = ok ? d.ok : d.no;
+}
+
+function cnNoteSave(taId, stId){
+  const ta = document.getElementById(taId);
+  const st = document.getElementById(stId);
+  if(!ta) return;
+  try{
+    if(typeof cmnSet === 'function') cmnSet('aimath.cnn.' + taId, ta.value);
+    else localStorage.setItem('aimath.cnn.' + taId, ta.value);
+    if(st) st.textContent = '저장했습니다. 이 기기에만 보관됩니다. (' + new Date().toLocaleTimeString() + ')';
+  }catch(e){
+    if(st) st.textContent = '저장에 실패했습니다. 브라우저의 저장 공간을 확인해 주세요.';
+  }
+}
+function cnNoteLoad(taId){
+  const ta = document.getElementById(taId);
+  if(!ta) return;
+  try{
+    const v = (typeof cmnGet === 'function') ? cmnGet('aimath.cnn.' + taId, '') : (localStorage.getItem('aimath.cnn.' + taId) || '');
+    if(v) ta.value = v;
+  }catch(e){}
+}
+function cnAnsSave(){ cnNoteSave('cn-ans1', 'cn-ans-st'); }
+
+/* ── 10. 3단원 한 장 정리 렌더 ──────────────────────────────────────────── */
+function cnU3MapRender(){
+  const box = document.getElementById('cn-u3map');
+  if(!box) return;
+  box.innerHTML = '';
+  CN_U3MAP.forEach(function(it){
+    const b = document.createElement('button');
+    b.type = 'button';
+    const here = !it.v;
+    const ready = here || !!document.getElementById('v-' + it.v);
+    b.className = 'cn-mapc' + (here ? ' here' : '');
+    const esc = (typeof cmnEsc === 'function') ? cmnEsc : function(x){ return String(x); };
+    b.innerHTML = '<span class="n">' + esc(it.n) + '</span>' +
+      '<span class="t">' + esc(it.t) + '</span>' +
+      '<span class="d">' + esc(it.d) + (ready ? '' : ' · 준비 중') + '</span>';
+    if(!here && ready){
+      b.addEventListener('click', function(){ if(typeof go === 'function') go(it.v); });
+    }else if(here){
+      b.addEventListener('click', function(){ cnTab(0); });
+    }
+    box.appendChild(b);
+  });
+}
+
+/* ── 11. 폐지 슬러그 리다이렉트 (§9-5) ──────────────────────────────────────
+   구 해시 #conv · #filter · #pool · #pipeline · #detect 로 들어오면
+   #cnn/n 으로 바꾸고 해당 탭을 연 뒤, 상단에 안내 배지를 1회 노출합니다. */
+const CN_REDIR = {
+  conv:     { tab: 0, msg: '15차시 「합성곱의 원리」는 <b>20차시 탭 ① 합성곱</b>으로 통합되었습니다.' },
+  filter:   { tab: 1, msg: '16차시 「커널 필터 실험실」은 <b>20차시 탭 ② 커널 필터</b>로 통합되었습니다.' },
+  pool:     { tab: 2, msg: '17차시 「풀링과 정규화」는 <b>20차시 탭 ③ 풀링과 정규화</b>로 통합되었습니다.' },
+  pipeline: { tab: 3, msg: '18차시 「CNN 파이프라인」은 <b>20차시 탭 ④ 파이프라인</b>으로 통합되었습니다.' },
+  detect:   { tab: 4, msg: '19차시 「객체 탐지」는 <b>20차시 탭 ⑤ 객체 탐지</b>로 통합되었습니다.' }
+};
+
+function cnNotice(html){
+  const root = document.getElementById('v-cnn');
+  if(!root || document.getElementById('cn-redir-note')) return;
+  const d = document.createElement('div');
+  d.className = 'info';
+  d.id = 'cn-redir-note';
+  d.setAttribute('data-no-toggle', '1');
+  d.setAttribute('role', 'status');
+  d.style.borderLeftColor = 'var(--blue)';
+  d.innerHTML = '<strong>안내 — 이 차시는 통합되었습니다</strong>' +
+    '<p class="desc" style="margin-top:0.4rem;">' + html +
+    ' 예전 주소로 들어오셨어도 같은 내용을 그대로 보실 수 있습니다.</p>';
+  root.insertBefore(d, root.firstChild);
+  setTimeout(function(){ try{ d.scrollIntoView({ block: 'start' }); }catch(e){} }, 60);
+}
+
+/* 최초 로드 시점의 해시를 미리 붙잡아 둡니다(core.js 의 startRouter 가 #home 으로 되돌리기 전에). */
+const CN_BOOT_HASH = (typeof location !== 'undefined' && location.hash) ? location.hash.replace('#', '') : '';
+
+function cnRoute(raw){
+  const parts = String(raw || '').split('/');
+  const slug = parts[0];
+  if(slug === 'cnn'){
+    const n = parseInt(parts[1], 10);
+    if(isFinite(n) && n >= 1 && n <= 5) cnTab(n - 1);
+    return true;
+  }
+  if(Object.prototype.hasOwnProperty.call(CN_REDIR, slug)){
+    const r = CN_REDIR[slug];
+    if(typeof go === 'function') go('cnn', false);
+    cnTab(r.tab);
+    cnNotice(r.msg);
+    return true;
+  }
+  return false;
+}
+
+/* ── 12. 초기화 ─────────────────────────────────────────────────────────── */
+let cnInited = false;
+function cnInit(){
+  const root = document.getElementById('v-cnn');
+  if(!root || cnInited) return;
+  cnInited = true;
+
+  if(typeof videoDeck === 'function'){ try{ videoDeck('cn-videos', 'cnn', CN_VIDEOS); }catch(e){ console.error('cn videoDeck', e); } }
+  if(typeof warmStepper === 'function'){ try{ warmStepper('cn-warm', 'cn', CN_WARM); }catch(e){ console.error('cn warmStepper', e); } }
+  if(typeof quizStepper === 'function'){
+    try{ quizStepper('cn-quiz', 'cn', CN_QUIZ); }catch(e){ console.error('cn quizStepper', e); }
+    try{ quizStepper('cn-quiz-u3', 'cnu3', CN_QUIZ_U3); }catch(e){ console.error('cn quizStepper u3', e); }
+  }
+  if(typeof chipDefs === 'function'){ try{ chipDefs('#v-cnn .cn-keys', CN_DEFS); }catch(e){ console.error('cn chipDefs', e); } }
+  if(typeof wsLinks === 'function'){ try{ wsLinks('cn-wslinks', 'cnn'); }catch(e){ console.error('cn wsLinks', e); } }
+
+  try{ cnU3MapRender(); }catch(e){ console.error('cn u3map', e); }
+
+  ['cn-ans1', 'cn-j1-ta', 'cn-j2-ta', 'cn-j3-ta', 'cn-j4-ta', 'cn-j5-ta'].forEach(cnNoteLoad);
+
+  // 「눈 vs CNN」·「내 사진 통과」 등 캔버스는 접이식이 열릴 때 크기를 맞춥니다.
+  root.querySelectorAll('details.cn-fold').forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if(!d.open) return;
+      requestAnimationFrame(function(){
+        try{
+          if(d.querySelector('#ec-wrap-eye') && typeof ecFitCanvas === 'function'){
+            if(typeof ecRender === 'function') ecRender();
+            ecFitCanvas('eye'); ecFitCanvas('cnn');
+          }
+        }catch(e){}
+      });
+    });
+  });
+
+  // 뷰가 화면에 나타나는 순간 현재 탭의 지연 init 을 한 번 더 확인합니다.
+  if(typeof MutationObserver === 'function'){
+    const vo = new MutationObserver(function(){
+      if(root.classList.contains('active')) cnTabBoot(cnCur);
+    });
+    vo.observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  if(typeof initToggles === 'function'){ try{ initToggles(root); }catch(e){} }
+}
+
+(function cnBoot(){
+  const boot = function(){
+    try{ cnInit(); }catch(e){ console.error('cnInit', e); }
+    // startRouter 보다 뒤에 실행되도록 한 틱 미룹니다(폐지 해시 처리).
+    setTimeout(function(){ try{ cnRoute(CN_BOOT_HASH); }catch(e){ console.error('cnRoute', e); } }, 0);
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.addEventListener('popstate', function(){
+    try{
+      const raw = (location.hash || '').replace('#', '');
+      if(/^(cnn\/|conv$|filter$|pool$|pipeline$|detect$)/.test(raw)) cnRoute(raw);
+    }catch(e){}
+  });
+})();
+
+/* ●●● ANCHOR-CNN (20차시) ●●● */
+
+
+/* ══════════ 37차시 재편 통합 · 31차시 INQUIRY ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   31차시 INQUIRY — 탐구의 다섯 걸음과 윤리의 경계선   (전역 접두사: iq)
+   · 뷰 파일 : views/inquiry.html  (<div class="view" id="v-inquiry">)
+   · 공통 컴포넌트(videoDeck / warmStepper / quizStepper / chipDefs / wsPrint /
+     wsLinks / initToggles / cmnGet / cmnSet / go)는 호출만 하고 수정하지 않습니다.
+   · 교육과정 준수 — 내적 기호·조건부확률 기호·회전변환은 학생 화면에 쓰지 않습니다.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. 얕은 유틸 ───────────────────────────────────────────────────────── */
+
+function iqEl(id){ return document.getElementById(id); }
+
+function iqEsc(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* 짧은 안내 띠 — 아직 배포되지 않은 뷰로 이동하려 할 때 등 */
+function iqToast(msg){
+  var old=document.querySelector('.iq-toast');
+  if(old && old.parentNode) old.parentNode.removeChild(old);
+  var d=document.createElement('div');
+  d.className='iq-toast';
+  d.setAttribute('role','status');
+  d.style.cssText='position:fixed;left:50%;bottom:1.4rem;transform:translateX(-50%);z-index:9998;'+
+    'max-width:min(30rem,92vw);background:#1a1714;color:#f5f0ea;border-radius:0.6rem;'+
+    'padding:0.7rem 1rem;font-size:0.92rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,0.25);';
+  d.textContent=msg;
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); },3200);
+}
+
+/* 후보 슬러그를 차례로 시도합니다. 아직 통합되지 않은 뷰는 안내만 띄웁니다. */
+function iqGo(cands, label){
+  var arr=Array.isArray(cands)?cands:[cands];
+  for(var i=0;i<arr.length;i++){
+    if(document.getElementById('v-'+arr[i])){
+      if(typeof go==='function') go(arr[i]);
+      return true;
+    }
+  }
+  iqToast('「'+(label||arr[0])+'」 자료는 아직 이 배포본에 들어 있지 않습니다. 차시 목록에서 확인해 주세요.');
+  return false;
+}
+
+/* STEP 2 탭 전환 */
+function iqTab(n, el){
+  var view=iqEl('v-inquiry');
+  if(!view) return;
+  var tabs=view.querySelectorAll('.tabs .tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+  if(el) el.classList.add('on');
+  else if(tabs[n]) tabs[n].classList.add('on');
+  var ps=view.querySelectorAll('.tpanel');
+  for(var j=0;j<ps.length;j++) ps[j].classList.remove('on');
+  var pn=iqEl('iq'+n);
+  if(pn) pn.classList.add('on');
+}
+
+/* 칩 정의·본문에서 해당 활동으로 이동 */
+function iqSee(tab, id){
+  var view=iqEl('v-inquiry');
+  if(!view) return;
+  var tabs=view.querySelectorAll('.tabs .tab');
+  if(typeof tab==='number' && tabs[tab]) iqTab(tab, tabs[tab]);
+  var target=(id && iqEl(id)) || tabs[tab] || null;
+  if(target && target.scrollIntoView){
+    setTimeout(function(){
+      try{ target.scrollIntoView({behavior:'smooth', block:'center'}); }
+      catch(e){ try{ target.scrollIntoView(); }catch(e2){} }
+    },60);
+  }
+}
+
+
+/* ── 1. 데이터 : 추천 영상 (전부 썸네일 200 + oEmbed 제목·채널 대조 완료) ─── */
+
+const IQ_VIDEOS=[
+  {id:'dqTWgyWgGtk', t:"'AI 채용'은 남성을 선호해?…성차별 논란에 '자체 폐기'", s:'JTBC News · 탭② 사례 1의 근거'},
+  {id:'LksanwqE73Y', t:'알고리즘 채용의 블랙박스 — 이력서 편향을 막아라', s:'베드 사이언스 · 방식 C 논의로 직결'},
+  {id:'Kyr3MXt_p8A', t:'[팩트체크] 자율주행차 교통사고, 책임은 누가질까?', s:'JTBC News · 세 번째 서랍(수학 밖)'},
+  {id:'xms3OOi6uHM', t:'세상의 모든 법칙 — 트롤리 딜레마, 당신의 선택은?', s:'EBS 교양 · 계산이 답하지 못하는 결정'},
+  {id:'RufLe4Q5FYs', t:'AI 영상 분류 오인식 논란 (데이터의 편향성 ①)', s:'MBC 뉴스 · 5차시 복습'}
+];
+
+
+/* ── 2. 데이터 : 마중 퀴즈 3문항 (합본 p.324 문항01·02 · 주제 적합성) ───── */
+
+const IQ_WARM=[
+  {q:"다음 중 인공지능을 활용한 '합리적 의사 결정'에 대한 설명으로 적절하지 않은 것은?",
+   opts:['문제 해결을 위해 최적의 대안을 찾고 실행하는 과정을 뜻한다',
+         '단순한 의사 결정을 자동화해 인력과 시간을 절약할 수 있다',
+         '직관이나 경험에만 의존할 때 생기는 부정확함을 줄일 수 있다',
+         '인공지능의 결론은 항상 수학적으로 완벽하므로 그대로 받아들여야 한다'],
+   answer:3,
+   explain:'인공지능의 결론은 <b>자료와 손실함수와 하이퍼파라미터의 결과물</b>입니다. 자료가 치우쳐 있으면 결론도 치우칩니다. 그래서 씨마스 교과서는 "결과가 모든 이에게 공정하게 적용되는지, 누가 책임지는지, 근거가 충분한지"를 사용자가 확인해야 한다고 적어 두었습니다. (합본 p.324 문항01 · 씨마스 교과서 Ⅴ p.186 서술을 재구성)'},
+  {q:'인공지능 수학 탐구의 다섯 단계를 올바른 순서대로 나열한 것은?',
+   opts:['데이터 수집 → 주제 선정 → 탐구 수행 → 결과 정리 → 평가',
+         '주제 선정 → 데이터 분석 → 데이터 수집 → 결과 해석 → 평가',
+         '탐구 주제 선정 → 자료 수집 및 분석 → 탐구 수행 → 탐구 결과 정리 → 평가 및 고찰',
+         '문제 정의 → 데이터 수집 → 결과 해석 → 데이터 분석 → 후속 계획'],
+   answer:2,
+   explain:'<b>주제가 먼저</b>입니다. 무엇을 알고 싶은지가 정해지지 않으면 어떤 자료를 모아야 할지도 정할 수 없습니다(①의 오류). 그리고 <b>수집이 분석보다 앞섭니다</b>(②의 오류). 오늘 탭①에서 각 걸음마다 무엇을 만들어 내야 하는지까지 확인합니다. (합본 p.324 문항02 · 씨마스 교과서 Ⅴ p.188 서술을 재구성)'},
+  {q:'어느 팀이 "인공지능의 역사를 조사한다"를 탐구 주제로 냈는데 반려되었습니다. 그 이유로 가장 적절한 것은?',
+   opts:['주제가 너무 어렵기 때문이다',
+         '인공지능과 관련이 없기 때문이다',
+         '자료를 수치화하여 수학적 개념·원리를 적용할 여지가 없어 검색 정리로 끝나기 때문이다',
+         'SDGs와 연결되지 않기 때문이다'],
+   answer:2,
+   explain:'탐구 주제를 고를 때는 네 가지를 봅니다 — <b>주어진 시간에 해결 가능한가 / 배운 수학 개념·원리를 활용할 수 있는가 / 필요한 자료를 충분히 모아 수치화할 수 있는가 / 인공지능 속 수학 원리를 탐구하는 것이 목표에 들어 있는가.</b> \'역사 조사\'는 세 번째·네 번째를 충족하지 못합니다. SDGs 연계는 권장 사항이지 필수 조건이 아닙니다. 탭③의 폼이 이 네 기준을 자동으로 점검해 줍니다. (합본 p.312·p.324 · 씨마스 교과서 Ⅴ p.190 서술을 재구성)'}
+];
+
+
+/* ── 3. 데이터 : 형성평가 5문항 (합본 pp.324~325 문항과 정합) ──────────── */
+
+const IQ_QUIZ=[
+  {q:"'인공지능 수학 탐구 과정'의 다섯 단계를 올바른 순서대로 나열한 것은?",
+   opts:['데이터 수집 → 주제 선정 → 탐구 수행 → 결과 정리 → 평가',
+         '주제 선정 → 데이터 분석 → 데이터 수집 → 결과 해석 → 평가',
+         '주제 탐색 → 탐구 수행 → 데이터 수집 → 결과 정리 → 결과 해석',
+         '탐구 주제 선정 → 자료 수집 및 분석 → 탐구 수행 → 탐구 결과 정리 → 평가 및 고찰'],
+   answer:3,
+   explain:'주제가 먼저이고(①③의 오류), 수집이 분석보다 앞서며(②의 오류), 마지막은 평가와 고찰입니다. 오늘 탭①의 배치 활동에서 확인한 순서 그대로입니다. <b>[12인수05-02]</b>'},
+  {q:'인공지능 수학 탐구 주제를 선정할 때 고려해야 할 사항으로 옳은 것만을 있는 대로 고르세요. ㄱ. 주어진 시간 내에 해결 가능한 난이도인가 / ㄴ. 학습한 수학적 개념과 원리를 활용할 수 있는가 / ㄷ. 필요한 자료를 충분히 수집하고 수치화할 수 있는가 / ㄹ. 인공지능 기술 속에서 수학적 원리를 탐구하는 것이 목표에 포함되는가',
+   opts:['ㄱ, ㄴ','ㄴ, ㄷ','ㄱ, ㄴ, ㄹ','ㄴ, ㄷ, ㄹ','ㄱ, ㄴ, ㄷ, ㄹ'],
+   answer:4,
+   explain:'네 가지 모두 필요합니다. 탭③의 폼이 이 네 기준을 실시간으로 점검한 것이 바로 이 문항입니다. 특히 <b>ㄷ의 수치화</b>와 <b>ㄹ의 원리 탐구</b>가 빠지면 아무리 좋은 주제라도 검색 정리로 끝납니다. (합본 p.324 문항03과 동일 취지)'},
+  {q:'인공지능이 비합리적인 결정을 내리는 원인과 그에 대한 대응으로 가장 적절한 것은?',
+   opts:['알고리즘이 복잡하기 때문이므로 더 단순한 모델을 쓴다',
+         '특정 집단의 자료가 지나치게 큰 비중을 차지했기 때문일 수 있으므로, 결과를 집단별로 나누어 정확도를 비교한다',
+         '컴퓨터의 계산 오차 때문이므로 더 정밀한 계산을 한다',
+         '민감한 항목(성별·인종)을 자료에서 지우면 문제가 완전히 해결된다'],
+   answer:1,
+   explain:'씨마스 교과서가 든 원인은 두 가지입니다 — <b>잘못된 정보가 섞인 자료</b>와 <b>특정 집단의 과대 비중</b>. 그래서 대응의 출발점은 결과를 <b>집단별로 나누어 재는 것</b>입니다. ④는 오늘 활동 ③의 방식 C가 보여 준 대로 틀렸습니다 — 대리 변수가 남아 격차 <b>17.9%p</b>가 그대로 있었습니다. <b>[12인수05-01]</b>'},
+  {q:'활동 ③의 결과입니다. (A 단일 기준선 — 격차 25.0%p · 정확도 82.0% / B 집단별 기준선 — 격차 0.0%p · 정확도 78.0%) 이 표에서 읽어 낼 수 있는 결론으로 가장 적절한 것은?',
+   opts:['방식 B가 수학적으로 언제나 옳은 선택이다',
+         '방식 A가 정확도가 높으므로 언제나 옳은 선택이다',
+         '격차를 없애는 데는 정확도 4%p라는 비용이 따르며, 그 비용을 치를지는 사람이 판단해야 한다',
+         '두 방식의 차이는 계산 오차이므로 무시할 수 있다'],
+   answer:2,
+   explain:'수학이 해 준 일은 <b>"격차 25%p의 값은 정확도 4%p"</b>라는 교환 비율을 정확히 계산한 것입니다. 어느 쪽이 옳은지는 계산의 결론이 아닙니다. ①②처럼 한쪽을 \'언제나 옳다\'고 말하는 순간 계산이 판단을 대신하게 되고, 그것이 바로 오늘 경계선을 그은 이유입니다.'},
+  {q:'다음 중 지속가능발전목표(SDGs)와 연계한 인공지능 수학 탐구 활동으로 적절하지 않은 것은?',
+   opts:['뉴스 기사의 연관어 분석으로 \'기후 변화 대응\' 관련 주제를 탐색한다',
+         '온실가스 배출량과 해수면 높이 사이의 추세선을 구해 미래를 예측한다',
+         '공공 데이터로 장애인 이동 편의를 높이는 배차 알고리즘을 개선한다',
+         '인공지능 번역기의 성차별적 결과는 데이터의 문제이므로 수학적 탐구 대상에서 제외한다'],
+   answer:3,
+   explain:'<b>"데이터의 문제"라는 말이 곧 "수학의 대상이 아니다"라는 뜻이 될 수 없습니다.</b> 오히려 자료의 치우침은 빈도를 세고 비율을 비교하는 가장 전형적인 수학적 탐구 대상입니다. 오늘 탭②에서 이 사례(카드 7)를 <b>A 서랍</b>으로 분류했습니다. SDGs 목표 5(성평등)·10(불평등 감소)과도 직접 연결됩니다. (합본 p.325 문항05와 동일)'}
+];
+
+
+/* ── 4. 데이터 : 핵심 개념 칩 상세 (정의 · 예시 · 이번 차시 · 앞뒤 차시 · 출처) ── */
+
+const IQ_DEFS={
+  '합리적 의사 결정':
+    '<p><b>정의</b> — 여러 선택지 가운데 <b>최적의 선택</b>을 하는 것입니다. 씨마스 교과서는 이를 잘하기 위한 네 가지 요소를 듭니다 — '+
+    '<b>목표</b>(문제를 정의하고 해결 목표를 세운다), <b>정보</b>(충분한 정보를 모은다), <b>선택</b>(정보를 분석해 여러 선택지를 만든다), '+
+    '<b>평가</b>(선택한 결과가 합리적이었는지 평가한다). 인공지능은 이 네 요소 가운데 특히 \'정보\'와 \'선택\'에서 사람보다 빠르고 넓게 일합니다.</p>'+
+    '<p><b>예시</b> — ① 여행지를 고를 때 가격·편의 시설·음식을 함께 고려해 가장 알맞은 곳을 정하는 일. '+
+    '② 도로 상황 예측 시스템: 실시간 차량 흐름·기상·사고 자료를 모아(정보) 5~15분 뒤를 예측하고(선택) 신호를 조절한다(결정). '+
+    '③ 인공지능이 대신할 수 <b>없는</b> 부분: "무엇을 목표로 삼을지" 자체를 정하는 일. 목표를 정하는 사람은 언제나 사람입니다.</p>'+
+    '<p><b>이번 차시에서는</b> — 탭②에서 사례를 세 서랍으로 가르는 기준이 바로 이 네 요소입니다. '+
+    '\'정보\'와 \'선택\'의 문제는 대개 수학으로 고칠 수 있고, \'목표\'와 \'평가\'의 문제는 사람이 결정해야 합니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqSee(1,\'iq-cases-h\')">탭②로 이동</button></div>'+
+    '<p><b>앞뒤 차시 연결</b> — 4단원 전체가 \'선택\'을 자동화하는 수학이었습니다: 확률로 예측하고, 손실을 정의하고, 최적을 찾았습니다. '+
+    '다음 차시에서는 사례 다섯 건을 3단 구조로 직접 해부합니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqGo([\'prob\'],\'21차시 확률\')">21차시 확률</button>'+
+    '<button class="btn" type="button" onclick="iqGo([\'optim\'],\'25~28차시 최적화\')">25~28차시 손실함수·최적화</button>'+
+    '<button class="btn" type="button" onclick="iqGo([\'decision\'],\'32차시\')">32차시 의사 결정</button></div>'+
+    '<p class="iq-src">출처 — 씨마스 교과서 Ⅴ pp.181~182 서술을 재구성</p>',
+
+  '인공지능 수학 탐구 5단계':
+    '<p><b>정의</b> — 탐구를 다섯 걸음으로 나눈 뼈대입니다. '+
+    '<b>① 탐구 주제 선정 → ② 자료 수집 및 분석 → ③ 탐구 수행 → ④ 탐구 결과 정리 → ⑤ 평가 및 고찰</b>. '+
+    '①에서는 배운 내용을 활용할 수 있는 주제를 고르고, ②에서는 인터넷·문헌·공공 데이터로 폭넓게 모으고, '+
+    '③에서는 수학적 방법과 공학 도구로 실제로 해 보고, ④에서는 결과와 함께 <b>인공지능에서 수학이 어떻게 쓰였는지</b>를 분석하고, '+
+    '⑤에서는 잘된 점·배운 점·개선할 점을 돌아봅니다.</p>'+
+    '<p><b>예시</b> — ① 페트병 분리수거: 주제 선정(플라스틱 오염) → 자료 수집(페트병·캔 이미지) → '+
+    '수행(이미지를 0/1 행렬로 바꾸고 해밍 거리 계산) → 정리(해밍 거리가 0에 가까운 것으로 분류) → 고찰(왜곡된 이미지는 실패). '+
+    '② ChatGPT 원리: 주제 선정 → 자료 수집(단어 임베딩 기초) → 수행(벡터 연산으로 단어 관계 확인) → 정리 → 고찰(복잡한 문맥은 못 잡는다).</p>'+
+    '<p><b>이번 차시에서는</b> — 탭①의 <b>원형 진행 링</b>에서 단계를 하나씩 눌러 "무엇을 하고, 무엇을 만들어 내는지"를 확인하고, '+
+    '각 단계가 <b>보고서 A~F 중 어느 칸</b>을 채우는지 연결합니다. 두 예시는 오버레이로 통째로 볼 수 있습니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqSee(0,\'iq-ring-h\')">탭①로 이동</button></div>'+
+    '<p><b>앞뒤 차시 연결</b> — 다음 차시에 이 링의 ①을 마치고, 그다음 차시에 ②③을 수행하고, 마지막 차시에 ④⑤를 발표로 완성합니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqGo([\'decision\'],\'32차시\')">32차시 탐구 설계</button>'+
+    '<button class="btn" type="button" onclick="iqGo([\'datalab\'],\'33차시\')">33차시 탐구 수행</button>'+
+    '<button class="btn" type="button" onclick="iqGo([\'project\'],\'34차시\')">34차시 발표·성찰</button></div>'+
+    '<p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.188 · pp.194~197 · 연수교재 합본 pp.309·313~316 서술을 재구성</p>',
+
+  '데이터 편향과 공정성':
+    '<p><b>정의</b> — 인공지능이 비합리적인 결정을 내리는 원인은 대개 둘입니다. <b>잘못된 정보가 섞인 자료</b>를 배웠거나, '+
+    '<b>특정 집단의 자료가 지나치게 큰 비중</b>을 차지하는 자료를 배웠기 때문입니다. 그래서 사용자는 네 가지를 확인해야 합니다 — '+
+    '결과가 <b>모든 이에게 공정하게</b> 적용되는가, <b>균형 있게</b> 적용되는가, 결과를 <b>누가 책임지는가</b>, <b>근거와 신뢰성</b>이 충분한가.</p>'+
+    '<p><b>예시</b> — ① 과거 10년간 남성이 많이 채용된 자료로 학습한 채용 모델이 여성 지원자를 낮게 평가한 사례(실제 보도). '+
+    '② 얼굴 인식 모델이 특정 인종에서 오인식률이 높게 나오는 사례. '+
+    '③ 5차시에서 우리가 만든 상황: 한식 자료 0장으로 학습한 모델의 전체 정확도 95%, 한식 정확도 0%.</p>'+
+    '<p><b>이번 차시에서는</b> — 탭②의 사례 카드 8장을 세 서랍으로 가릅니다. 이어서 활동 ③에서 <b>합격 기준선(임계값)을 움직여</b> '+
+    '집단 간 격차와 전체 정확도가 서로 반대로 움직이는 장면을 봅니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqSee(1,\'iq-cases-h\')">탭②로 이동</button></div>'+
+    '<p><b>앞뒤 차시 연결</b> — 5차시에서 편향을 수로 재고 부등식으로 필요한 추가 수집량을 구했습니다. '+
+    '오늘은 그다음 질문 — <b>"그래서 무엇을 공정이라고 부를 것인가"</b>로 넘어갑니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqGo([\'bias\'],\'5차시 편향\')">5차시 빅데이터와 편향</button></div>'+
+    '<p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.186 서술을 재구성</p>',
+
+  '상충하는 두 목표':
+    '<p><b>정의</b> — 두 개의 좋은 목표가 <b>동시에 최대가 될 수 없는</b> 관계를 상충이라고 합니다. '+
+    '인공지능 공정성 문제의 핵심이 여기 있습니다. <b>전체 정확도를 최대로 하는 모델</b>과 <b>집단 간 격차를 최소로 하는 모델</b>은 '+
+    '대개 서로 다른 모델입니다. 수학은 두 목표를 각각 수로 재어 주고, 하나를 얼마나 내놓으면 다른 하나가 얼마나 좋아지는지를 '+
+    '<b>계산해 줄 수</b> 있습니다. 그러나 <b>어디서 멈출지는 계산이 정해 주지 않습니다.</b></p>'+
+    '<p><b>예시</b> — ① 오늘의 가상 자료(200명): 단일 기준선을 쓰면 정확도 82.0%·격차 25.0%p, '+
+    '집단별 기준선을 쓰면 정확도 78.0%·격차 0.0%p → <b>격차 25%p의 값은 정확도 4%p</b>. '+
+    '② 손실함수를 고르는 일(이상치에 강한 자 vs 큰 오차를 크게 벌하는 자)도 같은 종류의 결정입니다.</p>'+
+    '<p><b>이번 차시에서는</b> — 탭② 활동 ③의 슬라이더를 움직이면 두 막대가 <b>반대 방향으로</b> 움직입니다. '+
+    '그 장면을 보고 "우리 반이라면 어디서 멈출 것인가"를 각자 정하고 근거를 적습니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqSee(1,\'iq-cases-h\')">탭②로 이동</button></div>'+
+    '<p><b>앞뒤 차시 연결</b> — 5차시의 혼동행렬(정밀도와 재현율이 서로 밀고 당기던 관계), 24차시의 과적합(훈련 오차와 검증 오차의 상충), '+
+    '25~28차시의 \'자 고르기\' — 앞 단원 내내 만난 구조가 여기서 사회적 결정으로 이어집니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqGo([\'bias\'],\'5차시 편향\')">5차시 혼동행렬</button>'+
+    '<button class="btn" type="button" onclick="iqGo([\'trend\'],\'24차시 과적합\')">24차시 과적합</button>'+
+    '<button class="btn" type="button" onclick="iqGo([\'optim\'],\'25~28차시 최적화\')">25~28차시 손실함수</button></div>'+
+    '<p class="iq-src">출처 — 연수교재 합본(오세준 집필분) "Accuracy 최대화 vs Fairness gap 최소화 — 두 목표는 상충" 서술을 재구성</p>',
+
+  '지속가능발전목표(SDGs)':
+    '<p><b>정의</b> — 2015년 UN 총회에서 2030년까지 달성하기로 결의한 <b>인류 공동의 17개 목표</b>입니다. '+
+    '빈곤·기아·질병·불평등·기후 변화 등 전 인류가 직면한 문제를 해결하기 위한 의제이고, 크게 '+
+    '<b>인간·번영·환경·평화</b> 네 영역으로 묶입니다. 우리 교육과정은 "환경, 생태, 지속가능한 발전, 기후변화 등에서 활용되는 '+
+    '인공지능의 수학적 원리를 탐구하게 하여 <b>생태전환</b>을 실천"하도록 권하고 있습니다.</p>'+
+    '<p><b>예시</b> — ① 목표 13 기후 변화 대응: 온실가스 배출량과 해수면 높이의 관계를 추세선으로 분석해 미래를 예측. '+
+    '② 목표 10·11: 장애인 콜택시 대기 시간을 줄이는 배차 알고리즘 개선(공공데이터포털 자료). '+
+    '③ 목표 12: 급식 잔반량을 최소화하는 인원 예측(경사하강법). '+
+    '④ 목표 14·15: 페트병 분리수거 자동 분류(해밍 거리) — 씨마스 예시 1.</p>'+
+    '<p><b>이번 차시에서는</b> — 탭③에서 SDGs 칩 17개와 <b>수학 도구 칩</b> 8개를 교차 선택하면, '+
+    '그 조합에 맞는 <b>주제 카드와 데이터 출처, 다시 볼 뷰의 바로가기</b>가 만들어집니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqSee(2,\'iq-form-h\')">탭③으로 이동</button></div>'+
+    '<p><b>앞뒤 차시 연결</b> — 1~4단원의 모든 뷰가 탭③의 \'다시 볼 뷰\' 목록에 등장합니다. '+
+    '프로젝트 3차시가 끝나면 마지막 회고에서 "우리 팀이 쓴 수학"을 그 지도 위에 표시합니다.</p>'+
+    '<div class="btn-row"><button class="btn" type="button" onclick="iqGo([\'project\'],\'34차시\')">34차시 회고</button></div>'+
+    '<p class="iq-src">출처 — 씨마스 교과서 Ⅴ p.189 · 연수교재 합본 p.318 서술을 재구성</p>'
+};
+
+
+
+/* ═══════════ 탭 ① 탐구의 다섯 걸음 ═══════════════════════════════════════ */
+
+/* ── 5-1. 배치 미니 활동 (카드 6장 · 슬롯 5칸 · 함정 1장) ───────────────── */
+
+const IQ_PLACE=[
+  {t:'자료 수집 및 분석', o:2},
+  {t:'평가 및 고찰',     o:5},
+  {t:'탐구 주제 선정',   o:1},
+  {t:'탐구 결과 정리',   o:4},
+  {t:'탐구 수행',        o:3},
+  {t:'결론 먼저 정하기', o:0, trap:true}
+];
+
+let iqPlaceSlots=[null,null,null,null,null];
+let iqPlaceSel=-1;
+
+function iqPlaceRender(){
+  const cbox=iqEl('iq-pcards'), sbox=iqEl('iq-slots');
+  if(!cbox||!sbox) return;
+  cbox.innerHTML='';
+  IQ_PLACE.forEach(function(c,i){
+    const used=(iqPlaceSlots.indexOf(i)>=0);
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='iq-pcard'+(used?' used':'')+(iqPlaceSel===i?' sel':'');
+    b.textContent=c.t;
+    b.setAttribute('aria-pressed', iqPlaceSel===i?'true':'false');
+    if(!used) b.addEventListener('click',function(){ iqPlaceSel=(iqPlaceSel===i?-1:i); iqPlaceRender(); });
+    cbox.appendChild(b);
+  });
+  sbox.innerHTML='';
+  for(let k=0;k<5;k++){
+    (function(k){
+      const idx=iqPlaceSlots[k];
+      const d=document.createElement('button');
+      d.type='button';
+      d.className='iq-slot'+(idx===null?'':' full');
+      d.innerHTML='<span class="n">'+(k+1)+'단계</span><span class="t">'+
+        (idx===null?'<span style="color:var(--muted);font-weight:400;">여기에 놓기</span>':iqEsc(IQ_PLACE[idx].t))+'</span>';
+      d.addEventListener('click',function(){
+        if(idx!==null){ iqPlaceSlots[k]=null; iqPlaceRender(); iqPlaceFb(''); return; }
+        if(iqPlaceSel<0){ iqPlaceFb('먼저 위의 카드를 하나 고른 뒤 칸을 눌러 주세요.','no'); return; }
+        const card=IQ_PLACE[iqPlaceSel];
+        if(card.trap){
+          iqPlaceFb('✗ 이 카드는 슬롯에 들어갈 수 없습니다.','no',
+            '<b>결론을 먼저 정하고 자료를 찾으면 탐구가 아니라 증명이 됩니다.</b> 이 카드는 버려 주세요. 탐구는 "무엇이 궁금한가"에서 출발합니다.');
+          iqPlaceSel=-1; iqPlaceRender(); return;
+        }
+        iqPlaceSlots[k]=iqPlaceSel; iqPlaceSel=-1; iqPlaceRender(); iqPlaceFb('');
+      });
+      sbox.appendChild(d);
+    })(k);
+  }
+}
+
+function iqPlaceFb(msg, kind, extra){
+  const fb=iqEl('iq-place-fb');
+  if(!fb) return;
+  if(!msg){ fb.className='iq-fb'; fb.innerHTML=''; return; }
+  fb.className='iq-fb '+(kind||'');
+  fb.innerHTML=iqEsc(msg)+(extra?'<span class="x">'+extra+'</span>':'');
+}
+
+function iqPlaceCheck(){
+  const sbox=iqEl('iq-slots');
+  if(!sbox) return;
+  const cells=sbox.querySelectorAll('.iq-slot');
+  let filled=0, right=0;
+  for(let k=0;k<5;k++){
+    const idx=iqPlaceSlots[k];
+    if(idx===null) continue;
+    filled++;
+    const ok=(IQ_PLACE[idx].o===k+1);
+    if(ok) right++;
+    if(cells[k]) cells[k].classList.add(ok?'ok':'bad');
+  }
+  if(filled<5){ iqPlaceFb('아직 '+(5-filled)+'칸이 비어 있습니다.','no','다섯 칸을 모두 채운 뒤 확인해 보세요. 카드 여섯 장 중 <b>한 장은 버려야</b> 합니다.'); return; }
+  if(right===5){
+    iqPlaceFb('✓ 정확합니다. 다섯 걸음이 완성되었습니다.','ok',
+      '① 탐구 주제 선정 → ② 자료 수집 및 분석 → ③ 탐구 수행 → ④ 탐구 결과 정리 → ⑤ 평가 및 고찰. '+
+      '아래 <b>원형 진행 링</b>에서 각 걸음의 산출물과 보고서 칸을 확인해 보세요.');
+    iqStage(1);
+    const ring=iqEl('iq-ring-h');
+    if(ring && ring.scrollIntoView){ setTimeout(function(){ try{ring.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}} ,220); }
+  }else{
+    iqPlaceFb('✗ '+right+'칸이 맞았습니다. 초록 테두리는 맞은 칸, 붉은 테두리는 자리를 바꿔야 하는 칸입니다.','no',
+      '두 가지만 기억하면 됩니다 — <b>주제가 자료보다 먼저</b>이고, <b>평가·고찰이 맨 마지막</b>입니다.');
+  }
+}
+
+function iqPlaceReset(){
+  iqPlaceSlots=[null,null,null,null,null];
+  iqPlaceSel=-1;
+  iqPlaceRender();
+  iqPlaceFb('');
+}
+
+
+/* ── 5-2. 원형 진행 링 5칸 ───────────────────────────────────────────── */
+
+const IQ_STAGES=[
+  {n:'① 탐구 주제 선정', doing:'Ⅰ~Ⅳ단원에서 배운 내용을 활용할 수 있는 주제를 고릅니다. 시간·난이도를 반드시 검토합니다. 어려우면 SDGs에서 영역을 먼저 정하고 자료를 탐색합니다.',
+   out:'탐구 주제 1줄 · 선정 이유 · 탐구 목표 · <b>변수 x와 y의 정의</b>', rep:'A', when:'오늘 탭③ + 32차시',
+   role:'전원', rk:'o'},
+  {n:'② 자료 수집 및 분석', doing:'인터넷·문헌·공공 데이터로 폭넓게 최신 자료를 모으고 분석합니다. 결측값·이상치를 처리하고 형식을 통일합니다.',
+   out:'데이터 출처와 수집 방법 · 정형/비정형 여부와 속성 · <b>전처리 기록</b>', rep:'B', when:'33차시',
+   role:'데이터 수집가', rk:'b'},
+  {n:'③ 탐구 수행', doing:'수학적 방법으로 탐구를 진행합니다. 공개된 모델이나 공학 도구를 활용해도 됩니다.',
+   out:'활용한 수학 개념과 이유 · 선택한 방식 · <b>모델 수식</b>(f(x)=ax+b, 손실함수 L(a) 등) · 시각화 · 결과값', rep:'C·D', when:'33차시',
+   role:'수학 모델러 · 기술 구현자', rk:'g'},
+  {n:'④ 탐구 결과 정리', doing:'결과를 명확히 기술하고 <b>인공지능에서 수학의 연관성</b>을 분석합니다. 어떤 개념이 어떻게 쓰였는지 짚습니다.',
+   out:'결과 해석 · 타당성 검토 · <b>한계와 편향</b>', rep:'D·E', when:'34차시',
+   role:'비평 및 분석가', rk:'r'},
+  {n:'⑤ 평가 및 고찰', doing:'과정과 결과를 공유·평가하고, 배운 점과 개선할 부분을 고찰합니다.',
+   out:'달성 정도 · 배운 점 · 향후 계획 · 기여도와 자기평가', rep:'E·F', when:'34차시',
+   role:'전원', rk:'o'}
+];
+
+let iqStageCur=1;
+
+function iqArcPath(cx,cy,r1,r2,a0,a1){
+  function pt(r,a){
+    const t=(a-90)*Math.PI/180;
+    return [(cx+r*Math.cos(t)).toFixed(2), (cy+r*Math.sin(t)).toFixed(2)];
+  }
+  const p1=pt(r2,a0), p2=pt(r2,a1), p3=pt(r1,a1), p4=pt(r1,a0);
+  const laf=(a1-a0)>180?1:0;
+  return 'M'+p1[0]+' '+p1[1]+' A'+r2+' '+r2+' 0 '+laf+' 1 '+p2[0]+' '+p2[1]+
+         ' L'+p3[0]+' '+p3[1]+' A'+r1+' '+r1+' 0 '+laf+' 0 '+p4[0]+' '+p4[1]+' Z';
+}
+
+function iqRingRender(){
+  const svg=iqEl('iq-ring');
+  if(svg){
+    let s='';
+    const cx=130, cy=130;
+    const NUM=['①','②','③','④','⑤'];
+    for(let i=0;i<5;i++){
+      const a0=i*72+2.4, a1=(i+1)*72-2.4, am=(a0+a1)/2;
+      const on=(iqStageCur===i+1);
+      s+='<path class="seg" data-i="'+(i+1)+'" d="'+iqArcPath(cx,cy,64,100,a0,a1)+'" '+
+         'fill="'+(on?'var(--fg)':'var(--card)')+'" stroke="var(--border)" stroke-width="1.5">'+
+         '<title>'+iqEsc(IQ_STAGES[i].n)+'</title></path>';
+      const t=(am-90)*Math.PI/180;
+      const tx=(cx+82*Math.cos(t)).toFixed(1), ty=(cy+82*Math.sin(t)+6).toFixed(1);
+      s+='<text class="seg" data-i="'+(i+1)+'" x="'+tx+'" y="'+ty+'" font-size="19" font-weight="700" '+
+         'text-anchor="middle" fill="'+(on?'var(--bg)':'var(--fg)')+'">'+NUM[i]+'</text>';
+    }
+    s+='<circle cx="130" cy="130" r="56" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/>';
+    s+='<text x="130" y="122" font-size="13" text-anchor="middle" fill="var(--muted)">탐구</text>';
+    s+='<text x="130" y="142" font-size="15" font-weight="700" text-anchor="middle" fill="var(--fg)">다섯 걸음</text>';
+    svg.innerHTML=s;
+    const segs=svg.querySelectorAll('.seg');
+    for(let k=0;k<segs.length;k++){
+      segs[k].addEventListener('click',function(){ iqStage(parseInt(this.getAttribute('data-i'),10)); });
+    }
+  }
+  const col=iqEl('iq-ringcol');
+  if(col){
+    col.innerHTML='';
+    IQ_STAGES.forEach(function(st,i){
+      const b=document.createElement('button');
+      b.type='button';
+      b.className=(iqStageCur===i+1?'on':'');
+      b.textContent=st.n;
+      b.addEventListener('click',function(){ iqStage(i+1); });
+      col.appendChild(b);
+    });
+  }
+}
+
+function iqStage(n){
+  iqStageCur=n;
+  const st=IQ_STAGES[n-1];
+  const box=iqEl('iq-stage');
+  if(box && st){
+    box.innerHTML='<h4>'+iqEsc(st.n)+'</h4>'+
+      '<span class="lbl">무엇을 하나</span><p>'+st.doing+'</p>'+
+      '<span class="lbl">무엇을 만들어 내나 (산출물)</span><p>'+st.out+'</p>'+
+      '<span class="lbl">보고서 칸 · 언제 하나</span>'+
+      '<p><span class="iq-badge">보고서 '+iqEsc(st.rep)+'</span><span class="iq-badge o">'+iqEsc(st.when)+'</span></p>'+
+      '<span class="lbl">이 걸음의 담당 역할</span>'+
+      '<p><span class="iq-badge '+st.rk+'">'+iqEsc(st.role)+'</span></p>';
+  }
+  iqRingRender();
+}
+
+
+/* ── 5-3. 예시 오버레이 (페트병 · 임베딩 · 계획서 [A] 예시) ─────────────── */
+
+const IQ_EX={
+  pet:{
+    h:'예시 1 · 「인공지능을 이용한 페트병 분리수거」',
+    rows:[
+      ['①','탐구 주제: 인공지능을 이용한 페트병 분리수거 / <b>수학 탐구 주제: 이미지의 표현과 해밍 거리를 이용한 분류</b> / 이유: 플라스틱이 환경 오염의 주된 요인 (SDGs 14·15)'],
+      ['②','해밍 거리의 개념 조사 + 페트병·다른 재활용품 이미지 수집 / "올바르게 분리된 투명 페트병으로 의류나 가방을 만들 수 있다"는 사실 확인'],
+      ['③','이미지를 <b>0과 1의 행렬</b>로 표현하고 두 행렬 사이의 해밍 거리 계산 / 여러 표본으로 분류 정확도 시험 / 티처블 머신으로 병행 검증'],
+      ['④','기준 페트병 이미지와 해밍 거리가 0에 가까운 것을 찾아 분류 성공'],
+      ['⑤','<b>한계 2가지</b>: 크기가 다르거나 형태가 왜곡된 이미지는 정확한 분류가 어렵다 / 해밍 거리는 위치별 차이만 보므로 이미지의 전체적인 차이를 비교하기 어렵다 → 향후: 분류 정확도를 높이는 다른 수학적 방법 탐구']
+    ],
+    btns:[['18차시 손글씨·해밍 거리 다시 보기',"iqGo(['imgcls','hamming','mnist'],'18차시 해밍 거리')"],
+          ['14차시 이미지는 행렬이다',"iqGo(['imgop'],'14차시 이미지=행렬')"],
+          ['티처블 머신 열기 ↗',"window.open('https://teachablemachine.withgoogle.com','_blank','noopener')"]],
+    src:'출처 — 씨마스 교과서 Ⅴ pp.194~195 서술을 재구성'
+  },
+  emb:{
+    h:'예시 2 · 「ChatGPT의 원리 이해」',
+    rows:[
+      ['①','<b>수학 탐구 주제: 단어 임베딩에 사용되는 벡터의 연산과 기하적 표현</b>'],
+      ['②','자연어 처리와 단어 임베딩 기초 자료 수집 / 벡터 연산과 기하적 표현 조사'],
+      ['③','질의문 → 형태소 분석 → 단어 임베딩 → 언어 모델(확률로 다음 단어 예측) 흐름 정리 / word2vec 사이트에서 벡터 연산 확인(예: 한국 − 서울 + 도쿄 = 일본)'],
+      ['④','벡터 연산이 단어 사이의 의미 관계를 나타냄을 확인 / 벡터의 덧셈·실수배와 기하적 표현 정리'],
+      ['⑤','<b>한계</b>: 일부 단어 쌍은 잘 되지만 복잡한 문맥적 뉘앙스는 포착하지 못한다 → 향후: 더 정교한 임베딩 모델과 다양한 언어·문맥 탐색']
+    ],
+    btns:[['8차시 텍스트를 벡터로',"iqGo(['text'],'8차시 벡터 표현')"],
+          ['11차시 유사도',"iqGo(['sim'],'11차시 유사도')"],
+          ['word2vec.kr 열기 ↗',"window.open('http://word2vec.kr/search/','_blank','noopener')"]],
+    src:'출처 — 씨마스 교과서 Ⅴ pp.196~197 서술을 재구성'
+  },
+  form:{
+    h:'계획서 [A] 작성 예시 두 편',
+    rows:[
+      ['탐구 주제','① 인공지능을 이용한 페트병 분리수거 &nbsp;/&nbsp; ② 기온에 따른 교내 매점 음료 수요 예측'],
+      ['수학 탐구 주제','① 이미지의 행렬 표현과 <b>해밍 거리</b>를 이용한 분류 &nbsp;/&nbsp; ② <b>손실함수 L(a)의 최소화와 경사하강법</b>'],
+      ['선정 이유','① 플라스틱이 환경 오염의 주된 요인이며 올바른 분리배출이 재활용률을 좌우한다(SDGs 14·15) &nbsp;/&nbsp; ② 매점 폐기량을 줄이면 비용과 음식물 쓰레기가 함께 줄어든다(SDGs 12)'],
+      ['탐구 목표','① 두 이미지의 해밍 거리로 재활용품을 분류할 수 있는지, 그리고 <b>어떤 경우에 실패하는지</b>를 확인한다 &nbsp;/&nbsp; ② 기온과 판매량의 관계를 직선 모델로 세우고 손실을 최소로 하는 기울기를 구하는 <b>원리</b>를 확인한다'],
+      ['변수 정의','① x = 28×28 이진 이미지 행렬, y = 페트병/캔 분류 결과 &nbsp;/&nbsp; ② x = 그날의 최고 기온(℃), y = 음료 판매량(개)'],
+      ['데이터 출처','① 직접 촬영 40장 + 티처블 머신 &nbsp;/&nbsp; ② 기상자료개방포털 일별 기온 60일 + 매점 판매 일지 60일(직접 수집)']
+    ],
+    btns:[],
+    src:'출처 — 씨마스 교과서 Ⅴ pp.194~197 · 연수교재 합본 pp.313~316 서술을 재구성'
+  }
+};
+
+function iqEx(key){
+  const d=IQ_EX[key];
+  if(!d) return;
+  const ov=document.createElement('div');
+  ov.className='iq-ov';
+  let rows='';
+  d.rows.forEach(function(r){ rows+='<tr><th>'+r[0]+'</th><td>'+r[1]+'</td></tr>'; });
+  let btns='';
+  d.btns.forEach(function(b){ btns+='<button class="btn" type="button" onclick="'+b[1]+'">'+iqEsc(b[0])+'</button>'; });
+  ov.innerHTML='<button class="x" type="button" aria-label="닫기">✕</button>'+
+    '<div class="bx"><h3>'+iqEsc(d.h)+'</h3>'+
+    '<div class="tw"><table>'+rows+'</table></div>'+
+    (btns?'<div class="rw">'+btns+'</div>':'')+
+    '<p class="src">'+iqEsc(d.src)+'</p></div>';
+  function close(){
+    document.removeEventListener('keydown',onKey);
+    if(ov.parentNode) ov.parentNode.removeChild(ov);
+  }
+  function onKey(e){ if(e.key==='Escape'||e.key==='Esc') close(); }
+  ov.querySelector('.x').addEventListener('click',close);
+  ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
+  document.addEventListener('keydown',onKey);
+  document.body.appendChild(ov);
+}
+
+
+/* ═══════════ 탭 ② 수학으로 풀리는 윤리, 풀리지 않는 윤리 ════════════════ */
+
+/* ── 6-1. 사례 카드 8장 (교사가 교체·추가할 수 있도록 분리) ───────────── */
+
+const IQ_CASES=[
+  {t:'채용 AI가 여성 지원자를 낮게 평가했다', s:'JTBC 보도 · 해당 기업 자체 폐기',
+   a:'B', p:'A',
+   x:'집단별 합격률과 정확도를 <b>측정하는 일</b>은 수학이 합니다(A). 자료를 균형 있게 다시 모으는 것도 수학입니다. 그러나 "합격률을 같게 맞추는 것"과 "직무 능력만 보는 것" 중 무엇을 공정이라 부를지는 <b>계산으로 정해지지 않습니다</b>(B). 활동 ③에서 그 값을 직접 재 봅니다.',
+   g:['bias'], gl:'5차시 편향'},
+  {t:'얼굴 인식이 특정 인종에서 오인식률이 높다', s:'MBC 보도 · 사회 관계망 서비스 영상 분류 논란',
+   a:'A', p:'',
+   x:'원인이 자료의 구성에 있고, 해결책도 수학적입니다 — 집단별 오인식률을 <b>재고</b>, 부족한 집단의 자료를 <b>더 모으고</b>, 판정 기준을 <b>조정</b>합니다. 5차시에서 필요한 추가 수집량을 부등식으로 구한 것과 같은 작업입니다.',
+   g:['bias'], gl:'5차시 편향'},
+  {t:'신용평가 점수가 사는 지역과 강하게 관련된다', s:'금융 알고리즘 공정성 논의',
+   a:'B', p:'A',
+   x:'어떤 변수가 다른 변수를 몰래 대신하고 있는지(<b>대리 변수</b>)는 유사도·상관관계로 찾아낼 수 있습니다(A). 그러나 지역 정보를 쓰지 못하게 금지할지는 <b>제도의 결정</b>입니다. 게다가 지역을 지워도 다른 변수가 그 역할을 대신할 수 있습니다.',
+   g:['sim'], gl:'11차시 유사도'},
+  {t:'자율주행차 사고의 책임은 누구에게 있는가', s:'JTBC 팩트체크 · 씨마스 Ⅴ p.184 생각해 보기',
+   a:'C', p:'',
+   x:'사고 확률을 계산하고 어느 상황에서 위험이 커지는지 분석하는 일은 수학이 합니다. 그러나 <b>책임의 배분</b>은 법과 제도의 문제입니다. 씨마스 교과서도 이 물음을 \'생각해 보기\'로만 남겨 둡니다.',
+   g:[], gl:''},
+  {t:'생성형 AI가 사실과 다른 정보를 그럴듯하게 만들어 낸다', s:'씨마스 Ⅴ p.185 생각해 보기(환각 현상)',
+   a:'B', p:'',
+   x:'모델이 답의 <b>확신 정도를 확률로 밝히게</b> 하고 출처를 검증하는 절차를 넣는 것은 수학·공학의 일입니다. 그러나 "어느 정도의 오류까지 허용할 것인가"는 사회적 합의입니다. 20차시에서 신뢰도 기준선을 어디에 둘지 물었던 것과 같은 자리입니다.',
+   g:['cnn','detect'], gl:'20차시 신뢰도 기준선'},
+  {t:'인공지능 판사가 형량을 정한다', s:'씨마스 Ⅴ p.183 생각해 보기',
+   a:'C', p:'',
+   x:'판결 시간을 줄이고 유사 사건을 찾아 주는 것까지는 도구입니다. 그러나 교과서가 짚듯 "비슷해 보이는 범죄라도 상황과 배경이 모두 다르고", 양형은 <b>가치의 판단</b>입니다. 빠른 것이 곧 좋은 것도 아닙니다.',
+   g:[], gl:''},
+  {t:"번역기가 '간호사'를 she로, '의사'를 he로 옮긴다", s:'tvN STORY · 성인지 감수성과 인공지능',
+   a:'A', p:'',
+   x:'학습에 쓰인 말뭉치에서 직업어와 성별 대명사가 함께 나온 <b>빈도를 세어</b> 치우침을 확인할 수 있고, 자료를 균형 있게 다시 뽑아 고칠 수 있습니다. 9차시 TF-IDF와 8차시 빈도수 벡터가 그대로 도구가 됩니다.',
+   g:['tfidf'], gl:'9차시 TF-IDF'},
+  {t:'학교가 AI 대입 예측 점수를 진로 상담에 사용한다', s:'교육 현장의 예측 모델 활용 논의',
+   a:'B', p:'C',
+   x:'예측의 <b>오차와 과적합, 집단별 편차</b>를 재는 일은 수학입니다(24차시). 그러나 "예측 점수를 학생에게 알려 줄 것인가"는 교육적 판단이고, 학생의 동의 문제까지 걸리면 제도의 영역으로 넘어갑니다.',
+   g:['trend'], gl:'24차시 과적합'}
+];
+
+let iqCasePick=[];
+
+function iqCasesRender(){
+  const box=iqEl('iq-cases');
+  if(!box) return;
+  box.innerHTML='';
+  IQ_CASES.forEach(function(c,i){
+    const d=document.createElement('div');
+    d.className='iq-case';
+    let btns='';
+    ['A','B','C'].forEach(function(k){ btns+='<button class="iq-abc" type="button" data-k="'+k+'">'+k+'</button>'; });
+    d.innerHTML='<span class="q">'+(i+1)+'. '+iqEsc(c.t)+'</span><span class="s">'+iqEsc(c.s)+'</span>'+
+      '<div class="row">'+btns+'<span class="iq-mini">← 이 사례를 넣을 서랍을 고르세요</span></div>'+
+      '<div class="iq-fb" role="status" aria-live="polite"></div>';
+    const row=d.querySelector('.row');
+    const fb=d.querySelector('.iq-fb');
+    const bs=d.querySelectorAll('.iq-abc');
+    for(let j=0;j<bs.length;j++){
+      (function(b){
+        b.addEventListener('click',function(){
+          const k=b.getAttribute('data-k');
+          for(let m=0;m<bs.length;m++){ bs[m].className='iq-abc'; }
+          let kind, head;
+          if(k===c.a){ kind='ok'; head='✓ 가장 알맞은 서랍입니다.'; b.classList.add('ok'); }
+          else if(c.p && k===c.p){ kind='mid'; head='◐ 부분 정답입니다. 이 사례는 '+c.a+'와 '+c.p+' 두 서랍에 걸쳐 있습니다.'; b.classList.add('mid'); }
+          else{ kind='no'; head='✗ 다시 생각해 봅시다. 가장 알맞은 서랍은 '+c.a+'입니다.'; b.classList.add('no'); }
+          let extra=c.x;
+          if(c.g && c.g.length){
+            extra+='<div class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="iqGo('+
+              JSON.stringify(c.g).replace(/"/g,'&quot;')+',&quot;'+iqEsc(c.gl)+'&quot;)">'+iqEsc(c.gl)+' 다시 보기</button></div>';
+          }
+          fb.className='iq-fb '+kind;
+          fb.innerHTML=head+'<span class="x">'+extra+'</span>';
+          iqCasePick[i]=c.a;
+          iqCaseSummary();
+        });
+      })(bs[j]);
+    }
+    if(row){ /* 접근성 — 버튼 묶음에 설명 라벨 */ row.setAttribute('role','group'); row.setAttribute('aria-label', (i+1)+'번 사례의 서랍 선택'); }
+    box.appendChild(d);
+  });
+}
+
+function iqCaseSummary(){
+  const box=iqEl('iq-drawer-res');
+  if(!box) return;
+  let done=0, n={A:0,B:0,C:0};
+  for(let i=0;i<IQ_CASES.length;i++){
+    if(iqCasePick[i]){ done++; n[iqCasePick[i]]=(n[iqCasePick[i]]||0)+1; }
+  }
+  if(done<IQ_CASES.length){
+    box.innerHTML='<span class="cnt">'+done+' / '+IQ_CASES.length+'장 분류</span> — 남은 카드도 서랍에 넣어 보세요.';
+    return;
+  }
+  box.innerHTML='<span class="cnt">A: '+n.A+'장 · B: '+n.B+'장 · C: '+n.C+'장</span>'+
+    '<p style="margin-top:0.4rem;font-size:0.98rem;line-height:1.8;color:var(--body);">'+
+    '<b>가장 많은 카드가 B에 모였습니다.</b> 인공지능 윤리 문제의 대부분은 "수학이냐 아니냐"가 아니라 '+
+    '<b>"수학이 계산해 준 선택지 중에서 사람이 무엇을 고를 것이냐"</b>입니다.</p>';
+  iqSaveState();
+}
+
+
+/* ── 6-2. 활동 ② 「수학이 실제로 할 수 있는 일」 칩 8개 ─────────────────── */
+
+const IQ_MCHIPS=[
+  {t:'집단별로 정확도·오인식률을 따로 계산해 비교하기', ok:true,  n:'5차시 혼동행렬'},
+  {t:'부족한 집단에 필요한 추가 수집량을 부등식으로 구하기', ok:true,  n:'5차시 부등식'},
+  {t:'어떤 변수가 다른 변수를 몰래 대신하는지 유사도로 찾기', ok:true,  n:'11차시 유사도'},
+  {t:'판정 기준선(임계값)을 바꾸며 결과가 어떻게 달라지는지 표로 만들기', ok:true, n:'12·21차시'},
+  {t:'손실함수에 공정성 항을 더해 두 목표를 함께 줄이도록 설계하기', ok:true, n:'25~28차시 [참고]'},
+  {t:'예측의 불확실성을 확률로 표시하기', ok:true,  n:'20·21차시'},
+  {t:'"무엇이 공정한 결과인지"를 계산으로 결정하기', ok:false,
+   f:'이것은 <b>사람의 결정</b>입니다. 수학은 여러 정의(합격률을 같게 / 오류율을 같게 / 직무 능력만 보기)를 각각 수로 계산해 줄 수 있을 뿐, 어느 것을 공정이라 부를지는 정해 주지 않습니다. → 서랍 <b>B</b>의 정의로 돌아가 보세요.'},
+  {t:'사고의 책임자를 알고리즘으로 지정하기', ok:false,
+   f:'이것은 <b>제도의 문제</b>입니다. 사고 확률은 계산할 수 있지만 책임의 배분은 법이 정합니다. → 서랍 <b>C</b>의 정의로 돌아가 보세요.'}
+];
+
+let iqChipOn=[];
+
+function iqChipsRender(){
+  const box=iqEl('iq-mchips');
+  if(!box) return;
+  box.innerHTML='';
+  IQ_MCHIPS.forEach(function(c,i){
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='iq-mchip'+(iqChipOn.indexOf(i)>=0?(c.ok?' on':' trap'):'');
+    b.setAttribute('aria-pressed', iqChipOn.indexOf(i)>=0?'true':'false');
+    b.innerHTML=(c.ok?'':'')+iqEsc(c.t)+(c.n?' <span class="iq-mini">('+iqEsc(c.n)+')</span>':'');
+    b.addEventListener('click',function(){
+      const k=iqChipOn.indexOf(i);
+      if(k>=0) iqChipOn.splice(k,1); else iqChipOn.push(i);
+      iqChipsRender();
+      iqChipFb(i, k<0);
+    });
+    box.appendChild(b);
+  });
+}
+
+function iqChipFb(i, justOn){
+  const fb=iqEl('iq-mchip-fb');
+  if(!fb) return;
+  const c=IQ_MCHIPS[i];
+  if(!justOn){ fb.className='iq-fb'; fb.innerHTML=''; return; }
+  if(c.ok){
+    let cnt=0;
+    iqChipOn.forEach(function(k){ if(IQ_MCHIPS[k].ok) cnt++; });
+    fb.className='iq-fb ok';
+    fb.innerHTML='✓ 맞습니다. 목록에 담았습니다. ('+cnt+' / 6)'+
+      '<span class="x">여섯 개를 모두 담으면 「수학이 실제로 할 수 있는 일」 목록이 완성됩니다. 함정 칩 두 개는 담기지 않아야 합니다.</span>';
+  }else{
+    fb.className='iq-fb no';
+    fb.innerHTML='✗ 이것은 수학이 대신할 수 없습니다.'+'<span class="x">'+c.f+'</span>';
+  }
+  iqSaveState();
+}
+
+function iqChipReset(){
+  iqChipOn=[];
+  iqChipsRender();
+  const fb=iqEl('iq-mchip-fb');
+  if(fb){ fb.className='iq-fb'; fb.innerHTML=''; }
+}
+
+
+
+/* ── 6-3. 활동 ③ 상충 실험 — 지원자 200명 (수업용 가상 자료, 하드코딩) ──── */
+/*  난수 생성 금지 — 매번 값이 달라지면 학급 토론이 성립하지 않습니다.
+    아래 대역(band) 구성은 다음 고정값을 정확히 만들어 냅니다.
+      방식 A(단일 70점)  남 66명 55.0% · 여 24명 30.0% · 격차 25.0%p · 정확도 82.0%
+      방식 B(남 75·여 65) 남 48명 40.0% · 여 32명 40.0% · 격차  0.0%p · 정확도 78.0%
+      방식 C(성별 열 삭제·70점) 남 62명 51.7% · 여 27명 33.8% · 격차 17.9%p · 정확도 81.5%   */
+
+function iqSpread(n, lo, hi){
+  const a=[];
+  if(n<=0) return a;
+  if(n===1){ a.push(Math.round((lo+hi)/2)); return a; }
+  for(let i=0;i<n;i++) a.push(lo + Math.round(i*(hi-lo)/(n-1)));
+  return a;
+}
+
+function iqBuildApps(){
+  const rows=[];
+  function grp(g,k,aB,cB){
+    let A=[], C=[];
+    aB.forEach(function(b){ A=A.concat(iqSpread(b[0],b[1],b[2])); });
+    cB.forEach(function(b){ C=C.concat(iqSpread(b[0],b[1],b[2])); });
+    A.sort(function(x,y){return y-x;});
+    C.sort(function(x,y){return y-x;});
+    for(let i=0;i<A.length;i++) rows.push({g:g, k:k, s:A[i], c:C[i]});
+  }
+  /*        성별  실제우수   방식A·B 점수 대역               방식C 점수 대역        */
+  grp('m', 1, [[44,75,92],[13,70,74],[3,62,68]],   [[54,70,90],[6,58,69]]);   /* 남 · 우수  60 */
+  grp('m', 0, [[4,75,84],[5,70,74],[51,40,69]],    [[8,70,82],[52,38,69]]);   /* 남 · 비우수 60 */
+  grp('f', 1, [[20,70,89],[4,65,68],[16,45,64]],   [[22,70,88],[18,48,69]]);  /* 여 · 우수  40 */
+  grp('f', 0, [[4,70,78],[4,65,69],[32,38,64]],    [[5,70,79],[35,36,69]]);   /* 여 · 비우수 40 */
+  return rows;
+}
+
+const IQ_APPS=iqBuildApps();
+
+/* mode: 'A' 단일 기준선(thr) · 'B' 집단별 기준선(고정 75/65) · 'C' 성별 열 삭제(thr, c점수) */
+function iqCalc(mode, thr){
+  let mp=0, fp=0, ok=0, mn=0, fn=0;
+  for(let i=0;i<IQ_APPS.length;i++){
+    const r=IQ_APPS[i];
+    let pass;
+    if(mode==='B')      pass = (r.g==='m') ? (r.s>=75) : (r.s>=65);
+    else if(mode==='C') pass = (r.c>=thr);
+    else                pass = (r.s>=thr);
+    if(r.g==='m'){ mn++; if(pass) mp++; } else { fn++; if(pass) fp++; }
+    if((pass && r.k===1) || (!pass && r.k===0)) ok++;
+  }
+  const mr=mn?mp/mn*100:0, fr=fn?fp/fn*100:0;
+  return {mp:mp, fp:fp, mn:mn, fn:fn, mr:mr, fr:fr,
+          gap:Math.abs(mr-fr), acc:ok/IQ_APPS.length*100, ok:ok};
+}
+
+const IQ_MODES=[
+  {k:'A', n:'A 단일 기준선', d:'모두 같은 점수 이상'},
+  {k:'B', n:'B 집단별 기준선', d:'남 75점 · 여 65점'},
+  {k:'C', n:'C 성별 항목만 삭제', d:'성별 열을 지우고 다시 학습'}
+];
+
+let iqMode='A', iqThr=70;
+
+function iqModesRender(){
+  const box=iqEl('iq-modes');
+  if(!box) return;
+  box.innerHTML='';
+  IQ_MODES.forEach(function(m){
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='iq-mode'+(iqMode===m.k?' on':'');
+    b.setAttribute('aria-pressed', iqMode===m.k?'true':'false');
+    b.innerHTML=iqEsc(m.n)+' <span class="iq-mini">'+iqEsc(m.d)+'</span>';
+    b.addEventListener('click',function(){ iqMode=m.k; iqTradeRender(); iqSaveState(); });
+    box.appendChild(b);
+  });
+}
+
+function iqTradeRender(){
+  iqModesRender();
+  const sld=iqEl('iq-thr'), sv=iqEl('iq-thrv'), note=iqEl('iq-thr-note');
+  if(sld){
+    sld.value=String(iqThr);
+    sld.disabled=(iqMode==='B');
+    sld.setAttribute('aria-disabled', iqMode==='B'?'true':'false');
+  }
+  if(sv) sv.textContent=(iqMode==='B'?'남 75 · 여 65':iqThr+'점');
+  if(note){
+    note.innerHTML=(iqMode==='B')
+      ? '방식 B는 집단별로 기준선을 따로 두므로 <b>슬라이더가 잠깁니다.</b> 남 75점 · 여 65점 고정입니다.'
+      : '기준선을 움직이면 두 막대가 <b>서로 반대 방향</b>으로 갑니다. 두 막대가 만나는 지점은 없습니다.';
+  }
+
+  const cur=iqCalc(iqMode, iqThr);
+  const bg=iqEl('iq-bar-gap'), ba=iqEl('iq-bar-acc');
+  const vg=iqEl('iq-val-gap'), va=iqEl('iq-val-acc');
+  if(bg) bg.style.width=Math.max(0,Math.min(100, cur.gap*2)).toFixed(1)+'%';   /* 0~50%p 를 폭 0~100% 로 */
+  if(ba) ba.style.width=Math.max(0,Math.min(100, cur.acc)).toFixed(1)+'%';
+  if(vg) vg.textContent=cur.gap.toFixed(1)+'%p';
+  if(va) va.textContent=cur.acc.toFixed(1)+'%';
+
+  const tbl=iqEl('iq-tbl');
+  if(tbl){
+    const A=iqCalc('A',70), B=iqCalc('B',70), C=iqCalc('C',70);
+    const rows=[['A 단일 기준선','모두 70점 이상',A],
+                ['B 집단별 기준선','남 75점 · 여 65점',B],
+                ['C 성별 항목만 삭제','성별 열을 지우고 학습 · 70점',C]];
+    let s='<tr><th>방식</th><th>어떻게 뽑나</th><th class="c">남 합격</th><th class="c">여 합격</th>'+
+          '<th class="c">합격률 격차</th><th class="c">전체 정확도</th></tr>';
+    rows.forEach(function(r,i){
+      const on=(IQ_MODES[i].k===iqMode);
+      s+='<tr'+(on?' style="background:var(--card-h);"':'')+'>'+
+         '<td><b>'+r[0]+'</b>'+(on?' <span class="iq-mini">← 선택</span>':'')+'</td><td>'+r[1]+'</td>'+
+         '<td class="v">'+r[2].mp+'명 ('+r[2].mr.toFixed(1)+'%)</td>'+
+         '<td class="v">'+r[2].fp+'명 ('+r[2].fr.toFixed(1)+'%)</td>'+
+         '<td class="v">'+r[2].gap.toFixed(1)+'%p</td>'+
+         '<td class="v">'+r[2].acc.toFixed(1)+'%</td></tr>';
+    });
+    s+='<tr><td colspan="6" class="iq-mini">표는 세 방식을 <b>정해진 기준선</b>에서 비교한 값입니다. '+
+       '위의 막대는 지금 고른 방식과 슬라이더 값을 그대로 보여 줍니다. '+
+       '현재 — <b>'+iqEsc(IQ_MODES.filter(function(m){return m.k===iqMode;})[0].n)+'</b> · '+
+       (iqMode==='B'?'남 75 · 여 65':'기준선 '+iqThr+'점')+
+       ' → 격차 <b>'+cur.gap.toFixed(1)+'%p</b> · 정확도 <b>'+cur.acc.toFixed(1)+'%</b> '+
+       '(맞힌 사람 '+cur.ok+'명 / 200명)</td></tr>';
+    tbl.innerHTML=s;
+  }
+}
+
+
+/* ── 6-4. 관찰 기록 3칸 ──────────────────────────────────────────────── */
+
+const IQ_NOTEKEY='aimath.iq.notes';
+
+function iqNotesLoad(){
+  let a=[];
+  try{ a=JSON.parse(cmnGet(IQ_NOTEKEY,'[]'))||[]; }catch(e){ a=[]; }
+  ['iq-n1','iq-n2','iq-n3'].forEach(function(id,i){
+    const el=iqEl(id);
+    if(el && a[i]) el.value=a[i];
+  });
+}
+
+function iqNotesSave(){
+  const a=['iq-n1','iq-n2','iq-n3'].map(function(id){ const el=iqEl(id); return el?el.value:''; });
+  cmnSet(IQ_NOTEKEY, JSON.stringify(a));
+  const st=iqEl('iq-note-st');
+  if(st) st.textContent='기록을 저장했습니다. ('+new Date().toLocaleTimeString('ko-KR')+') 이 기기에만 저장됩니다.';
+  iqSaveState();
+}
+
+
+/* ═══════════ 탭 ③ 우리 팀 주제 만들기 ═══════════════════════════════════ */
+
+/* ── 7-1. SDGs 17목표 (씨마스 Ⅴ p.189 · 인간·번영·환경·평화 4영역) ─────── */
+
+const IQ_SDG_GROUPS=[
+  {g:1, n:'인간',  ids:[1,2,3,4,5]},
+  {g:2, n:'번영',  ids:[7,8,9,10,11]},
+  {g:3, n:'환경',  ids:[6,12,13,14,15], eco:true},
+  {g:4, n:'평화',  ids:[16,17]}
+];
+
+const IQ_SDG_NAMES={
+  1:'빈곤 퇴치', 2:'기아 종식', 3:'건강과 웰빙', 4:'양질의 교육', 5:'성평등',
+  6:'깨끗한 물과 위생', 7:'모두를 위한 에너지', 8:'경제 성장·일자리', 9:'산업·혁신',
+  10:'불평등 감소', 11:'지속가능한 도시', 12:'지속가능한 소비·생산', 13:'기후 변화 대응',
+  14:'해양 생태계 보존', 15:'육상 생태계 보호', 16:'평화·정의·제도', 17:'글로벌 파트너십'
+};
+
+/* ── 7-2. 수학 도구 칩 8종 ───────────────────────────────────────────── */
+
+const IQ_TOOLS=[
+  {k:'trend', n:'추세선 y=ax+b',      m:'추세선 y=ax+b와 예측값·오차의 해석', v:['trend'], vl:'23·24차시 추세선'},
+  {k:'gd',    n:'손실함수·경사하강법', m:'손실함수 L(a)를 세우고 경사하강법으로 최적 기울기 찾기', v:['optim','gdsheet'], vl:'25~29차시 최적화'},
+  {k:'prob',  n:'확률·상대도수',       m:'조건에 따른 상대도수를 비교해 예측하기', v:['prob'], vl:'21·22차시 확률'},
+  {k:'cos',   n:'코사인·유클리드 유사도', m:'대상을 벡터로 나타내고 유사도로 묶기', v:['sim'], vl:'11차시 유사도'},
+  {k:'jac',   n:'자카드 유사도',       m:'집합의 겹침을 자카드 유사도로 재어 판정하기', v:['senti'], vl:'12차시 감성 분석'},
+  {k:'ham',   n:'해밍 거리',           m:'이미지를 0·1 행렬로 바꾸고 해밍 거리로 분류하기', v:['imgcls','hamming'], vl:'18차시 해밍 거리'},
+  {k:'mat',   n:'행렬 연산',           m:'행렬의 덧셈·실수배·곱셈으로 자료를 변환하기', v:['imgop'], vl:'14차시 이미지=행렬'},
+  {k:'set',   n:'집합·단어집합',       m:'문장을 단어집합으로 만들고 빈도수·TF-IDF로 핵심어 뽑기', v:['tfidf','text'], vl:'7~9차시 텍스트'}
+];
+
+const IQ_TOOL_KEYWORDS=['추세선','손실함수','경사하강','확률','상대도수','유사도','코사인','유클리드',
+  '자카드','해밍','행렬','집합','벡터','합성곱','퍼셉트론','TF-IDF','tf-idf','빈도수','최적화','분류','군집'];
+
+/* ── 7-3. 미리 작성한 주제 카드 8종 (조합 키 = SDGs번호|도구키) ────────── */
+
+const IQ_TOPICS={
+  '13|trend':{t:'우리 지역 연평균 기온으로 10년 뒤 여름 일수 예측',
+    m:'추세선 y=ax+b와 오차의 해석', src:[['기상자료개방포털','https://data.kma.go.kr/cmmn/main.do'],['국가통계포털 KOSIS','https://kosis.kr/index/index.do']],
+    v:['trend'], vl:'23·24차시 추세선'},
+  '12|gd':{t:'급식 인원 수에 따른 잔반량 최소화',
+    m:'손실함수 L(a)와 경사하강법으로 최적 기울기 찾기', src:[['학교 급식 일지(직접 수집)',''],['공공데이터포털','https://www.data.go.kr/']],
+    v:['optim','gdsheet'], vl:'25~29차시 최적화'},
+  '14|ham':{t:'재활용품 사진 자동 분류',
+    m:'이미지의 행렬 표현과 해밍 거리 분류 (씨마스 예시 1)', src:[['직접 촬영',''],['티처블 머신','https://teachablemachine.withgoogle.com']],
+    v:['imgcls','hamming'], vl:'18차시 해밍 거리'},
+  '15|ham':{t:'재활용품 사진 자동 분류',
+    m:'이미지의 행렬 표현과 해밍 거리 분류 (씨마스 예시 1)', src:[['직접 촬영',''],['티처블 머신','https://teachablemachine.withgoogle.com']],
+    v:['imgcls','hamming'], vl:'18차시 해밍 거리'},
+  '3|prob':{t:'우리 학교 감기 결석과 기온·습도의 관계',
+    m:'조건에 따른 상대도수 비교로 예측', src:[['기상자료개방포털','https://data.kma.go.kr/cmmn/main.do'],['보건일지(직접 수집)','']],
+    v:['prob'], vl:'21·22차시 확률'},
+  '11|cos':{t:'우리 동네 버스 노선의 이용 패턴 묶기',
+    m:'벡터 표현과 코사인 유사도로 노선 군집', src:[['공공데이터포털','https://www.data.go.kr/'],['국가통계포털 KOSIS','https://kosis.kr/index/index.do']],
+    v:['sim','mlplay'], vl:'11차시 유사도 · 2차시 군집'},
+  '10|set':{t:'뉴스에서 특정 집단을 다루는 말의 치우침 분석',
+    m:'빈도수 벡터·TF-IDF와 감성 분석', src:[['빅카인즈','https://www.bigkinds.or.kr/']],
+    v:['tfidf','senti'], vl:'9차시 TF-IDF · 12차시 감성'},
+  '4|trend':{t:'학습 시간과 성취도의 관계, 그리고 상관관계와 인과의 차이',
+    m:'추세선의 예측과 과적합·상관관계의 해석', src:[['학급 설문(직접 수집)',''],['한국교육개발원','https://www.kedi.re.kr/khome/main/webhome/Home.do']],
+    v:['trend'], vl:'24차시 과적합'},
+  '8|gd':{t:'아르바이트 경력과 시급의 관계 예측',
+    m:'손실함수의 최소화로 최적 추세선 찾기', src:[['국가통계포털 KOSIS','https://kosis.kr/index/index.do'],['지표누리','https://www.index.go.kr/']],
+    v:['optim'], vl:'25~28차시 손실함수'}
+};
+
+const IQ_SRC_DEFAULT=[['공공데이터포털','https://www.data.go.kr/'],['국가통계포털 KOSIS','https://kosis.kr/index/index.do'],['지속가능발전포털','https://www.index.go.kr/unity/potal/sdg/SDGMain.do']];
+
+let iqSdgPick=0, iqToolPick='';
+
+function iqSdgRender(){
+  const wrap=iqEl('iq-sdgwrap');
+  if(wrap){
+    let s='';
+    IQ_SDG_GROUPS.forEach(function(gr){
+      s+='<p class="iq-grouplb">'+iqEsc(gr.n)+' 영역'+(gr.eco?' · 생태전환':'')+'</p><div class="iq-sdgs">';
+      gr.ids.forEach(function(id){
+        s+='<button class="iq-sdg g'+gr.g+(iqSdgPick===id?' on':'')+'" type="button" data-id="'+id+'" '+
+           'aria-pressed="'+(iqSdgPick===id?'true':'false')+'">'+id+'. '+iqEsc(IQ_SDG_NAMES[id])+
+           (gr.eco?'<span class="eco">생태전환</span>':'')+'</button>';
+      });
+      s+='</div>';
+    });
+    wrap.innerHTML=s;
+    const bs=wrap.querySelectorAll('.iq-sdg');
+    for(let i=0;i<bs.length;i++){
+      bs[i].addEventListener('click',function(){
+        const id=parseInt(this.getAttribute('data-id'),10);
+        iqSdgPick=(iqSdgPick===id?0:id);
+        iqSdgRender(); iqTopicRender(); iqSaveState();
+      });
+    }
+  }
+  const tb=iqEl('iq-tools');
+  if(tb){
+    tb.innerHTML='';
+    IQ_TOOLS.forEach(function(t){
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='iq-tool'+(iqToolPick===t.k?' on':'');
+      b.setAttribute('aria-pressed', iqToolPick===t.k?'true':'false');
+      b.textContent=t.n;
+      b.addEventListener('click',function(){
+        iqToolPick=(iqToolPick===t.k?'':t.k);
+        iqSdgRender(); iqTopicRender(); iqSaveState();
+      });
+      tb.appendChild(b);
+    });
+  }
+}
+
+function iqTopicRender(){
+  const box=iqEl('iq-topic');
+  if(!box) return;
+  if(!iqSdgPick || !iqToolPick){
+    box.innerHTML='<p class="iq-mini" style="margin-top:0.7rem;">SDGs 목표 하나와 수학 도구 하나를 고르면 주제 카드가 만들어집니다.</p>';
+    return;
+  }
+  const tool=IQ_TOOLS.filter(function(t){return t.k===iqToolPick;})[0];
+  const key=iqSdgPick+'|'+iqToolPick;
+  const made=IQ_TOPICS[key];
+  const sdgName=IQ_SDG_NAMES[iqSdgPick];
+  const eco=IQ_SDG_GROUPS[2].ids.indexOf(iqSdgPick)>=0;
+  const t   = made ? made.t   : ('「'+sdgName+'」와 관련된 우리 주변 자료를 모아 '+tool.n+'으로 분석하기');
+  const m   = made ? made.m   : tool.m;
+  const src = made ? made.src : IQ_SRC_DEFAULT;
+  const v   = made ? made.v   : tool.v;
+  const vl  = made ? made.vl  : tool.vl;
+  let links='';
+  src.forEach(function(s){
+    links += s[1]
+      ? '<a class="btn" href="'+iqEsc(s[1])+'" target="_blank" rel="noopener">'+iqEsc(s[0])+' ↗</a>'
+      : '<span class="btn" style="cursor:default;">'+iqEsc(s[0])+'</span>';
+  });
+  box.innerHTML='<div class="iq-topic">'+
+    '<h4>'+(made?'':'<span class="iq-badge o">조합 제안</span> ')+iqEsc(t)+'</h4>'+
+    '<p><b>SDGs '+iqSdgPick+' '+iqEsc(sdgName)+'</b>'+(eco?' <span class="iq-badge g">생태전환</span>':'')+
+    ' × <b>'+iqEsc(tool.n)+'</b></p>'+
+    '<span class="k">수학 탐구 주제</span><p style="font-weight:700;color:var(--fg);">'+iqEsc(m)+'</p>'+
+    '<span class="k">데이터 출처</span><div class="rw">'+links+'</div>'+
+    '<span class="k">다시 볼 뷰</span><div class="rw">'+
+      '<button class="btn" type="button" onclick="iqGo('+JSON.stringify(v).replace(/"/g,'&quot;')+',&quot;'+iqEsc(vl)+'&quot;)">'+iqEsc(vl)+'</button>'+
+    '</div>'+
+    '<div class="rw" style="margin-top:0.7rem;">'+
+      '<button class="btn pri" type="button" onclick="iqUseTopic()">이 주제를 계획서 [A]에 넣기</button></div>'+
+    '</div>';
+}
+
+function iqUseTopic(){
+  if(!iqSdgPick || !iqToolPick) return;
+  const tool=IQ_TOOLS.filter(function(t){return t.k===iqToolPick;})[0];
+  const made=IQ_TOPICS[iqSdgPick+'|'+iqToolPick];
+  const sdgName=IQ_SDG_NAMES[iqSdgPick];
+  const a1=iqEl('iq-a1'), a1m=iqEl('iq-a1m'), a2=iqEl('iq-a2'), a5=iqEl('iq-a5');
+  if(a1 && !a1.value.trim()) a1.value = made ? made.t : ('「'+sdgName+'」와 관련된 우리 주변 자료를 '+tool.n+'으로 분석하기');
+  if(a1m && !a1m.value.trim()) a1m.value = made ? made.m : tool.m;
+  if(a2 && !a2.value.trim()) a2.value = 'SDGs '+iqSdgPick+' '+sdgName+'과(와) 연계된 문제입니다. (여기에 왜 중요한지 우리 말로 이어 적으세요.)';
+  if(a5 && !a5.value.trim()){
+    const src=made?made.src:IQ_SRC_DEFAULT;
+    a5.value=src.map(function(s){ return s[0]+(s[1]?' '+s[1]:''); }).join(' / ')+' — 예상 자료 개수: ___개';
+  }
+  iqLights();
+  iqSee(2,'iq-form-h');
+  const fb=iqEl('iq-form-fb');
+  if(fb){ fb.className='iq-fb ok'; fb.innerHTML='주제 카드를 계획서 [A]에 옮겼습니다.'+
+    '<span class="x">비어 있던 칸만 채웠습니다. 이미 쓴 내용은 그대로 두었으니, 우리 팀의 말로 고쳐 쓰세요.</span>'; }
+}
+
+
+
+/* ── 7-4. 계획서 [A] 폼 · 자동 점검 4기준 (차단이 아니라 안내) ──────────── */
+
+const IQ_FKEY='aimath.iq.form';
+const IQ_SKEY='aimath.iq.state';
+const IQ_FIELDS=['iq-a0','iq-a0r','iq-a1','iq-a1m','iq-a2','iq-a3','iq-ax','iq-ay','iq-a5'];
+
+function iqVal(id){ const el=iqEl(id); return el?String(el.value||'').trim():''; }
+
+function iqFormLoad(){
+  let d={};
+  try{ d=JSON.parse(cmnGet(IQ_FKEY,'{}'))||{}; }catch(e){ d={}; }
+  IQ_FIELDS.forEach(function(id){
+    const el=iqEl(id);
+    if(el && d[id]) el.value=d[id];
+  });
+  iqTeamShow();
+}
+
+function iqFormStore(){
+  const d={};
+  IQ_FIELDS.forEach(function(id){ d[id]=iqVal(id); });
+  cmnSet(IQ_FKEY, JSON.stringify(d));
+}
+
+function iqTeamShow(){
+  const el=iqEl('iq-teamcode');
+  if(!el) return;
+  const c=iqVal('iq-a0');
+  el.textContent=c?c:'(아직 정하지 않음)';
+}
+
+/* 4기준 판정 — 'ok' | 'warn' | 'no' */
+function iqCheck(){
+  const src=iqVal('iq-a5'), math=iqVal('iq-a1m'),
+        x=iqVal('iq-ax'), y=iqVal('iq-ay'), goal=iqVal('iq-a3');
+  const r=[];
+
+  /* ① 시간 안에 해결 가능한가 */
+  if(!src) r.push(['no','자료를 <b>어디서 어떻게 몇 개</b> 모을지 적어야 3차시 안에 끝낼 수 있습니다.']);
+  else if(/직접|설문|촬영|수집/.test(src) && !/[0-9]/.test(src))
+    r.push(['warn','직접 모으는 자료라면 <b>몇 개를 모을지</b> 예상 개수를 적어 두세요.']);
+  else r.push(['ok','자료를 모을 방법이 적혀 있습니다.']);
+
+  /* ② 배운 수학 개념을 쓸 수 있는가 */
+  let hit=false;
+  for(let i=0;i<IQ_TOOL_KEYWORDS.length;i++){ if(math.indexOf(IQ_TOOL_KEYWORDS[i])>=0){ hit=true; break; } }
+  if(!math) r.push(['no','<b>수학 탐구 주제</b>가 비었습니다. "무엇을 조사한다"가 아니라 <b>"어떤 수학으로 무엇을 한다"</b>를 적어야 합니다.']);
+  else if(!hit) r.push(['warn','도구 이름이 보이지 않습니다. 추세선·손실함수·유사도·해밍 거리·행렬 같은 <b>도구 이름</b>을 넣어 보세요.']);
+  else r.push(['ok','배운 수학 도구가 주제에 들어 있습니다.']);
+
+  /* ③ 자료를 수치화할 수 있는가 — 형식 검사만 하고 내용의 적절성은 판정하지 않습니다(노랑까지) */
+  if(!x || !y) r.push(['no','x와 y를 수로 나타낼 수 없다면 손실함수도 유사도도 계산할 수 없습니다.']);
+  else r.push(['warn','x·y가 채워졌습니다. <b>정말 수로 잴 수 있는지</b>는 선생님과 함께 확인하세요.']);
+
+  /* ④ 인공지능 속 수학 원리를 탐구하는가 */
+  if(!goal) r.push(['no','탐구 목표가 비었습니다.']);
+  else if(/원리|방법|모델|수식|왜/.test(goal)) r.push(['ok','원리를 확인하겠다는 목표가 들어 있습니다.']);
+  else r.push(['warn','"조사한다"로 끝나면 검색 정리가 됩니다. <b>원리</b>를 확인하겠다는 목표를 넣어 주세요.']);
+
+  return r;
+}
+
+const IQ_CRITERIA=['① 주어진 시간 안에 해결 가능한가',
+                   '② 배운 수학 개념·원리를 활용할 수 있는가',
+                   '③ 자료를 충분히 모아 수치화할 수 있는가',
+                   '④ 인공지능 속 수학 원리를 탐구하는 것이 목표에 있는가'];
+
+function iqLights(){
+  const box=iqEl('iq-lights');
+  const r=iqCheck();
+  if(box){
+    box.innerHTML='';
+    r.forEach(function(v,i){
+      const d=document.createElement('div');
+      d.className='iq-light '+v[0];
+      d.innerHTML='<span class="dot" aria-hidden="true"></span><span><b>'+iqEsc(IQ_CRITERIA[i])+'</b><br>'+v[1]+'</span>';
+      box.appendChild(d);
+    });
+  }
+  const pass=r.every(function(v){ return v[0]!=='no'; });
+  const btn=iqEl('iq-send');
+  if(btn){
+    btn.disabled=!pass;
+    btn.classList.toggle('cmn-pulse', pass);
+  }
+  iqTeamShow();
+  return pass;
+}
+
+
+/* ── 7-5. 공유 문서(localStorage['aimath.project']) 병합 저장 ───────────── */
+/*  project 뷰가 소유하는 단일 JSON 문서입니다. 기존 필드는 지우지 않고
+    비어 있지 않은 값만 덮어씁니다(다른 뷰가 먼저 쓴 값 보존).                */
+
+const IQ_PKEY='aimath.project';
+
+function iqProjMerge(fn){
+  let d=null;
+  try{ d=JSON.parse(cmnGet(IQ_PKEY,'null')); }catch(e){ d=null; }
+  if(!d || typeof d!=='object') d={};
+  if(!d.team   || typeof d.team!=='object')   d.team={};
+  if(!d.topic  || typeof d.topic!=='object')  d.topic={};
+  if(!d.report || typeof d.report!=='object') d.report={};
+  if(!d.iq     || typeof d.iq!=='object')     d.iq={};
+  try{ fn(d); }catch(e){}
+  if(!d.ver) d.ver=1;
+  d.updated=new Date().toISOString();
+  cmnSet(IQ_PKEY, JSON.stringify(d));
+  const code=(d.team && d.team.code)?String(d.team.code).trim():'';
+  if(code){
+    cmnSet(IQ_PKEY+'.t.'+code, JSON.stringify(d));
+    let list=[];
+    try{ list=JSON.parse(cmnGet(IQ_PKEY+'.teams','[]'))||[]; }catch(e){ list=[]; }
+    if(list.indexOf(code)<0){ list.push(code); cmnSet(IQ_PKEY+'.teams', JSON.stringify(list)); }
+  }
+  return d;
+}
+
+/* 이 차시가 만든 활동 기록을 공유 문서의 iq 칸에 병합합니다. */
+function iqStateObj(){
+  const drawers={};
+  for(let i=0;i<IQ_CASES.length;i++){ if(iqCasePick[i]) drawers[i+1]=iqCasePick[i]; }
+  let notes=[];
+  try{ notes=JSON.parse(cmnGet(IQ_NOTEKEY,'[]'))||[]; }catch(e){ notes=[]; }
+  return {
+    drawers:drawers,
+    tools:iqChipOn.slice(),
+    tradeoff:{mode:iqMode, threshold:iqThr, notes:notes},
+    sdg:iqSdgPick?[iqSdgPick]:[],
+    tool:iqToolPick?[iqToolPick]:[],
+    stage:iqStageCur
+  };
+}
+
+function iqSaveState(){
+  const s=iqStateObj();
+  cmnSet(IQ_SKEY, JSON.stringify(s));
+  iqProjMerge(function(d){ d.iq=s; });
+}
+
+function iqStateLoad(){
+  let s=null;
+  try{ s=JSON.parse(cmnGet(IQ_SKEY,'null')); }catch(e){ s=null; }
+  if(!s || typeof s!=='object') return;
+  if(s.drawers){
+    Object.keys(s.drawers).forEach(function(k){
+      const i=parseInt(k,10)-1;
+      if(i>=0 && i<IQ_CASES.length) iqCasePick[i]=s.drawers[k];
+    });
+  }
+  if(Array.isArray(s.tools)) iqChipOn=s.tools.slice();
+  if(s.tradeoff){
+    if(s.tradeoff.mode) iqMode=s.tradeoff.mode;
+    if(typeof s.tradeoff.threshold==='number') iqThr=s.tradeoff.threshold;
+  }
+  if(Array.isArray(s.sdg) && s.sdg.length) iqSdgPick=s.sdg[0];
+  if(Array.isArray(s.tool) && s.tool.length) iqToolPick=s.tool[0];
+}
+
+function iqSave(){
+  iqFormStore();
+  iqSaveState();
+  const fb=iqEl('iq-form-fb');
+  if(fb){
+    fb.className='iq-fb ok';
+    fb.innerHTML='임시 저장했습니다. ('+new Date().toLocaleTimeString('ko-KR')+')'+
+      '<span class="x">이 기기의 브라우저에만 저장됩니다. 네 기준을 모두 통과하지 않아도 임시 저장은 언제나 됩니다.</span>';
+  }
+}
+
+function iqSend(){
+  if(!iqLights()){
+    const fb=iqEl('iq-form-fb');
+    if(fb){ fb.className='iq-fb no'; fb.innerHTML='아직 통과하지 못한 기준이 있습니다.'+
+      '<span class="x">붉은 점이 켜진 항목을 채운 뒤 다시 눌러 주세요. 그동안에도 <b>[임시 저장]</b>은 언제나 됩니다.</span>'; }
+    return;
+  }
+  iqFormStore();
+  const topic=iqVal('iq-a1'), math=iqVal('iq-a1m'), reason=iqVal('iq-a2'),
+        goal=iqVal('iq-a3'), x=iqVal('iq-ax'), y=iqVal('iq-ay'),
+        src=iqVal('iq-a5'), code=iqVal('iq-a0'), roles=iqVal('iq-a0r');
+  iqProjMerge(function(d){
+    if(code) d.team.code=code;
+    if(roles) d.team.name=d.team.name||roles;
+    if(topic){ d.topic.topic=topic; }
+    if(x) d.topic.x=x;
+    if(y) d.topic.y=y;
+    if(src) d.topic.src=src;
+    if(topic || math) d.report.A1=(topic||'')+(math?'\n수학 탐구 주제: '+math:'');
+    if(reason) d.report.A2=reason;
+    if(goal)   d.report.A3=goal;
+    d.iq=iqStateObj();
+    d.iq.mathTopic=math;
+  });
+  const fb=iqEl('iq-form-fb');
+  if(fb){
+    fb.className='iq-fb ok';
+    fb.innerHTML='✓ 계획서 [A]로 전송했습니다.'+
+      '<span class="x">다음 차시의 보고서 <b>A. 탐구 주제 선정 및 문제 정의</b> 칸에 그대로 나타납니다. '+
+      '팀 코드 <b>'+iqEsc(code||'(없음)')+'</b>를 기억해 두세요. 이 기기의 브라우저에 저장됩니다.</span>';
+  }
+  iqTeamShow();
+}
+
+
+/* ── 8. 참고 자료 — 교사가 추가한 링크(이 기기에만 저장) ────────────────── */
+
+const IQ_REF_KEY='aimath.iq.refs';
+let iqRefCache=null;
+
+function iqRefLoad(){
+  if(iqRefCache) return iqRefCache;
+  try{
+    const a=JSON.parse(cmnGet(IQ_REF_KEY,'[]'));
+    iqRefCache=Array.isArray(a)?a:[];
+  }catch(e){ iqRefCache=[]; }
+  return iqRefCache;
+}
+function iqRefSave(){ cmnSet(IQ_REF_KEY, JSON.stringify(iqRefLoad())); }
+
+function iqRefRender(){
+  const box=iqEl('iq-ref-custom');
+  if(!box) return;
+  box.innerHTML=iqRefLoad().map(function(r,i){
+    return '<div class="iq-refwrap">'+
+      '<a class="iq-ref" href="'+iqEsc(r.u)+'" target="_blank" rel="noopener">'+
+        '<span class="th"><span class="bg">추가 자료</span>🔗</span>'+
+        '<span class="bd"><span class="tt">'+iqEsc(r.t)+'</span><span class="ds">'+iqEsc(r.u)+'</span></span></a>'+
+      '<button class="rm" type="button" title="이 자료 삭제" aria-label="이 자료 삭제" onclick="iqRefDel('+i+')">×</button></div>';
+  }).join('');
+}
+
+function iqRefAdd(){
+  const iu=iqEl('iq-ref-url'), it=iqEl('iq-ref-tt'), st=iqEl('iq-ref-st');
+  if(!iu) return;
+  const u=iu.value.trim();
+  if(!/^https?:\/\//i.test(u)){
+    if(st) st.textContent='http 또는 https 로 시작하는 전체 주소를 붙여넣어 주세요.';
+    return;
+  }
+  const t=(it && it.value.trim()) || u.replace(/^https?:\/\//i,'').split('/')[0];
+  iqRefLoad().push({u:u, t:t});
+  iqRefSave();
+  iu.value=''; if(it) it.value='';
+  if(st) st.textContent='자료를 추가했습니다. 이 기기에만 저장됩니다.';
+  iqRefRender();
+}
+
+function iqRefDel(i){
+  const list=iqRefLoad();
+  if(i<0 || i>=list.length) return;
+  list.splice(i,1);
+  iqRefSave();
+  const st=iqEl('iq-ref-st');
+  if(st) st.textContent='자료를 삭제했습니다.';
+  iqRefRender();
+}
+
+
+/* ── 9. 차시 매니페스트 안전망 ──────────────────────────────────────────
+   core.js 의 AIM_LESSONS / AIM_ART 정식 편집(INTEGRATION.md §2·§3)이 끝났다면
+   이 가드는 아무 일도 하지 않습니다. 편집이 누락된 경우에만 31차시 항목을
+   런타임에 채워 넣어 홈 카드·차시 목록에서 뷰가 사라지지 않게 합니다.        */
+
+const IQ_ART=`<svg viewBox="0 0 320 180" role="img" aria-label="다섯 개의 발자국이 이룬 원형 링과 세 개의 서랍">
+    <rect width="320" height="180" fill="var(--bg)"/>
+    <circle cx="86" cy="90" r="52" fill="none" stroke="var(--border)" stroke-width="2.5" stroke-dasharray="12 8"/>
+    <circle cx="86" cy="38" r="11" fill="var(--fg)"/><text x="86" y="43" font-size="12" fill="var(--bg)" font-family="monospace" text-anchor="middle">1</text>
+    <circle cx="135" cy="74" r="11" fill="var(--accent)"/><text x="135" y="79" font-size="12" fill="var(--fg)" font-family="monospace" text-anchor="middle">2</text>
+    <circle cx="117" cy="131" r="11" fill="var(--accent)"/><text x="117" y="136" font-size="12" fill="var(--fg)" font-family="monospace" text-anchor="middle">3</text>
+    <circle cx="55" cy="131" r="11" fill="var(--accent)"/><text x="55" y="136" font-size="12" fill="var(--fg)" font-family="monospace" text-anchor="middle">4</text>
+    <circle cx="37" cy="74" r="11" fill="var(--accent)"/><text x="37" y="79" font-size="12" fill="var(--fg)" font-family="monospace" text-anchor="middle">5</text>
+    <rect x="176" y="26" width="126" height="34" rx="5" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+    <rect x="224" y="39" width="30" height="8" rx="4" fill="var(--green)"/>
+    <rect x="176" y="70" width="126" height="34" rx="5" fill="none" stroke="var(--blue)" stroke-width="2.5"/>
+    <rect x="224" y="83" width="30" height="8" rx="4" fill="var(--blue)"/>
+    <rect x="176" y="114" width="126" height="34" rx="5" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+    <rect x="224" y="127" width="30" height="8" rx="4" fill="var(--red)"/>
+    <text x="160" y="170" font-size="11" fill="var(--muted)" font-family="monospace" text-anchor="middle">다섯 걸음으로 걷고, 세 서랍으로 가른다</text>
+  </svg>`;
+
+function iqManifestGuard(){
+  try{
+    if(typeof AIM_ART==='object' && AIM_ART && !AIM_ART.inquiry) AIM_ART.inquiry=IQ_ART;
+    if(typeof AIM_LESSONS==='undefined' || !Array.isArray(AIM_LESSONS)) return;
+    for(let i=0;i<AIM_LESSONS.length;i++){ if(AIM_LESSONS[i].v==='inquiry') return; }
+    let u=4;
+    if(typeof AIM_UNITS!=='undefined' && Array.isArray(AIM_UNITS)){
+      for(let j=0;j<AIM_UNITS.length;j++){ if(AIM_UNITS[j].u==='Ⅴ'){ u=j; break; } }
+    }
+    let at=AIM_LESSONS.length;
+    for(let k=0;k<AIM_LESSONS.length;k++){ if(AIM_LESSONS[k].v==='decision'){ at=k; break; } }
+    AIM_LESSONS.splice(at,0,{u:u, n:'31차시', t:'탐구의 다섯 걸음과 윤리의 경계선', v:'inquiry', a:'inquiry',
+      d:'프로젝트에 들어가기 전 탐구의 뼈대를 세웁니다. 5단계를 배치해 순서를 잡고, 사례 여덟 장을 세 서랍으로 갈라 "수학으로 고칠 수 있는 것은 어디까지인가"의 경계선을 그은 뒤, SDGs와 도구를 교차해 우리 팀 계획서 [A]를 만듭니다.'});
+    if(typeof aimBuildHome==='function') aimBuildHome();
+    if(typeof aimBuildMarks==='function') aimBuildMarks();
+  }catch(e){}
+}
+
+
+/* ── 10. 초기화 ─────────────────────────────────────────────────────── */
+
+(function inquiryInit(){
+  const boot=function(){
+    const root=document.getElementById('v-inquiry');
+    if(!root) return;                       /* 뷰가 없어도 core.js가 죽지 않도록 가드 */
+
+    iqManifestGuard();
+
+    /* 공통 컴포넌트 */
+    if(typeof videoDeck   === 'function') videoDeck('iq-videos','iq', IQ_VIDEOS);
+    if(typeof warmStepper === 'function') warmStepper('iq-warm','iq', IQ_WARM);
+    if(typeof quizStepper === 'function') quizStepper('iq-quiz','iq', IQ_QUIZ);
+    if(typeof chipDefs    === 'function') chipDefs('#v-inquiry .iq-keys', IQ_DEFS);
+    if(typeof wsLinks     === 'function') wsLinks('iq-wslinks','iq');
+
+    /* 저장된 활동 상태 복원 후 렌더 */
+    try{ iqStateLoad(); }catch(e){}
+    try{ iqPlaceRender(); }catch(e){}
+    try{ iqStage(iqStageCur||1); }catch(e){}
+    try{ iqCasesRender(); iqCaseSummary(); }catch(e){}
+    try{ iqChipsRender(); }catch(e){}
+    try{ iqTradeRender(); }catch(e){}
+    try{ iqSdgRender(); iqTopicRender(); }catch(e){}
+    try{ iqRefRender(); }catch(e){}
+    try{ iqNotesLoad(); }catch(e){}
+    try{ iqFormLoad(); iqLights(); }catch(e){}
+
+    /* 이벤트 결선 */
+    const sld=iqEl('iq-thr');
+    if(sld){
+      sld.addEventListener('input',function(){ iqThr=parseInt(sld.value,10)||70; iqTradeRender(); });
+      sld.addEventListener('change',function(){ iqSaveState(); });
+    }
+    ['iq-n1','iq-n2','iq-n3'].forEach(function(id){
+      const el=iqEl(id);
+      if(el) el.addEventListener('change', iqNotesSave);
+    });
+    IQ_FIELDS.forEach(function(id){
+      const el=iqEl(id);
+      if(el){
+        el.addEventListener('input', function(){ iqLights(); });
+        el.addEventListener('change', function(){ iqFormStore(); iqLights(); });
+      }
+    });
+    const ru=iqEl('iq-ref-url');
+    if(ru) ru.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); iqRefAdd(); } });
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+
+/* ══════════ 37차시 재편 통합 · 폐지 슬러그 통합 리다이렉트 ══════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   37차시 재편 · 폐지 슬러그 통합 리다이렉트 (접두사 rd / RD_)
+   core.js 의 **맨 끝**(모든 차시 블록 뒤)에 붙입니다 — go() 를 마지막으로 감쌉니다.
+   ───────────────────────────────────────────────────────────────────────────
+   구 8뷰는 두 통합 뷰로 흡수되었습니다.
+     quickdraw · mnist · hamming            → imgcls (18차시)
+     conv · filter · pool · pipeline · detect → cnn   (20차시, 탭 ①~⑤)
+   본문 곳곳에 남아 있는 go('conv') 같은 옛 호출과 #conv 해시를
+   한자리에서 받아 넘겨, 빈 화면이 뜨는 일이 없게 합니다.
+   (imgcls 스니펫의 icWrapGo · cnn 스니펫의 cnRoute 와 중복 동작하지 않도록
+    이 층에서 최종 판정만 하고, 탭 열기는 각 뷰의 함수에 위임합니다.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function rdInstall(){
+  var RD_MAP = {
+    quickdraw: { v: 'imgcls', k: '18차시', tab: 0 },
+    mnist:     { v: 'imgcls', k: '18차시', tab: 0 },
+    hamming:   { v: 'imgcls', k: '18차시', tab: 1 },
+    conv:      { v: 'cnn',    k: '20차시', tab: 0 },
+    filter:    { v: 'cnn',    k: '20차시', tab: 1 },
+    pool:      { v: 'cnn',    k: '20차시', tab: 2 },
+    pipeline:  { v: 'cnn',    k: '20차시', tab: 3 },
+    detect:    { v: 'cnn',    k: '20차시', tab: 4 }
+  };
+  window.RD_MAP = RD_MAP;
+
+  function rdOpenTab(r){
+    try{
+      if(r.v === 'imgcls' && typeof icTab === 'function') icTab(r.tab, null);
+      if(r.v === 'cnn'    && typeof cnTab === 'function') cnTab(r.tab);
+    }catch(e){}
+  }
+
+  var prev = window.go;
+  if(typeof prev !== 'function' || prev.__rd) return;
+  var wrapped = function(v, push){
+    var r = Object.prototype.hasOwnProperty.call(RD_MAP, v) ? RD_MAP[v] : null;
+    if(!r) return prev.apply(this, arguments);
+    var out = prev.call(this, r.v, push);
+    setTimeout(function(){ rdOpenTab(r); }, 0);
+    return out;
+  };
+  wrapped.__rd = 1;
+  window.go = wrapped;
+
+  /* 해시로 직접 들어온 경우(#pool · #hamming 등)도 받아 넘깁니다.
+     core.js 의 startRouter 뒤에 한 틱 미뤄 실행합니다. */
+  function rdRouteHash(){
+    try{
+      var raw = (location.hash || '').replace('#', '').split('/')[0];
+      if(!raw || !Object.prototype.hasOwnProperty.call(RD_MAP, raw)) return;
+      var r = RD_MAP[raw];
+      /* 주소창에 폐지 해시가 남으면 즐겨찾기·새로고침 때마다 안내 배지가 다시 뜹니다.
+         기록을 늘리지 않고 새 슬러그로 바꿔 둡니다.
+         (core.js 라우터가 뒤늦게 해시를 되돌려 놓는 경우가 있어 몇 번 다시 시도합니다.
+          go() 안에서 예외가 나도 이 정리는 반드시 돌도록 먼저 예약해 둡니다.) */
+      var to = (r.v === 'cnn') ? ('#cnn/' + (r.tab + 1)) : ('#' + r.v);
+      [40, 200, 600].forEach(function(ms){
+        setTimeout(function(){
+          try{
+            if((location.hash || '').replace('#', '').split('/')[0] !== raw) return;
+            history.replaceState(null, '', to);
+          }catch(e){}
+        }, ms);
+      });
+      window.go(raw, false);
+    }catch(e){ console.error('rdRouteHash', e); }
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(rdRouteHash, 10); });
+  }else{
+    setTimeout(rdRouteHash, 10);
+  }
+  /* hashchange · popstate 양쪽을 다 봅니다 — 프로그램적 해시 변경은 popstate 를 내지 않습니다. */
+  window.addEventListener('hashchange', function(){ setTimeout(rdRouteHash, 0); });
+  window.addEventListener('popstate', function(){ setTimeout(rdRouteHash, 0); });
+})();
+
+/* ●●● ANCHOR-REDIRECT (37차시 재편) ●●● */
