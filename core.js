@@ -48671,3 +48671,37 @@ var GE_ART =
   setTimeout(sync, 0);
   setTimeout(sync, 400);
 })();
+
+/* ═══════════════════════════════════════════════════════════════
+   18차시(imgcls) 초기화 보강
+   구 mnist/hamming 위젯이 통합 뷰로 옮겨졌지만 초기화는 옛 뷰 이름에만
+   걸려 있어 손글씨 캔버스에 그리기 이벤트가 붙지 않던 문제를 고칩니다.
+   ═══════════════════════════════════════════════════════════════ */
+(function aimImgclsBoot(){
+  function boot(){
+    var v = document.getElementById('v-imgcls');
+    if(!v || !v.classList.contains('active')) return;
+    try{
+      if(typeof mnInit === 'function'){
+        if(!mnInited){ mnInited = true; mnInit(); }
+        else if(typeof mnRefresh === 'function'){ mnRefresh(); }
+      }
+    }catch(e){}
+    try{
+      if(typeof hbInit === 'function'){
+        if(!hbInited){ hbInited = true; hbInit(); }
+        else if(typeof hbRefresh === 'function'){ hbRefresh(); }
+      }
+    }catch(e){}
+    try{ if(typeof initToggles === 'function') initToggles(v); }catch(e){}
+  }
+  if(typeof window.go === 'function' && !window.go.__aimIcBoot){
+    var g = window.go;
+    var w = function(){ var r = g.apply(this, arguments); setTimeout(boot, 0); return r; };
+    w.__aimIcBoot = true;
+    window.go = w;
+  }
+  window.aimImgclsBoot = boot;
+  setTimeout(boot, 0);
+  setTimeout(boot, 500);
+})();
