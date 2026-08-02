@@ -187,6 +187,9 @@ h3{font-size:1.15rem;font-weight:600;margin-bottom:0.6rem;}
 
 footer{border-top:1px solid var(--border);margin-top:auto;}
 footer .inner{max-width:68rem;margin:0 auto;padding:1.1rem 1.5rem;display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.65rem;color:var(--muted);}
+footer .notice{max-width:68rem;margin:0 auto;padding:0 1.5rem 1.3rem;font-size:0.82rem;line-height:1.7;color:var(--muted);text-align:center;}
+footer .notice b{color:var(--body);}
+@media (max-width:640px){ footer .notice{text-align:left;padding-bottom:1.1rem;} }
 
 @media(max-width:640px){
   h1{font-size:1.4rem;white-space:normal;}
@@ -490,6 +493,9 @@ nav{position:relative;}
   border-bottom:1.5pt solid #000;padding-bottom:2mm;margin-bottom:4mm;position:relative;}
 .ws-sheet .ws-h::before{content:"제작 : 대전대신고등학교 교사 하진수";position:absolute;top:-4mm;right:0;
   font-size:7.5pt;color:#666;letter-spacing:-0.01em;}
+.ws-sheet::after{content:"제작 : 대전대신고등학교 교사 하진수 · 이 자료의 무단 배포 및 상업적 이용을 금합니다";
+  display:block;margin-top:6mm;padding-top:2mm;border-top:0.5pt solid #bbb;
+  font-size:7.5pt;color:#666;text-align:center;}
 .ws-sheet .ws-id{font-size:10pt;white-space:nowrap;}
 .ws-sheet h3{font-size:11.5pt;margin:5mm 0 1.5mm;padding-left:2mm;border-left:3pt solid #000;}
 .ws-sheet p,.ws-sheet li{font-size:10pt;line-height:1.65;margin:0 0 1.5mm;}
@@ -528,7 +534,23 @@ nav{position:relative;}
 .tbshot-row:empty{display:none;}
 .tbshot{margin:0;max-width:100%;}
 .tbshot img{display:block;width:100%;height:auto;max-width:100%;border:1px solid var(--border);
-  border-radius:0.5rem;background:#fff;}
+  border-radius:0.5rem;background:#fff;cursor:zoom-in;transition:box-shadow .18s,transform .18s;}
+.tbshot img:hover{box-shadow:0 4px 14px rgba(0,0,0,.12);transform:translateY(-2px);}
+/* 교과서 지면 크게 보기 — 누르면 열리고, 다시 누르면 닫힙니다 */
+#aim-tbzoom{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:0.8rem;padding:2.5rem 1.5rem 1.5rem;
+  background:rgba(20,23,29,0.86);backdrop-filter:blur(3px);cursor:zoom-out;
+  animation:aimTbFade .16s ease;}
+@keyframes aimTbFade{from{opacity:0}to{opacity:1}}
+#aim-tbzoom img{max-width:min(96vw,1400px);max-height:82vh;width:auto;height:auto;
+  border-radius:0.5rem;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+#aim-tbzoom .aim-tbzoom-cap{color:#e9e7e3;font-size:0.9rem;line-height:1.6;text-align:center;
+  max-width:60rem;margin:0;}
+.aim-tbzoom-x{position:absolute;top:0.9rem;right:1.1rem;width:2.6rem;height:2.6rem;
+  border-radius:9999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);
+  color:#fff;font-size:1rem;cursor:pointer;}
+.aim-tbzoom-x:hover{background:rgba(255,255,255,.24);}
+@media (prefers-reduced-motion:reduce){ #aim-tbzoom{animation:none} .tbshot img{transition:none} }
 .tbshot figcaption{font-size:0.78rem;color:var(--muted);line-height:1.55;margin-top:0.3rem;}
 .tbshot figcaption .src{display:block;font-size:0.72rem;margin-top:0.12rem;}
 
@@ -599,7 +621,10 @@ body.aim-has-botbar .aim-botbar{display:flex;}
 
 </main>
 
-<footer><div class="inner"><span>제작 : 대전대신고등학교 교사 하진수</span><span>2026</span></div></footer>
+<footer>
+  <div class="inner"><span>제작 : 대전대신고등학교 교사 하진수</span><span>2026</span></div>
+  <p class="notice">이 웹페이지의 <b>무단 배포</b> 및 <b>상업적 이용</b>을 금합니다. 학교 수업 목적으로만 이용해 주세요.</p>
+</footer>
 
 <!-- Phase H — 하단 고정 이동 바 + 가장자리 화살표(데스크톱). 내용은 core.js 가 채웁니다. -->
 <button class="aim-edge aim-edge-l" id="aim-edge-l" type="button" aria-label="이전 차시" title="이전 차시">‹</button>

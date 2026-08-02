@@ -7248,7 +7248,8 @@ function aimTbFigHTML(f){
   const pub=(m&&AIM_TB_PUB[m[1]])||'교과서';
   const pg=m?('p.'+m[2]):'';
   return '<figure class="tbshot">'+
-    '<img src="assets/textbook-local/'+encodeURIComponent(f)+'" alt="교과서 지면(수업용)" loading="lazy" '+
+    '<img src="assets/textbook-local/'+encodeURIComponent(f)+'" alt="교과서 지면(수업용) — 누르면 크게 보입니다" loading="lazy" '+
+    'title="누르면 크게, 다시 누르면 작게" onclick="aimTbZoom(this)" '+
     'onerror="var f=this.closest(\'.tbshot\');if(f&&f.parentNode)f.parentNode.removeChild(f);">'+
     '<figcaption>'+cmnEsc(pub)+' '+pg+' <span class="src">교과서 지면(수업용) — 공개 게시하지 않습니다.</span></figcaption></figure>';
 }
@@ -48512,6 +48513,7 @@ var GE_ART =
    ═══════════════════════════════════════════════════════════════ */
 (function aimWsSave(){
   var CREDIT = '제작 : 대전대신고등학교 교사 하진수';
+  var NOTICE = '이 자료의 무단 배포 및 상업적 이용을 금합니다. 학교 수업 목적으로만 이용해 주세요.';
 
   /* 입력값(학생이 웹에서 적은 것)을 저장본에 남깁니다. */
   function freeze(node){
@@ -48551,7 +48553,7 @@ var GE_ART =
       + 'table{border-collapse:collapse;width:100%;} td,th{border:1px solid #999;padding:6px;}'
       + 'input{border:none;border-bottom:1px solid #999;min-width:80px;}'
       + '.aim-credit{margin-top:24px;padding-top:8px;border-top:1px solid #ccc;font-size:9pt;color:#666;}</style></head>'
-      + '<body>' + body + '<p class="aim-credit">' + CREDIT + '</p></body></html>';
+      + '<body>' + body + '<p class="aim-credit">' + CREDIT + '<br>' + NOTICE + '</p></body></html>';
 
     try{
       var blob = new Blob(['\ufeff' + html], {type:'application/msword'});
@@ -48705,3 +48707,49 @@ var GE_ART =
   setTimeout(boot, 0);
   setTimeout(boot, 500);
 })();
+
+/* ═══════════════════════════════════════════════════════════════
+   교과서로 확인하기 — 지면을 누르면 크게, 다시 누르면 작게
+   (수업 중 교사가 화면에 띄워 함께 볼 때 사용)
+   ═══════════════════════════════════════════════════════════════ */
+function aimTbZoom(img){
+  if(!img) return;
+  var open = document.getElementById('aim-tbzoom');
+  /* 이미 열려 있고 같은 그림이면 닫습니다(토글). */
+  if(open){
+    var same = open.dataset.src === img.getAttribute('src');
+    open.remove();
+    document.body.style.overflow = '';
+    if(same) return;
+  }
+  var box = document.createElement('div');
+  box.id = 'aim-tbzoom';
+  box.dataset.src = img.getAttribute('src');
+  box.setAttribute('role','dialog');
+  box.setAttribute('aria-label','교과서 지면 크게 보기');
+  var cap = '';
+  var fig = img.closest('.tbshot');
+  if(fig){
+    var fc = fig.querySelector('figcaption');
+    if(fc) cap = fc.textContent.trim();
+  }
+  box.innerHTML =
+    '<button class="aim-tbzoom-x" type="button" aria-label="닫기" title="닫기(ESC)">✕</button>' +
+    '<img src="' + img.getAttribute('src') + '" alt="교과서 지면 크게 보기">' +
+    '<p class="aim-tbzoom-cap">' + (cap || '교과서 지면(수업용)') + ' — 화면을 누르면 닫힙니다.</p>';
+  document.body.appendChild(box);
+  document.body.style.overflow = 'hidden';
+
+  function close(){
+    var b = document.getElementById('aim-tbzoom');
+    if(b) b.remove();
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onKey, true);
+  }
+  function onKey(e){
+    if(e.key === 'Escape'){ e.stopPropagation(); close(); }
+  }
+  box.addEventListener('click', close);
+  document.addEventListener('keydown', onKey, true);
+}
+window.aimTbZoom = aimTbZoom;
