@@ -7248,7 +7248,8 @@ function aimTbFigHTML(f){
   const pub=(m&&AIM_TB_PUB[m[1]])||'교과서';
   const pg=m?('p.'+m[2]):'';
   return '<figure class="tbshot">'+
-    '<img src="assets/textbook-local/'+encodeURIComponent(f)+'" alt="교과서 지면(수업용) — 누르면 크게 보입니다" loading="lazy" '+
+    /* loading="lazy" 는 숨겨진 뷰 안에서 발동하지 않아 지면이 끝내 뜨지 않습니다(구동 확인). */
+    '<img src="assets/textbook-local/'+encodeURIComponent(f)+'" alt="교과서 지면(수업용) — 누르면 크게 보입니다" '+
     'title="누르면 크게, 다시 누르면 작게" onclick="aimTbZoom(this)" '+
     'onerror="var f=this.closest(\'.tbshot\');if(f&&f.parentNode)f.parentNode.removeChild(f);">'+
     '<figcaption>'+cmnEsc(pub)+' '+pg+' <span class="src">교과서 지면(수업용) — 공개 게시하지 않습니다.</span></figcaption></figure>';

@@ -2,6 +2,17 @@
 <div class="view" id="v-logic">
   <style>
   /* logic 뷰 전용 스타일 (#v-logic 스코프 한정 — 전역 누수 금지) */
+  /* 서책형 도판 — 이번 차시를 한눈에 보여 주는 개념도 */
+  #v-logic .lg-plate{margin:1.1rem 0 1.4rem;}
+  #v-logic .lg-plate img{width:100%;height:auto;display:block;border:1px solid var(--border);
+    border-radius:0.5rem;background:#fff;cursor:zoom-in;
+    box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.06);transition:box-shadow .18s,transform .18s;}
+  #v-logic .lg-plate img:hover{box-shadow:0 4px 14px rgba(0,0,0,.12);transform:translateY(-2px);}
+  #v-logic .lg-plate figcaption{margin-top:0.7rem;padding-left:0.9rem;border-left:3px solid var(--accent);
+    font-size:0.95rem;line-height:1.85;color:var(--body);}
+  #v-logic .lg-plate .no{display:block;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;
+    color:var(--muted);margin-bottom:0.25rem;}
+  #v-logic .lg-plate .src{display:block;margin-top:0.45rem;font-size:0.8rem;color:var(--muted);}
   #v-logic .lg-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
   #v-logic .lg-step::after{content:'';flex:1;height:1px;background:var(--border);}
   #v-logic .lg-step .mono{font-size:0.78rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
@@ -191,6 +202,20 @@
       <li>규칙만으로 생각하는 기계는 어디까지 똑똑해질 수 있는가?</li>
     </ul>
   </div>
+
+  <!-- 서책형 도판 — 이번 차시 한눈에 보기(토글 밖에 두어 들어오자마자 보이게 함) -->
+  <figure class="lg-plate">
+    <img src="assets/photo/logic_rule_ai.png"
+         alt="규칙 기반 인공지능의 세 갈래 — 논리 회로, IF-THEN 규칙과 추론 엔진, 순서도"
+         onclick="aimTbZoom(this)" title="누르면 크게, 다시 누르면 작게"
+         onerror="var f=this.closest('figure');if(f)f.style.display='none';">
+    <figcaption><span class="no">그림 1 · 이번 차시 한눈에 보기 — 누르면 크게 보입니다</span>
+      <b>왼쪽</b> 스위치를 켜고 끄면 논리 회로가 전구를 켭니다 → 오늘의 <b>진리표</b>.
+      <b>가운데</b> "비가 오면 우산을 챙겨라" 같은 <b>IF-THEN 규칙</b> 카드가 톱니바퀴(추론 엔진)로 들어갑니다 → <b>전문가 시스템</b>.
+      <b>오른쪽</b> 마름모에서 조건을 따져 길이 갈라집니다 → <b>순서도</b>.
+      이 세 장면이 그대로 오늘의 탐구 1·2·3입니다.
+      <span class="src">자체 제작 개념도(생성형 AI로 제작 후 교사 검수) · 무단 배포 및 상업적 이용 금지</span></figcaption>
+  </figure>
 
   <!-- ═════ STEP 1 · 도입 ═════ -->
   <div class="lg-step"><p class="mono">STEP 1 · 도입 — 생각 열기</p></div>
