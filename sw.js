@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ai-math-v31';
+const CACHE_NAME = 'ai-math-v32';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   './manifest.json',
   './views/home.html',
   './views/intro.html',
+  './assets/photo/dartmouth_1956.jpg',
   './views/mlplay.html',
   './views/logic.html',
   './views/perceptron.html',
