@@ -2057,7 +2057,7 @@ function warmStepper(cid, prefix, QS){
     d.className='cmn-warm-item';
     d.id=prefix+'-warm-'+i;
     d.innerHTML='<p class="cmn-q">질문 '+(i+1)+'. '+cmnEsc(q.q)+'</p>'+
-                '<div class="btn-row cmn-opts"></div><div class="cmn-fbwrap"></div>';
+                '<div class="btn-row cmn-opts"></div><div class="cmn-fbwrap" role="status" aria-live="polite"></div>';
     const row=d.querySelector('.cmn-opts');
     (q.opts||[]).forEach((o,k)=>{
       const b=document.createElement('button');
@@ -2100,7 +2100,7 @@ function quizStepper(cid, prefix, QS){
     box.innerHTML='<div class="cmn-prog">문항 '+(i+1)+' / '+N+'</div>'+
       '<div class="cmn-bar"><i style="width:'+Math.round((i)/N*100)+'%"></i></div>'+
       '<p class="cmn-q">'+cmnEsc(q.q)+'</p>'+
-      '<div class="btn-row cmn-opts"></div><div class="cmn-fbwrap"></div>'+
+      '<div class="btn-row cmn-opts" ></div><div class="cmn-fbwrap" role="status" aria-live="polite"></div>'+
       '<div class="btn-row cmn-nav"></div>';
     const row=box.querySelector('.cmn-opts');
     (q.opts||[]).forEach((o,k)=>{
@@ -5138,7 +5138,7 @@ function mlJump(tab,id){
    실존 확인된 유튜브 ID만 사용합니다(새 ID 창작 금지).             */
 /* 자료 중복 배치 금지(§23) — 역사 영상은 1차시, 탐색 영상은 3차시 전용입니다. */
 const ML_VIDEOS=[
-  {id:'IiyYsAMmmw4', t:'기계학습 — 지도학습·비지도학습·강화학습', s:'유튜브 · 오늘의 주력 영상'},
+  {id:'IiyYsAMmmw4', t:'기계학습 — 지도학습·비지도학습·강화학습', s:'유튜브 · KERIS 연수 패들렛 지정 영상'},
 ];
 
 
@@ -5571,7 +5571,7 @@ function lgGoAct(n, id){
 const LG_REF_KEY='aimath.logic.customrefs';
 const LG_REFS=[
   { k:'em', em:'🃏', b:'웹 활동', t:'논리 회로 · 논리집합 카드 게임',
-    d:'연산 카드와 명제 카드로 논리식을 만들어 진리표를 완성하는 교실 활동 안내입니다.',
+    d:'연산 카드와 명제 카드로 논리식을 만들어 진리표를 완성하는 교실 활동 안내입니다. (대전대신고 하진수 개발 · 노션 「인공지능 수학」 자료실)',
     u:'https://dshskr.notion.site/1ad7f8928da3800393d8f321a9ff5798' },
   { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 논리 게이트',
     d:'AND·OR·NOT·XOR 등 논리 게이트의 기호와 진리표를 표준 정의로 정리한 문서입니다. 오늘 채점한 진리표와 비교해 보세요.',
@@ -48014,12 +48014,25 @@ function geAssemble(){
   if(out) out.textContent = parts.join(' ');
   if(msg) msg.style.display = (n === 4) ? 'block' : 'none';
 }
-function geCopy(){
+function geCopy(btn){
   var out = geEl('ge-assemble'); if(!out) return;
   var text = out.textContent || '';
+  /* 눌렀는데 아무 반응이 없으면 학생이 두 번 세 번 누릅니다 — 결과를 바로 알려 줍니다. */
+  var b = (btn && btn.tagName) ? btn : null;
+  function say(msg){
+    if(!b) return;
+    if(!b.dataset.geLabel) b.dataset.geLabel = b.textContent;
+    b.textContent = msg;
+    setTimeout(function(){ b.textContent = b.dataset.geLabel; }, 1600);
+  }
   try{
-    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(function(){});
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ say('복사됨 ✓'); })
+                                         .catch(function(){ say('복사 실패 — 직접 선택해 주세요'); });
+      return;
+    }
   }catch(e){}
+  say('복사 실패 — 직접 선택해 주세요');
 }
 
 /* ── 활동 ③ ⓒ 5단계 검증 체크리스트 ── */
@@ -48754,3 +48767,282 @@ function aimTbZoom(img){
   document.addEventListener('keydown', onKey, true);
 }
 window.aimTbZoom = aimTbZoom;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   지연 로딩 되살리기 — 숨은 뷰(display:none) 안의 loading="lazy" 이미지는
+   브라우저가 "화면에 들어올 일이 없다"고 판단해 끝내 받아오지 않습니다.
+   그 결과 디딤 영상 썸네일·사진이 빈 칸으로 남았습니다(전 차시 확인).
+   뷰가 열리는 순간 그 뷰 안의 lazy 이미지를 eager 로 바꿔 즉시 받아옵니다.
+   (열지 않은 차시는 그대로 지연 로딩 → 첫 로딩 속도는 유지)
+   ═══════════════════════════════════════════════════════════════════════ */
+(function aimLazyWake(){
+  'use strict';
+  function wake(root){
+    if(!root) return 0;
+    var n = 0;
+    root.querySelectorAll('img[loading="lazy"]').forEach(function(img){
+      img.setAttribute('loading','eager');
+      /* 이미 src 가 붙어 있어도 브라우저가 요청을 미뤄 둔 경우가 있어
+         같은 주소를 다시 넣어 로딩을 확실히 깨웁니다. */
+      if(!img.complete || img.naturalWidth < 2){
+        var s = img.getAttribute('src');
+        if(s){ img.setAttribute('src', s); }
+      }
+      n++;
+    });
+    return n;
+  }
+
+  /* 뷰가 열릴 때 */
+  function wakeActive(){
+    var el = document.querySelector('.view.active') ||
+             document.querySelector('#views .view:not([hidden])');
+    if(el && getComputedStyle(el).display !== 'none') wake(el);
+  }
+
+  /* 라우터(window.go)는 파일 여러 곳에서 다시 감싸이므로 가로채지 않습니다.
+     대신 뷰가 '보이게 되는 순간'을 직접 감시합니다 — 어떤 경로로 전환하든 걸립니다. */
+  function sweepVisible(){
+    document.querySelectorAll('#views > .view, .view').forEach(function(v){
+      if(v.__aimWoke) return;
+      if(getComputedStyle(v).display === 'none') return;
+      v.__aimWoke = true;
+      wake(v);
+    });
+  }
+  window.addEventListener('hashchange', function(){ setTimeout(sweepVisible,0); setTimeout(sweepVisible,350); });
+  document.addEventListener('click', function(){ setTimeout(sweepVisible, 120); }, true);
+
+  /* 뷰가 보이게 되는 순간(class·style 변화)과, 뷰 안에 나중에 그려지는 덱·카드를 함께 감시합니다. */
+  function boot(){
+    sweepVisible();
+    var host = document.getElementById('views') || document.body;
+    var pending = null;
+    function schedule(){ if(pending) return; pending = setTimeout(function(){ pending=null; sweepVisible(); }, 80); }
+    var mo = new MutationObserver(function(muts){
+      for(var i=0;i<muts.length;i++){
+        var m = muts[i];
+        if(m.type === 'attributes'){ schedule(); continue; }
+        for(var j=0;j<m.addedNodes.length;j++){
+          var nd = m.addedNodes[j];
+          if(nd.nodeType !== 1) continue;
+          var vw = nd.closest ? nd.closest('.view') : null;
+          if(vw && getComputedStyle(vw).display !== 'none'){
+            if(nd.matches && nd.matches('img[loading="lazy"]')) nd.setAttribute('loading','eager');
+            else wake(nd);
+          }
+        }
+      }
+    });
+    mo.observe(host, {childList:true, subtree:true, attributes:true, attributeFilter:['class','style','hidden']});
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.aimLazyWake = sweepVisible;
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   활동 진행 표시 — 전개(STEP 2)에서 활동을 열어 보면 색이 바뀝니다.
+   · 한 번이라도 연 단계 토글·탭에 ✓ 와 파란 표시가 붙습니다.
+   · STEP 2 머리글 옆에 "탐구 N개 중 M개 열어봄" 배지가 붙고, 다 하면 초록.
+   · 차시별로 브라우저에 기억되어 수업 중 새로고침해도 남습니다.
+   · 색만으로 알리지 않도록 ✓ 를 함께 씁니다(색각 이상·흑백 인쇄 대비).
+   ═══════════════════════════════════════════════════════════════════════ */
+(function aimProgress(){
+  'use strict';
+  var KEY = 'aimath.prog.';
+
+  function viewOf(el){ return el && el.closest ? el.closest('.view') : null; }
+  function slug(v){ return v && v.id ? v.id.replace(/^v-/,'') : ''; }
+
+  function load(s){
+    try{ return JSON.parse(localStorage.getItem(KEY+s) || '[]'); }catch(e){ return []; }
+  }
+  function save(s, arr){
+    try{ localStorage.setItem(KEY+s, JSON.stringify(arr)); }catch(e){}
+  }
+
+  /* STEP 2 구간 안에 있는 요소만 대상으로 삼습니다.
+     각 뷰의 머리글은 <div class="xx-step"><p class="mono">STEP 2 · 전개 …</p></div> 꼴입니다. */
+  function stepMarks(view){
+    var heads = [], all = view.querySelectorAll('p.mono, .mono');
+    for(var i=0;i<all.length;i++){
+      var t = (all[i].textContent||'').replace(/\s+/g,' ').trim();
+      if(/^STEP\s*[123]\b/.test(t)) heads.push({el:all[i], n:parseInt(t.replace(/^STEP\s*/,''),10)});
+    }
+    return heads;
+  }
+  function step2Range(view){
+    var h = stepMarks(view);
+    var s2 = null, s3 = null;
+    for(var i=0;i<h.length;i++){
+      if(h[i].n === 2 && !s2) s2 = h[i].el;
+      else if(h[i].n === 3 && s2 && !s3) s3 = h[i].el;
+    }
+    return s2 ? {start:s2, end:s3} : null;
+  }
+  function inRange(el, r){
+    if(!r) return false;
+    var afterStart = r.start.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING;
+    if(!afterStart) return false;
+    if(!r.end) return true;
+    return !!(r.end.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING);
+  }
+
+  /* 활동으로 셀 요소 — 단계 토글 머리와 탭 버튼 */
+  function items(view){
+    var r = step2Range(view);
+    var out = [];
+    view.querySelectorAll('.tgl-head, .tab').forEach(function(el){
+      if(el.closest('.ws-sheet')) return;              /* 학습지 인쇄 지면은 제외 */
+      if(r && !inRange(el, r)) return;                 /* STEP 2 밖은 제외 */
+      out.push(el);
+    });
+    /* STEP 표시가 없거나(구 뷰) 그 구간에 활동이 잡히지 않으면 뷰 전체를 대상으로 삼습니다.
+       (18차시처럼 탭이 STEP 2 앞에 놓인 통합 차시에서 배지가 아예 안 뜨던 문제) */
+    if(!r || !out.length){
+      out = [];
+      view.querySelectorAll('.tgl-head, .tab').forEach(function(el){
+        if(!el.closest('.ws-sheet')) out.push(el);
+      });
+    }
+    return out;
+  }
+
+  function keyOf(el, idx){
+    var t = (el.textContent||'').replace(/\s+/g,' ').trim().slice(0,28);
+    return idx + '|' + t;
+  }
+
+  function badge(view, done, total){
+    var r = step2Range(view);
+    if(!total) return;
+    /* STEP 2 머리글이 없으면 뷰의 첫 머리글 옆에 붙입니다. */
+    var host = r ? r.start : view.querySelector('p.mono, h2');
+    if(!host) return;
+    var b = host.querySelector('.aim-prog');
+    if(!b){
+      b = document.createElement('span');
+      b.className = 'aim-prog';
+      host.appendChild(b);
+      var rs = document.createElement('button');
+      rs.type = 'button';
+      rs.className = 'aim-prog-reset';
+      rs.textContent = '표시 지우기';
+      rs.title = '이 차시의 활동 표시를 처음 상태로 되돌립니다';
+      rs.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        var s = slug(view);
+        save(s, []);
+        items(view).forEach(function(el){ el.classList.remove('aim-done'); });
+        apply(view);
+      });
+      host.appendChild(rs);
+    }
+    var txt = (done >= total)
+      ? '활동 ' + total + '개 모두 열어봄 ✓'
+      : '활동 ' + total + '개 중 ' + done + '개 열어봄';
+    /* 같은 글자를 다시 넣으면 DOM 변화로 잡혀 감시기가 끝없이 다시 도는 원인이 됩니다. */
+    if(b.textContent !== txt) b.textContent = txt;
+    b.classList.toggle('full', done >= total);
+  }
+
+  function apply(view){
+    if(!view) return;
+    var s = slug(view);
+    if(!s) return;
+    var set = load(s), its = items(view), done = 0;
+    its.forEach(function(el, i){
+      var k = keyOf(el, i);
+      if(set.indexOf(k) >= 0){ el.classList.add('aim-done'); done++; }
+    });
+    badge(view, done, its.length);
+  }
+
+  function mark(el){
+    var view = viewOf(el);
+    if(!view) return;
+    var s = slug(view);
+    if(!s) return;
+    var its = items(view), i = its.indexOf(el);
+    if(i < 0) return;
+    var k = keyOf(el, i), set = load(s);
+    if(set.indexOf(k) < 0){ set.push(k); save(s, set); }
+    el.classList.add('aim-done');
+    apply(view);
+  }
+
+  /* 클릭 위임 — 어느 차시에서든 동작합니다. */
+  document.addEventListener('click', function(e){
+    var el = e.target && e.target.closest ? e.target.closest('.tgl-head, .tab') : null;
+    if(!el) return;
+    if(el.closest('.ws-sheet')) return;
+    setTimeout(function(){ mark(el); }, 0);
+  }, true);
+
+  /* 탭 묶음에 표준 역할을 부여합니다(스크린리더가 "3개 중 2번째 탭"으로 읽도록). */
+  function a11yTabs(view){
+    view.querySelectorAll('.tabs').forEach(function(row){
+      if(!row.hasAttribute('role')) row.setAttribute('role','tablist');
+      row.querySelectorAll('.tab').forEach(function(t){
+        if(!t.hasAttribute('role')) t.setAttribute('role','tab');
+        t.setAttribute('aria-selected', t.classList.contains('on') ? 'true' : 'false');
+      });
+    });
+    /* 지금 보고 있는 차시를 목록에서도 알 수 있게 */
+    document.querySelectorAll('.nav-item').forEach(function(n){
+      if(n.classList.contains('cur')) n.setAttribute('aria-current','page');
+      else n.removeAttribute('aria-current');
+    });
+  }
+
+  /* 키보드로도 열 수 있게 — 토글 머리에 역할과 포커스를 부여합니다. */
+  function a11y(view){
+    a11yTabs(view);
+    view.querySelectorAll('.tgl-head').forEach(function(h){
+      if(h.__aimA11y) return;
+      h.__aimA11y = 1;
+      if(!h.hasAttribute('tabindex')) h.setAttribute('tabindex','0');
+      if(!h.hasAttribute('role')) h.setAttribute('role','button');
+      h.setAttribute('aria-expanded', h.classList.contains('open') ? 'true' : 'false');
+      h.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); h.click(); }
+      });
+      h.addEventListener('click', function(){
+        setTimeout(function(){ h.setAttribute('aria-expanded', h.classList.contains('open') ? 'true' : 'false'); }, 0);
+      });
+    });
+  }
+
+  function refresh(){
+    document.querySelectorAll('.view').forEach(function(v){
+      if(getComputedStyle(v).display === 'none') return;
+      a11y(v);
+      apply(v);
+    });
+  }
+
+  function boot(){
+    refresh();
+    var host = document.getElementById('views') || document.body;
+    var t = null;
+    new MutationObserver(function(muts){
+      /* 우리가 만든 배지·표시가 일으킨 변화는 무시합니다(자기 자신을 다시 깨우지 않도록). */
+      var own = true;
+      for(var i=0;i<muts.length;i++){
+        var tg = muts[i].target;
+        var el = tg && tg.nodeType === 1 ? tg : (tg && tg.parentElement);
+        if(!el || !el.closest || !el.closest('.aim-prog, .aim-prog-reset')){ own = false; break; }
+      }
+      if(own) return;
+      if(t) return;
+      t = setTimeout(function(){ t = null; refresh(); }, 200);
+    }).observe(host, {childList:true, subtree:true, attributes:true, attributeFilter:['class','style','hidden']});
+    window.addEventListener('hashchange', function(){ setTimeout(refresh, 120); });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.aimProgressRefresh = refresh;
+})();

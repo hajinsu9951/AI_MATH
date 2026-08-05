@@ -9,6 +9,10 @@
      ══════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-cnn">
 <style>
+  /* 자체 제작 도해 — 카드 폭에 맞춰 늘어나고, 좁은 화면에서는 가로 스크롤 대신 축소됩니다. */
+  #v-cnn .cnx-svg{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.6rem;background:var(--card);}
+  #v-cnn .cvx-diagram .fb{display:none;}
+
   /* ═══ 20차시 래퍼 전용 (접두사 cn) ═══ */
   #v-cnn .card div{min-width:0;}
   #v-cnn canvas{max-width:100%;}
@@ -849,7 +853,7 @@
   </div>
 
   <!-- ═════ STEP 1 · 도입 (6분) ═════ -->
-  <div class="cn-step"><p class="mono">STEP 1 · 도입 — 생각 열기</p></div>
+  <div class="cn-step"><p class="mono">STEP 1 · 도입 — 생각 열기 (8분)</p></div>
 
   <div class="card" data-no-toggle="1">
     <h3>추천 영상 — 커널이 지나갈 때, 그리고 상자가 그려질 때</h3>
@@ -905,7 +909,7 @@
   </div>
 
   <!-- ═════ STEP 2 · 전개 (5탭) ═════ -->
-  <div class="cn-step"><p class="mono">STEP 2 · 전개 — 다섯 마디</p></div>
+  <div class="cn-step"><p class="mono">STEP 2 · 전개 — 다섯 마디 (30분)</p></div>
 
   <div class="tabs" id="cn-tabs">
     <button class="tab on" type="button" onclick="cnTab(0,this)">① 합성곱 · 12분 · 필수</button>
@@ -1347,19 +1351,20 @@ K: 필터(커널)   X: 입력의 한 창   Y: 출력값 한 개
           <p>오늘 여러분이 계산한 3×3 창 하나가, 바로 그 ‘방향에 반응하는 뉴런’ 하나에 해당합니다.</p>
           <div class="cvx-frow">
             <figure class="cvx-photo" style="max-width:min(100%,11rem);">
-              <img src="얀 르쿤.jpeg" alt="얀 르쿤(Yann LeCun)의 사진"
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Yann_LeCun_-_2018_%28cropped%29.jpg/500px-Yann_LeCun_-_2018_%28cropped%29.jpg"
+                   alt="얀 르쿤(Yann LeCun)의 사진" referrerpolicy="no-referrer"
                    onerror="var f=this.closest('figure');if(f)f.classList.add('nofoto');">
               <span class="fb" aria-hidden="true">👨‍🔬</span>
               <figcaption><b>얀 르쿤</b>(Yann LeCun, 1960~ ) — 1989년 손글씨 숫자를 읽는 합성곱 신경망을 만들어
                 오늘의 계산을 처음 기계에 심은 연구자입니다. 2018년 튜링상을 받았습니다.
-                <span class="lo">저장소 내 수업 자료 사진(AI_MATH/얀 르쿤.jpeg)</span></figcaption>
+                <span class="lo">사진 — Jérémy Barande / École polytechnique, 「Yann LeCun - 2018」,
+                  Wikimedia Commons, CC BY-SA 2.0</span></figcaption>
             </figure>
-            <figure class="cvx-photo" style="max-width:min(100%,26rem);">
-              <img src="cnnimg1.png" alt="인간의 시각 처리 과정과 CNN의 처리 과정을 나란히 비교한 도해"
-                   onerror="var f=this.closest('figure');if(f)f.classList.add('nofoto');">
-              <span class="fb" aria-hidden="true">🧠</span>
-              <figcaption>인간의 시각(망막 → V1 → V2·V4 → 측두엽)과 CNN(입력 → 합성곱 → ReLU → 풀링 → 분류)의 대응.
-                <span class="lo">저장소 내 수업 자료 이미지(AI_MATH/cnnimg1.png)</span></figcaption>
+            <figure class="cvx-photo cvx-diagram" style="max-width:min(100%,34rem);">
+              <svg viewBox="0 0 1000 430" role="img" aria-label="사람의 시각 인식 5단계와 합성곱 신경망 5단계를 나란히 견준 도해" class="cnx-svg"><rect width="1000" height="430" fill="var(--card)"/><text x="24" y="30" font-size="17" font-weight="700" fill="var(--fg)">사람의 눈과 뇌가 보는 순서</text><text x="24" y="246" font-size="17" font-weight="700" fill="var(--pri)">합성곱 신경망(CNN)이 보는 순서</text><line x1="24" y1="216" x2="976" y2="216" stroke="var(--border)" stroke-width="1"/><rect x="24" y="48" width="176" height="132" rx="12" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/><circle cx="46" cy="72" r="11" fill="var(--fg)"/><text x="46" y="77" font-size="12" font-weight="700" text-anchor="middle" fill="var(--card)">1</text><text x="66" y="77" font-size="14.5" font-weight="600" fill="var(--fg)">망막 · 수정체</text><foreignObject x="38" y="92" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">빛을 모아 상을 맺음</div></foreignObject><rect x="24" y="266" width="176" height="132" rx="12" fill="#fff" stroke="var(--pri)" stroke-width="1.5"/><circle cx="46" cy="290" r="11" fill="var(--pri)"/><text x="46" y="295" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">1</text><text x="66" y="295" font-size="14.5" font-weight="600" fill="var(--pri-active)">입력 이미지</text><foreignObject x="38" y="310" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">28×28 픽셀 행렬</div></foreignObject><line x1="112.0" y1="180" x2="112.0" y2="266" stroke="var(--pri)" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.55"/><path d="M204 114 L226 114" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M226 114 l-7 -5 v10 z" fill="var(--muted)"/><path d="M204 332 L226 332" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M226 332 l-7 -5 v10 z" fill="var(--muted)"/><rect x="230" y="48" width="176" height="132" rx="12" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/><circle cx="252" cy="72" r="11" fill="var(--fg)"/><text x="252" y="77" font-size="12" font-weight="700" text-anchor="middle" fill="var(--card)">2</text><text x="272" y="77" font-size="14.5" font-weight="600" fill="var(--fg)">V1 단순세포</text><foreignObject x="244" y="92" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">선분의 방향에 반응</div></foreignObject><rect x="230" y="266" width="176" height="132" rx="12" fill="#fff" stroke="var(--pri)" stroke-width="1.5"/><circle cx="252" cy="290" r="11" fill="var(--pri)"/><text x="252" y="295" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">2</text><text x="272" y="295" font-size="14.5" font-weight="600" fill="var(--pri-active)">합성곱 층</text><foreignObject x="244" y="310" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">필터로 모서리 검출</div></foreignObject><line x1="318.0" y1="180" x2="318.0" y2="266" stroke="var(--pri)" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.55"/><path d="M410 114 L432 114" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M432 114 l-7 -5 v10 z" fill="var(--muted)"/><path d="M410 332 L432 332" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M432 332 l-7 -5 v10 z" fill="var(--muted)"/><rect x="436" y="48" width="176" height="132" rx="12" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/><circle cx="458" cy="72" r="11" fill="var(--fg)"/><text x="458" y="77" font-size="12" font-weight="700" text-anchor="middle" fill="var(--card)">3</text><text x="478" y="77" font-size="14.5" font-weight="600" fill="var(--fg)">발화 임계값</text><foreignObject x="450" y="92" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">약한 자극은 무시</div></foreignObject><rect x="436" y="266" width="176" height="132" rx="12" fill="#fff" stroke="var(--pri)" stroke-width="1.5"/><circle cx="458" cy="290" r="11" fill="var(--pri)"/><text x="458" y="295" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">3</text><text x="478" y="295" font-size="14.5" font-weight="600" fill="var(--pri-active)">활성화 ReLU</text><foreignObject x="450" y="310" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">음수는 0으로</div></foreignObject><line x1="524.0" y1="180" x2="524.0" y2="266" stroke="var(--pri)" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.55"/><path d="M616 114 L638 114" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M638 114 l-7 -5 v10 z" fill="var(--muted)"/><path d="M616 332 L638 332" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M638 332 l-7 -5 v10 z" fill="var(--muted)"/><rect x="642" y="48" width="176" height="132" rx="12" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/><circle cx="664" cy="72" r="11" fill="var(--fg)"/><text x="664" y="77" font-size="12" font-weight="700" text-anchor="middle" fill="var(--card)">4</text><text x="684" y="77" font-size="14.5" font-weight="600" fill="var(--fg)">V2 · V4</text><foreignObject x="656" y="92" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">눈·코 같은 형태로 조합</div></foreignObject><rect x="642" y="266" width="176" height="132" rx="12" fill="#fff" stroke="var(--pri)" stroke-width="1.5"/><circle cx="664" cy="290" r="11" fill="var(--pri)"/><text x="664" y="295" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">4</text><text x="684" y="295" font-size="14.5" font-weight="600" fill="var(--pri-active)">풀링 · 깊은 합성곱</text><foreignObject x="656" y="310" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">줄이고 다시 조합</div></foreignObject><line x1="730.0" y1="180" x2="730.0" y2="266" stroke="var(--pri)" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.55"/><path d="M822 114 L844 114" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M844 114 l-7 -5 v10 z" fill="var(--muted)"/><path d="M822 332 L844 332" stroke="var(--muted)" stroke-width="2" fill="none"/><path d="M844 332 l-7 -5 v10 z" fill="var(--muted)"/><rect x="848" y="48" width="176" height="132" rx="12" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/><circle cx="870" cy="72" r="11" fill="var(--fg)"/><text x="870" y="77" font-size="12" font-weight="700" text-anchor="middle" fill="var(--card)">5</text><text x="890" y="77" font-size="14.5" font-weight="600" fill="var(--fg)">측두엽(IT)</text><foreignObject x="862" y="92" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">‘고양이다’ 판단</div></foreignObject><rect x="848" y="266" width="176" height="132" rx="12" fill="#fff" stroke="var(--pri)" stroke-width="1.5"/><circle cx="870" cy="290" r="11" fill="var(--pri)"/><text x="870" y="295" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">5</text><text x="890" y="295" font-size="14.5" font-weight="600" fill="var(--pri-active)">완전연결 · 출력</text><foreignObject x="862" y="310" width="148" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font:13.5px/1.55 var(--sans);color:var(--body);">확률로 분류</div></foreignObject><line x1="936.0" y1="180" x2="936.0" y2="266" stroke="var(--pri)" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.55"/></svg>
+              <figcaption>사람의 시각(망막 → V1 → 임계 → V2·V4 → 측두엽)과 CNN(입력 → 합성곱 → ReLU → 풀링 → 분류)이
+                <b>단계마다 하나씩 맞물립니다</b>. 점선으로 이어진 위·아래가 같은 일을 하는 짝입니다.
+                <span class="lo">자체 제작 도해 · 근거 — 허블·비셀(1959·1962) 고양이 시각피질 실험, 르쿤 외(1989) LeNet</span></figcaption>
             </figure>
           </div>
           <span class="cvx-src">출처 — 동아출판 「인공지능 수학」 Ⅲ p.110(필터 4개의 합성곱 결과로 숫자를 판단하는 서술),
@@ -2885,7 +2890,7 @@ K = ───  ⎢1 1 1⎥      →   주변 아홉 칸의 평균
   </div>
 
   <!-- ═════ STEP 3 · 정리 (7분) ═════ -->
-  <div class="cn-step"><p class="mono">STEP 3 · 정리 — 배움 다지기</p></div>
+  <div class="cn-step"><p class="mono">STEP 3 · 정리 — 배움 다지기 (8분)</p></div>
 
   <div class="card" data-no-toggle="1">
     <h3>오늘의 핵심 3줄</h3>

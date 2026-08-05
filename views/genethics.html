@@ -408,7 +408,7 @@
         <textarea class="ge-obs" id="ge-c3" oninput="geAssemble()" onblur="geSaveObs('c3',this.value)" rows="1"></textarea></label>
       <div class="ge-light r" id="ge-light">0/4</div>
       <div class="ge-assemble" id="ge-assemble">(네 조건을 채우면 여기에 완성된 질문문이 조립됩니다)</div>
-      <div class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="geCopy()">복사</button></div>
+      <div class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="geCopy(this)">복사</button></div>
       <p class="ge-fb ok" id="ge-light-msg" style="display:none;">v1은 룰렛을 그냥 돌리는 것이고, v2는 룰렛의 후보 목록을 좁혀 주는 것입니다. 특히 4번 조건은 "모르겠다는 후보의 확률이 낮다"는 문제를 질문 쪽에서 보완합니다.</p>
     </div>
 
@@ -544,6 +544,7 @@
   <div class="card" data-no-toggle="1">
     <h3>참고 자료 — 더 찾아보고 직접 해 보기</h3>
     <div class="ge-refs">
+      <a class="ge-ref" href="https://www.keris.or.kr/main/ad/pblcte/selectPblcteRRInfo.do?mi=1138&amp;pblcteSeq=13757" target="_blank" rel="noopener"><span class="th"><span class="bg">연구보고서</span>📑</span><span class="bd"><span class="tt">KERIS 연구보고 RR 2024-01 (원문)</span><span class="ds">본문에서 <b>RR 2024-01</b>로 줄여 인용한 연구보고서의 원문입니다. 박선아 외(정영식·최소영·임새롬·홍지연·김기영·윤근식), 「생성형 AI를 활용한 교수학습 프레임워크 개발 연구」, 한국교육학술정보원(KERIS), 2024, 연구보고 RR 2024-01.</span></span></a>
       <a class="ge-ref" href="https://www.youtube.com/watch?v=t4FIMh_LNcg" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">모르면 찍는 인공지능?</span><span class="ds">오늘 주 디딤영상(EBS 지식채널e).</span></span></a>
       <a class="ge-ref" href="https://www.youtube.com/watch?v=F-wHYNeU4Ps" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">"AI도 거짓말해요?" 정확하고 안전한 정보 찾는 법</span><span class="ds">검증 방법 요약(서울AI재단).</span></span></a>
       <a class="ge-ref" href="https://www.youtube.com/watch?v=L_c_4RUUlDE" target="_blank" rel="noopener"><span class="th"><span class="bg">영상</span>🎬</span><span class="bd"><span class="tt">빅테크들, 저작권 규정 무시한 채 AI 학습 데이터 수집</span><span class="ds">학습 자료 출처 문제(YTN 사이언스).</span></span></a>

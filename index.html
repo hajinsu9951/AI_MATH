@@ -12,7 +12,7 @@
 :root{
   /* ═══ Notion 디자인 언어 (DESIGN-notion.md) — 본적용: 토큰 자체 교체 ═══ */
   --bg:#f6f5f4;--fg:#1a1a1a;--card:#ffffff;--card-h:#f0efec;--muted:#615d59;--body:#31302e;
-  --accent:#62aef0;--border:#e6e6e6;--red:#dd5b00;--green:#1aae39;--blue:#0075de;
+  --accent:#62aef0;--border:#e6e6e6;--red:#c04600;--green:#107a33;--blue:#0075de;
   --pri:#0075de;--pri-active:#005bab;
   --radius:12px;--sans:'Inter','Noto Sans KR',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
 }
@@ -206,6 +206,43 @@ footer .notice b{color:var(--body);}
 .card .tgl-head{padding:0.45rem 0;}
 .tgl-body{display:none;margin-top:0.55rem;}
 .tgl-body.open{display:block;}
+
+/* ── 활동 진행 표시 ─────────────────────────────────────────────
+   전개(STEP 2)의 활동을 한 번이라도 열어 보면 색이 바뀌어
+   "여기는 했다"가 한눈에 보이게 합니다. 색만으로 알리지 않도록
+   체크 표시(✓)를 함께 붙입니다(색각 이상·흑백 인쇄 대비). */
+/* 각 차시의 #v-… 스타일보다 뒤에 와야 하므로 상태 값은 !important 로 고정합니다.
+   (상태 표시는 전 차시가 똑같이 보여야 하는 공통 규칙입니다.) */
+/* 상태 색은 전환 애니메이션 없이 즉시 바뀝니다 — 수업 중 "눌렀다"가 지체 없이 보이도록. */
+.tgl-head{border-left:3px solid transparent !important;padding-left:0.65rem !important;
+  border-radius:0.35rem;transition:none !important;}
+.tgl-head:hover{background:rgba(0,117,222,.06) !important;}
+.tgl-head:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
+.tgl-head.open{border-left-color:var(--pri) !important;background:rgba(0,117,222,.08) !important;
+  color:var(--pri-active) !important;}
+.tgl-head.aim-done{border-left-color:var(--pri) !important;}
+.tgl-head.aim-done::before{content:'✓';flex:none;margin-right:0.5rem;font-size:0.72em;font-weight:800;
+  color:#fff;background:var(--pri);border-radius:9999px;width:1.4em;height:1.4em;
+  display:inline-flex;align-items:center;justify-content:center;line-height:1;}
+.tgl-head.aim-done:not(.open){background:rgba(0,117,222,.05) !important;color:var(--pri-active) !important;}
+
+/* 탭도 같은 규칙 — 눌러 본 탭에는 점, 지금 탭은 파란 밑줄 */
+.tab{position:relative;}
+.tab:focus-visible{outline:2px solid var(--pri);outline-offset:-2px;}
+.tab.aim-done:not(.on){color:var(--pri-active) !important;}
+.tab.aim-done::before{content:'';position:absolute;left:0.42rem;top:50%;transform:translateY(-50%);
+  width:0.4rem;height:0.4rem;border-radius:9999px;background:var(--pri);}
+.tab.aim-done{padding-left:1.15rem !important;}
+
+/* 전개 머리글 옆 진행 배지 — "탐구 4개 중 2개 열어봄" */
+.aim-prog{margin-left:0.75rem;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.04em;
+  color:var(--pri-active);background:rgba(0,117,222,.09);border:1px solid rgba(0,117,222,.28);
+  border-radius:9999px;padding:0.16rem 0.6rem;white-space:nowrap;vertical-align:middle;}
+.aim-prog.full{color:#0d7a2e;background:rgba(26,174,57,.1);border-color:rgba(26,174,57,.35);}
+.aim-prog-reset{margin-left:0.4rem;font-family:var(--mono);font-size:0.68rem;color:var(--muted);
+  background:none;border:none;cursor:pointer;text-decoration:underline;padding:0.2rem;min-height:auto;}
+.aim-prog-reset:hover{color:var(--fg);}
+@media print{.aim-prog,.aim-prog-reset{display:none;}}
 
 .ec-dual{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;}
 .ec-title{font-weight:800;margin-bottom:0.35rem;}
