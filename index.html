@@ -226,13 +226,33 @@ footer .notice b{color:var(--body);}
   display:inline-flex;align-items:center;justify-content:center;line-height:1;}
 .tgl-head.aim-done:not(.open){background:rgba(0,117,222,.05) !important;color:var(--pri-active) !important;}
 
-/* 탭도 같은 규칙 — 눌러 본 탭에는 점, 지금 탭은 파란 밑줄 */
-.tab{position:relative;}
-.tab:focus-visible{outline:2px solid var(--pri);outline-offset:-2px;}
-.tab.aim-done:not(.on){color:var(--pri-active) !important;}
-.tab.aim-done::before{content:'';position:absolute;left:0.42rem;top:50%;transform:translateY(-50%);
-  width:0.4rem;height:0.4rem;border-radius:9999px;background:var(--pri);}
-.tab.aim-done{padding-left:1.15rem !important;}
+/* ── 전개의 활동 메인 버튼(탭) ───────────────────────────────
+   지금 보고 있는 활동은 파랗게 '채워져' 한눈에 들어오고,
+   이미 열어 본 활동은 옅은 파랑 + ✓ 로 남습니다. */
+.tabs{gap:0.4rem;padding-bottom:0.55rem;flex-wrap:wrap;}
+.tab{position:relative;border-radius:9999px !important;border:1px solid var(--border) !important;
+  background:var(--card) !important;padding:0.5rem 1rem !important;min-height:44px;
+  font-family:var(--sans) !important;font-size:0.95rem !important;font-weight:600;letter-spacing:0 !important;
+  border-bottom-width:1px !important;transition:none !important;
+  /* 좁은 화면에서 글자가 쥐어짜여 세로로 늘어지지 않도록, 줄이지 말고 다음 줄로 넘깁니다. */
+  flex:0 0 auto;white-space:nowrap;}
+.tab:hover{background:var(--card-h) !important;border-color:var(--muted) !important;color:var(--fg) !important;}
+.tab:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
+/* 지금 열려 있는 활동 — 채운 파랑 */
+.tab.on{background:var(--pri) !important;border-color:var(--pri) !important;color:#fff !important;
+  box-shadow:0 2px 8px rgba(0,117,222,.28);}
+.tab.on:hover{background:var(--pri-active) !important;border-color:var(--pri-active) !important;color:#fff !important;}
+/* 한 번이라도 열어 본 활동 — 옅은 파랑 + ✓ */
+.tab.aim-done:not(.on){background:rgba(0,117,222,.10) !important;border-color:rgba(0,117,222,.45) !important;
+  color:var(--pri-active) !important;}
+.tab.aim-done:not(.on)::after{content:'✓';margin-left:0.4rem;font-size:0.85em;font-weight:800;color:var(--pri);}
+@media (max-width:520px){ .tab{font-size:0.88rem !important;padding:0.45rem 0.75rem !important;} }
+
+/* 활동 안의 선택 칩도 같은 규칙으로 또렷하게 */
+.chip{font-size:0.86rem;padding:0.4rem 0.8rem;min-height:38px;background:var(--card);}
+.chip:hover{background:var(--card-h);border-color:var(--muted);color:var(--fg);}
+.chip:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
+.chip.on{box-shadow:0 1px 5px rgba(0,117,222,.28);}
 
 /* 전개 머리글 옆 진행 배지 — "탐구 4개 중 2개 열어봄" */
 .aim-prog{margin-left:0.75rem;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.04em;

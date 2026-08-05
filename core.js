@@ -48953,9 +48953,11 @@ window.aimTbZoom = aimTbZoom;
     var s = slug(view);
     if(!s) return;
     var set = load(s), its = items(view), done = 0;
+    /* 기록에 있는 것만 표시하고, 없으면 지웁니다 — "표시 지우기" 와 어긋나지 않도록. */
     its.forEach(function(el, i){
       var k = keyOf(el, i);
       if(set.indexOf(k) >= 0){ el.classList.add('aim-done'); done++; }
+      else el.classList.remove('aim-done');
     });
     badge(view, done, its.length);
   }
