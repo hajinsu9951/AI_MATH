@@ -128,6 +128,10 @@
   #v-logic .lg-ref:hover{border-color:var(--muted);transform:translateY(-2px);box-shadow:0 2px 8px rgba(26,23,20,0.07);}
   #v-logic .lg-ref .th{position:relative;width:100%;aspect-ratio:16/9;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:2.4rem;border-bottom:1px solid var(--border);}
   #v-logic .lg-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-logic .lg-ref .th .lg-th{width:100%;height:100%;display:block;}
+  /* 도판이 있는 카드는 이모지 크기를 쓰지 않습니다. */
+  #v-logic .lg-ref .th:has(.lg-th){font-size:0;padding:0;background:var(--bg);}
+
   #v-logic .lg-ref .bd{padding:0.6rem 0.75rem 0.8rem;}
   #v-logic .lg-ref .bg{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.06em;padding:0.15rem 0.5rem;border-radius:9999px;background:var(--accent);color:var(--fg);margin-bottom:0.35rem;}
   #v-logic .lg-ref .tt{display:block;font-size:0.92rem;font-weight:700;color:var(--fg);line-height:1.5;}

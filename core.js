@@ -5568,24 +5568,36 @@ function lgGoAct(n, id){
 }
 
 /* ── 6. 참고 자료 카드 (STEP 3 맨 아래) — 실존 확인된 URL만 ── */
+
+/* 3차시 참고 자료 대표 도판 — 카드가 260px 남짓이라 글자 없이 큰 형태만 씁니다.
+   SVG 라서 확대해도 뭉개지지 않고, 화면 색(--bg/--pri)을 그대로 따릅니다. */
+const LG_THUMBS = {
+  cards: '<svg viewBox="0 0 320 180" class="lg-th" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><rect width="320" height="180" fill="var(--bg)"/><g stroke="var(--fg)" stroke-width="4" fill="var(--card)" stroke-linejoin="round"><rect x="34" y="52" width="58" height="82" rx="8" transform="rotate(-9 63 93)"/><rect x="64" y="46" width="58" height="82" rx="8" transform="rotate(7 93 87)"/></g><circle cx="93" cy="87" r="11" fill="var(--pri)"/><path d="M136 90 H176" stroke="var(--fg)" stroke-width="4" fill="none"/><path d="M176 90 l-11 -7 v14 z" fill="var(--fg)"/><path d="M196 50 h26 a40 40 0 0 1 0 80 h-26 z" fill="var(--pri)"/><g stroke="var(--fg)" stroke-width="4" fill="none"><path d="M170 68 h26"/><path d="M170 112 h26"/><path d="M262 90 h28"/></g></svg>',
+  gates: '<svg viewBox="0 0 320 180" class="lg-th" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><rect width="320" height="180" fill="var(--bg)"/><g stroke="var(--fg)" stroke-width="4" fill="none" stroke-linejoin="round"><path d="M32 58 h20 a32 32 0 0 1 0 64 h-20 z" fill="var(--card)"/><path d="M14 74 h18"/><path d="M14 106 h18"/><path d="M84 90 h16"/><path d="M122 58 q26 32 0 64 q34 0 52 -32 q-18 -32 -52 -32 z" fill="var(--pri)" stroke="var(--pri)"/><path d="M104 74 h20"/><path d="M104 106 h20"/><path d="M174 90 h16"/><path d="M214 58 l52 32 l-52 32 z" fill="var(--card)"/><path d="M196 90 h18"/><path d="M280 90 h26"/></g><circle cx="272" cy="90" r="7" fill="var(--card)" stroke="var(--fg)" stroke-width="4"/></svg>',
+  dogtree: '<svg viewBox="0 0 320 180" class="lg-th" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><rect width="320" height="180" fill="var(--bg)"/><path d="M74 90 l34 -34 l34 34 l-34 34 z" fill="var(--pri)"/><g stroke="var(--fg)" stroke-width="4" fill="none"><path d="M142 90 H176 V52 h18"/><path d="M142 90 H176 V128 h18"/></g><g stroke="var(--fg)" stroke-width="4" fill="var(--card)" stroke-linejoin="round"><path d="M204 34 l14 12 h28 l14 -12 v30 a28 28 0 0 1 -56 0 z"/><path d="M204 110 l14 12 h28 l14 -12 v30 a28 28 0 0 1 -56 0 z"/></g><g fill="var(--fg)"><circle cx="222" cy="56" r="4"/><circle cx="246" cy="56" r="4"/><circle cx="222" cy="132" r="4"/><circle cx="246" cy="132" r="4"/></g></svg>',
+  rules: '<svg viewBox="0 0 320 180" class="lg-th" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><rect width="320" height="180" fill="var(--bg)"/><g stroke="var(--fg)" stroke-width="4" fill="var(--card)" stroke-linejoin="round"><rect x="20" y="52" width="62" height="24" rx="6"/><rect x="20" y="82" width="62" height="24" rx="6"/><rect x="20" y="112" width="62" height="24" rx="6"/></g><g stroke="var(--fg)" stroke-width="4" fill="none"><path d="M92 94 h26"/></g><path d="M118 94 l-11 -7 v14 z" fill="var(--fg)"/><g fill="var(--pri)"><circle cx="176" cy="94" r="34"/></g><circle cx="176" cy="94" r="13" fill="var(--bg)"/><g fill="var(--pri)"><rect x="169" y="46" width="14" height="16" rx="3"/><rect x="169" y="126" width="14" height="16" rx="3"/><rect x="128" y="87" width="16" height="14" rx="3"/><rect x="208" y="87" width="16" height="14" rx="3"/></g><g stroke="var(--fg)" stroke-width="4" fill="none"><path d="M222 94 h24"/></g><path d="M246 94 l-11 -7 v14 z" fill="var(--fg)"/><rect x="252" y="70" width="52" height="48" rx="8" fill="var(--card)" stroke="var(--fg)" stroke-width="4"/><path d="M264 94 l9 10 l18 -20" stroke="var(--pri)" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  flow: '<svg viewBox="0 0 320 180" class="lg-th" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><rect width="320" height="180" fill="var(--bg)"/><rect x="14" y="74" width="56" height="32" rx="16" fill="var(--card)" stroke="var(--fg)" stroke-width="4"/><g stroke="var(--fg)" stroke-width="4" fill="none"><path d="M70 90 h24"/></g><path d="M94 90 l-11 -7 v14 z" fill="var(--fg)"/><path d="M104 90 l40 -38 l40 38 l-40 38 z" fill="var(--pri)"/><g stroke="var(--fg)" stroke-width="4" fill="none"><path d="M184 90 h22 V46 h24"/><path d="M184 90 h22 V134 h24"/></g><g fill="var(--card)" stroke="var(--fg)" stroke-width="4"><rect x="230" y="30" width="72" height="32" rx="6"/><rect x="230" y="118" width="72" height="32" rx="6"/></g></svg>',
+  ebs: '<svg viewBox="0 0 320 180" class="lg-th" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><rect width="320" height="180" fill="var(--bg)"/><rect x="52" y="38" width="216" height="118" rx="10" fill="var(--card)" stroke="var(--fg)" stroke-width="4"/><rect x="68" y="54" width="184" height="74" rx="6" fill="var(--pri)"/><path d="M148 72 l38 20 l-38 20 z" fill="var(--bg)"/><path d="M36 166 h248" stroke="var(--fg)" stroke-width="6" stroke-linecap="round"/><g fill="var(--fg)"><path d="M96 20 l26 12 l-26 12 l-26 -12 z"/><path d="M224 20 l26 12 l-26 12 l-26 -12 z"/></g></svg>',
+};
+
 const LG_REF_KEY='aimath.logic.customrefs';
 const LG_REFS=[
-  { k:'em', em:'🃏', b:'웹 활동', t:'논리 회로 · 논리집합 카드 게임',
+  { k:'em', em:'🃏', b:'웹 활동', t:'논리 회로 · 논리집합 카드 게임', sv:'cards',
     d:'연산 카드와 명제 카드로 논리식을 만들어 진리표를 완성하는 교실 활동 안내입니다. (대전대신고 하진수 개발 · 노션 「인공지능 수학」 자료실)',
     u:'https://dshskr.notion.site/1ad7f8928da3800393d8f321a9ff5798' },
-  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 논리 게이트',
+  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 논리 게이트', sv:'gates',
     d:'AND·OR·NOT·XOR 등 논리 게이트의 기호와 진리표를 표준 정의로 정리한 문서입니다. 오늘 채점한 진리표와 비교해 보세요.',
     u:'https://ko.wikipedia.org/wiki/논리_게이트' },
-  { k:'em', em:'🐶', b:'웹 활동', t:'나에게 맞는 강아지 찾기',
+  { k:'em', em:'🐶', b:'웹 활동', t:'나에게 맞는 강아지 찾기', sv:'dogtree',
     d:'한국일보가 만든 전문가 시스템 체험 페이지입니다. 질문에 답할수록 규칙이 후보를 좁혀 갑니다.',
     u:'https://interactive.hankookilbo.com/v/e4fe0c1ef9294bdbb8e34c3b326ec2ed/' },
-  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 전문가 시스템',
+  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 전문가 시스템', sv:'rules',
     d:'지식 베이스와 추론 엔진의 구조, 전문가 시스템의 역사와 한계를 정리한 문서입니다.',
     u:'https://ko.wikipedia.org/wiki/전문가_시스템' },
-  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 순서도',
+  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 순서도', sv:'flow',
     d:'순서도에 쓰이는 기호와 표기 규칙을 정리한 문서입니다. 오늘 그린 순서도와 비교해 보세요.',
     u:'https://ko.wikipedia.org/wiki/순서도' },
-  { k:'em', em:'🏫', b:'사이트', t:'EBS 이솦 (EBS SW·AI)',
+  { k:'em', em:'🏫', b:'사이트', t:'EBS 이솦 (EBS SW·AI)', sv:'ebs',
     d:'인공지능 개념 강좌와 실습 자료를 더 찾아볼 수 있는 사이트입니다.',
     u:'https://www.ebssw.kr' },
 ];
@@ -5614,7 +5626,9 @@ function lgRefCard(r, idx){
     ? `<span class="th"><img src="https://img.youtube.com/vi/${lgRefEsc(r.vid)}/hqdefault.jpg" alt=""`+
       ` loading="lazy" referrerpolicy="no-referrer"`+
       ` onerror="this.style.display='none';this.parentNode.insertAdjacentText('beforeend','🎬');"></span>`
-    : `<span class="th">${lgRefEsc(r.em||'🔗')}</span>`;
+    : (r.sv && LG_THUMBS[r.sv])
+      ? `<span class="th">${LG_THUMBS[r.sv]}</span>`
+      : `<span class="th">${lgRefEsc(r.em||'🔗')}</span>`;
   const rm = (idx>=0)
     ? `<button class="rm" title="이 자료 삭제" aria-label="이 자료 삭제" onclick="event.preventDefault();event.stopPropagation();lgRefDel(${idx});">×</button>`
     : '';
@@ -6335,13 +6349,13 @@ const AIM_LESSONS=[
    d:'주가·출산율·수면 시간 자료의 점을 직접 끌어 산점도를 만들고, 직선의 양 끝을 올리내리며 내 추세선을 긋습니다.'},
   {u:3,n:'24차시',t:'어떤 추세선이 좋은가 — 곡선과 과적합', v:'trend', a:'trend',
    d:'직선부터 9차 곡선까지 모델을 갈아 끼우며 훈련 오차가 0이 되는 장면을 만들고, 검증 데이터를 공개해 오차가 폭발하는 순간을 확인합니다.'},
-  {u:3,n:'25차시',t:'손실함수 L(a)로 최적 추세선 찾기', v:'optim', a:'optim',
+  {u:3,n:'25차시',t:'손실함수 L(a)로 최적 추세선 찾기', v:'optim', a:'optim25',
    d:'오차를 그냥 더하면 상쇄되어 비교할 수 없습니다. 제곱해 만든 L(a) 의 포물선 위에서 잔차 정사각형이 가장 작아지는 순간을 찾고, 완전제곱식으로 최적 기울기 15/8 을 정확히 구합니다.'},
   {u:3,n:'26차시',t:'오차를 재는 두 개의 자', v:'loss2', a:'loss2',
    d:'오차의 절댓값을 더한 자와 제곱해 더한 자를 나란히 놓고, 튀는 값 하나에 두 자가 어떻게 다르게 반응하는지 확인합니다.'},
-  {u:3,n:'27차시',t:'내려갈 방향 — 극한과 미분계수', v:'optim', a:'optim',
+  {u:3,n:'27차시',t:'내려갈 방향 — 극한과 미분계수', v:'optim', a:'optim27',
    d:'h 를 줄이며 할선이 접선이 되는 순간을 보고, 미분계수의 부호로 내려갈 방향을 읽습니다. 안개에 가려진 손실함수를 탐침만으로 걸어 내려가 경사하강법의 전략을 스스로 발견합니다.'},
-  {u:3,n:'28차시',t:'경사하강법 — 학습률과 수렴·발산', v:'optim', a:'optim',
+  {u:3,n:'28차시',t:'경사하강법 — 학습률과 수렴·발산', v:'optim', a:'optim28',
    d:'aₙ₊₁ = aₙ − k·L′(aₙ) 을 한 걸음씩 눌러 접선·부호·이동 세 단계를 확인하고, 학습률만 바꾸어 수렴·지그재그·진동·발산이 갈리는 이유를 |1 − 2Ak| 한 줄로 정리합니다.'},
   {u:3,n:'29차시',t:'종합 실습 — 아이스티 판매 예측 AI', v:'gdsheet', a:'gdsheet',
    d:'기온과 판매량 10일치로 예측 AI 를 만듭니다. 수식을 드롭다운으로 조립해 MSE 를 완성하고, 갱신식을 셀에 연결해 a 가 2 에서 2.427 로 자라나는 과정을 표와 곡선으로 기록합니다.'},
@@ -6365,6 +6379,10 @@ const AIM_LESSONS=[
 
 /* ── 차시별 16:9 인라인 SVG 일러스트 (베이지 팔레트 · 외부 이미지 없음) ── */
 const AIM_ART={
+  optim25: '<svg viewBox="0 0 320 180" class="aim-art" role="img" preserveAspectRatio="xMidYMid slice" aria-label="손실함수 포물선 위의 여러 후보 점과 가장 낮은 최솟값"><rect width="320" height="180" fill="var(--bg)"/><path d="M20 160 H300" stroke="var(--border)" stroke-width="2"/><path d="M20 30 Q160 270 300 30" fill="none" stroke="var(--fg)" stroke-width="3"/><circle cx="62" cy="91" r="7" fill="var(--red)" opacity="0.55"/><circle cx="104" cy="131" r="7" fill="var(--red)" opacity="0.75"/><circle cx="216" cy="131" r="7" fill="var(--red)" opacity="0.55"/><path d="M160 150 V166" stroke="var(--green)" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="160" cy="150" r="10" fill="var(--green)"/><path d="M154 150 l5 5 l9 -10" stroke="var(--bg)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  optim27: '<svg viewBox="0 0 320 180" class="aim-art" role="img" preserveAspectRatio="xMidYMid slice" aria-label="한 점에 가까워지는 할선들과 그 극한인 접선"><rect width="320" height="180" fill="var(--bg)"/><path d="M20 160 H300" stroke="var(--border)" stroke-width="2"/><path d="M20 30 Q160 270 300 30" fill="none" stroke="var(--fg)" stroke-width="3"/><path d="M90 120 L194 143" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/><path d="M90 120 L146 149" stroke="var(--muted)" stroke-width="2.5" stroke-dasharray="5 4"/><circle cx="194" cy="143" r="5" fill="var(--muted)" opacity="0.6"/><circle cx="146" cy="149" r="5" fill="var(--muted)" opacity="0.8"/><path d="M52 87.4 L128 152.6" stroke="var(--blue)" stroke-width="3.5" stroke-linecap="round"/><circle cx="90" cy="120" r="9" fill="var(--red)"/></svg>',
+  optim28: '<svg viewBox="0 0 320 180" class="aim-art" role="img" preserveAspectRatio="xMidYMid slice" aria-label="포물선 위를 한 걸음씩 내려와 바닥에 이르는 경사하강 과정"><rect width="320" height="180" fill="var(--bg)"/><path d="M20 160 H300" stroke="var(--border)" stroke-width="2"/><path d="M20 30 Q160 270 300 30" fill="none" stroke="var(--fg)" stroke-width="3"/><path d="M48 73 L82 112" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" opacity="0.45"/><path d="M82 112 L112 136" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" opacity="0.59"/><path d="M112 136 L135 146" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" opacity="0.73"/><path d="M135 146 L149 149" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" opacity="0.87"/><circle cx="48" cy="73" r="7" fill="var(--red)" opacity="0.50"/><circle cx="82" cy="112" r="6" fill="var(--red)" opacity="0.62"/><circle cx="112" cy="136" r="5" fill="var(--red)" opacity="0.74"/><circle cx="135" cy="146" r="4" fill="var(--red)" opacity="0.86"/><circle cx="149" cy="149" r="3" fill="var(--red)" opacity="0.98"/><circle cx="160" cy="150" r="9" fill="var(--green)"/><path d="M154 150 l5 5 l9 -10" stroke="var(--bg)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+
   /* 20차시 — 사진 격자 위를 지나는 커널 → 특징 맵 → 축소 → 확률 막대 → 바운딩 박스 */
   cnn:`<svg viewBox="0 0 320 180" role="img" aria-label="사진 격자 위를 3곱하기3 커널이 지나가 특징 맵을 만들고, 풀링으로 작아지고, 확률 막대로 이름이 붙고, 마지막에 바운딩 박스가 그려지는 그림">
     <rect width="320" height="180" fill="var(--bg)"/>

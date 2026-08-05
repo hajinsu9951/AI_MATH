@@ -237,12 +237,14 @@
   </style>
 
   <div class="op-hero">
-    <svg class="op-wm" viewBox="0 0 320 180" role="img" aria-label="손실함수 포물선 위를 굴러 내려가는 공">
-      <path d="M20 30 C90 190, 230 190, 300 30" fill="none" stroke="var(--fg)" stroke-width="3"/>
-      <circle cx="86" cy="112" r="11" fill="var(--red)"/>
-      <path d="M50 118 L124 90" stroke="var(--blue)" stroke-width="3"/>
-      <circle cx="160" cy="152" r="7" fill="var(--green)"/>
+    <!-- 정확한 포물선 M20 30 Q160 270 300 30 (꼭짓점 160,150).
+         접선은 t=0.25 인 점 (90,120)에서 기울기 12/7·(1−2t)=0.857 로 실제로 접하게 그렸습니다. -->
+    <svg class="op-wm" viewBox="0 0 320 180" role="img" aria-label="손실함수 포물선 위의 한 점에서 접선을 긋고 바닥을 향해 굴러 내려가는 공">
       <path d="M20 160 H300" stroke="var(--border)" stroke-width="2"/>
+      <path d="M20 30 Q160 270 300 30" fill="none" stroke="var(--fg)" stroke-width="3"/>
+      <path d="M52 87.4 L128 152.6" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="90" cy="120" r="10" fill="var(--red)"/>
+      <circle cx="160" cy="150" r="7" fill="var(--green)"/>
     </svg>
     <p class="mono" style="margin-bottom:0.4rem;">Ⅳ 단원 · 25~28차시 · [12인수04-03] [12인수04-04]</p>
     <h2>가장 좋은 직선을 찾아가는 세 걸음 — 손실함수 · 미분계수 · 경사하강법</h2>
