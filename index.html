@@ -272,6 +272,18 @@ footer .notice b{color:var(--body);}
 .ws-srcbox li{font-size:0.78rem;color:var(--muted);line-height:1.65;}
 .ws-srcbox p{margin:0;font-size:0.74rem;color:var(--muted);}
 
+/* ── 참고 자료 카드 대표 도판 ──────────────────────────────────
+   이모지 한 글자 대신 자료 성격에 맞는 도판을 씁니다. 차시마다
+   .th 규격이 달라 여기서 한 번에 맞춥니다(16:9, 꽉 채움). */
+.th:has(> img[src*="assets/refthumb/"]){
+  position:relative;aspect-ratio:16/9;overflow:hidden;font-size:0 !important;
+  padding:0 !important;background:var(--bg) !important;display:block !important;}
+img[src*="assets/refthumb/"]{width:100%;height:100%;object-fit:cover;display:block;}
+.th:has(> img[src*="assets/refthumb/"]) > .bg{
+  position:absolute;left:0.45rem;top:0.45rem;z-index:2;font-size:0.62rem;
+  font-family:var(--mono);background:var(--fg);color:var(--bg);
+  padding:0.16rem 0.5rem;border-radius:9999px;letter-spacing:0.04em;line-height:1.6;}
+
 /* ── 수업 단계 색 구분 ────────────────────────────────────────
    STEP 머리글 한 줄만 단계마다 색을 달리해, 지금 수업이 어느
    대목인지 화면을 스치듯 봐도 알 수 있게 합니다.

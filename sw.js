@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ai-math-v61';
+const CACHE_NAME = 'ai-math-v63';
 const ASSETS = [
   './',
   './index.html',
