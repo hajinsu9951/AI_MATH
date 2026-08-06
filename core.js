@@ -49066,3 +49066,37 @@ window.aimTbZoom = aimTbZoom;
 
   window.aimProgressRefresh = refresh;
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   수업 단계 색 구분 — STEP 머리글 한 줄에만 색을 입힙니다.
+   도입=주황 · 전개=파랑 · 정리=초록. 차시마다 머리글 클래스 이름이
+   달라(lg-step·it-step…) CSS 만으로는 잡히지 않으므로 여기서 표시합니다.
+   ═══════════════════════════════════════════════════════════════════════ */
+(function aimStepColor(){
+  'use strict';
+  function tag(root){
+    (root || document).querySelectorAll('p.mono').forEach(function(p){
+      if(p.__aimStep) return;
+      var t = (p.textContent || '').replace(/\s+/g,' ').trim();
+      var m = t.match(/^STEP\s*([123])\b/);
+      if(!m) return;
+      p.__aimStep = 1;
+      p.setAttribute('data-step', m[1]);
+      var row = p.parentElement;
+      if(!row) return;
+      row.classList.add('aim-steprow', 'aim-step' + m[1]);
+    });
+  }
+  function boot(){
+    tag(document);
+    var host = document.getElementById('views') || document.body;
+    var t = null;
+    new MutationObserver(function(){
+      if(t) return;
+      t = setTimeout(function(){ t = null; tag(document); }, 200);
+    }).observe(host, {childList:true, subtree:true});
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.aimStepColor = function(){ tag(document); };
+})();

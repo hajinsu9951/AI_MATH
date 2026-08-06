@@ -272,6 +272,29 @@ footer .notice b{color:var(--body);}
 .ws-srcbox li{font-size:0.78rem;color:var(--muted);line-height:1.65;}
 .ws-srcbox p{margin:0;font-size:0.74rem;color:var(--muted);}
 
+/* ── 수업 단계 색 구분 ────────────────────────────────────────
+   STEP 머리글 한 줄만 단계마다 색을 달리해, 지금 수업이 어느
+   대목인지 화면을 스치듯 봐도 알 수 있게 합니다.
+   도입=주황 · 전개=파랑 · 정리=초록 (모두 WCAG AA 통과 색) */
+.aim-steprow{--stp:var(--muted);--stp-bg:transparent;}
+.aim-steprow.aim-step1{--stp:#b45309;--stp-bg:rgba(180,83,9,0.09);}
+.aim-steprow.aim-step2{--stp:#0075de;--stp-bg:rgba(0,117,222,0.09);}
+.aim-steprow.aim-step3{--stp:#107a33;--stp-bg:rgba(16,122,51,0.09);}
+.aim-steprow::after{background:var(--stp) !important;opacity:0.3;}
+.aim-steprow > p.mono{
+  color:var(--stp) !important;background:var(--stp-bg);
+  border-left:4px solid var(--stp);border-radius:0.4rem;
+  padding:0.5rem 0.85rem !important;font-weight:700;
+  font-size:0.82rem !important;letter-spacing:0.1em !important;}
+/* 단계 번호를 동그란 배지로 앞에 세웁니다(색만으로 알리지 않도록) */
+.aim-steprow > p.mono::before{
+  content:attr(data-step);display:inline-flex;align-items:center;justify-content:center;
+  width:1.45em;height:1.45em;margin-right:0.5rem;border-radius:9999px;
+  background:var(--stp);color:#fff;font-weight:800;font-size:0.92em;line-height:1;
+  vertical-align:-0.25em;}
+@media (max-width:520px){ .aim-steprow > p.mono{font-size:0.74rem !important;padding:0.45rem 0.6rem !important;} }
+@media print{ .aim-steprow > p.mono{background:none;} }
+
 .ec-dual{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;}
 .ec-title{font-weight:800;margin-bottom:0.35rem;}
 @media (max-width: 860px){
