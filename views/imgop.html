@@ -11,6 +11,12 @@
      ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-imgop">
   <style>
+  /* 서책형 도판 — 사진에서 직접 만든 설명 그림 */
+  #v-imgop .io-plate{margin:1.1rem 0 1.4rem;}
+  #v-imgop .io-plate img{width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:0.5rem;background:#fff;cursor:zoom-in;box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.06);}
+  #v-imgop .io-plate figcaption{margin-top:0.7rem;padding-left:0.9rem;border-left:3px solid var(--accent);font-size:0.95rem;line-height:1.85;color:var(--body);}
+  #v-imgop .io-plate .src{display:block;margin-top:0.45rem;font-size:0.8rem;color:var(--muted);}
+
   /* imgop 뷰 전용 스타일 (#v-imgop 스코프 한정 — 전역 누수 금지) */
   #v-imgop .io-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
   #v-imgop .io-step::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -375,6 +381,12 @@
 
   <div class="card" data-no-toggle="1">
     <h3>확대하면 보이는 것 — 컴퓨터에게 사진은 그림이 아닙니다</h3>
+    <figure class="io-plate">
+      <img src="assets/photo/pixel_grid.jpg" alt="같은 사진을 원본, 64×64, 24×24, 8×8 해상도로 낮추어 나란히 놓은 그림" loading="eager"
+           onclick="aimTbZoom(this)" title="누르면 크게, 다시 누르면 작게">
+      <figcaption>같은 사진을 칸 수만 줄여 본 것입니다. 칸이 줄수록 <b>다루는 수의 개수</b>도 줄어듭니다(270000개 → 192개). 컴퓨터에게 사진은 <b>이 수들의 표</b>일 뿐입니다.
+        <span class="src">원본 사진 — D. Sharon Pruitt, 「Ice cream cone」, CC BY 2.0, Wikimedia Commons. 채널 분해·해상도 축소는 수업용으로 직접 처리했습니다.</span></figcaption>
+    </figure>
     <p>같은 사진을 세 단계로 확대했습니다. 오른쪽 끝에서는 <b>네모 칸 하나하나에 적힌 수</b>가 보입니다.</p>
     <div class="io-zoom">
       <figure><canvas id="io-zm0" width="120" height="120" aria-label="원본 회색조 사진"></canvas>

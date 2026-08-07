@@ -260,5 +260,29 @@
   "used_in": [
    "trend.html"
   ]
+ },
+ "wm-rgb-channels.jpg": {
+  "from": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Colorful_spring_garden_Bayer_%2B_RGB.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "commons": "Colorful spring garden Bayer + RGB.png",
+  "artist": "Cmglee",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Colorful_spring_garden_Bayer_%2B_RGB.png",
+  "used_in": []
+ },
+ "wm-pixelation.jpg": {
+  "from": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Pixelation_example.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "commons": "Pixelation example.JPG",
+  "artist": "Ftm100",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Pixelation_example.JPG",
+  "used_in": []
+ },
+ "wm-subpixel.jpg": {
+  "from": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Subpixel_Rendering_LCD_photo_3is_composite.jpg/1280px-Subpixel_Rendering_LCD_photo_3is_composite.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "commons": "Subpixel Rendering LCD photo 3is composite.jpg",
+  "artist": "ALexL33",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Subpixel_Rendering_LCD_photo_3is_composite.jpg",
+  "used_in": []
  }
 }

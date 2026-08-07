@@ -7,6 +7,12 @@
      ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-rgb">
   <style>
+  /* 서책형 도판 — 사진에서 직접 만든 설명 그림 */
+  #v-rgb .rg-plate{margin:1.1rem 0 1.4rem;}
+  #v-rgb .rg-plate img{width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:0.5rem;background:#fff;cursor:zoom-in;box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.06);}
+  #v-rgb .rg-plate figcaption{margin-top:0.7rem;padding-left:0.9rem;border-left:3px solid var(--accent);font-size:0.95rem;line-height:1.85;color:var(--body);}
+  #v-rgb .rg-plate .src{display:block;margin-top:0.45rem;font-size:0.8rem;color:var(--muted);}
+
   /* rgb 뷰 전용 스타일 (#v-rgb 스코프 한정 — 전역 누수 금지) */
   #v-rgb .rg-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
   #v-rgb .rg-step::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -302,6 +308,12 @@
 
   <div class="card" data-no-toggle="1">
     <h3>같은 사진, 세 장의 흑백 — 오른쪽 세 장을 겹치면 왼쪽이 됩니다</h3>
+    <figure class="rg-plate">
+      <img src="assets/photo/rgb_channels.jpg" alt="같은 사진을 원본과 빨강·초록·파랑 세 채널로 나누어 나란히 놓은 그림" loading="eager"
+           onclick="aimTbZoom(this)" title="누르면 크게, 다시 누르면 작게">
+      <figcaption>왼쪽 원본을 <b>R·G·B 세 장</b>으로 나눈 것입니다. 세 장은 각각 <b>0~255 사이 수로 채워진 표</b>이고, 표 아래 <b>평균</b>이 그 채널의 밝기입니다. 세 장을 겹치면 왼쪽 원본이 됩니다.
+        <span class="src">원본 사진 — D. Sharon Pruitt, 「Ice cream cone」, CC BY 2.0, Wikimedia Commons. 채널 분해·해상도 축소는 수업용으로 직접 처리했습니다.</span></figcaption>
+    </figure>
     <p>아래 네 장은 <b>모두 같은 사진</b>입니다. 왼쪽 위가 원래 사진이고, 나머지 세 장은
       빨강·초록·파랑의 세기만 각각 뽑아 밝기로 그린 것입니다.</p>
     <div class="rg-quad">
