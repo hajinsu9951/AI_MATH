@@ -7,6 +7,9 @@
      ══════════════════════════════════════════════════════════════════════════════ -->
 <div class="view" id="v-optim">
   <style>
+  /* "해 볼 일" — 학생이 무엇을 조작해야 하는지 한 줄로 못박습니다. */
+  #v-optim .op-do{margin-top:0.6rem;padding:0.6rem 0.8rem;border-left:3px solid var(--pri);background:rgba(0,117,222,0.06);border-radius:0.35rem;font-size:0.97rem;}
+
   /* optim 뷰 전용 스타일 (#v-optim 스코프 한정 — 전역 누수 금지) */
   #v-optim .op-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
   #v-optim .op-step::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -593,6 +596,7 @@
 P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h) − f(t) } ÷ h</div>
       <p>h 를 0에 가깝게 줄이면 점 Q 가 곡선을 따라 P 로 다가오고, 할선 PQ 는 <b>어떤 직선 하나</b>에 한없이 가까워집니다.
         그 직선을 <b>접선</b>이라 하고, 그 기울기를 <b>미분계수</b>라 합니다.</p>
+        <p class="op-do"><b>해 볼 일</b> — 슬라이더로 <b>h 를 점점 줄이면서</b>, 파란 할선이 초록 접선에 겹쳐지는 것을 눈으로 확인하고 그때의 기울기 값을 <b>표에 기록</b>하세요. 값이 어디로 다가가나요?</p>
 
       <div class="op-slide">
         <label for="op-t">접점의 x좌표 t</label>
@@ -846,6 +850,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
       <h3>활동 9 · 「등고선 지도 걷기」 — 변수가 두 개라면</h3>
       <p>추세선이 y = ax + b 라면 조절할 값이 <b>두 개</b>여서 지형이 <b>평면 위의 산과 골짜기</b>가 됩니다.
         아래 격자는 그 지형의 등고선 지도이고, 여러분은 <b>주위 한 칸</b>만 볼 수 있습니다.</p>
+        <p class="op-do"><b>해 볼 일</b> — 가운데 <b>방향 화살표를 눌러</b> 한 칸씩 내려가 보세요. 주위 한 칸만 보고도 가장 낮은 곳에 닿을 수 있는지, 몇 걸음이 걸리는지 세어 봅니다.</p>
       <div class="op-slide">
         <label>시야</label>
         <span class="chips" style="margin:0;">
@@ -1337,7 +1342,7 @@ P(t, f(t))          Q(t + h, f(t + h))          할선 PQ의 기울기 = { f(t+h
       </a>
       <a class="op-ref" href="https://ko.wikipedia.org/wiki/%EA%B2%BD%EC%82%AC_%ED%95%98%EA%B0%95%EB%B2%95" target="_blank" rel="noopener">
         <span class="th"><span class="bg">개념</span><img src="assets/refthumb/k-doc.svg" alt="" loading="eager"></span>
-        <span class="bd"><span class="tt">경사 하강법 (위키백과, 한국어)</span>
+        <span class="bd"><span class="tt">경사하강법 (위키백과, 한국어)</span>
           <span class="ds">학습률·수렴 조건·확률적 경사하강법(SGD)까지 한국어로 정리되어 있습니다.
             심화를 원하는 학생에게 안내합니다.</span></span>
       </a>

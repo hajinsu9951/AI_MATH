@@ -1763,7 +1763,7 @@ K = ───  ⎢1 1 1⎥      →   주변 아홉 칸의 평균
       <div id="pst" class="status" style="text-align:center;"></div>
       <div class="px-fml">P(i, j) = max { S(2i, 2j), S(2i, 2j+1), S(2i+1, 2j), S(2i+1, 2j+1) }</div>
       <p class="px-hint">S는 풀링 전 특징 맵, P는 풀링된 결과입니다. 2×2 구역이 겹치지 않게 두 칸씩 건너뛰며 이동합니다.</p>
-      <span class="px-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅰ단원 p.105 최대 풀링(Max Pooling) 식 서술을 재구성</span>
+      <span class="px-src">출처 — 씨마스 「인공지능 수학」 지도서 Ⅰ단원 p.105 맥스 풀링(Max Pooling) 식 서술을 재구성</span>
     </div>
 
     <div class="card" data-no-toggle="1">
@@ -1807,7 +1807,7 @@ K = ───  ⎢1 1 1⎥      →   주변 아홉 칸의 평균
             2×2 구역이라면 네 수 가운데 가장 큰 수를 남깁니다.</p>
           <p>예 ① 구역이 {9, 8, 7, 9}이면 남는 값은 9입니다.<br>
              예 ② 구역이 {2, 8, 6, 5}이면 남는 값은 8입니다.</p>
-          <span class="px-src">출처 — 천재교육 「인공지능 수학」 지도서 p.155 ⑷ 풀링 연산, 씨마스 지도서 Ⅰ단원 p.105 최대 풀링 서술을 재구성</span>
+          <span class="px-src">출처 — 천재교육 「인공지능 수학」 지도서 p.155 ⑷ 풀링 연산, 씨마스 지도서 Ⅰ단원 p.105 맥스 풀링 서술을 재구성</span>
         </div>
       </details>
       <div id="px-tb2"></div>
@@ -2128,7 +2128,7 @@ K = ───  ⎢1 1 1⎥      →   주변 아홉 칸의 평균
           <p>합성곱 → ReLU → 풀링은 <b>한 묶음</b>입니다. CNN은 이 묶음을 여러 번 반복합니다.</p>
           <p>반복할수록 인식하는 특징이 추상적으로 바뀝니다.
             처음에는 <b>선·모서리</b>, 다음에는 <b>눈·바퀴·꽃잎</b>, 더 깊은 곳에서는 <b>얼굴·자동차</b> 전체입니다.</p>
-          <p>충분히 줄어든 뒤에야 완전 연결층(행렬의 곱셈)이 등장해 최종 분류를 합니다.</p>
+          <p>충분히 줄어든 뒤에야 완전연결층(행렬의 곱셈)이 등장해 최종 분류를 합니다.</p>
           <div class="cnnx-scroll">
             <table class="cnnx-tbl">
               <tr><th>단계</th><th>하는 일</th><th>수학</th><th>배운 차시</th></tr>
@@ -2438,7 +2438,7 @@ K = ───  ⎢1 1 1⎥      →   주변 아홉 칸의 평균
     <div id="cnnx-map-body" class="cnnx-veil2">
     <div class="cnnx-two">
       <figure>
-        <svg viewBox="0 0 320 190" role="img" aria-label="입력 이미지가 합성곱과 활성화와 풀링을 반복해 특징을 추출한 뒤 완전 연결층과 소프트맥스로 분류되는 CNN 구조 그림">
+        <svg viewBox="0 0 320 190" role="img" aria-label="입력 이미지가 합성곱과 활성화와 풀링을 반복해 특징을 추출한 뒤 완전연결층과 소프트맥스로 분류되는 CNN 구조 그림">
           <rect width="320" height="190" fill="var(--bg)"/>
           <defs><marker id="cnxar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
             <path d="M0 0L8 4L0 8Z" fill="var(--fg)"/></marker></defs>
@@ -3036,7 +3036,7 @@ K = ───  ⎢1 1 1⎥      →   주변 아홉 칸의 평균
     <h3>참고 자료 — 합성곱에서 탐지까지, 더 넓게</h3>
     <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 다섯 편은 여기에 다시 넣지 않았습니다.</p>
     <div class="cn-refs">
-      <a class="cn-ref" href="https://poloclub.github.io/cnn-explainer/" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 도구</span><img src="assets/refthumb/k-tool.svg" alt="" loading="eager"></span><span class="bd"><span class="tt">CNN Explainer — 합성곱 신경망 해부</span><span class="ds">사진 한 장이 층을 지나며 어떤 특징 지도로 바뀌는지 층마다 열어 볼 수 있습니다. 오늘 손으로 계산한 9칸이 실제 신경망 안에서 어디에 해당하는지 확인해 보세요. <b>출처</b> — KERIS 「인공지능 수학」 교수·학습 역량 강화(2차) 연수 패들렛 공유 자료</span></span></a>
+      <a class="cn-ref" href="https://poloclub.github.io/cnn-explainer/" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 도구</span><img src="assets/refthumb/k-tool.svg" alt="" loading="eager"></span><span class="bd"><span class="tt">CNN Explainer — 합성곱 신경망 해부</span><span class="ds">사진 한 장이 층을 지나며 어떤 특징 맵로 바뀌는지 층마다 열어 볼 수 있습니다. 오늘 손으로 계산한 9칸이 실제 신경망 안에서 어디에 해당하는지 확인해 보세요. <b>출처</b> — KERIS 「인공지능 수학」 교수·학습 역량 강화(2차) 연수 패들렛 공유 자료</span></span></a>
       <a class="cn-ref" href="https://tjdgus1121.github.io/cnn_visualizer.html" target="_blank" rel="noopener">
         <span class="th"><span class="bg">웹 활동</span><img src="assets/refthumb/k-activity.svg" alt="" loading="eager"></span>
         <span class="bd"><span class="tt">합성곱 시각화 (황성현)</span>
