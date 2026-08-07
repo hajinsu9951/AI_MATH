@@ -1,6 +1,12 @@
 <!-- ═══════════ MATMUL (17차시: 행렬의 곱셈 — 이미지를 옮기고 뒤집다) ═══════════ -->
 <div class="view" id="v-matmul">
   <style>
+  /* 서책형 도판 — 사진에 실제 연산을 적용해 만든 설명 그림 */
+  #v-matmul .mm-plate{margin:1.1rem 0 1.4rem;}
+  #v-matmul .mm-plate img{width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:0.5rem;background:#fff;cursor:zoom-in;box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.06);}
+  #v-matmul .mm-plate figcaption{margin-top:0.7rem;padding-left:0.9rem;border-left:3px solid var(--accent);font-size:0.95rem;line-height:1.85;color:var(--body);}
+  #v-matmul .mm-plate .src{display:block;margin-top:0.45rem;font-size:0.8rem;color:var(--muted);}
+
   /* matmul 뷰 전용 스타일 (#v-matmul 스코프 한정 — 전역 누수 금지) */
   #v-matmul .mm-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
   #v-matmul .mm-step::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -218,6 +224,12 @@
 
   <div class="card" data-no-toggle="1">
     <h3>도입 실자료 — 「섞여 버린 사진」</h3>
+    <figure class="mm-plate">
+      <img src="assets/photo/matmul_photo.jpg" alt="같은 사진에 반전 행렬을 오른쪽에 곱한 결과와 왼쪽에 곱한 결과를 나란히 놓은 그림" loading="eager"
+           onclick="aimTbZoom(this)" title="누르면 크게, 다시 누르면 작게">
+      <figcaption>같은 반전 행렬인데 <b>곱하는 자리</b>가 다릅니다. 오른쪽에 곱한 <b>A × D</b>는 <b>열</b>이 뒤집혀 좌우가 바뀌고, 왼쪽에 곱한 <b>E × A</b>는 <b>행</b>이 뒤집혀 상하가 바뀝니다. 행렬곱은 자리를 바꾸면 결과가 달라집니다.
+        <span class="src">원본 사진 — D. Sharon Pruitt, 「Ice cream cone」, CC BY 2.0, Wikimedia Commons. 전치·행렬곱·합성곱은 실제로 계산해 얻은 결과입니다.</span></figcaption>
+    </figure>
     <p><b>[섞기]</b>를 누르면 사진의 <b>행 세 쌍</b>이 서로 맞바뀝니다(1행↔2행, 4행↔7행, 6행↔8행).</p>
     <div class="mm-figs">
       <figure class="mm-fig">

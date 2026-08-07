@@ -1,6 +1,12 @@
 <!-- ═══════════ TRANSPOSE (16차시: 전치행렬로 사진의 구도를 바꾸다) ═══════════ -->
 <div class="view" id="v-transpose">
   <style>
+  /* 서책형 도판 — 사진에 실제 연산을 적용해 만든 설명 그림 */
+  #v-transpose .tp-plate{margin:1.1rem 0 1.4rem;}
+  #v-transpose .tp-plate img{width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:0.5rem;background:#fff;cursor:zoom-in;box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.06);}
+  #v-transpose .tp-plate figcaption{margin-top:0.7rem;padding-left:0.9rem;border-left:3px solid var(--accent);font-size:0.95rem;line-height:1.85;color:var(--body);}
+  #v-transpose .tp-plate .src{display:block;margin-top:0.45rem;font-size:0.8rem;color:var(--muted);}
+
   /* transpose 뷰 전용 스타일 (#v-transpose 스코프 한정 — 전역 누수 금지) */
   #v-transpose .tsp-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
   #v-transpose .tsp-step::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -222,6 +228,12 @@
 
   <div class="card" data-no-toggle="1">
     <h3>도입 실자료 — 「세로로 찍었는데 왜 눕지 않을까」</h3>
+    <figure class="tp-plate">
+      <img src="assets/photo/transpose_photo.jpg" alt="가로로 긴 사진과 그것을 전치해 세로로 길어진 사진, 다시 전치해 원래대로 돌아온 사진" loading="eager"
+           onclick="aimTbZoom(this)" title="누르면 크게, 다시 누르면 작게">
+      <figcaption>가로 <b>186행 300열</b>이던 사진을 전치하면 <b>300행 186열</b>이 됩니다. 꼴이 뒤바뀌고 그림도 주대각선을 기준으로 접힙니다. 한 번 더 전치하면 <b>원래대로</b> 돌아옵니다 — (A<sup>T</sup>)<sup>T</sup> = A.
+        <span class="src">원본 사진 — D. Sharon Pruitt, 「Ice cream cone」, CC BY 2.0, Wikimedia Commons. 전치·행렬곱·합성곱은 실제로 계산해 얻은 결과입니다.</span></figcaption>
+    </figure>
     <p>왼쪽은 세로로 긴 사진, 오른쪽은 그 사진의 <b>어떤 값도 바꾸지 않고</b> 자리만 바꾼 결과입니다.</p>
     <div class="tsp-imgs">
       <figure class="tsp-fig">
