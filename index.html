@@ -403,23 +403,11 @@ img[src*="assets/refthumb/"]{width:100%;height:100%;object-fit:cover;display:blo
 .rx-tools{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.5rem;}
 .rx-note{font-size:0.88rem;color:var(--muted);line-height:1.7;margin-top:0.5rem;}
 
-/* 학급 공유 자료함 — 어디서나 얇은 가로바 한 줄로만 보입니다.
-   차시마다 참고 자료 카드(16:9 썸네일)로 그리던 탓에 그림도 없는 빈 상자가
-   크게 자리를 차지했습니다(7·8차시는 1242×836). 위 .rx-share 와 같은 모양으로
-   맞춰, 자료함이 자료 카드처럼 보이지 않게 합니다. */
-.aim-roombar{display:flex;flex-wrap:wrap;align-items:center;gap:0.6rem;width:100%;
-  background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);
-  border-radius:0 var(--radius) var(--radius) 0;padding:0.7rem 0.9rem;margin:0.2rem 0 0.5rem;
-  text-decoration:none;color:var(--body);text-align:left;font-family:var(--sans);
-  cursor:pointer;transition:border-color 0.2s;}
-.aim-roombar:hover{border-color:var(--fg);}
-/* 참고 자료 그리드 안에 들어 있으면 한 줄을 통째로 차지하게 합니다.
-   칸 하나에 끼면 글이 접혀 오히려 세로로 길어집니다. */
-.aim-roombar,*:has(> .aim-roombar){grid-column:1 / -1;}
-.aim-roombar > .ic{flex:0 0 auto;font-size:1.35rem;line-height:1;}
-.aim-roombar > .bd{flex:1 1 14rem;min-width:0;}
-.aim-roombar .tt{display:block;font-weight:700;color:var(--fg);font-size:0.98rem;line-height:1.5;}
-.aim-roombar .ds{display:block;font-size:0.88rem;color:var(--muted);line-height:1.6;}
+/* 학급 공유 자료함은 위 .rx-share 가로바 하나로만 나옵니다.
+   예전에는 7·8·12·13·33차시가 저마다 참고 자료 카드로 또 그려, 같은 폴더가
+   한 차시에 두 번 보이고 그림도 없는 16:9 빈 상자가 크게 자리를 차지했습니다
+   (7·8차시는 1242×836). 차시별 설명 문구는 core.js 의 AIM_ROOM_DESC 로 옮겨
+   이 가로바가 대신 보여 줍니다. */
 
 /* 마중 퀴즈 · 형성평가 공통 */
 .cmn-q{font-size:1.05rem;font-weight:600;line-height:1.7;margin:0.2rem 0 0.6rem;color:var(--fg);}

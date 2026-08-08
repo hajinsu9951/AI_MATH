@@ -7069,6 +7069,16 @@ function aimBuildMarks(){
    ═══════════════════════════════════════════════════════════════════════════ */
 const AIM_SHARE_KEY='aimath.shared.folder';
 
+/* 자료함 설명은 차시마다 다릅니다. 예전에는 7·8·12·13·33차시가 저마다
+   자료함 카드를 따로 그려 같은 폴더가 두 번 보였습니다. 카드를 걷어 내고
+   문구만 이리로 옮겨, 자료함은 차시당 이 가로바 하나로만 나옵니다. */
+const AIM_ROOM_DESC={
+  text:    '우리 반이 모은 한 줄 평과 벡터 표를 함께 보는 자료함입니다.',
+  senti:   '우리 반이 만든 감성 사전과 급식 리뷰 분석 결과를 모으는 곳입니다. 프로젝트 과제 제출물도 여기에 올립니다.',
+  review:  '우리 반의 리뷰 분석 보고서와 추천 규칙 한 문장을 모으는 곳입니다. 프로젝트 과제 제출물도 여기에 올립니다.',
+  datalab: '선생님이 등록한 학급 자료함입니다. 정리한 표·그림·[D]란 요약을 여기에 모읍니다.'
+};
+
 function aimRefExtras(box, slug){
   if(!box) return;
   const CK='aimath.'+slug+'.customrefs';
@@ -7083,7 +7093,7 @@ function aimRefExtras(box, slug){
         '<span class="ic" aria-hidden="true">📂</span>'+
         '<span class="tx"><b>학급 공유 자료함</b>'+
           (shared
-            ? '선생님이 올린 자료를 모두가 보거나 내려받을 수 있습니다.'
+            ? (AIM_ROOM_DESC[slug] || '선생님이 올린 자료를 모두가 보거나 내려받을 수 있습니다.')
             : '공유 폴더(구글 드라이브·패들렛 등) 주소를 한 번만 설정하면 모든 차시에 함께 나타납니다. '+
               '드라이브는 <b>링크가 있는 모든 사용자 보기</b> 권한을 권장합니다.')+
         '</span>'+
@@ -9814,19 +9824,15 @@ function tvRefsRender(){
   if (!box) return;
   var url = txClassSync();
   var arr = txJson('aimath.text7.refs');
-  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 — 그리드 밖에 둡니다 */
-  var h = '<a class="aim-roombar" ' + (url ? 'href="' + txEsc(url) + '" target="_blank" rel="noopener"' : 'href="#" onclick="return false;"') + '>' +
-    '<span class="ic" aria-hidden="true">🗂️</span><span class="bd"><span class="tt">학급 공유 자료함</span>' +
-    '<span class="ds">' + (url ? '우리 반이 모은 한 줄 평과 벡터 표를 함께 보는 자료함입니다.'
-                              : '아직 주소가 없습니다. 아래 [학급 자료함 주소 설정]에서 등록하세요. (7~12차시 공통)') +
-    '</span></span></a>';
-  h += '<div class="tx-refs" style="margin-top:0.8rem;">';
+  /* 자료함 카드는 여기서 그리지 않습니다 — 공통 가로바(aimRefExtras)가 맡습니다.
+     예전에는 둘이 함께 나와 같은 폴더가 두 번 보였습니다. */
+  var h = '<div class="tx-refs" style="margin-top:0.8rem;">';
   arr.forEach(function (it, i) {
     h += '<a class="tx-ref" href="' + txEsc(it.u) + '" target="_blank" rel="noopener">' +
       '<span class="th"><span class="bg">교사 추가</span>🔗</span><span class="bd"><span class="tt">' + txEsc(it.t || it.u) + '</span>' +
       '<span class="ds">선생님이 등록한 자료입니다. <button class="btn tx-mini" type="button" data-del="' + i + '">삭제</button></span></span></a>';
   });
-  h += '</div><div class="btn-row"><button class="btn tx-mini" type="button" id="tv-ref-class">학급 자료함 주소 설정</button>' +
+  h += '</div><div class="btn-row">' +
     '<button class="btn tx-mini" type="button" id="tv-ref-add">+ 자료 추가</button></div>' +
     '<p class="cmn-note">교사용 — 추가한 자료는 이 기기에만 저장됩니다. ' +
     '(키 <code>aimath.classroom.url</code> · <code>aimath.text7.refs</code>)</p>';
@@ -13865,17 +13871,10 @@ function stRoomRender(){
     const legacy = stLS(ST_K_ROOM_CORE, '');
     if(legacy){ url = legacy; stLSSet(ST_K_ROOM, legacy); }
   }
-  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 */
-  box.innerHTML = url
-    ? '<a class="aim-roombar" href="' + stEsc(url) + '" target="_blank" rel="noopener">'
-      + '<span class="ic" aria-hidden="true">🗂</span>'
-      + '<span class="bd"><span class="tt">학급 공유 자료함</span>'
-      + '<span class="ds">우리 반이 만든 감성 사전과 급식 리뷰 분석 결과를 모으는 곳입니다. 프로젝트 과제 제출물도 여기에 올립니다.</span></span></a>'
-      + '<button type="button" class="btn st-roomedit">주소 변경</button>'
-    : '<button type="button" class="aim-roombar st-roomedit">'
-      + '<span class="ic" aria-hidden="true">🗂</span>'
-      + '<span class="bd"><span class="tt">학급 공유 자료함 설정</span>'
-      + '<span class="ds">선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 7~12차시 모든 차시에 함께 나타납니다.</span></span></button>';
+  /* 자료함 표시는 공통 가로바(aimRefExtras)가 맡습니다. 여기서 또 그리면
+     같은 폴더가 한 차시에 두 번 나옵니다. 값 미러링만 위에서 계속합니다. */
+  box.innerHTML = '';
+  return;
   const btn = box.querySelector('.st-roomedit');
   if(btn) btn.addEventListener('click', function(){
     const f = stEl('st-room-form');
@@ -16022,15 +16021,9 @@ function rvRoomRender(){
     const legacy = rvLS(RV_K_ROOM_CORE, '');
     if(legacy){ url = legacy; rvLSSet(RV_K_ROOM, legacy); }
   }
-  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 */
-  box.innerHTML = url
-    ? '<a class="aim-roombar" href="' + rvEsc(url) + '" target="_blank" rel="noopener">' +
-      '<span class="ic" aria-hidden="true">🗂</span><span class="bd"><span class="tt">학급 공유 자료함</span>' +
-      '<span class="ds">우리 반의 리뷰 분석 보고서와 추천 규칙 한 문장을 모으는 곳입니다. 프로젝트 과제 제출물도 여기에 올립니다.</span></span></a>' +
-      '<button class="btn" type="button" style="margin-top:0.4rem;" onclick="rvRoomForm(1)">주소 변경</button>'
-    : '<button class="aim-roombar" type="button" onclick="rvRoomForm(1)">' +
-      '<span class="ic" aria-hidden="true">🗂</span><span class="bd"><span class="tt">학급 공유 자료함 설정</span>' +
-      '<span class="ds">선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 7~13차시 모든 차시에 함께 나타납니다.</span></span></button>';
+  /* 자료함 표시는 공통 가로바(aimRefExtras)가 맡습니다. 여기서 또 그리면
+     같은 폴더가 한 차시에 두 번 나옵니다. 값 미러링만 위에서 계속합니다. */
+  box.innerHTML = '';
 }
 function rvRoomSave(){
   const i = rvEl('rv-room-u');
@@ -33358,14 +33351,9 @@ function dlRoomSave(){
 function dlRoomRender(){
   const box = dlEl('dl-room');
   if(!box) return;
-  const v = dlLS(DL_K_ROOM, '') || dlLS(DL_K_ROOM_CORE, '');
-  if(!v){ box.innerHTML = ''; return; }
-  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 */
-  box.innerHTML = '<a class="aim-roombar" href="'+dlEsc(v)+'" target="_blank" rel="noopener">'+
-    '<span class="ic" aria-hidden="true">📌</span>'+
-    '<span class="bd"><span class="tt">우리 반 공유 자료함</span>'+
-    '<span class="ds">선생님이 등록한 학급 자료함입니다. 정리한 표·그림·[D]란 요약을 여기에 모읍니다.</span></span></a>'+
-    '<button class="btn" type="button" onclick="dlRefAdd()">주소 바꾸기</button>';
+  /* 자료함 표시는 공통 가로바(aimRefExtras)가 맡습니다. 여기서 또 그리면
+     같은 폴더가 한 차시에 두 번 나옵니다. 값 미러링만 위에서 계속합니다. */
+  box.innerHTML = '';
 }
 
 /* ── 13. 잠금 · 탭 · 이동 ────────────────────────────────────────────────── */
