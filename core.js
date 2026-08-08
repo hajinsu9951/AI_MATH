@@ -9814,12 +9814,13 @@ function tvRefsRender(){
   if (!box) return;
   var url = txClassSync();
   var arr = txJson('aimath.text7.refs');
-  var h = '<div class="tx-refs" style="margin-top:0.8rem;">';
-  h += '<a class="tx-ref" ' + (url ? 'href="' + txEsc(url) + '" target="_blank" rel="noopener"' : 'href="#" onclick="return false;"') + '>' +
-    '<span class="th"><span class="bg">학급</span>🗂️</span><span class="bd"><span class="tt">학급 공유 자료함</span>' +
+  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 — 그리드 밖에 둡니다 */
+  var h = '<a class="aim-roombar" ' + (url ? 'href="' + txEsc(url) + '" target="_blank" rel="noopener"' : 'href="#" onclick="return false;"') + '>' +
+    '<span class="ic" aria-hidden="true">🗂️</span><span class="bd"><span class="tt">학급 공유 자료함</span>' +
     '<span class="ds">' + (url ? '우리 반이 모은 한 줄 평과 벡터 표를 함께 보는 자료함입니다.'
                               : '아직 주소가 없습니다. 아래 [학급 자료함 주소 설정]에서 등록하세요. (7~12차시 공통)') +
     '</span></span></a>';
+  h += '<div class="tx-refs" style="margin-top:0.8rem;">';
   arr.forEach(function (it, i) {
     h += '<a class="tx-ref" href="' + txEsc(it.u) + '" target="_blank" rel="noopener">' +
       '<span class="th"><span class="bg">교사 추가</span>🔗</span><span class="bd"><span class="tt">' + txEsc(it.t || it.u) + '</span>' +
@@ -13864,14 +13865,15 @@ function stRoomRender(){
     const legacy = stLS(ST_K_ROOM_CORE, '');
     if(legacy){ url = legacy; stLSSet(ST_K_ROOM, legacy); }
   }
+  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 */
   box.innerHTML = url
-    ? '<a class="st-ref" href="' + stEsc(url) + '" target="_blank" rel="noopener">'
-      + '<span class="th"><span class="bg">학급</span>🗂</span>'
+    ? '<a class="aim-roombar" href="' + stEsc(url) + '" target="_blank" rel="noopener">'
+      + '<span class="ic" aria-hidden="true">🗂</span>'
       + '<span class="bd"><span class="tt">학급 공유 자료함</span>'
       + '<span class="ds">우리 반이 만든 감성 사전과 급식 리뷰 분석 결과를 모으는 곳입니다. 프로젝트 과제 제출물도 여기에 올립니다.</span></span></a>'
       + '<button type="button" class="btn st-roomedit">주소 변경</button>'
-    : '<button type="button" class="st-ref st-refadd st-roomedit">'
-      + '<span class="th">🗂</span>'
+    : '<button type="button" class="aim-roombar st-roomedit">'
+      + '<span class="ic" aria-hidden="true">🗂</span>'
       + '<span class="bd"><span class="tt">학급 공유 자료함 설정</span>'
       + '<span class="ds">선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 7~12차시 모든 차시에 함께 나타납니다.</span></span></button>';
   const btn = box.querySelector('.st-roomedit');
@@ -16020,14 +16022,15 @@ function rvRoomRender(){
     const legacy = rvLS(RV_K_ROOM_CORE, '');
     if(legacy){ url = legacy; rvLSSet(RV_K_ROOM, legacy); }
   }
+  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 */
   box.innerHTML = url
-    ? '<a class="rv-vdlink" href="' + rvEsc(url) + '" target="_blank" rel="noopener">' +
-      '<span class="th">🗂</span><span class="meta"><b>학급 공유 자료함</b>' +
-      '<span>학급 · 우리 반의 리뷰 분석 보고서와 추천 규칙 한 문장을 모으는 곳입니다. 프로젝트 과제 제출물도 여기에 올립니다.</span></span></a>' +
+    ? '<a class="aim-roombar" href="' + rvEsc(url) + '" target="_blank" rel="noopener">' +
+      '<span class="ic" aria-hidden="true">🗂</span><span class="bd"><span class="tt">학급 공유 자료함</span>' +
+      '<span class="ds">우리 반의 리뷰 분석 보고서와 추천 규칙 한 문장을 모으는 곳입니다. 프로젝트 과제 제출물도 여기에 올립니다.</span></span></a>' +
       '<button class="btn" type="button" style="margin-top:0.4rem;" onclick="rvRoomForm(1)">주소 변경</button>'
-    : '<button class="rv-vdlink" type="button" style="cursor:pointer;text-align:left;" onclick="rvRoomForm(1)">' +
-      '<span class="th">🗂</span><span class="meta"><b>학급 공유 자료함 설정</b>' +
-      '<span>학급 · 선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 7~13차시 모든 차시에 함께 나타납니다.</span></span></button>';
+    : '<button class="aim-roombar" type="button" onclick="rvRoomForm(1)">' +
+      '<span class="ic" aria-hidden="true">🗂</span><span class="bd"><span class="tt">학급 공유 자료함 설정</span>' +
+      '<span class="ds">선생님이 패들렛·구글 드라이브 주소를 한 번만 넣으면 7~13차시 모든 차시에 함께 나타납니다.</span></span></button>';
 }
 function rvRoomSave(){
   const i = rvEl('rv-room-u');
@@ -33357,8 +33360,9 @@ function dlRoomRender(){
   if(!box) return;
   const v = dlLS(DL_K_ROOM, '') || dlLS(DL_K_ROOM_CORE, '');
   if(!v){ box.innerHTML = ''; return; }
-  box.innerHTML = '<a class="dl-ref" href="'+dlEsc(v)+'" target="_blank" rel="noopener">'+
-    '<span class="th"><span class="bg">학급</span>📌</span>'+
+  /* 자료함은 자료 카드가 아니라 가로바 한 줄로 */
+  box.innerHTML = '<a class="aim-roombar" href="'+dlEsc(v)+'" target="_blank" rel="noopener">'+
+    '<span class="ic" aria-hidden="true">📌</span>'+
     '<span class="bd"><span class="tt">우리 반 공유 자료함</span>'+
     '<span class="ds">선생님이 등록한 학급 자료함입니다. 정리한 표·그림·[D]란 요약을 여기에 모읍니다.</span></span></a>'+
     '<button class="btn" type="button" onclick="dlRefAdd()">주소 바꾸기</button>';
