@@ -147,11 +147,14 @@
     border:1px solid var(--border);border-radius:var(--radius);padding:0.65rem;color:var(--body);
     transition:border-color 0.2s;text-align:left;font-family:var(--sans);cursor:pointer;min-width:0;}
   #v-optim .op-ref:hover{border-color:var(--fg);}
-  #v-optim .op-ref .th{flex:0 0 3.2rem;height:3.2rem;border-radius:0.4rem;background:var(--card-h);
+  /* 도판이 16:9라 칸도 16:9(5.6rem × 3.15rem)로 둡니다. 정사각형이면
+     좌우가 잘려 무슨 그림인지 알아보기 어렵습니다. */
+  #v-optim .op-ref .th{flex:0 0 5.6rem;height:3.15rem;border-radius:0.4rem;background:var(--card-h);
     display:flex;align-items:center;justify-content:center;font-size:1.5rem;position:relative;overflow:hidden;}
   #v-optim .op-ref .th img{width:100%;height:100%;object-fit:cover;}
-  #v-optim .op-ref .th .bg{position:absolute;bottom:0;left:0;right:0;font-family:var(--mono);font-size:0.55rem;
-    background:var(--fg);color:var(--bg);text-align:center;letter-spacing:0.04em;padding:0.05rem 0;}
+  #v-optim .op-ref .th .bg{position:absolute;left:0.3rem;top:0.3rem;font-family:var(--mono);font-size:0.55rem;
+    background:var(--fg);color:var(--bg);text-align:center;letter-spacing:0.04em;
+    padding:0.1rem 0.4rem;border-radius:9999px;line-height:1.5;}
   #v-optim .op-ref .bd{min-width:0;}
   #v-optim .op-ref .tt{display:block;font-weight:700;color:var(--fg);font-size:0.96rem;line-height:1.5;}
   #v-optim .op-ref .ds{display:block;font-size:0.86rem;color:var(--muted);line-height:1.6;margin-top:0.2rem;}
