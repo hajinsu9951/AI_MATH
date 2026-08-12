@@ -283,7 +283,23 @@ footer .notice b{color:var(--body);}
    .th 규격이 달라 여기서 한 번에 맞춥니다(16:9, 꽉 채움). */
 .th:has(> img[src*="assets/refthumb/"]){
   position:relative;aspect-ratio:16/9;overflow:hidden;font-size:0 !important;
-  padding:0 !important;background:var(--bg) !important;display:block !important;}
+  padding:0 !important;background:var(--bg) !important;display:block !important;
+  container-type:inline-size;}
+
+/* 도판은 자료의 '성격'(영상·웹 활동·데이터…)만 알려 주는 그림이라, 카드가
+   여러 장 늘어서면 어느 것이 무슨 내용인지 그림만 보고는 알 수 없습니다.
+   카드 제목을 도판 아래에 얹어 그림 자체가 무엇인지 말하게 합니다.
+   (유튜브 섬네일은 이미 제 내용을 담고 있어 건드리지 않습니다.) */
+.aim-thcap{position:absolute;left:0;right:0;bottom:0;z-index:1;pointer-events:none;
+  padding:0.55rem 0.5rem 0.34rem;box-sizing:border-box;
+  font-family:var(--sans);font-size:0.7rem;font-weight:700;line-height:1.34;
+  letter-spacing:0;color:var(--fg);text-align:left;word-break:keep-all;
+  background:linear-gradient(to top,rgba(246,245,244,0.97) 0%,
+             rgba(246,245,244,0.93) 58%,rgba(246,245,244,0) 100%);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* 25·29차시의 작은 가로형 칸(112×63)에서는 제목이 그림을 다 덮으므로 뺍니다.
+   그 카드들은 제목이 바로 옆에 큼직하게 붙어 있어 없어도 알아볼 수 있습니다. */
+@container (max-width: 220px){ .aim-thcap{display:none;} }
 img[src*="assets/refthumb/"]{width:100%;height:100%;object-fit:cover;display:block;}
 /* 배지는 '왼쪽 위 알약' 하나로 못박습니다. 차시 CSS가 bottom·right 를
    잡아 두면(29·25차시가 그랬습니다) 여기서 준 top 과 합쳐져 배지가

@@ -48855,6 +48855,77 @@ window.aimTbZoom = aimTbZoom;
 })();
 
 /* ═══════════════════════════════════════════════════════════════════════
+   참고 자료 도판에 제목 얹기
+   도판(assets/refthumb/…)은 자료의 '성격'만 알려 주는 그림이라, 카드가
+   여러 장 늘어서면 어느 것이 무슨 내용인지 그림만 보고는 알 수 없습니다.
+   카드 제목을 도판 아래에 얹어 그림 자체가 무엇인지 말하게 합니다.
+   · 제목은 카드 본문에 이미 있으므로 aria-hidden — 화면낭독기에서 두 번
+     읽히지 않게 합니다.
+   · 유튜브 섬네일은 제 내용을 이미 담고 있어 대상이 아닙니다.
+   ═══════════════════════════════════════════════════════════════════════ */
+(function aimThumbCaption(){
+  'use strict';
+  var IMG   = 'img[src*="assets/refthumb/"]';
+  var TITLE = '.tt,.pcx-reft,.cmn-vd-t,.meta > b,b';
+
+  function titleOf(img){
+    var card = img.closest ? img.closest('a,button') : null;
+    if(!card) return '';
+    var t = card.querySelector(TITLE);
+    return t ? t.textContent.replace(/\s+/g,' ').trim() : '';
+  }
+
+  function capOne(img){
+    if(img.__aimCap) return;
+    var box = img.parentElement;
+    /* 도판 전용 상자(.th) 안에 있을 때만 얹습니다. 카드가 바로 부모면
+       카드 전체를 기준으로 자리가 잡혀 엉뚱한 곳에 놓입니다. */
+    if(!box || !box.classList || !box.classList.contains('th')) return;
+    img.__aimCap = true;
+    var t = titleOf(img);
+    if(!t) return;
+    if(box.querySelector('.aim-thcap')) return;
+    var s = document.createElement('span');
+    s.className = 'aim-thcap';
+    s.setAttribute('aria-hidden','true');
+    s.textContent = t;
+    box.appendChild(s);
+  }
+
+  function sweep(){
+    try{ document.querySelectorAll(IMG).forEach(capOne); }catch(e){}
+  }
+
+  function boot(){
+    sweep();
+    var host = document.getElementById('views') || document.body;
+    var pending = null;
+    function schedule(){
+      if(pending) return;
+      pending = setTimeout(function(){ pending = null; sweep(); }, 120);
+    }
+    /* 카드가 나중에 그려지는 차시(교사 추가 슬롯 등)까지 잡습니다.
+       제목을 얹는 것 자체도 변화라 한 번 더 돌지만, 이미 얹은 것은
+       __aimCap 로 걸러져 그 다음 회차에서 조용히 멈춥니다. */
+    new MutationObserver(function(muts){
+      for(var i=0;i<muts.length;i++){
+        var m = muts[i];
+        for(var j=0;j<m.addedNodes.length;j++){
+          var nd = m.addedNodes[j];
+          if(nd.nodeType !== 1) continue;
+          if(nd.classList && nd.classList.contains('aim-thcap')) continue;  /* 내 변화는 무시 */
+          schedule();
+        }
+      }
+    }).observe(host, {childList:true, subtree:true});
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  window.aimThumbCaption = sweep;
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
    활동 진행 표시 — 전개(STEP 2)에서 활동을 열어 보면 색이 바뀝니다.
    · 한 번이라도 연 단계 토글·탭에 ✓ 와 파란 표시가 붙습니다.
    · STEP 2 머리글 옆에 "탐구 N개 중 M개 열어봄" 배지가 붙고, 다 하면 초록.
