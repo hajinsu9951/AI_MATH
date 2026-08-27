@@ -210,7 +210,8 @@ footer .sp{flex:1}
 <div class="card" id="stage2">
   <div class="stagehead"><span class="tag">2단계 · 조립</span><h2 style="margin:0">게이트 블록으로 같은 회로 만들기</h2></div>
   <p class="note">블록을 눌러 추가한 뒤, 회로도에서 <b>출력점을 누르고 → 이어서 입력점(○)을 누르면</b> 전선이 이어집니다.
-    연결된 입력점을 그냥 누르면 끊어집니다. 위 1단계 스위치를 움직이면 내 회로도 함께 움직입니다.</p>
+    연결된 입력점을 그냥 누르면 끊어집니다. 스위치 3개 문제에서는 게이트마다 꼭지가 3개 나오며 셋째 꼭지는 선택입니다
+    (부정 NOT은 1개면 충분하고, 여러 개를 이으면 「모두의 OR」의 부정으로 계산됩니다). 위 1단계 스위치를 움직이면 내 회로도 함께 움직입니다.</p>
   <div class="palette" id="palette"></div>
   <div class="rows" id="rows"></div>
   <p class="wirehint" id="wirehint" role="status" aria-live="polite"></p>
@@ -525,15 +526,40 @@ function combosOf(p){
   }
   return out;
 }
-function evalGates(gates,out,s){
+/* 스위치 3개 문제에서는 2입력 게이트가 입력점 3개짜리로 커집니다(셋째는 선택).
+   연결된 입력만 모아 계산합니다 — AND는 전부 곱, OR는 전부 합, XOR는 홀수 판정. */
+function threeIn(){ return P().sw.length===3; }
+function gateEval(t, vals){
+  var and=vals.reduce(function(x,y){return x&y;},1);
+  var or =vals.reduce(function(x,y){return x|y;},0);
+  var xr =vals.reduce(function(x,y){return x^y;},0);
+  if(t==='NOT')  return vals.length===1 ? 1-vals[0] : 1-or;  /* 다입력 부정 = (모두의 OR)′ */
+  if(t==='AND')  return and;
+  if(t==='OR')   return or;
+  if(t==='XOR')  return xr;
+  if(t==='NAND') return 1-and;
+  if(t==='NOR')  return 1-or;
+}
+function evalAll(gates,s){
   var v={A:s.A,B:s.B,C:s.C};
   for(var i=0;i<gates.length;i++){
     var g=gates[i], d=GATES[g.t];
-    if(v[g.a]===undefined) return undefined;
-    if(d.n>1 && v[g.b]===undefined) return undefined;
-    v['G'+(i+1)] = d.n>1 ? d.f(v[g.a],v[g.b]) : d.f(v[g.a]);
+    var min = d.n===1 ? 1 : 2;                 /* NOT은 1개부터, 나머지는 2개부터 */
+    var ins=[g.a,g.b,g.c].filter(function(x){return x;});
+    var vals=ins.map(function(x){return v[x];});
+    v['G'+(i+1)] = (ins.length<min || vals.some(function(x){return x===undefined;}))
+                   ? undefined : gateEval(g.t, vals);
   }
+  return v;
+}
+function evalGates(gates,out,s){
+  var v=evalAll(gates,s);
   return out ? v[out] : undefined;
+}
+/* 게이트의 입력점(꼭지) 자리 — [이름, 게이트 안 y좌표].
+   부정 포함 모든 게이트가 2변수 문제에선 꼭지 2개, 3변수 문제에선 3개. */
+function portSlots(g){
+  return threeIn() ? [['a',8],['b',22],['c',36]] : [['a',12],['b',32]];
 }
 
 /* ══════════════ 그리기 ══════════════ */
@@ -626,9 +652,9 @@ function renderStage2(){
     return '<button class="gatebtn" data-add="'+t+'" title="'+GATES[t].ko+'">'+gateIcon(t,40)+'<b>'+t+'</b></button>';
   }).join('');
   var rows=b.gates.map(function(g,i){
-    var d=GATES[g.t];
-    var conn = d.n>1 ? (g.a?'<b>'+g.a+'</b>':'○')+' · '+(g.b?'<b>'+g.b+'</b>':'○')
-                     : (g.a?'<b>'+g.a+'</b>':'○');
+    var conn = portSlots(g).map(function(sl){
+      return g[sl[0]] ? '<b>'+g[sl[0]]+'</b>' : '○';
+    }).join(' · ');
     return '<div class="grow"><span class="gname">G'+(i+1)+'</span><span class="gtype">'+g.t+'</span>'+
       '<span class="conn">입력 '+conn+'</span>'+
       (i===b.gates.length-1 ? '<button class="del" data-del="'+i+'" aria-label="G'+(i+1)+' 삭제">✕ 삭제</button>':'')+
@@ -649,8 +675,8 @@ function renderBuilderSvg(){
   var maxD=1;
   for(i=0;i<b.gates.length;i++){
     var g=b.gates[i];
-    var da=g.a?depth[g.a]:0, db=(GATES[g.t].n>1&&g.b)?depth[g.b]:0;
-    depth['G'+(i+1)] = Math.max(da||0, db||0)+1;
+    var dd=[g.a,g.b,g.c].filter(Boolean).map(function(x){return depth[x]||0;});
+    depth['G'+(i+1)] = (dd.length ? Math.max.apply(null,dd) : 0)+1;
     if(depth['G'+(i+1)]>maxD) maxD=depth['G'+(i+1)];
   }
   var colX=function(d){return 150+(d-1)*130;};
@@ -665,13 +691,7 @@ function renderBuilderSvg(){
   var Wd = 150+maxD*130+110;
   var Hd = 180;
   Object.keys(pos).forEach(function(k){ Hd=Math.max(Hd,pos[k].y+80); });
-  var val={A:sw.A,B:sw.B,C:sw.C};
-  for(i=0;i<b.gates.length;i++){
-    var gg=b.gates[i], dd=GATES[gg.t];
-    var a=val[gg.a];
-    val['G'+(i+1)] = (a===undefined||(dd.n>1&&val[gg.b]===undefined)) ? undefined
-                     : (dd.n>1? dd.f(a,val[gg.b]) : dd.f(a));
-  }
+  var val=evalAll(b.gates, sw);
   var svg='';
   function wire(fx,fy,tx,ty,v){
     var hot=v===1;
@@ -690,9 +710,12 @@ function renderBuilderSvg(){
     return {x:pos[src].x+13, y:pos[src].y};
   }
   for(i=0;i<b.gates.length;i++){
-    var g2=b.gates[i], pp=pos['G'+(i+1)], d2=GATES[g2.t];
-    var pa=outPoint(g2.a); if(pa) svg+=wire(pa.x,pa.y,pp.x+10,pp.y+(d2.n>1?12:22),val[g2.a]);
-    if(d2.n>1){ var pb=outPoint(g2.b); if(pb) svg+=wire(pb.x,pb.y,pp.x+10,pp.y+32,val[g2.b]); }
+    var g2=b.gates[i], pp=pos['G'+(i+1)];
+    portSlots(g2).forEach(function(sl){
+      var src=g2[sl[0]]; if(!src) return;
+      var ps=outPoint(src);
+      if(ps) svg+=wire(ps.x,ps.y,pp.x+10,pp.y+sl[1],val[src]);
+    });
   }
   var bulbX=Wd-58, outV;
   if(b.out){ var po=outPoint(b.out); outV = val[b.out];
@@ -737,15 +760,19 @@ function renderBuilderSvg(){
     if(pend==='G'+(i+1)) ports+=ring(so.x,so.y,12);
     ports+=hit(so.x,so.y,17,'data-port-out="G'+(i+1)+'"','G'+(i+1)+' 출력');
   }
-  /* 입력점 — 게이트 */
+  /* 입력점 — 게이트 (2변수 문제 꼭지 2개 · 3변수 문제 꼭지 3개) */
   for(i=0;i<b.gates.length;i++){
-    var g4=b.gates[i], q4=pos['G'+(i+1)], d4=GATES[g4.t];
-    var pts = d4.n>1 ? [['a',q4.y+12],['b',q4.y+32]] : [['a',q4.y+22]];
-    pts.forEach(function(pt){
-      var px=q4.x+4, py=pt[1], vv=g4[pt[0]];
-      ports+='<circle cx="'+px+'" cy="'+py+'" r="5.5" style="fill:'+(vv?'var(--fg)':'var(--card)')+';stroke:var(--fg);stroke-width:2.5"/>';
-      if(pend && validSrc(pend,i)) ports+=cand(px,py);
-      ports+=hit(px,py,16,'data-port-in="'+i+':'+pt[0]+'"','G'+(i+1)+' 입력'+(pt[0]==='b'?' 둘째':'')+(vv?' (연결됨: '+vv+')':' (비어 있음)'));
+    var g4=b.gates[i], q4=pos['G'+(i+1)];
+    var slots=portSlots(g4);
+    var hitR = slots.length===3 ? 13 : 16;
+    var candR = slots.length===3 ? 8 : 12;
+    slots.forEach(function(sl){
+      var px=q4.x+4, py=q4.y+sl[1], vv=g4[sl[0]];
+      var seq = sl[0]==='a'?'첫째':(sl[0]==='b'?'둘째':'셋째');
+      ports+='<circle cx="'+px+'" cy="'+py+'" r="5" style="fill:'+(vv?'var(--fg)':'var(--card)')+';stroke:var(--fg);stroke-width:2.5"/>';
+      if(pend && validSrc(pend,i))
+        ports+='<circle cx="'+px+'" cy="'+py+'" r="'+candR+'" style="fill:none;stroke:var(--pri);stroke-width:2.5;stroke-dasharray:4 4"/>';
+      ports+=hit(px,py,hitR,'data-port-in="'+i+':'+sl[0]+'"','G'+(i+1)+' '+seq+' 입력'+(vv?' (연결됨: '+vv+')':' (비어 있음)'));
     });
   }
   /* 입력점 — 전구 */
@@ -800,14 +827,14 @@ function exprOf(src,gates){
   if(src.charAt(0)!=='G') return src;
   var g=gates[parseInt(src.slice(1),10)-1];
   if(!g) return '?';
-  var a=exprOf(g.a,gates), b=exprOf(g.b,gates);
-  if(g.t==='AND')  return '('+a+'·'+b+')';
-  if(g.t==='OR')   return '('+a+'+'+b+')';
-  if(g.t==='XOR')  return '('+a+'⊕'+b+')';
-  if(g.t==='NOT')  return a+'′';
-  if(g.t==='NAND') return '('+a+'·'+b+')′';
-  if(g.t==='NOR')  return '('+a+'+'+b+')′';
-  return '?';
+  var parts=[g.a,g.b,g.c].filter(Boolean).map(function(x){return exprOf(x,gates);});
+  if(!parts.length) return '?';
+  if(g.t==='NOT')
+    return parts.length===1 ? parts[0]+'′' : '('+parts.join('+')+')′';
+  var op = (g.t==='AND'||g.t==='NAND') ? '·' : (g.t==='XOR' ? '⊕' : '+');
+  var e='('+parts.join(op)+')';
+  if(g.t==='NAND'||g.t==='NOR') e+='′';
+  return e;
 }
 function stripOuter(e){
   if(e.charAt(0)!=='(' || e.charAt(e.length-1)!==')') return e;
@@ -907,13 +934,13 @@ document.addEventListener('click',function(e){
   if(t.hasAttribute('data-add')){
     var b=curBuild();
     if(b.gates.length>=6){ alert('게이트는 6개까지면 충분합니다. 필요 없는 게이트를 지워 보세요.'); return; }
-    b.gates.push({t:t.getAttribute('data-add'),a:'',b:''});
+    b.gates.push({t:t.getAttribute('data-add'),a:'',b:'',c:''});
     renderStage2(); return;
   }
   if(t.hasAttribute('data-del')){
     var b2=curBuild(); b2.gates.pop();
     var gone='G'+(b2.gates.length+1);
-    b2.gates.forEach(function(g){ if(g.a===gone)g.a=''; if(g.b===gone)g.b=''; });
+    b2.gates.forEach(function(g){ if(g.a===gone)g.a=''; if(g.b===gone)g.b=''; if(g.c===gone)g.c=''; });
     if(b2.out===gone) b2.out='';
     if(pend===gone) pend=null;
     renderStage2(); return;
@@ -939,9 +966,13 @@ function check(){
   var p=P(), b=curBuild(), r=$('result');
   if(!b.out){ r.className='result bad'; r.innerHTML='전구가 아직 아무 출력에도 연결되지 않았습니다 — 「전구 입력」을 고르세요.'; return; }
   for(var i=0;i<b.gates.length;i++){
-    var d=GATES[b.gates[i].t];
-    if(!b.gates[i].a || (d.n>1&&!b.gates[i].b)){
-      r.className='result bad'; r.innerHTML='G'+(i+1)+' 게이트의 입력이 비어 있습니다.'; return;
+    var g=b.gates[i], d=GATES[g.t];
+    var n=[g.a,g.b,g.c].filter(Boolean).length;
+    var min = d.n===1 ? 1 : 2;
+    if(n<min){
+      r.className='result bad';
+      r.innerHTML='G'+(i+1)+' ('+g.t+') 게이트에 입력이 '+(min===1?'1개 이상':'2개 이상')+' 필요합니다.';
+      return;
     }
   }
   var miss=[];
