@@ -5584,6 +5584,9 @@ const LG_THUMBS = {
 
 const LG_REF_KEY='aimath.logic.customrefs';
 const LG_REFS=[
+  { k:'em', em:'🕵️', b:'웹 게임', t:'논리 회로 탐정 — 블랙박스 회로 맞히기', sv:'gates',
+    d:'스위치를 눌러 전구 반응을 조사하고, 표준 기호 게이트 블록으로 숨은 회로를 조립해 검증하는 게임입니다. 기본 3문제(스위치 2개) + 심화 6문제(스위치 3개). (대전대신고 하진수 제작 · 연구수업용)',
+    u:'games/logic.html' },
   { k:'em', em:'🃏', b:'웹 활동', t:'논리 회로 · 논리집합 카드 게임', sv:'cards',
     d:'연산 카드와 명제 카드로 논리식을 만들어 진리표를 완성하는 교실 활동 안내입니다. (대전대신고 하진수 개발 · 노션 「인공지능 수학」 자료실)',
     u:'https://dshskr.notion.site/1ad7f8928da3800393d8f321a9ff5798' },

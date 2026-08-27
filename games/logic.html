@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>논리 회로 탐정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+/* 대전대신고 「인공지능 수학」 사이트의 디자인 언어를 그대로 따릅니다.
+   종이 캔버스 #f6f5f4 · 흰 카드 · 노션 블루 하나. 전류만 호박색으로 빛납니다. */
+:root{
+  --bg:#f6f5f4; --card:#fff; --card-h:#efedeb; --fg:#2f2f2f; --body:#46413b;
+  --muted:#8a8580; --border:#e0ded9; --pri:#0075de; --pri-h:#0059ab;
+  --hot:#d97706; --glow:#f5b301; --green:#107a33; --red:#c04600;
+  --swA:#0075de; --swB:#7c3aed; --swC:#0d9488;
+  --radius:12px;
+  --sans:'Noto Sans KR','Inter',system-ui,sans-serif;
+  --mono:ui-monospace,'Cascadia Mono',Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;background:var(--bg);color:var(--body);font-family:var(--sans);line-height:1.65;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1060px;margin:0 auto;padding:1.4rem 1rem 3.5rem}
+
+/* 2단계 조립 중에는 1단계 실험이 우측 하단 미니 창으로 따라옵니다.
+   같은 스위치가 실제 회로와 내 게이트 회로를 동시에 움직입니다. */
+.pip{position:fixed;right:14px;bottom:14px;z-index:60;width:min(370px,calc(100vw - 28px));
+  background:var(--card);border:1.5px solid var(--border);border-radius:12px;
+  box-shadow:0 10px 30px rgba(26,23,20,.2);padding:.55rem .7rem .65rem}
+.pip-head{display:flex;align-items:center;gap:.5rem;justify-content:space-between}
+.pip-head .tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;color:#fff;
+  background:var(--fg);border-radius:9999px;padding:.14rem .55rem}
+#pip-bulb{font-size:.8rem;font-weight:800}
+.pip .circuit-svg{margin-top:.45rem;border-radius:.45rem}
+.pip .swrow{margin-top:.45rem;gap:.35rem}
+.pip .swbtn{min-height:36px;padding:.26rem .55rem;font-size:.84rem;gap:.35rem}
+@media (max-width:719px){ #pip-svg{display:none} }
+@media print{ .pip{display:none} }
+/* 서브 창이 떠 있는 동안, 그 높이만큼 본문 아래 여백을 확보해
+   검사 버튼·결과·다음 버튼이 가려지지 않게 합니다. */
+body.pip-on .wrap{padding-bottom:calc(var(--pip-h, 320px) + 44px)}
+
+/* ── 머리글 ── */
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+h1{font-size:2rem;font-weight:900;color:var(--fg);margin:.15rem 0 .2rem;letter-spacing:-.02em;text-wrap:balance}
+.sub{margin:0;color:var(--muted)}
+.progress{margin-top:.6rem;font-family:var(--mono);font-size:.78rem;color:var(--pri);
+  background:rgba(0,117,222,.08);border:1px solid rgba(0,117,222,.25);border-radius:9999px;
+  display:inline-block;padding:.2rem .7rem}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.05rem 1.15rem;margin-top:1rem}
+.card h2{font-size:1.05rem;font-weight:800;color:var(--fg);margin:0 0 .5rem}
+.card h3{font-size:.95rem;font-weight:700;color:var(--fg);margin:0 0 .4rem}
+.note{font-size:.86rem;color:var(--muted);line-height:1.7;margin:.3rem 0 0}
+
+/* ── 방법 3단계 ── */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.7rem;margin-top:.3rem}
+.step{background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .85rem}
+.step b{display:block;color:var(--fg);font-size:.92rem}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;
+  border-radius:9999px;background:var(--pri);color:#fff;font-weight:800;font-size:.8rem;margin-right:.45rem}
+.step p{margin:.3rem 0 0;font-size:.85rem;color:var(--muted);line-height:1.6}
+
+/* ── 기호 범례 ── */
+.legend{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem}
+.leg{display:flex;align-items:center;gap:.5rem;background:var(--bg);border:1px solid var(--border);
+  border-radius:.55rem;padding:.4rem .65rem}
+.leg svg{display:block}
+.leg b{font-family:var(--mono);font-size:.78rem;color:var(--fg)}
+.leg span{font-size:.74rem;color:var(--muted)}
+
+/* ── 문제 이동 ── */
+.nav{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-top:1.1rem}
+.nav .grp{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin:0 .15rem}
+.pchip{min-width:2.4rem;text-align:center;font-family:var(--mono);font-size:.88rem;font-weight:700;
+  padding:.34rem .6rem;border:1px solid var(--border);border-radius:9999px;background:var(--card);
+  color:var(--body);cursor:pointer}
+.pchip:hover{border-color:var(--muted)}
+.pchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.pchip.done:not(.on){background:rgba(16,122,51,.09);border-color:rgba(16,122,51,.4);color:var(--green)}
+.pchip.done::after{content:' ✓'}
+
+/* ── 1단계 실험 ── */
+.stagehead{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem .8rem}
+.stagehead .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:#fff;
+  background:var(--fg);border-radius:9999px;padding:.16rem .6rem;white-space:nowrap}
+.circuit-svg{width:100%;height:auto;display:block;margin-top:.5rem;
+  background:var(--bg);border:1px solid var(--border);border-radius:.6rem}
+.swrow{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+.swbtn{display:inline-flex;align-items:center;gap:.5rem;border:1.5px solid var(--border);
+  background:var(--card);border-radius:.6rem;padding:.45rem .8rem;cursor:pointer;
+  font-family:var(--sans);font-size:.95rem;color:var(--body);min-height:44px}
+.swbtn .dot{width:1.35em;height:1.35em;border-radius:9999px;display:inline-flex;align-items:center;
+  justify-content:center;color:#fff;font-weight:800;font-size:.8em}
+.swbtn .st{font-family:var(--mono);font-weight:700;font-size:1rem;color:var(--muted);min-width:1.1em;text-align:center}
+.swbtn[aria-pressed="true"]{border-color:var(--hot);background:rgba(217,119,6,.07)}
+.swbtn[aria-pressed="true"] .st{color:var(--hot)}
+.combos{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem;align-items:center}
+.combos .lb{font-size:.8rem;color:var(--muted);margin-right:.2rem}
+.combo{font-family:var(--mono);font-size:.78rem;color:var(--muted);border:1px dashed var(--border);
+  border-radius:.45rem;padding:.14rem .5rem;background:var(--card)}
+.combo.seen{border-style:solid;border-color:var(--pri);color:var(--pri);background:rgba(0,117,222,.06)}
+.combo.seen.lit{border-color:var(--hot);color:#a35505;background:rgba(217,119,6,.1);font-weight:700}
+.paper{margin-top:.7rem;font-size:.88rem;color:var(--body);background:rgba(0,117,222,.06);
+  border-left:4px solid var(--pri);border-radius:0 .5rem .5rem 0;padding:.55rem .8rem}
+
+/* ── 2단계 조립 ── */
+.palette{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+.gatebtn{display:inline-flex;flex-direction:column;align-items:center;gap:.15rem;
+  border:1.5px solid var(--border);background:var(--card);border-radius:.6rem;
+  padding:.45rem .7rem .35rem;cursor:pointer;min-width:4.2rem;min-height:44px}
+.gatebtn:hover{border-color:var(--pri)}
+.gatebtn b{font-family:var(--mono);font-size:.72rem;color:var(--fg)}
+.rows{display:flex;flex-direction:column;gap:.45rem;margin-top:.7rem}
+.grow{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;background:var(--bg);
+  border:1px solid var(--border);border-radius:.55rem;padding:.4rem .6rem;font-size:.88rem}
+.grow .gname{font-family:var(--mono);font-weight:800;font-size:.85rem;color:var(--fg);min-width:2.2rem}
+.grow .gtype{font-family:var(--mono);font-size:.8rem;color:var(--pri);font-weight:700}
+.grow select{font-family:var(--mono);font-size:.9rem;padding:.28rem .4rem;border:1px solid var(--border);
+  border-radius:.45rem;background:var(--card);color:var(--fg);min-height:38px}
+.grow .conn{font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+.grow .conn b{color:var(--fg)}
+.grow .del{margin-left:auto;border:none;background:none;color:var(--muted);cursor:pointer;
+  font-size:.85rem;padding:.2rem .45rem}
+.wirehint{margin:.6rem 0 0;font-size:.88rem;color:var(--pri);background:rgba(0,117,222,.06);
+  border:1px dashed rgba(0,117,222,.35);border-radius:.5rem;padding:.45rem .7rem}
+.grow .del:hover{color:var(--red)}
+.outrow{border-color:rgba(0,117,222,.4);background:rgba(0,117,222,.05)}
+.builder-svg{width:100%;height:auto;display:block;margin-top:.7rem;background:var(--card);
+  border:1px dashed var(--border);border-radius:.6rem}
+.btnrow{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;align-items:center}
+.btn{font-family:var(--sans);font-size:.95rem;font-weight:700;border:1.5px solid var(--border);
+  border-radius:.6rem;background:var(--card);color:var(--body);padding:.5rem 1rem;cursor:pointer;min-height:44px}
+.btn:hover{border-color:var(--muted)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.pri:hover{background:var(--pri-h)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.result{margin-top:.7rem;border-radius:.6rem;padding:.7rem .9rem;font-size:.95rem;display:none}
+.result.bad{display:block;background:rgba(192,70,0,.07);border-left:4px solid var(--red);color:var(--red);font-weight:700}
+.result.bad .miss{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem}
+.result.bad .miss span{font-family:var(--mono);font-size:.78rem;font-weight:400;color:var(--body);
+  background:var(--card);border:1px solid var(--border);border-radius:.4rem;padding:.1rem .45rem}
+.result.good{display:block;background:rgba(16,122,51,.08);border-left:4px solid var(--green);color:var(--green);font-weight:800;
+  animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(.97);opacity:.4}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.result.good{animation:none}}
+
+/* ── 해결 화면 ── */
+.solved{margin-top:.8rem;border-top:1px dashed var(--border);padding-top:.8rem}
+.ttable{border-collapse:collapse;font-family:var(--mono);font-size:.88rem;margin-top:.4rem}
+.ttable th,.ttable td{border:1px solid var(--border);padding:.24rem .7rem;text-align:center}
+.ttable th{background:var(--card-h);color:var(--fg)}
+.ttable td.one{color:var(--hot);font-weight:800}
+.lesson{margin-top:.6rem;font-size:.92rem;color:var(--fg);background:rgba(16,122,51,.07);
+  border-left:4px solid var(--green);border-radius:0 .5rem .5rem 0;padding:.55rem .8rem}
+.myexpr{margin:.5rem 0 0;font-size:.92rem;color:var(--body)}
+.myexpr b{font-family:var(--mono);color:var(--pri)}
+.alts{margin:.35rem 0 0;padding-left:1.15rem}
+.alts li{font-size:.9rem;margin:.3rem 0;line-height:1.6}
+.alts b{font-family:var(--mono);font-weight:700;color:var(--fg)}
+.alts span{color:var(--muted);font-size:.84rem}
+
+footer{margin-top:2rem;font-size:.78rem;color:var(--muted);line-height:1.7;
+  border-top:1px solid var(--border);padding-top:.9rem;display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center}
+footer .sp{flex:1}
+.reset{border:none;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:.78rem}
+.reset:hover{color:var(--fg)}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">인공지능 수학 · 논리 회로 실험</p>
+  <h1>논리 회로 탐정</h1>
+  <p class="sub">스위치를 눌러 전구의 반응을 조사하고, 숨어 있는 논리 회로의 정체를 밝혀냅니다.</p>
+  <span class="progress" id="prog"></span>
+</header>
+
+<div class="card">
+  <h2>수사 방법</h2>
+  <div class="steps">
+    <div class="step"><b><span class="n">1</span>실험한다</b>
+      <p>회로의 스위치를 눌러 모든 조합을 시험합니다. 전류가 흐르는 길은 주황색으로 빛납니다.</p></div>
+    <div class="step"><b><span class="n">2</span>종이에 기록한다</b>
+      <p>진리표를 활동지(종이)에 직접 그려 채우고, 어떤 논리식인지 추리해 씁니다.</p></div>
+    <div class="step"><b><span class="n">3</span>블록으로 조립한다</b>
+      <p>게이트 블록으로 같은 회로를 조립해 검사합니다. 블록 종류가 달라도
+        <b>불이 켜지는 경우(진리표)가 같으면 모두 정답</b>입니다!</p></div>
+  </div>
+  <h3 style="margin-top:.9rem">논리 게이트 기호 <span style="font-weight:400;color:var(--muted);font-size:.8rem">— 실제 회로도에서 쓰는 표준 기호입니다</span></h3>
+  <div class="legend" id="legend"></div>
+</div>
+
+<div class="nav" id="nav" role="tablist" aria-label="문제 선택"></div>
+
+<div class="card" id="stage1">
+  <div class="stagehead"><span class="tag">1단계 · 실험</span><h2 id="ptitle" style="margin:0"></h2></div>
+  <p class="note" id="pcap"></p>
+  <div id="csvg"></div>
+  <div class="swrow" id="swrow"></div>
+  <div class="combos" id="combos"></div>
+  <p class="paper">📝 <b>종이에 기록</b> — 진리표를 활동지에 직접 그려 채운 뒤, 이 회로가 어떤 논리식인지 추리해 적으세요. 그다음 아래에서 조립을 시작합니다.</p>
+</div>
+
+<div class="card" id="stage2">
+  <div class="stagehead"><span class="tag">2단계 · 조립</span><h2 style="margin:0">게이트 블록으로 같은 회로 만들기</h2></div>
+  <p class="note">블록을 눌러 추가한 뒤, 회로도에서 <b>출력점을 누르고 → 이어서 입력점(○)을 누르면</b> 전선이 이어집니다.
+    연결된 입력점을 그냥 누르면 끊어집니다. 위 1단계 스위치를 움직이면 내 회로도 함께 움직입니다.</p>
+  <div class="palette" id="palette"></div>
+  <div class="rows" id="rows"></div>
+  <p class="wirehint" id="wirehint" role="status" aria-live="polite"></p>
+  <div id="bsvg"></div>
+  <div class="btnrow">
+    <button class="btn pri" id="check">회로 검사</button>
+    <button class="btn" id="clear">전체 지우기</button>
+    <span class="note" id="checkhint" style="margin:0"></span>
+  </div>
+  <div class="result" id="result" role="status" aria-live="polite"></div>
+  <div class="solved" id="solvedbox" style="display:none"></div>
+</div>
+
+<aside class="pip" id="pip" hidden aria-label="1단계 실험 미니 창">
+  <div class="pip-head"><span class="tag">1단계 · 실험</span><span id="pip-bulb"></span></div>
+  <div id="pip-svg"></div>
+  <div class="swrow" id="pip-swrow"></div>
+</aside>
+
+<footer>
+  <span>대전대신고등학교 · 「인공지능 수학」 3차시 연구수업 · 하진수</span>
+  <span class="sp"></span>
+  <span>진행 상황은 이 기기에만 저장됩니다</span>
+  <button class="reset" id="resetall">진행 초기화</button>
+</footer>
+</div>
+
+<script>
+'use strict';
+/* ══════════════ 게이트 정의와 표준 기호 ══════════════ */
+var GATES = {
+  AND :{n:2, f:function(a,b){return a&b;},      ko:'논리곱'},
+  OR  :{n:2, f:function(a,b){return a|b;},      ko:'논리합'},
+  NOT :{n:1, f:function(a){return 1-a;},        ko:'부정'},
+  XOR :{n:2, f:function(a,b){return a^b;},      ko:'배타적 논리합'},
+  NAND:{n:2, f:function(a,b){return 1-(a&b);},  ko:'AND의 부정'},
+  NOR :{n:2, f:function(a,b){return 1-(a|b);},  ko:'OR의 부정'}
+};
+var SWCOLOR = {A:'var(--swA)', B:'var(--swB)', C:'var(--swC)'};
+
+/* ANSI 표준 모양. (0,0)~(약 60,44) 좌표계, 출력점 x를 함께 돌려줍니다. */
+function gateShape(type){
+  var body='', outX=50;
+  if(type==='AND'||type==='NAND')
+    body='<path d="M8,2 H30 A20,20 0 0 1 30,42 H8 Z"/>';
+  if(type==='OR'||type==='NOR'||type==='XOR')
+    body='<path d="M8,2 Q30,2 50,22 Q30,42 8,42 Q20,22 8,2 Z"/>';
+  if(type==='XOR')
+    body='<path style="fill:none" d="M2,2 Q14,22 2,42"/>'+body;
+  if(type==='NOT'){
+    body='<path d="M8,4 L38,22 L8,40 Z"/><circle cx="43" cy="22" r="5"/>'; outX=48;
+  }
+  if(type==='NAND'||type==='NOR'){ body+='<circle cx="55" cy="22" r="5"/>'; outX=60; }
+  return {svg:body, outX:outX};
+}
+function gateIcon(type, w){
+  var s=gateShape(type), sc=(w||44)/62;
+  return '<svg width="'+Math.round(68*sc)+'" height="'+Math.round(48*sc)+'" viewBox="-4 -2 68 48" aria-hidden="true">'+
+    '<g style="fill:var(--card);stroke:var(--fg);stroke-width:3;stroke-linejoin:round">'+s.svg+'</g></svg>';
+}
+
+/* ══════════════ 실물 회로 그리기 도구 ══════════════ */
+function wires(list, s, lit){
+  return list.map(function(w){
+    var hot = lit && w.hot(s);
+    return (hot?'<path d="'+w.d+'" style="stroke:rgba(217,119,6,.28);stroke-width:11;fill:none;stroke-linecap:round"/>':'')+
+      '<path d="'+w.d+'" style="stroke:'+(hot?'var(--hot)':'#5c564f')+';stroke-width:4;fill:none;stroke-linecap:round"/>';
+  }).join('');
+}
+function badge(x,y,name){
+  return '<circle cx="'+x+'" cy="'+y+'" r="11" style="fill:'+SWCOLOR[name]+'"/>'+
+    '<text x="'+x+'" y="'+(y+4.5)+'" text-anchor="middle" style="fill:#fff;font:800 13px var(--mono)">'+name+'</text>';
+}
+/* 나이프 스위치: 닫힘(1)=수평 연결, 열림(0)=들림 */
+function knife(x,y,name,on,hot){
+  var lev = on ? 'M'+x+','+y+' L'+(x+52)+','+y : 'M'+x+','+y+' L'+(x+44)+','+(y-24);
+  return '<g data-sw="'+name+'" style="cursor:pointer">'+
+    '<rect x="'+(x-10)+'" y="'+(y-34)+'" width="72" height="48" fill="transparent"/>'+
+    '<path d="'+lev+'" style="stroke:'+(hot?'var(--hot)':'var(--fg)')+';stroke-width:5;stroke-linecap:round"/>'+
+    '<circle cx="'+x+'" cy="'+y+'" r="5" style="fill:var(--fg)"/>'+
+    '<circle cx="'+(x+52)+'" cy="'+y+'" r="5" style="fill:var(--fg)"/>'+
+    badge(x+26,y-38,name)+'</g>';
+}
+/* b접점 버튼: 뗌(0)=다리가 접점에 붙음(닫힘), 누름(1)=다리가 들려 끊김 */
+function ncbtn(x,y,name,pressed,hot){
+  var by = pressed ? y-22 : y-7;
+  return '<g data-sw="'+name+'" style="cursor:pointer">'+
+    '<rect x="'+(x-10)+'" y="'+(y-46)+'" width="72" height="56" fill="transparent"/>'+
+    '<path d="M'+x+','+y+' V'+(y-7)+' M'+(x+52)+','+y+' V'+(y-7)+'" style="stroke:var(--fg);stroke-width:4;fill:none"/>'+
+    '<path d="M'+(x-4)+','+by+' H'+(x+56)+'" style="stroke:'+(hot?'var(--hot)':'var(--fg)')+';stroke-width:5;stroke-linecap:round"/>'+
+    '<path d="M'+(x+26)+','+by+' V'+(by-9)+'" style="stroke:var(--fg);stroke-width:4"/>'+
+    '<circle cx="'+x+'" cy="'+y+'" r="4.5" style="fill:var(--fg)"/>'+
+    '<circle cx="'+(x+52)+'" cy="'+y+'" r="4.5" style="fill:var(--fg)"/>'+
+    badge(x+26,y-50,name)+'</g>';
+}
+/* 삼로 스위치: 1=위 길, 0=아래 길 */
+function spdt(x,y,name,up,dirRight,hot){
+  var tx = dirRight ? x+56 : x-56;
+  var lev='M'+x+','+y+' L'+tx+','+(up?y-18:y+18);
+  return '<g data-sw="'+name+'" style="cursor:pointer">'+
+    '<rect x="'+(Math.min(x,tx)-10)+'" y="'+(y-52)+'" width="76" height="76" fill="transparent"/>'+
+    '<path d="'+lev+'" style="stroke:'+(hot?'var(--hot)':'var(--fg)')+';stroke-width:5;stroke-linecap:round"/>'+
+    '<circle cx="'+x+'" cy="'+y+'" r="5.5" style="fill:var(--fg)"/>'+
+    '<circle cx="'+tx+'" cy="'+(y-18)+'" r="5" style="fill:var(--fg)"/>'+
+    '<circle cx="'+tx+'" cy="'+(y+18)+'" r="5" style="fill:var(--fg)"/>'+
+    badge(x,y-40,name)+'</g>';
+}
+/* 접점: 같은 글자끼리 한 스위치로 움직입니다 (다수결용) */
+function contact(x,y,name,on,hot){
+  var col = SWCOLOR[name];
+  var lev = on ? 'M'+x+','+y+' L'+(x+44)+','+y : 'M'+x+','+y+' L'+(x+37)+','+(y-20);
+  return '<g data-sw="'+name+'" style="cursor:pointer">'+
+    '<rect x="'+(x-8)+'" y="'+(y-30)+'" width="60" height="42" fill="transparent"/>'+
+    '<path d="'+lev+'" style="stroke:'+(hot?'var(--hot)':col)+';stroke-width:5;stroke-linecap:round"/>'+
+    '<circle cx="'+x+'" cy="'+y+'" r="4.5" style="fill:'+col+'"/>'+
+    '<circle cx="'+(x+44)+'" cy="'+y+'" r="4.5" style="fill:'+col+'"/>'+
+    '<text x="'+(x+22)+'" y="'+(y-24)+'" text-anchor="middle" style="fill:'+col+';font:800 13px var(--mono)">'+name+'</text></g>';
+}
+function frame(s,lit,inX1,inX2){
+  /* 전지(왼쪽)·전구(오른쪽)·아래 귀선. 위 레일은 문제마다 그립니다. */
+  var always=function(){return true;};
+  var fr=[
+    {d:'M60,50 V116', hot:always},
+    {d:'M60,142 V210 H580 V149', hot:always},
+    {d:'M580,111 V50', hot:always},
+    {d:'M60,50 H'+inX1, hot:always},
+    {d:'M'+inX2+',50 H580', hot:always}
+  ];
+  var bulb =
+    (lit?'<circle cx="580" cy="130" r="30" style="fill:rgba(245,179,1,.28)"/>':'')+
+    '<circle cx="580" cy="130" r="18" style="fill:'+(lit?'#ffd75e':'var(--card)')+';stroke:var(--fg);stroke-width:3.5"/>'+
+    '<path d="M567.3,117.3 L592.7,142.7 M592.7,117.3 L567.3,142.7" style="stroke:var(--fg);stroke-width:3;fill:none"/>'+
+    '<text x="580" y="176" text-anchor="middle" style="fill:var(--muted);font:500 12px var(--sans)">전구</text>';
+  var batt =
+    '<path d="M44,122 H76" style="stroke:var(--fg);stroke-width:5;stroke-linecap:round"/>'+
+    '<path d="M52,136 H68" style="stroke:var(--fg);stroke-width:7;stroke-linecap:round"/>'+
+    '<text x="28" y="127" text-anchor="middle" style="fill:var(--muted);font:700 13px var(--mono)">+</text>'+
+    '<text x="28" y="143" text-anchor="middle" style="fill:var(--muted);font:700 13px var(--mono)">−</text>'+
+    '<text x="60" y="196" text-anchor="middle" style="fill:var(--muted);font:500 12px var(--sans)">전지</text>';
+  return wires(fr,s,lit)+batt+bulb;
+}
+
+/* ══════════════ 문제 은행 ══════════════ */
+var PROBLEMS=[
+{ id:'p1', sw:['A','B'], grp:'기본', fn:function(s){return s.A & s.B;},
+  cap:'스위치 — 누름(1) = 닫힘 · 뗌(0) = 열림',
+  lesson:'두 스위치가 <b>직렬</b>이면 AND — 둘 다 닫혀야 전류가 흐릅니다. 논리식 Y = A·B.',
+  draw:function(s,lit){
+    var w=[{d:'M252,50 H330',hot:function(){return true;}}];
+    return frame(s,lit,200,382)+wires(w,s,lit)+knife(200,50,'A',s.A,lit)+knife(330,50,'B',s.B,lit);
+  },
+  _chk:{gates:[{t:'AND',a:'A',b:'B'}],out:'G1'} },
+
+{ id:'p2', sw:['A','B'], grp:'기본', fn:function(s){return s.A | s.B;},
+  cap:'스위치 — 누름(1) = 닫힘 · 뗌(0) = 열림',
+  lesson:'두 스위치가 <b>병렬</b>이면 OR — 어느 한 길만 닫혀도 전류가 흐릅니다. 논리식 Y = A + B.',
+  draw:function(s,lit){
+    var w=[
+      {d:'M170,50 V110', hot:function(){return true;}},
+      {d:'M470,50 V110', hot:function(){return true;}},
+      {d:'M170,50 H280', hot:function(st){return !!st.A;}},
+      {d:'M332,50 H470', hot:function(st){return !!st.A;}},
+      {d:'M170,110 H280', hot:function(st){return !!st.B;}},
+      {d:'M332,110 H470', hot:function(st){return !!st.B;}}
+    ];
+    return frame(s,lit,170,470)+wires(w,s,lit)+knife(280,50,'A',s.A,lit&&s.A)+knife(280,110,'B',s.B,lit&&s.B);
+  },
+  _chk:{gates:[{t:'OR',a:'A',b:'B'}],out:'G1'} },
+
+{ id:'p3', sw:['A','B'], grp:'기본', fn:function(s){return s.A ^ s.B;},
+  cap:'삼로(3길) 스위치 — 1 = 위 길, 0 = 아래 길. 계단·복도 전등에 실제로 쓰입니다.',
+  lesson:'계단의 <b>삼로 스위치</b> 배선 = XOR — 두 스위치가 서로 <b>다른 길</b>을 고를 때만 켜집니다. 논리식 Y = A ⊕ B.',
+  draw:function(s,lit){
+    var w=[
+      {d:'M246,32 L340,50 L434,68', hot:function(st){return st.A===1;}},
+      {d:'M246,68 L334,51.2',        hot:function(st){return st.A===0;}},
+      {d:'M346,48.9 L434,32',        hot:function(st){return st.A===0;}}
+    ];
+    return frame(s,lit,190,490)+wires(w,s,lit)+
+      spdt(190,50,'A',s.A===1,true,lit)+spdt(490,50,'B',s.B===1,false,lit);
+  },
+  _chk:{gates:[{t:'XOR',a:'A',b:'B'}],out:'G1'} },
+
+{ id:'and3', sw:['A','B','C'], grp:'심화', fn:function(s){return s.A & s.B & s.C;},
+  cap:'스위치 — 누름(1) = 닫힘 · 뗌(0) = 열림',
+  lesson:'세 스위치가 모두 <b>직렬</b> — 하나라도 열리면 끊깁니다. 논리식 Y = A·B·C. 2입력 AND 블록을 <b>두 번</b> 이어 붙이면 됩니다.',
+  draw:function(s,lit){
+    var w=[
+      {d:'M202,50 H275', hot:function(){return true;}},
+      {d:'M327,50 H400', hot:function(){return true;}}
+    ];
+    return frame(s,lit,150,452)+wires(w,s,lit)+
+      knife(150,50,'A',s.A,lit)+knife(275,50,'B',s.B,lit)+knife(400,50,'C',s.C,lit);
+  },
+  _chk:{gates:[{t:'AND',a:'A',b:'B'},{t:'AND',a:'G1',b:'C'}],out:'G2'} },
+
+{ id:'p6', sw:['A','B','C'], grp:'심화', fn:function(s){return s.A & (s.B | s.C);},
+  cap:'스위치 — 누름(1) = 닫힘 · 뗌(0) = 열림',
+  lesson:'직렬과 병렬의 <b>합성</b> — A가 닫혀 있어야 하고, B·C 중 하나면 됩니다. 논리식 Y = A·(B + C). 반장(A)이 거부권을 가진 투표인 셈입니다.',
+  draw:function(s,lit){
+    var w=[
+      {d:'M232,50 H290', hot:function(){return true;}},
+      {d:'M290,50 V110', hot:function(){return true;}},
+      {d:'M470,50 V110', hot:function(){return true;}},
+      {d:'M290,50 H330',  hot:function(st){return !!st.B;}},
+      {d:'M382,50 H470',  hot:function(st){return !!st.B;}},
+      {d:'M290,110 H330', hot:function(st){return !!st.C;}},
+      {d:'M382,110 H470', hot:function(st){return !!st.C;}}
+    ];
+    return frame(s,lit,180,470)+wires(w,s,lit)+knife(180,50,'A',s.A,lit)+
+      knife(330,50,'B',s.B,lit&&s.B)+knife(330,110,'C',s.C,lit&&s.C);
+  },
+  _chk:{gates:[{t:'OR',a:'B',b:'C'},{t:'AND',a:'A',b:'G1'}],out:'G2'} },
+
+{ id:'nand3', sw:['A','B','C'], grp:'심화', fn:function(s){return 1-(s.A & s.B & s.C);},
+  cap:'b접점 버튼 — 평소엔 닫혀 있고, 누르면(1) 끊어집니다.',
+  lesson:'‘누르면 끊김’ 버튼의 <b>병렬</b> = NAND — 셋이 모두 누를 때만 꺼집니다. 논리식 Y = (A·B·C)′. AND의 <b>여집합(부정)</b>입니다.',
+  draw:function(s,lit){
+    var w=[
+      {d:'M170,50 V160', hot:function(){return true;}},
+      {d:'M470,50 V160', hot:function(){return true;}},
+      {d:'M170,50 H280',  hot:function(st){return st.A===0;}},
+      {d:'M332,50 H470',  hot:function(st){return st.A===0;}},
+      {d:'M170,105 H280', hot:function(st){return st.B===0;}},
+      {d:'M332,105 H470', hot:function(st){return st.B===0;}},
+      {d:'M170,160 H280', hot:function(st){return st.C===0;}},
+      {d:'M332,160 H470', hot:function(st){return st.C===0;}}
+    ];
+    return frame(s,lit,170,470)+wires(w,s,lit)+
+      ncbtn(280,50,'A',s.A===1,lit&&s.A===0)+
+      ncbtn(280,105,'B',s.B===1,lit&&s.B===0)+
+      ncbtn(280,160,'C',s.C===1,lit&&s.C===0);
+  },
+  _chk:{gates:[{t:'AND',a:'A',b:'B'},{t:'NAND',a:'G1',b:'C'}],out:'G2'} },
+
+{ id:'inh3', sw:['A','B','C'], grp:'심화', fn:function(s){return (s.A|s.B)&(1-s.C);},
+  cap:'A·B는 보통 스위치(누름=닫힘), C는 b접점(누르면 끊김) — 셋 중 하나만 성질이 다릅니다!',
+  lesson:'병렬(A+B)에 <b>억제 스위치</b> C를 직렬로 — C를 누르면 무조건 꺼집니다. 논리식 Y = (A+B)·C′. 여집합이 실제 회로에서 쓰이는 방식입니다(예: 창문이 열리면 냉방 정지).',
+  draw:function(s,lit){
+    var w=[
+      {d:'M170,50 V110', hot:function(){return true;}},
+      {d:'M390,50 V110', hot:function(){return true;}},
+      {d:'M170,50 H250',  hot:function(st){return !!st.A;}},
+      {d:'M302,50 H390',  hot:function(st){return !!st.A;}},
+      {d:'M170,110 H250', hot:function(st){return !!st.B;}},
+      {d:'M302,110 H390', hot:function(st){return !!st.B;}},
+      {d:'M390,50 H420',  hot:function(){return true;}}
+    ];
+    return frame(s,lit,170,472)+wires(w,s,lit)+
+      knife(250,50,'A',s.A,lit&&s.A)+knife(250,110,'B',s.B,lit&&s.B)+
+      ncbtn(420,50,'C',s.C===1,lit);
+  },
+  _chk:{gates:[{t:'OR',a:'A',b:'B'},{t:'NOT',a:'C',b:''},{t:'AND',a:'G1',b:'G2'}],out:'G3'} },
+
+{ id:'xac', sw:['A','B','C'], grp:'심화', fn:function(s){return (s.A ^ s.B) & s.C;},
+  cap:'삼로 스위치 A·B(1 = 위 길)와 마스터 스위치 C(1 = 닫힘)입니다.',
+  lesson:'계단 조명(A ⊕ B)에 <b>마스터 스위치 C</b>를 직렬로 단 회로 — Y = (A ⊕ B)·C. <b>배타적 논리합</b>과 논리곱의 합성입니다.',
+  draw:function(s,lit){
+    var stair=function(st){return !!(st.A^st.B);};
+    var w=[
+      {d:'M206,32 L268,50 L330,68', hot:function(st){return stair(st)&&st.A===1;}},
+      {d:'M206,68 L262,51.7',        hot:function(st){return stair(st)&&st.A===0;}},
+      {d:'M274,48.3 L330,32',        hot:function(st){return stair(st)&&st.A===0;}},
+      {d:'M386,50 H430',             hot:function(){return true;}}
+    ];
+    return frame(s,lit,150,482)+wires(w,s,lit)+
+      spdt(150,50,'A',s.A===1,true,lit)+spdt(386,50,'B',s.B===1,false,lit)+
+      knife(430,50,'C',s.C,lit);
+  },
+  _chk:{gates:[{t:'XOR',a:'A',b:'B'},{t:'AND',a:'G1',b:'C'}],out:'G2'} },
+
+{ id:'p8', sw:['A','B','C'], grp:'심화', fn:function(s){return (s.A+s.B+s.C>=2)?1:0;},
+  cap:'같은 글자의 접점 두 개는 한 스위치로 함께 움직입니다. 아무 접점이나 눌러 보세요.',
+  lesson:'세 갈래 길 = <b>다수결</b> — 두 사람 이상 찬성하면 켜집니다. 논리식 Y = A·B + B·C + A·C. 4차시에 배울 퍼셉트론 w=(1,1,1), θ=1.5와 똑같이 판정하는 회로입니다.',
+  draw:function(s,lit){
+    var b1=function(st){return !!(st.A&&st.B);},
+        b2=function(st){return !!(st.B&&st.C);},
+        b3=function(st){return !!(st.A&&st.C);};
+    var w=[
+      {d:'M170,50 V160', hot:function(){return true;}},
+      {d:'M470,50 V160', hot:function(){return true;}},
+      {d:'M170,50 H225',  hot:b1},{d:'M269,50 H320',  hot:b1},{d:'M364,50 H470',  hot:b1},
+      {d:'M170,105 H225', hot:b2},{d:'M269,105 H320', hot:b2},{d:'M364,105 H470', hot:b2},
+      {d:'M170,160 H225', hot:b3},{d:'M269,160 H320', hot:b3},{d:'M364,160 H470', hot:b3}
+    ];
+    return frame(s,lit,170,470)+wires(w,s,lit)+
+      contact(225,50,'A',s.A,lit&&b1(s))+contact(320,50,'B',s.B,lit&&b1(s))+
+      contact(225,105,'B',s.B,lit&&b2(s))+contact(320,105,'C',s.C,lit&&b2(s))+
+      contact(225,160,'A',s.A,lit&&b3(s))+contact(320,160,'C',s.C,lit&&b3(s));
+  },
+  _chk:{gates:[{t:'AND',a:'A',b:'B'},{t:'AND',a:'B',b:'C'},{t:'AND',a:'A',b:'C'},
+               {t:'OR',a:'G1',b:'G2'},{t:'OR',a:'G4',b:'G3'}],out:'G5'} }
+];
+
+/* ══════════════ 상태 ══════════════ */
+var cur=0;
+var sw={A:0,B:0,C:0};
+var visited={};
+var build={};
+var solved={};
+try{ (JSON.parse(localStorage.getItem('lcgame.solved')||'[]')).forEach(function(id){solved[id]=1;}); }catch(e){}
+
+function saveSolved(){ try{ localStorage.setItem('lcgame.solved', JSON.stringify(Object.keys(solved))); }catch(e){} }
+function P(){ return PROBLEMS[cur]; }
+function comboKey(){ return P().sw.map(function(n){return sw[n];}).join(''); }
+function combosOf(p){
+  var n=p.sw.length, out=[];
+  for(var i=0;i<(1<<n);i++){
+    var s={A:0,B:0,C:0};
+    for(var j=0;j<n;j++) s[p.sw[j]] = (i>>(n-1-j))&1;
+    out.push(s);
+  }
+  return out;
+}
+function evalGates(gates,out,s){
+  var v={A:s.A,B:s.B,C:s.C};
+  for(var i=0;i<gates.length;i++){
+    var g=gates[i], d=GATES[g.t];
+    if(v[g.a]===undefined) return undefined;
+    if(d.n>1 && v[g.b]===undefined) return undefined;
+    v['G'+(i+1)] = d.n>1 ? d.f(v[g.a],v[g.b]) : d.f(v[g.a]);
+  }
+  return out ? v[out] : undefined;
+}
+
+/* ══════════════ 그리기 ══════════════ */
+var $=function(id){return document.getElementById(id);};
+
+function renderNav(){
+  var h='', grp='';
+  PROBLEMS.forEach(function(p,i){
+    if(p.grp!==grp){ grp=p.grp; h+='<span class="grp">'+grp+'</span>'; }
+    h+='<button class="pchip'+(i===cur?' on':'')+(solved[p.id]?' done':'')+'" role="tab" '+
+       'aria-selected="'+(i===cur)+'" data-go="'+i+'">'+(i+1)+'</button>';
+  });
+  $('nav').innerHTML=h;
+  var n=Object.keys(solved).length;
+  $('prog').textContent='해결 '+n+' / '+PROBLEMS.length+(n===PROBLEMS.length?' — 전부 해결! 🎉':'');
+}
+
+function renderStage1(){
+  var p=P(), lit=!!p.fn(sw);
+  $('ptitle').textContent='수사 '+(cur+1)+' · 스위치 '+p.sw.length+'개';
+  $('pcap').textContent=p.cap;
+  $('csvg').innerHTML='<svg class="circuit-svg" viewBox="0 -24 640 284" role="img" '+
+    'aria-label="스위치 '+p.sw.length+'개와 전구가 있는 전기 회로. 현재 전구는 '+(lit?'켜짐':'꺼짐')+'">'+
+    p.draw(sw,lit)+'</svg>';
+  $('swrow').innerHTML=p.sw.map(function(n){
+    return '<button class="swbtn" data-sw="'+n+'" aria-pressed="'+(sw[n]?'true':'false')+'">'+
+      '<span class="dot" style="background:'+SWCOLOR[n]+'">'+n+'</span>'+
+      '스위치 <span class="st">'+sw[n]+'</span></button>';
+  }).join('');
+  var seen=visited[p.id]||{};
+  $('combos').innerHTML='<span class="lb">시도한 조합 '+Object.keys(seen).length+'/'+(1<<p.sw.length)+
+    ' <span style="font-weight:400">(● 켜짐 · ○ 꺼짐)</span> :</span>'+
+    combosOf(p).map(function(s){
+      var k=p.sw.map(function(n){return s[n];}).join('');
+      var label=p.sw.map(function(n){return n+s[n];}).join(' ');
+      var isLit = seen[k] && p.fn(s)===1;
+      var mark = seen[k] ? (isLit?' ●':' ○') : '';
+      return '<span class="combo'+(seen[k]?' seen':'')+(isLit?' lit':'')+'" '+
+        (seen[k]?'aria-label="'+label+' — 전구 '+(isLit?'켜짐':'꺼짐')+'"':'')+'>'+label+mark+'</span>';
+    }).join('');
+  updateCheckGate();
+  renderPip();
+}
+
+/* ── 미니 실험 창(PiP) — 2단계로 내려가면 1단계가 우측 하단에 따라옵니다 ── */
+function renderPip(){
+  var el=$('pip'); if(!el || el.hidden) return;
+  var p=P(), lit=!!p.fn(sw);
+  $('pip-svg').innerHTML='<svg class="circuit-svg" viewBox="0 -24 640 284" aria-hidden="true">'+
+    p.draw(sw,lit)+'</svg>';
+  $('pip-bulb').innerHTML = lit
+    ? '<span style="color:var(--hot)">● 전구 켜짐</span>'
+    : '<span style="color:var(--muted)">○ 전구 꺼짐</span>';
+  $('pip-swrow').innerHTML = p.sw.map(function(n){
+    return '<button class="swbtn" data-sw="'+n+'" aria-pressed="'+(sw[n]?'true':'false')+'">'+
+      '<span class="dot" style="background:'+SWCOLOR[n]+'">'+n+'</span><span class="st">'+sw[n]+'</span></button>';
+  }).join('');
+  /* 창 높이만큼 본문 여백을 잡아 아래 내용이 가려지지 않게 */
+  document.documentElement.style.setProperty('--pip-h', el.offsetHeight+'px');
+}
+function pipCheck(){
+  var el=$('pip');
+  var show = $('stage1').getBoundingClientRect().bottom < 150;
+  if(el.hidden === show){
+    el.hidden = !show;
+    document.body.classList.toggle('pip-on', show);
+    if(show) renderPip();
+  }
+}
+window.addEventListener('scroll', pipCheck, {passive:true});
+window.addEventListener('resize', pipCheck);
+
+var pend=null;   /* 지금 손에 든 출력 (클릭-클릭 배선) */
+function validSrc(src,gi){    /* 앞선 블록의 출력만 뒤 블록에 연결(순환 방지) */
+  return src.charAt(0)!=='G' || parseInt(src.slice(1),10)<=gi;
+}
+function setHint(msg){
+  $('wirehint').textContent = msg ||
+    (pend ? '「'+pend+'」 출력을 들었습니다 — 이을 입력점(○)이나 전구를 누르세요. 다시 누르면 취소됩니다.'
+          : '스위치나 게이트의 출력점(●)을 누른 뒤, 게이트의 입력점(○)이나 전구를 누르면 전선이 이어집니다.');
+}
+function curBuild(){
+  var p=P();
+  if(!build[p.id]) build[p.id]={gates:[],out:''};
+  return build[p.id];
+}
+function renderStage2(){
+  var p=P(), b=curBuild();
+  $('palette').innerHTML=Object.keys(GATES).map(function(t){
+    return '<button class="gatebtn" data-add="'+t+'" title="'+GATES[t].ko+'">'+gateIcon(t,40)+'<b>'+t+'</b></button>';
+  }).join('');
+  var rows=b.gates.map(function(g,i){
+    var d=GATES[g.t];
+    var conn = d.n>1 ? (g.a?'<b>'+g.a+'</b>':'○')+' · '+(g.b?'<b>'+g.b+'</b>':'○')
+                     : (g.a?'<b>'+g.a+'</b>':'○');
+    return '<div class="grow"><span class="gname">G'+(i+1)+'</span><span class="gtype">'+g.t+'</span>'+
+      '<span class="conn">입력 '+conn+'</span>'+
+      (i===b.gates.length-1 ? '<button class="del" data-del="'+i+'" aria-label="G'+(i+1)+' 삭제">✕ 삭제</button>':'')+
+      '</div>';
+  }).join('');
+  rows+='<div class="grow outrow"><span class="gname">💡</span><span class="conn">전구 ← '+
+    (b.out?'<b>'+b.out+'</b>':'○ 미연결')+'</span></div>';
+  $('rows').innerHTML=rows;
+  renderBuilderSvg();
+  updateCheckGate();
+  setHint();
+}
+
+function renderBuilderSvg(){
+  var p=P(), b=curBuild();
+  var depth={}, i;
+  p.sw.forEach(function(n){depth[n]=0;});
+  var maxD=1;
+  for(i=0;i<b.gates.length;i++){
+    var g=b.gates[i];
+    var da=g.a?depth[g.a]:0, db=(GATES[g.t].n>1&&g.b)?depth[g.b]:0;
+    depth['G'+(i+1)] = Math.max(da||0, db||0)+1;
+    if(depth['G'+(i+1)]>maxD) maxD=depth['G'+(i+1)];
+  }
+  var colX=function(d){return 150+(d-1)*130;};
+  var slots={}, pos={};
+  p.sw.forEach(function(n,ix){ pos[n]={x:86,y:52+ix*84}; });
+  for(i=0;i<b.gates.length;i++){
+    var d=depth['G'+(i+1)]||1;
+    slots[d]=(slots[d]||0);
+    pos['G'+(i+1)]={x:colX(d), y:34+slots[d]*92};
+    slots[d]++;
+  }
+  var Wd = 150+maxD*130+110;
+  var Hd = 180;
+  Object.keys(pos).forEach(function(k){ Hd=Math.max(Hd,pos[k].y+80); });
+  var val={A:sw.A,B:sw.B,C:sw.C};
+  for(i=0;i<b.gates.length;i++){
+    var gg=b.gates[i], dd=GATES[gg.t];
+    var a=val[gg.a];
+    val['G'+(i+1)] = (a===undefined||(dd.n>1&&val[gg.b]===undefined)) ? undefined
+                     : (dd.n>1? dd.f(a,val[gg.b]) : dd.f(a));
+  }
+  var svg='';
+  function wire(fx,fy,tx,ty,v){
+    var hot=v===1;
+    var d='M'+fx+','+fy+' C'+(fx+48)+','+fy+' '+(tx-48)+','+ty+' '+tx+','+ty;
+    return (hot?'<path d="'+d+'" style="stroke:rgba(217,119,6,.25);stroke-width:9;fill:none"/>':'')+
+      '<path d="'+d+'" style="stroke:'+(v===undefined?'var(--border)':(hot?'var(--hot)':'#8f8a83'))+
+      ';stroke-width:3.5;fill:none'+(v===undefined?';stroke-dasharray:5 5':'')+'"/>';
+  }
+  function outPoint(src){
+    if(!src||!pos[src]) return null;
+    if(src.charAt(0)==='G'){
+      var gi=parseInt(src.slice(1),10)-1;
+      var sh=gateShape(b.gates[gi].t);
+      return {x:pos[src].x+sh.outX, y:pos[src].y+22};
+    }
+    return {x:pos[src].x+13, y:pos[src].y};
+  }
+  for(i=0;i<b.gates.length;i++){
+    var g2=b.gates[i], pp=pos['G'+(i+1)], d2=GATES[g2.t];
+    var pa=outPoint(g2.a); if(pa) svg+=wire(pa.x,pa.y,pp.x+10,pp.y+(d2.n>1?12:22),val[g2.a]);
+    if(d2.n>1){ var pb=outPoint(g2.b); if(pb) svg+=wire(pb.x,pb.y,pp.x+10,pp.y+32,val[g2.b]); }
+  }
+  var bulbX=Wd-58, outV;
+  if(b.out){ var po=outPoint(b.out); outV = val[b.out];
+    if(po) svg+=wire(po.x,po.y,bulbX-20,Hd/2,outV); }
+  p.sw.forEach(function(n){
+    var q=pos[n];
+    svg+='<circle cx="'+q.x+'" cy="'+q.y+'" r="13" style="fill:'+SWCOLOR[n]+'"/>'+
+      '<text x="'+q.x+'" y="'+(q.y+5)+'" text-anchor="middle" style="fill:#fff;font:800 14px var(--mono)">'+n+'</text>'+
+      '<text x="'+(q.x-24)+'" y="'+(q.y+5)+'" text-anchor="end" style="fill:'+(sw[n]?'var(--hot)':'var(--muted)')+';font:700 13px var(--mono)">'+sw[n]+'</text>';
+  });
+  for(i=0;i<b.gates.length;i++){
+    var g3=b.gates[i], q3=pos['G'+(i+1)], sh3=gateShape(g3.t);
+    svg+='<g transform="translate('+q3.x+','+q3.y+')" style="fill:var(--card);stroke:var(--fg);stroke-width:3;stroke-linejoin:round">'+sh3.svg+'</g>'+
+      '<text x="'+(q3.x+26)+'" y="'+(q3.y+62)+'" text-anchor="middle" style="fill:var(--muted);font:700 11px var(--mono)">G'+(i+1)+' '+g3.t+'</text>';
+  }
+  var lit2 = outV===1;
+  svg+=(lit2?'<circle cx="'+bulbX+'" cy="'+(Hd/2)+'" r="26" style="fill:rgba(245,179,1,.28)"/>':'')+
+    '<circle cx="'+bulbX+'" cy="'+(Hd/2)+'" r="15" style="fill:'+(lit2?'#ffd75e':'var(--card)')+';stroke:var(--fg);stroke-width:3"/>'+
+    '<path d="M'+(bulbX-10.6)+','+(Hd/2-10.6)+' L'+(bulbX+10.6)+','+(Hd/2+10.6)+' M'+(bulbX+10.6)+','+(Hd/2-10.6)+' L'+(bulbX-10.6)+','+(Hd/2+10.6)+'" style="stroke:var(--fg);stroke-width:2.6;fill:none"/>'+
+    '<text x="'+bulbX+'" y="'+(Hd/2+40)+'" text-anchor="middle" style="fill:var(--muted);font:500 11px var(--sans)">내 회로의 전구'+(outV===undefined?' (미연결)':'')+'</text>';
+
+  /* ── 클릭-클릭 배선용 접점 ─────────────────────────────
+     ● 출력점(스위치·게이트 오른쪽) → ○ 입력점(게이트 왼쪽·전구).
+     손에 든 출력(pend)이 있으면 이을 수 있는 입력점을 파란 점선으로 안내합니다. */
+  function ring(x,y,r){ return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" style="fill:none;stroke:var(--pri);stroke-width:3"/>'; }
+  function cand(x,y){ return '<circle cx="'+x+'" cy="'+y+'" r="12" style="fill:none;stroke:var(--pri);stroke-width:2.5;stroke-dasharray:4 4"/>'; }
+  function hit(x,y,r,attr,label){
+    return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="transparent" style="cursor:pointer" '+
+      'tabindex="0" role="button" aria-label="'+label+'" '+attr+'/>';
+  }
+  var ports='';
+  /* 출력점 — 스위치 */
+  p.sw.forEach(function(n){
+    var q=pos[n];
+    if(pend===n) ports+=ring(q.x,q.y,19);
+    ports+=hit(q.x,q.y,20,'data-port-out="'+n+'"','스위치 '+n+' 출력');
+  });
+  /* 출력점 — 게이트 */
+  for(i=0;i<b.gates.length;i++){
+    var so=outPoint('G'+(i+1));
+    ports+='<circle cx="'+so.x+'" cy="'+so.y+'" r="5" style="fill:var(--fg)"/>';
+    if(pend==='G'+(i+1)) ports+=ring(so.x,so.y,12);
+    ports+=hit(so.x,so.y,17,'data-port-out="G'+(i+1)+'"','G'+(i+1)+' 출력');
+  }
+  /* 입력점 — 게이트 */
+  for(i=0;i<b.gates.length;i++){
+    var g4=b.gates[i], q4=pos['G'+(i+1)], d4=GATES[g4.t];
+    var pts = d4.n>1 ? [['a',q4.y+12],['b',q4.y+32]] : [['a',q4.y+22]];
+    pts.forEach(function(pt){
+      var px=q4.x+4, py=pt[1], vv=g4[pt[0]];
+      ports+='<circle cx="'+px+'" cy="'+py+'" r="5.5" style="fill:'+(vv?'var(--fg)':'var(--card)')+';stroke:var(--fg);stroke-width:2.5"/>';
+      if(pend && validSrc(pend,i)) ports+=cand(px,py);
+      ports+=hit(px,py,16,'data-port-in="'+i+':'+pt[0]+'"','G'+(i+1)+' 입력'+(pt[0]==='b'?' 둘째':'')+(vv?' (연결됨: '+vv+')':' (비어 있음)'));
+    });
+  }
+  /* 입력점 — 전구 */
+  var bx=bulbX-20, byy=Hd/2;
+  ports+='<circle cx="'+bx+'" cy="'+byy+'" r="5.5" style="fill:'+(b.out?'var(--fg)':'var(--card)')+';stroke:var(--fg);stroke-width:2.5"/>';
+  if(pend) ports+=cand(bx,byy);
+  ports+=hit(bulbX-6,byy,26,'data-bulb-in="1"','전구 입력'+(b.out?' (연결됨: '+b.out+')':' (비어 있음)'));
+
+  $('bsvg').innerHTML='<svg class="builder-svg" viewBox="0 0 '+Wd+' '+Hd+'" role="img" aria-label="조립 중인 논리 회로도">'+svg+ports+'</svg>';
+}
+
+function updateCheckGate(){
+  var p=P(), total=1<<p.sw.length;
+  var n=Object.keys(visited[p.id]||{}).length;
+  var ok = n>=total;
+  $('check').disabled = !ok;
+  $('checkhint').textContent = ok ? '' : '모든 조합('+total+'가지)을 실험해야 검사할 수 있어요 — 지금 '+n+'가지';
+}
+
+/* ── 같은 동작을 하는 여러 회로 — 켜지는 경우가 같으면 전부 정답입니다 ── */
+var ALTS={
+  p1:[['A·B','AND 하나 — 직렬을 그대로 옮긴 표준형'],
+      ['(A·B)′ 뒤에 NOT','NAND → NOT — 부정을 두 번 하면 원래대로'],
+      ['(A′+B′)′','NOT 2개 + NOR — 드모르간 법칙']],
+  p2:[['A+B','OR 하나 — 병렬을 그대로 옮긴 표준형'],
+      ['(A+B)′ 뒤에 NOT','NOR → NOT'],
+      ['(A′·B′)′','NOT 2개 + NAND — 드모르간 법칙']],
+  p3:[['A⊕B','XOR 하나'],
+      ['(A+B)·(A·B)′','OR·NAND·AND — 「하나는 켜졌지만 둘 다는 아님」'],
+      ['A·B′ + A′·B','서로 다른 경우 두 가지를 OR로 묶기']],
+  and3:[['(A·B)·C','AND 두 번 잇기'],
+      ['A·(B·C)','묶는 순서는 자유 — 결합법칙'],
+      ['((A·B)·C)′ 뒤에 NOT','NAND → NOT']],
+  p6:[['A·(B+C)','OR 한 번 + AND 한 번'],
+      ['A·B + A·C','분배법칙으로 풀어 쓰기 — AND 2개 + OR']],
+  inh3:[['(A+B)·C′','OR + NOT + AND — 표준형'],
+      ['((A+B)′+C)′','NOR·OR·NOT — 드모르간 법칙'],
+      ['A·C′ + B·C′','분배법칙으로 풀어 쓰기']],
+  nand3:[['(A·B)·C 뒤에 NAND','AND → NAND'],
+      ['((A·B)·C)′','AND 2개 + NOT'],
+      ['A′+B′+C′','NOT 3개 + OR 2개 — 드모르간 법칙']],
+  xac:[['(A⊕B)·C','XOR + AND'],
+      ['((A+B)·(A·B)′)·C','XOR를 풀어 쓴 형태']],
+  p8:[['A·B + B·C + A·C','짝 3개를 OR로 — 게이트 5개'],
+      ['A·B + C·(A+B)','묶어내면 게이트 4개로 충분'],
+      ['4차시 예고','퍼셉트론 w=(1,1,1), θ=1.5 하나로도 같은 판정']]
+};
+
+/* 학생이 조립한 회로를 논리식으로 읽어 줍니다 */
+function exprOf(src,gates){
+  if(!src) return '?';
+  if(src.charAt(0)!=='G') return src;
+  var g=gates[parseInt(src.slice(1),10)-1];
+  if(!g) return '?';
+  var a=exprOf(g.a,gates), b=exprOf(g.b,gates);
+  if(g.t==='AND')  return '('+a+'·'+b+')';
+  if(g.t==='OR')   return '('+a+'+'+b+')';
+  if(g.t==='XOR')  return '('+a+'⊕'+b+')';
+  if(g.t==='NOT')  return a+'′';
+  if(g.t==='NAND') return '('+a+'·'+b+')′';
+  if(g.t==='NOR')  return '('+a+'+'+b+')′';
+  return '?';
+}
+function stripOuter(e){
+  if(e.charAt(0)!=='(' || e.charAt(e.length-1)!==')') return e;
+  var d=0;
+  for(var i=0;i<e.length-1;i++){
+    if(e.charAt(i)==='(') d++;
+    if(e.charAt(i)===')') d--;
+    if(d===0) return e;          /* 바깥 괄호가 중간에 닫힘 → 못 벗김 */
+  }
+  return e.slice(1,-1);
+}
+
+function renderSolved(){
+  var p=P();
+  if(!solved[p.id]){ $('solvedbox').style.display='none'; $('solvedbox').innerHTML=''; return; }
+  var head='<tr>'+p.sw.map(function(n){return '<th style="color:'+SWCOLOR[n]+'">'+n+'</th>';}).join('')+'<th>Y</th></tr>';
+  var body=combosOf(p).map(function(s){
+    var y=p.fn(s);
+    return '<tr>'+p.sw.map(function(n){return '<td>'+s[n]+'</td>';}).join('')+
+      '<td class="'+(y?'one':'')+'">'+y+'</td></tr>';
+  }).join('');
+  var b=curBuild(), mine='';
+  if(b.out){
+    var ex=stripOuter(exprOf(b.out,b.gates));
+    if(ex.indexOf('?')<0) mine='<p class="myexpr">내가 만든 회로 — <b>Y = '+ex+'</b></p>';
+  }
+  var alts=(ALTS[p.id]||[]).map(function(a){
+    return '<li><b>Y = '+a[0]+'</b><br><span>'+a[1]+'</span></li>';
+  }).join('');
+  $('solvedbox').innerHTML='<h3>사건 해결 — 진리표 확인</h3>'+
+    '<p class="note">종이에 쓴 진리표와 비교해 보세요.</p>'+
+    '<table class="ttable">'+head+body+'</table>'+
+    '<p class="lesson">'+p.lesson+'</p>'+
+    '<h3 style="margin-top:.8rem">같은 동작, 여러 회로</h3>'+
+    '<p class="note">불이 켜지는 경우가 같으면 <b>모두 정답</b>입니다. 이런 조립도 가능했습니다:</p>'+
+    mine+
+    '<ul class="alts">'+alts+'</ul>'+
+    (cur<PROBLEMS.length-1?'<div class="btnrow"><button class="btn pri" id="next">다음 사건 →</button></div>':'');
+  $('solvedbox').style.display='block';
+  var nx=$('next'); if(nx) nx.onclick=function(){ go(cur+1); };
+}
+
+function renderAll(){
+  renderNav(); renderStage1(); renderStage2(); renderSolved();
+  $('result').className='result'; $('result').innerHTML='';
+}
+
+function go(i){
+  cur=i; sw={A:0,B:0,C:0}; pend=null;
+  markVisited();
+  renderAll();
+  $('stage1').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function markVisited(){
+  var p=P();
+  if(!visited[p.id]) visited[p.id]={};
+  visited[p.id][comboKey()]=1;
+}
+
+/* ══════════════ 이벤트 ══════════════ */
+function handlePort(el){
+  var b=curBuild();
+  if(el.hasAttribute('data-port-out')){
+    var s=el.getAttribute('data-port-out');
+    pend = (pend===s) ? null : s;          /* 다시 누르면 취소 */
+    renderBuilderSvg(); setHint(); return;
+  }
+  if(el.hasAttribute('data-bulb-in')){
+    if(pend){ b.out=pend; pend=null; }
+    else if(b.out){ b.out=''; }            /* 빈손으로 누르면 끊기 */
+    renderStage2(); return;
+  }
+  var pi=el.getAttribute('data-port-in').split(':');
+  var gi=parseInt(pi[0],10), port=pi[1], g=b.gates[gi];
+  if(pend){
+    if(!validSrc(pend,gi)){
+      setHint('⛔ '+pend+' 는 G'+(gi+1)+' 뒤에 있는 블록입니다 — 앞선 블록의 출력만 뒤 블록의 입력에 이을 수 있어요.');
+      return;
+    }
+    g[port]=pend; pend=null;
+  } else if(g[port]){ g[port]=''; }
+  renderStage2();
+}
+document.addEventListener('click',function(e){
+  var pt=e.target.closest('[data-port-out],[data-port-in],[data-bulb-in]');
+  if(pt){ handlePort(pt); return; }
+  if(e.target.closest('#bsvg') && pend){ pend=null; renderBuilderSvg(); setHint(); return; }
+  var t=e.target.closest('[data-go],[data-sw],[data-add],[data-del],#check,#clear,#resetall');
+  if(!t) return;
+  if(t.hasAttribute('data-go')){ go(parseInt(t.getAttribute('data-go'),10)); return; }
+  if(t.hasAttribute('data-sw')){
+    var n=t.getAttribute('data-sw');
+    sw[n]=1-sw[n]; markVisited();
+    renderStage1(); renderBuilderSvg();
+    return;
+  }
+  if(t.hasAttribute('data-add')){
+    var b=curBuild();
+    if(b.gates.length>=6){ alert('게이트는 6개까지면 충분합니다. 필요 없는 게이트를 지워 보세요.'); return; }
+    b.gates.push({t:t.getAttribute('data-add'),a:'',b:''});
+    renderStage2(); return;
+  }
+  if(t.hasAttribute('data-del')){
+    var b2=curBuild(); b2.gates.pop();
+    var gone='G'+(b2.gates.length+1);
+    b2.gates.forEach(function(g){ if(g.a===gone)g.a=''; if(g.b===gone)g.b=''; });
+    if(b2.out===gone) b2.out='';
+    if(pend===gone) pend=null;
+    renderStage2(); return;
+  }
+  if(t.id==='clear'){ build[P().id]={gates:[],out:''}; pend=null; renderStage2();
+    $('result').className='result'; $('result').innerHTML=''; return; }
+  if(t.id==='check'){ check(); return; }
+  if(t.id==='resetall'){
+    if(confirm('모든 진행(해결 표시)을 지울까요?')){
+      solved={}; saveSolved(); visited={}; build={}; go(0);
+    }
+    return;
+  }
+});
+/* 키보드로도 접점을 조작할 수 있게 (Tab 이동 + Enter/Space) */
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter' && e.key!==' ') return;
+  var pt=e.target.closest ? e.target.closest('[data-port-out],[data-port-in],[data-bulb-in]') : null;
+  if(pt){ e.preventDefault(); handlePort(pt); }
+});
+
+function check(){
+  var p=P(), b=curBuild(), r=$('result');
+  if(!b.out){ r.className='result bad'; r.innerHTML='전구가 아직 아무 출력에도 연결되지 않았습니다 — 「전구 입력」을 고르세요.'; return; }
+  for(var i=0;i<b.gates.length;i++){
+    var d=GATES[b.gates[i].t];
+    if(!b.gates[i].a || (d.n>1&&!b.gates[i].b)){
+      r.className='result bad'; r.innerHTML='G'+(i+1)+' 게이트의 입력이 비어 있습니다.'; return;
+    }
+  }
+  var miss=[];
+  combosOf(p).forEach(function(s){
+    if(evalGates(b.gates,b.out,s)!==p.fn(s))
+      miss.push(p.sw.map(function(n){return n+'='+s[n];}).join(', '));
+  });
+  if(miss.length){
+    r.className='result bad';
+    r.innerHTML='아직 다릅니다 — '+miss.length+'가지 조합에서 실제 회로와 결과가 어긋납니다. 그 조합을 다시 실험해 보세요.'+
+      '<span class="miss">'+miss.map(function(m){return '<span>'+m+'</span>';}).join('')+'</span>';
+    return;
+  }
+  r.className='result good';
+  var std=p._chk, same = JSON.stringify(b.gates)===JSON.stringify(std.gates.map(function(x){
+    return {t:x.t,a:x.a,b:x.b}; })) && b.out===std.out;
+  r.innerHTML='모든 조합 일치 — 회로의 정체를 밝혀냈습니다! ✓'+
+    (same?'':'<br><span style="font-weight:400;font-size:.88rem">표준 답과 다른 조립이지만, 켜지는 경우가 같아 정답입니다. 아래에서 다른 방식들도 확인해 보세요.</span>');
+  if(!solved[p.id]){ solved[p.id]=1; saveSolved(); }
+  renderNav(); renderSolved();
+}
+
+/* 범례 */
+$('legend').innerHTML=Object.keys(GATES).map(function(t){
+  return '<span class="leg">'+gateIcon(t,34)+'<span><b>'+t+'</b><br>'+GATES[t].ko+'</span></span>';
+}).join('');
+
+/* 자가 검증 — 모든 문제의 모범 회로가 숨은 함수와 일치하는지 */
+window.__selftest=function(){
+  return PROBLEMS.map(function(p){
+    var bad=combosOf(p).filter(function(s){
+      return evalGates(p._chk.gates,p._chk.out,s)!==p.fn(s);
+    }).length;
+    return p.id+':'+(bad? 'FAIL('+bad+')':'ok');
+  }).join(' ');
+};
+
+markVisited();
+renderAll();
+pipCheck();
+</script>
+</body>
+</html>
