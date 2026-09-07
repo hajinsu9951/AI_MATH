@@ -195,6 +195,8 @@ footer .imgcred a{color:var(--pri);}
 footer .imgcred p{margin-top:0.4rem;line-height:1.7;}
 footer .notice{max-width:68rem;margin:0 auto;padding:0 1.5rem 1.3rem;font-size:0.82rem;line-height:1.7;color:var(--muted);text-align:center;}
 footer .notice b{color:var(--body);}
+footer .visits{font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.01em;}
+footer .visits b{color:var(--body);font-weight:700;}
 @media (max-width:640px){ footer .notice{text-align:left;padding-bottom:1.1rem;} }
 
 @media(max-width:640px){
@@ -766,7 +768,7 @@ body.aim-has-botbar .aim-botbar{display:flex;}
 </main>
 
 <footer>
-  <div class="inner"><span>제작 : 대전대신고등학교 교사 하진수</span><span>2026</span></div>
+  <div class="inner"><span>제작 : 대전대신고등학교 교사 하진수</span><span class="visits" id="aim-visits" hidden>누적 방문자 <b id="aim-visits-n">–</b>명</span><span>2026</span></div>
   <details class="imgcred">
     <summary>이미지 출처 — 참고 자료 카드에 쓴 사진</summary>
     <ul>
@@ -832,6 +834,32 @@ body.aim-has-botbar .aim-botbar{display:flex;}
   window.go = window.go || function(v){ try{ location.hash = '#'+v; }catch(e){} };
 </script>
 <script src="loader.js"></script>
+
+<script>
+/* 누적 방문자 수 — 한 브라우저에서 처음 들어올 때만 1 올리고,
+   다시 오면 숫자만 읽어 옵니다(같은 사람을 여러 번 세지 않기 위해서).
+   무가입 카운터 API(abacus)를 쓰며, 학교망에서 막히면 조용히 숨깁니다. */
+(function(){
+  var NS = 'hajinsu9951-aimath', KEY = 'visitors', MARK = 'aim-visited-v1';
+  var box = document.getElementById('aim-visits');
+  var num = document.getElementById('aim-visits-n');
+  if (!box || !num || !window.fetch) return;
+
+  var first = false;
+  try { first = !localStorage.getItem(MARK); } catch (e) { first = false; }
+
+  fetch('https://abacus.jasoncameron.dev/' + (first ? 'hit' : 'get') + '/' + NS + '/' + KEY,
+        { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (d) {
+      if (typeof d.value !== 'number') throw new Error('bad payload');
+      num.textContent = d.value.toLocaleString('ko-KR');
+      box.hidden = false;
+      if (first) { try { localStorage.setItem(MARK, new Date().toISOString()); } catch (e) {} }
+    })
+    .catch(function () { /* 차단·오류 시 표시하지 않음 */ });
+})();
+</script>
 
 </body>
 </html>
