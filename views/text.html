@@ -15,6 +15,11 @@
   #v-text .tx-sec{display:none;}
   #v-text .tx-sec.on{display:block;}
 
+  /* 활동 ③ — 표 바로 위에서 원문이 눈에 들어오도록 */
+  .tv-doc{background:var(--card-h);border-left:3px solid var(--accent);
+    border-radius:0 6px 6px 0;padding:0.7rem 0.9rem;margin:0.8rem 0 0.9rem;line-height:1.85;}
+  .tv-doc .tx-set{display:inline-block;margin-top:0.35rem;}
+
   /* STEP 구분선 */
   #v-text .tx-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
   #v-text .tx-step::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -993,33 +998,6 @@
     </div>
 
     <div class="card" data-no-toggle="1">
-      <h3>같은 장면, 다른 문장</h3>
-      <div class="tp-venwrap">
-        <div class="tp-vencol" style="flex:1 1 16rem;">
-          <figure class="tx-photo" id="tv-situ">
-            <img src="assets/situations/상황1.jpg" alt="축구장에서 무릎을 다친 친구와 말을 거는 친구, 말풍선이 비어 있는 상황 그림" loading="lazy"
-                 onerror="this.closest('.tx-photo').classList.add('nofoto');">
-            <span class="fb" aria-hidden="true">🗨️</span>
-            <figcaption>상황 그림(교사 배부) — 말풍선이 비어 있습니다. 다른 그림으로 바꾸려면 아래 단추를 누르세요.</figcaption>
-          </figure>
-          <div class="btn-row" id="tv-situ-btns"></div>
-        </div>
-        <div class="tp-vencol" style="flex:1 1 16rem;">
-          <p class="mat-label" style="text-align:left;">이 장면을 한 문장으로 적어 봅시다.</p>
-          <textarea class="tx-in" id="tv-s1" rows="2" placeholder="학생 1(또는 모둠 1)의 문장"></textarea>
-          <textarea class="tx-in" id="tv-s2" rows="2" placeholder="학생 2(또는 모둠 2)의 문장" style="margin-top:0.4rem;"></textarea>
-          <textarea class="tx-in" id="tv-s3" rows="2" placeholder="학생 3(또는 모둠 3)의 문장" style="margin-top:0.4rem;"></textarea>
-          <div class="btn-row">
-            <button class="btn pri tx-mini" type="button" onclick="tvSentSave()">문장 저장</button>
-            <button class="btn tx-mini" type="button" onclick="tvSentLoad()">7차시 문장 불러오기</button>
-          </div>
-          <div class="tx-fb" id="tv-sent-fb"></div>
-        </div>
-      </div>
-      <p class="tx-cap">같은 그림을 보고도 문장은 저마다 다릅니다. 그런데 컴퓨터는 이 서로 다른 문장들을 어떻게 '한 표' 위에 올려놓을까요?</p>
-    </div>
-
-    <div class="card" data-no-toggle="1">
       <h3>마중 퀴즈 — 내 생각은?</h3>
       <p style="margin-bottom:1rem;">한 번에 한 문항씩 열립니다. 답을 고르면 해설이 나타나고 다음 질문이 이어집니다.</p>
       <div id="tv-warm"></div>
@@ -1213,13 +1191,22 @@ c = (0, 0, 0, 0, 1, 1, 1, 1, 1)</div>
 
       <div class="card" data-no-toggle="1">
         <h3>캠핑장 후기 세 개 — 빈도수 표 24칸을 채우세요</h3>
-        <p><b>후기 A</b> 뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요.<br>
+        <p class="tx-note">칸에 수를 넣고 다른 칸으로 옮기면 즉시 채점됩니다. 화살표로 칸을 옮기고 Enter로 다음 칸,
+          칸을 <b>길게 누르거나 오른쪽 클릭</b>하면 그 단어가 원문에서 어디에 나오는지 형광 표시가 됩니다.</p>
+        <p class="tv-doc"><b>후기 A</b> 뷰가 좋아 사진이 잘 나와요. 깨끗한 캠핑장에서 사진 찍어요.<br>
           <b>후기 B</b> 뷰가 좋고, 깨끗한 차박에 좋은 캠핑장!<br>
           <b>후기 C</b> 캠핑장에 온수가 잘 나와요. 화장실도 깨끗하고 온수가 나와요.<br>
           <span class="tx-set">U = {뷰, 좋다, 사진, 깨끗하다, 캠핑장, 차박, 온수, 화장실} (8개)</span></p>
-        <p class="tx-note">칸에 수를 넣고 다른 칸으로 옮기면 즉시 채점됩니다. ← → ↑ ↓ 로 칸을 옮기고 Enter로 다음 칸.
-          칸을 <b>길게 누르거나 오른쪽 클릭</b>하면 그 단어가 원문에서 어디에 나오는지 형광 표시가 됩니다.</p>
-
+        <div class="tv-bar"><i id="tv-tf-bar" style="width:0%"></i></div>
+        <p class="tp-prog" id="tv-tf-prog">채운 칸 0/24 · 정답 0/24</p>
+        <div class="tx-scroll" id="tv-tf-tblwrap"></div>
+        <div class="btn-row">
+          <button class="btn tx-mini" type="button" id="tv-tf-ans" onclick="tvTfReveal()" disabled>먼저 채워 보세요 (0/24)</button>
+          <button class="btn tx-mini" type="button" onclick="tvTfReset()">지우고 다시</button>
+          <button class="btn tx-mini" type="button" onclick="tvTfMine()">우리 반 문장 넣기</button>
+        </div>
+        <div class="tv-vecs" id="tv-tf-vecs"></div>
+        <div class="tx-fb" id="tv-tf-fb"></div>
         <svg class="tx-illu" viewBox="0 0 660 190" role="img" aria-label="단어를 가방에 담고 개수를 세는 단어가방 그림">
           <rect width="660" height="190" fill="var(--bg)"/>
           <path d="M210 62 h240 l-22 104 h-196 z" fill="var(--card)" stroke="var(--fg)" stroke-width="2.5"/>
@@ -1234,17 +1221,6 @@ c = (0, 0, 0, 0, 1, 1, 1, 1, 1)</div>
           <text x="330" y="34" font-family="monospace" font-size="13" fill="var(--muted)" text-anchor="middle">단어가방 모형 — 순서는 버리고, 개수만 셉니다</text>
         </svg>
         <p class="tx-cap">▲ 단어가방 — 불용어를 걸러 낸 단어를 한 가방에 넣고 개수를 셉니다.</p>
-
-        <div class="tv-bar"><i id="tv-tf-bar" style="width:0%"></i></div>
-        <p class="tp-prog" id="tv-tf-prog">채운 칸 0/24 · 정답 0/24</p>
-        <div class="tx-scroll" id="tv-tf-tblwrap"></div>
-        <div class="btn-row">
-          <button class="btn tx-mini" type="button" id="tv-tf-ans" onclick="tvTfReveal()" disabled>먼저 채워 보세요 (0/24)</button>
-          <button class="btn tx-mini" type="button" onclick="tvTfReset()">지우고 다시</button>
-          <button class="btn tx-mini" type="button" onclick="tvTfMine()">우리 반 문장 넣기</button>
-        </div>
-        <div class="tv-vecs" id="tv-tf-vecs"></div>
-        <div class="tx-fb" id="tv-tf-fb"></div>
         <div id="tv-tf-src" class="tx-src">출처: 동아 교과서 Ⅱ p.54~55 표와 벡터를 재구성 · 활동지 「활동 1(TF-IDF)3 — 벡터와 빈도수벡터」 문제 1을 웹으로 이식</div>
       </div>
 
