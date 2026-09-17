@@ -565,6 +565,22 @@ nav{position:relative;}
 .vw-wrap>*:not(.vw-mark){position:relative;z-index:1;}
 /* 1·2차시는 활동 줄이 .vw-wrap 안에 있어 바로 윗줄에 눌려 고정이 풀립니다. 그 한 줄만 예외로 둡니다. */
 .vw-wrap>.tabs{position:sticky;top:var(--aim-hdr,81px);z-index:90;}
+
+/* 스크롤로 다음 활동에 넘어간 순간, 고정된 활동 줄이 한 번 물들었다 돌아옵니다.
+   눌러서 넘어간 것이 아니라 저절로 넘어간 것이라 표시가 없으면 알아채지 못합니다. */
+.tabs.aim-moved{background:rgba(0,117,222,0.10);
+  box-shadow:inset 0 -3px 0 var(--pri);
+  transition:background 0.25s ease, box-shadow 0.25s ease;}
+.tab.aim-just{animation:aim-just 1.1s ease;}
+@keyframes aim-just{
+  0%{transform:scale(1);}
+  22%{transform:scale(1.07);}
+  100%{transform:scale(1);}
+}
+@media (prefers-reduced-motion:reduce){
+  .tab.aim-just{animation:none;}
+  .tabs.aim-moved{transition:none;}
+}
 @media(max-width:760px){.vw-mark{display:none;}}
 
 /* 「일반화 · 내 문장으로」 산출 칸 (흥미·탐구 C-5) */
@@ -846,6 +862,102 @@ body.aim-has-botbar .aim-botbar{display:flex;}
   window.go = window.go || function(v){ try{ location.hash = '#'+v; }catch(e){} };
 </script>
 <script src="loader.js"></script>
+
+<script>
+/* 전개 — 지금 활동을 끝까지 내려 읽으면 다음 활동으로 저절로 넘어갑니다.
+   수업이 탭을 일일이 눌러 가며 끊기지 않도록, 스크롤만으로 이어지게 하려는 것입니다.
+   · 잠긴 활동(앞 활동을 풀어야 열리는 것)으로는 넘어가지 않습니다.
+   · 한 활동에서 한 번만 넘깁니다 — 되돌아와 다시 지나갈 때는 그냥 지나가게 둡니다.
+   · 넘어가면 상단 바가 한 번 물들어 바뀐 것을 알립니다. */
+(function(){
+  var moved = {}, busy = 0, raf = 0, lastY = -1;
+
+  function headOffset(){
+    var h = document.querySelector('header');
+    var t = activeTabs();
+    return (h ? h.getBoundingClientRect().height : 0) + (t ? t.getBoundingClientRect().height : 0) + 12;
+  }
+
+  function activeTabs(){
+    var list = document.querySelectorAll('.tabs');
+    for (var i = 0; i < list.length; i++) if (list[i].offsetParent !== null) return list[i];
+    return null;
+  }
+
+  /* 탭 줄과 같은 상자 안에서, 지금 보이는 활동 칸을 찾습니다. */
+  function activePanel(tabs){
+    var box = tabs.parentElement;
+    while (box && box !== document.body) {
+      var ps = box.querySelectorAll('.tpanel');
+      if (ps.length) {
+        for (var i = 0; i < ps.length; i++) if (ps[i].offsetParent !== null) return ps[i];
+        return null;
+      }
+      box = box.parentElement;
+    }
+    return null;
+  }
+
+  function key(tabs, idx){
+    var sec = tabs.closest('.tx-sec, section, div[id^="v-"]');
+    return (sec && sec.id ? sec.id : '?') + ':' + idx;
+  }
+
+  function check(){
+    if (busy && Date.now() - busy < 1200) return;
+    /* 한 번 넘긴 뒤에는 새 활동을 어느 정도 내려 읽기 전까지 다시 넘기지 않습니다.
+       짧은 활동은 넘어가자마자 끝이 화면 위로 올라와 두 칸씩 건너뛰었습니다. */
+    if (lastY >= 0 && scrollY - lastY < 400) return;
+    var tabs = activeTabs();
+    if (!tabs) return;
+
+    var btns = [].slice.call(tabs.querySelectorAll('.tab'));
+    if (btns.length < 2) return;
+    var cur = -1;
+    for (var i = 0; i < btns.length; i++) if (btns[i].classList.contains('on')) { cur = i; break; }
+    if (cur < 0 || cur >= btns.length - 1) return;
+
+    var next = btns[cur + 1];
+    if (next.classList.contains('lock') || next.disabled) return;   /* 잠긴 활동은 건너뛰지 않습니다 */
+
+    var panel = activePanel(tabs);
+    if (!panel) return;
+
+    var k = key(tabs, cur);
+    if (moved[k]) return;                                            /* 이 활동에서는 이미 한 번 넘겼습니다 */
+
+    /* 지금 활동의 끝이 화면 아래에서 120px 위로 올라오면 다 읽은 것으로 봅니다. */
+    if (panel.getBoundingClientRect().bottom > innerHeight - 120) return;
+
+    moved[k] = 1;
+    busy = Date.now();
+    lastY = scrollY;
+    next.click();
+
+    tabs.classList.add('aim-moved');
+    next.classList.add('aim-just');
+    setTimeout(function(){
+      tabs.classList.remove('aim-moved');
+      next.classList.remove('aim-just');
+    }, 1100);
+
+    /* 새 활동의 첫머리로 데려갑니다. 탭이 바뀌며 높이가 달라지므로 한 박자 뒤에 잽니다. */
+    setTimeout(function(){
+      var np = activePanel(tabs) || panel;
+      var y = np.getBoundingClientRect().top + scrollY - headOffset();
+      try { scrollTo({ top: y, behavior: 'smooth' }); } catch (e) { scrollTo(0, y); }
+    }, 60);
+  }
+
+  addEventListener('scroll', function(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = 0; check(); });
+  }, { passive: true });
+
+  /* 차시를 옮기면 '한 번만' 기록을 비웁니다. */
+  addEventListener('hashchange', function(){ moved = {}; lastY = -1; });
+})();
+</script>
 
 <script>
 /* 「단계 N」 묶음은 한 번에 하나만 펼칩니다 — 지금 보는 단계의 내용만 남기기 위해서입니다.
