@@ -563,6 +563,8 @@ nav{position:relative;}
   pointer-events:none;z-index:0;}
 .vw-mark svg{display:block;width:100%;height:auto;}
 .vw-wrap>*:not(.vw-mark){position:relative;z-index:1;}
+/* 1·2차시는 활동 줄이 .vw-wrap 안에 있어 바로 윗줄에 눌려 고정이 풀립니다. 그 한 줄만 예외로 둡니다. */
+.vw-wrap>.tabs{position:sticky;top:var(--aim-hdr,81px);z-index:90;}
 @media(max-width:760px){.vw-mark{display:none;}}
 
 /* 「일반화 · 내 문장으로」 산출 칸 (흥미·탐구 C-5) */
