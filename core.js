@@ -6908,7 +6908,7 @@ function aimBuildHome(){
       const has=l.v&&document.getElementById('v-'+l.v);
       if(has){
         html+='<div class="card-link" role="link" tabindex="0" data-go="'+l.v+'" data-k="'+cmnEsc(l.n)+'">'+
-                '<div class="hm-th">'+aimArt(l.a)+'</div>'+
+                '<div class="hm-th">'+'<img class="hm-img" src="assets/hero/L'+(('0'+parseInt(l.n,10)).slice(-2))+'.jpg" alt="" loading="lazy" onload="this.parentNode.classList.add(&quot;has-img&quot;)" onerror="this.remove()">'+aimArt(l.a)+'</div>'+
                 '<div class="hm-body"><h3>'+cmnEsc(l.n)+' · '+cmnEsc(l.t)+'</h3>'+
                 '<p>'+cmnEsc(l.d||'')+'</p></div></div>';
       }else{
