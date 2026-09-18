@@ -5274,10 +5274,10 @@ const ML_REFS_BASE=[
    t:'한눈에 보는 인공지능의 역사',
    d:'EBS 이솦 — 1차시 타임라인을 복습하며 알파고와 강화학습의 자리를 확인해 봅니다.'},
   {kind:'web', url:'https://teachablemachine.withgoogle.com', em:'🤖', badge:'웹 도구',
-   t:'티처블 머신(Teachable Machine)', img:'assets/refthumb/tm-webcam.jpg',
+   t:'티처블 머신(Teachable Machine)', img:'assets/refthumb/hf-tm-webcam.jpg',
    d:'사진·소리·자세를 직접 학습시켜 지도학습을 체험하는 구글의 웹 도구입니다. 5차시 편향 실습에서도 사용합니다.'},
   {kind:'web', url:'https://www.ebssw.kr', em:'📺', badge:'사이트',
-   t:'EBS 이솦(온라인 AI 교육 플랫폼)', img:'assets/refthumb/k-site.svg',
+   t:'EBS 이솦(온라인 AI 교육 플랫폼)', img:'assets/refthumb/hf-p-site.jpg',
    d:'인공지능 개념 영상과 실습 자료를 찾아볼 수 있는 공식 사이트입니다.'},
 ];
 
