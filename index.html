@@ -538,6 +538,12 @@ nav{position:relative;}
 .hm-unit .r{font-family:var(--mono);font-size:0.75rem;letter-spacing:0.1em;color:var(--muted);}
 .hm-unit::after{content:'';flex:1;height:1px;background:var(--border);min-width:2rem;}
 .hm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr));gap:1rem;}
+/* 넓은 화면에서는 칸 최소폭을 줄여 한 줄에 더 많은 카드가 들어가게 합니다. */
+@media (min-width:1200px){ .hm-grid{grid-template-columns:repeat(auto-fill,minmax(13.5rem,1fr));} }
+/* 화면이 넓어지면 차시 카드 영역만 본문 폭(68rem) 밖으로 넓혀 한 줄에 더 많이 놓습니다. */
+@media (min-width:1200px){
+  #hm-lessons{--hm-w:min(108rem,calc(100vw - 3rem));width:var(--hm-w);margin-left:calc((var(--hm-w) - 100%) / -2);}
+}
 .hm-grid .card-link{padding:0;overflow:hidden;display:flex;flex-direction:column;aspect-ratio:1/1;}
 .hm-no{aspect-ratio:1/1;display:flex;flex-direction:column;overflow:hidden;}
 .hm-grid .card-link::after{top:auto;bottom:0.5rem;right:0.9rem;}
