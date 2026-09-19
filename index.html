@@ -268,17 +268,14 @@ footer .visits b{color:var(--body);font-weight:700;}
 .tab-next:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
 .tab.tab-jumped{box-shadow:0 0 0 3px rgba(0,117,222,.35),0 2px 8px rgba(0,117,222,.28);}
 .tab-flow.is-last{background:var(--accent);}
-/* 정리 단계 자리표시 — 전개를 마치기 전까지 이 줄만 보입니다 */
-.step-lock{display:flex;align-items:center;gap:0.9rem;flex-wrap:wrap;
-  margin:2.2rem 0 0.4rem;padding:0.8rem 1.05rem;
-  border:1px dashed var(--border);border-radius:var(--radius);background:transparent;}
-.step-lock .sl-t{margin:0;flex:1 1 16rem;font-family:var(--mono);font-size:0.76rem;
-  letter-spacing:0.04em;color:var(--muted);}
-.sl-now{font-family:var(--mono);font-size:0.74rem;letter-spacing:0.04em;
+/* 전개 중에는 소단원 뒤가 잠시 닫혀 문서가 거기서 끝납니다 —
+   더 내려갈 곳이 없으니, 바닥에 닿으면 다음 소단원으로 이어집니다. */
+.flow-hidden{display:none !important;}
+.tf-skip{font-family:var(--mono);font-size:0.74rem;letter-spacing:0.04em;
   padding:0.4rem 0.85rem;border-radius:9999px;cursor:pointer;
   border:1px solid var(--border);background:var(--card);color:var(--muted);}
-.sl-now:hover{color:var(--fg);border-color:var(--muted);}
-.sl-now:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
+.tf-skip:hover{color:var(--fg);border-color:var(--muted);}
+.tf-skip:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
 @media (prefers-reduced-motion:reduce){
   .tab-flow,.tab.tab-jumped{transition:none;}
 }
