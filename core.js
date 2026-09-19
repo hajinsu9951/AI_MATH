@@ -44,6 +44,7 @@ function go(v,pushState=true){
     else{hbRefresh();}
     initToggles(viewEl);
   }
+  try{ wireTabFlow(viewEl); }catch(e){}
   if(v==='conv'){
       requestAnimationFrame(()=>{
       try{ecRender();ecFitCanvas('eye');ecFitCanvas('cnn');}catch(e){}
@@ -48563,3 +48564,147 @@ window.aimTbZoom = aimTbZoom;
   else boot();
   window.aimStepColor = function(){ tag(document); };
 })();
+/* ── 전개 → 정리 진행 ───────────────────────────────────────────────
+   ① 전개 소단원을 끝까지 내려가면 다음 소단원이 저절로 열립니다.
+   ② 그동안 STEP 3 · 정리는 감춰 둡니다 — 소단원을 건너뛰고 정리로
+      내려가 버리는 일을 막습니다.
+   ③ 마지막 소단원을 끝까지 보면 그때 정리가 열리고 그리로 이어집니다.
+   정리 뒤의 참고 자료·프로젝트 과제·학습지는 처음부터 그대로 둡니다.
+   선생님이 바로 정리를 보여 주어야 할 때는 자리표시줄의 [지금 열기]를 씁니다.
+   7·8차시처럼 한 뷰에 두 차시가 든 경우에는 탭 묶음마다 따로 잠급니다. */
+function wireTabFlow(root){
+  const scope = root || document;
+  const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const HEAD = 72;
+  const FOLLOWS = (a,b)=> (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)!==0;
+  const isStep3 = k => [...k.classList].some(c=>c.endsWith('-step')) &&
+                       /^STEP\s*3/.test((k.textContent||'').trim());
+  /* 정리 뒤에 붙는 참고 자료·프로젝트 과제·학습지는 가리지 않습니다 —
+     수업 시작부터 학습지를 열어야 하는 경우가 있습니다. */
+  const KEEP = k => k.classList.contains('ws')||k.classList.contains('ws-sheet')||
+                    k.classList.contains('pj')||/^참고\s*자료/.test((k.textContent||'').trim());
+
+  const views=new Set();
+  scope.querySelectorAll('.tabs').forEach(t=>{ const v=t.closest('.view'); if(v) views.add(v); });
+
+  views.forEach(view=>{
+    if(view.dataset.flowView) return;
+    view.dataset.flowView='1';
+    const groups=[...view.querySelectorAll('.tabs')].filter(t=>t.querySelectorAll('.tab').length>=2);
+    const steps=[...view.querySelectorAll('[class*="-step"]')].filter(isStep3);
+
+    groups.forEach((tabs,gi)=>{
+      if(tabs.dataset.flow) return;
+      const btns=[...tabs.querySelectorAll('.tab')];
+      const panels=[]; let el=tabs.nextElementSibling;
+      while(el && !el.classList.contains('tabs')){
+        if(el.classList.contains('tpanel')) panels.push(el);
+        el=el.nextElementSibling;
+      }
+      const n=Math.min(btns.length, panels.length);
+      if(n<2) return;
+      tabs.dataset.flow='1';
+      tabs.dataset.anchor=String(window.scrollY);
+
+      /* 이 묶음이 맡을 정리 — 묶음 뒤, 다음 묶음 앞에 있는 첫 STEP 3 */
+      const next=groups[gi+1]||null;
+      const head=steps.find(k=> FOLLOWS(tabs,k) && (!next || FOLLOWS(k,next))) || null;
+
+      let region=[], holder=null;
+      if(head && head.parentElement){
+        const sib=[...head.parentElement.children];
+        const hi=sib.indexOf(head);
+        let end=sib.length;
+        for(let j=hi+1;j<sib.length;j++){ if(KEEP(sib[j])){ end=j; break; } }
+        region=sib.slice(hi,end);
+      }
+      const lockable=region.length>0;
+      if(lockable){
+        holder=document.createElement('div');
+        holder.className='step-lock';
+        holder.innerHTML='<p class="sl-t">STEP 3 · 정리는 전개 활동을 모두 마치면 열립니다.</p>';
+        const now=document.createElement('button');
+        now.type='button'; now.className='sl-now'; now.textContent='지금 열기';
+        now.addEventListener('click',()=>unlock(true));
+        holder.appendChild(now);
+        head.parentElement.insertBefore(holder, head);
+        region.forEach(k=>{k.dataset.lockDisp=k.style.display||''; k.style.display='none';});
+      }
+      let unlocked=!lockable;
+      function unlock(scroll){
+        if(unlocked) return false;
+        unlocked=true;
+        region.forEach(k=>{k.style.display=k.dataset.lockDisp||''; delete k.dataset.lockDisp;});
+        if(holder){holder.remove(); holder=null;}
+        try{window.dispatchEvent(new Event('resize'));}catch(e){}
+        if(scroll && head){
+          const top=Math.max(0, head.getBoundingClientRect().top+window.scrollY-HEAD);
+          window.scrollTo({top, behavior:REDUCED?'auto':'smooth'});
+        }
+        return true;
+      }
+
+      const label=b=>b.textContent.replace(/\s+/g,' ').trim();
+      const openTab=i=>{
+        const b=btns[i]; if(!b) return;
+        b.click();
+        const top=Math.max(0, tabs.getBoundingClientRect().top+window.scrollY-HEAD);
+        tabs.dataset.anchor=String(top);
+        window.scrollTo({top, behavior:REDUCED?'auto':'smooth'});
+        b.classList.add('tab-jumped');
+        setTimeout(()=>b.classList.remove('tab-jumped'), 1700);
+      };
+      btns.forEach(b=>b.addEventListener('click',()=>{tabs.dataset.anchor=String(window.scrollY);}));
+
+      for(let i=0;i<n;i++){
+        const last=(i===n-1);
+        if(last && !lockable) continue;
+        const bar=document.createElement('div');
+        bar.className='tab-flow'+(last?' is-last':'');
+        const p=document.createElement('p');
+        p.className='tf-t';
+        p.innerHTML= last
+          ? '전개 활동을 모두 마쳤습니다. 다음은 <b>STEP 3 · 정리</b>입니다.'
+          : '다음은 <b>'+label(btns[i+1]).replace(/</g,'&lt;')+'</b>입니다.';
+        const go=document.createElement('button');
+        go.type='button'; go.className='tab-next';
+        go.textContent= last ? '정리로 넘어가기 →' : '이어서 열기 →';
+        go.addEventListener('click',()=> last ? unlock(true) : openTab(i+1));
+        bar.appendChild(p); bar.appendChild(go);
+        panels[i].appendChild(bar);
+
+        /* 띠가 화면에 들어와 잠깐 머물면 넘어갑니다. 빠르게 지나쳐 버렸거나
+           문서 맨 아래에 닿은 경우에도 곧바로 넘어갑니다 — 정리를 감춰 둔
+           탓에 막다른 화면이 되면 안 됩니다. */
+        let armedAt=0, ticking=false;
+        const fire=()=>{
+          if(bar.dataset.done) return;
+          bar.dataset.done='1';
+          window.removeEventListener('scroll', onScroll);
+          bar.classList.remove('is-armed');
+          if(last) unlock(true); else openTab(i+1);
+        };
+        const check=()=>{
+          if(bar.dataset.done) return;
+          if(!bar.offsetParent){ armedAt=0; bar.classList.remove('is-armed'); return; }
+          if(window.scrollY - Number(tabs.dataset.anchor||0) <= 240){
+            armedAt=0; bar.classList.remove('is-armed'); return;
+          }
+          const r=bar.getBoundingClientRect();
+          const atEnd = document.documentElement.scrollHeight - window.scrollY - innerHeight < 40;
+          if(r.bottom < 0 || atEnd){ fire(); return; }
+          if(r.top <= innerHeight*0.85){
+            bar.classList.add('is-armed');
+            if(!armedAt) armedAt=Date.now();
+            else if(Date.now()-armedAt >= 600) fire();
+          }else{ armedAt=0; bar.classList.remove('is-armed'); }
+        };
+        const onScroll=()=>{ if(ticking) return; ticking=true;
+          requestAnimationFrame(()=>{ ticking=false; check(); }); };
+        window.addEventListener('scroll', onScroll, {passive:true});
+        const tick=setInterval(()=>{ if(bar.dataset.done){clearInterval(tick); return;} check(); }, 400);
+      }
+    });
+  });
+}
+setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
