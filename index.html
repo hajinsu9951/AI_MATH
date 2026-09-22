@@ -580,7 +580,8 @@ nav{position:relative;}
 .hm-grid .card-link{padding:0;overflow:hidden;display:flex;flex-direction:column;aspect-ratio:1/1;}
 .hm-no{aspect-ratio:1/1;display:flex;flex-direction:column;overflow:hidden;}
 .hm-grid .card-link::after{top:auto;bottom:0.5rem;right:0.9rem;}
-.hm-th{flex:0 0 45%;min-height:0;background:var(--bg);border-bottom:1px solid var(--border);overflow:hidden;
+/* 설명이 한 줄로 짧아지면서 그림에 자리를 더 내줍니다(45% → 58%). */
+.hm-th{flex:0 0 58%;min-height:0;background:var(--bg);border-bottom:1px solid var(--border);overflow:hidden;
   display:flex;align-items:center;justify-content:center;padding:0.6rem;}
 .hm-th svg{display:block;width:100%;height:auto;max-height:100%;}
 /* 차시 그림(assets/hero/Lnn.jpg)이 있으면 정사각형 칸을 꽉 채우고, 없으면 기존 SVG 를 그대로 씁니다. */
@@ -591,7 +592,8 @@ nav{position:relative;}
 .hm-body{padding:0.8rem 1.05rem 1.5rem;flex:1 1 auto;min-height:0;overflow:hidden;}
 .hm-body h3{font-size:0.98rem;line-height:1.38;margin-bottom:0.3rem;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.hm-body p{font-size:0.88rem;color:var(--body);line-height:1.55;padding-right:0;
+/* 설명은 20~30자 한 문장이라 두 줄이면 넉넉합니다. */
+.hm-body p{font-size:0.88rem;color:var(--muted);line-height:1.55;padding-right:0;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .hm-no{background:transparent;border:1px dashed var(--border);border-radius:var(--radius);
   overflow:hidden;display:flex;flex-direction:column;opacity:0.72;cursor:not-allowed;}
@@ -613,6 +615,8 @@ nav{position:relative;}
 .vw-mark{position:absolute;top:-0.4rem;right:0;width:min(11rem,26%);
   pointer-events:none;z-index:0;border:1px solid var(--border);border-radius:var(--radius);
   overflow:hidden;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+/* 삽화가 사진으로 바뀌어 칸을 꽉 채웁니다(예전 그림은 여백이 있었습니다). */
+.vw-mark.has-img img{aspect-ratio:1/1;object-fit:cover;}
 .vw-mark img{display:block;width:100%;height:auto;}
 .vw-mark svg{display:block;width:100%;height:auto;}
 .vw-mark.has-img svg{display:none;}
@@ -923,8 +927,8 @@ body.aim-has-botbar .aim-botbar{display:flex;}
 <!-- 배포 표시 — 내용을 고칠 때 sw.js 의 CACHE_NAME 과 이 값을 함께 올립니다.
      loader.js 자신도 표시가 없으면 브라우저 캐시에 묶여, 뷰에 표시를 붙여도
      옛 loader.js 가 실행돼 소용이 없습니다. -->
-<script>window.AIM_BUILD = 'v120';</script>
-<script src="loader.js?v120"></script>
+<script>window.AIM_BUILD = 'v121';</script>
+<script src="loader.js?v121"></script>
 
 <script>
 /* 전개 — 지금 활동을 끝까지 내려 읽으면 다음 활동으로 저절로 넘어갑니다.
