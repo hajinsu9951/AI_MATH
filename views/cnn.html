@@ -792,11 +792,11 @@
       <span class="cn-bg must">최소 코스 ① ③ ④ 필수</span> <span class="cn-bg opt">② ⑤ 선택</span>
       로 운영하고, 남는 마디는 과제나 다음 시간에 이어 붙이십시오.</p>
     <div class="cn-five">
-      <button type="button" onclick="cnTab(0)"><span class="n">탭 ① · 12분 · 필수</span><span class="t">합성곱</span><span class="d">작은 창과 커널을 자리별로 곱해 모두 더합니다.</span></button>
-      <button type="button" onclick="cnTab(1)"><span class="n">탭 ② · 8분 · 선택</span><span class="t">커널 필터</span><span class="d">아홉 개의 수를 바꾸면 사진의 인상이 달라집니다.</span></button>
-      <button type="button" onclick="cnTab(2)"><span class="n">탭 ③ · 8분 · 필수</span><span class="t">풀링과 정규화</span><span class="d">네 칸을 한 칸으로 줄이고, 0~255를 0~1로 옮깁니다.</span></button>
+      <button type="button" onclick="cnTab(0)"><span class="n">탭 ① · 11분 · 필수</span><span class="t">합성곱</span><span class="d">작은 창과 커널을 자리별로 곱해 모두 더합니다.</span></button>
+      <button type="button" onclick="cnTab(1)"><span class="n">탭 ② · 선택 심화</span><span class="t">커널 필터</span><span class="d">아홉 개의 수를 바꾸면 사진의 인상이 달라집니다.</span></button>
+      <button type="button" onclick="cnTab(2)"><span class="n">탭 ③ · 9분 · 필수</span><span class="t">풀링과 정규화</span><span class="d">네 칸을 한 칸으로 줄이고, 0~255를 0~1로 옮깁니다.</span></button>
       <button type="button" onclick="cnTab(3)"><span class="n">탭 ④ · 10분 · 필수</span><span class="t">파이프라인</span><span class="d">사진 한 장이 여섯 단계를 통과합니다.</span></button>
-      <button type="button" onclick="cnTab(4)"><span class="n">탭 ⑤ · 7분 · 선택</span><span class="t">객체 탐지</span><span class="d">무엇이 ‘어디에’ 있는지를 네 개의 수로 답합니다.</span></button>
+      <button type="button" onclick="cnTab(4)"><span class="n">탭 ⑤ · 선택 심화</span><span class="t">객체 탐지</span><span class="d">무엇이 ‘어디에’ 있는지를 네 개의 수로 답합니다.</span></button>
     </div>
     <svg class="cn-illu" viewBox="0 0 680 190" role="img"
          aria-label="사진 격자 위를 3곱하기3 커널이 지나가 특징 맵을 만들고, 풀링으로 작아지고, 막대 확률로 이름이 붙고, 마지막에 바운딩 박스가 그려지는 전체 흐름 그림">
@@ -924,11 +924,11 @@
   <div class="cn-step"><p class="mono">STEP 2 · 전개 — 다섯 마디 (30분)</p></div>
 
   <div class="tabs" id="cn-tabs">
-    <button class="tab on" type="button" onclick="cnTab(0,this)">① 합성곱 · 12분 · 필수</button>
-    <button class="tab" type="button" onclick="cnTab(1,this)">② 커널 필터 · 8분</button>
-    <button class="tab" type="button" onclick="cnTab(2,this)">③ 풀링·정규화 · 8분 · 필수</button>
+    <button class="tab on" type="button" onclick="cnTab(0,this)">① 합성곱 · 11분 · 필수</button>
+    <button class="tab" type="button" onclick="cnTab(1,this)">② 커널 필터 · 선택</button>
+    <button class="tab" type="button" onclick="cnTab(2,this)">③ 풀링·정규화 · 9분 · 필수</button>
     <button class="tab" type="button" onclick="cnTab(3,this)">④ 파이프라인 · 10분 · 필수</button>
-    <button class="tab" type="button" onclick="cnTab(4,this)">⑤ 객체 탐지 · 7분</button>
+    <button class="tab" type="button" onclick="cnTab(4,this)">⑤ 객체 탐지 · 선택</button>
   </div>
 
   <!-- ══════════ 탭 ① 합성곱 (conv 이식) ══════════ -->
