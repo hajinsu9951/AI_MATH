@@ -10953,7 +10953,7 @@ const SM_QUIZ = [
       'C(읽은 기사, A) ≈ <b>0.99</b>, C(읽은 기사, B) ≈ <b>0.37</b>로 A가 압도적으로 유사합니다. ' +
       '<b>길이 편차가 큰 텍스트에서는 코사인 유사도를 쓰는 것이 알맞으므로</b> 기사 A를 추천합니다. ' +
       '①은 결론은 맞지만 근거가 틀렸습니다(유클리드로는 B가 더 작습니다).' +
-      '<span class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="smGo(\'sm-act4\',2)">활동 4-3 길이 편향 실험에서 다시 보기</button></span>'
+      '<span class="btn-row" style="margin-top:0.5rem;"><button class="btn" type="button" onclick="smGo(\'sm-act4\',2)">활동 ③ 길이 편향 실험에서 다시 보기</button></span>'
   },
   {
     q:'벡터 A = (6, 2, 2)를 크기가 1인 벡터로 고치는(L2 정규화) 식으로 옳은 것은?',
@@ -11507,7 +11507,7 @@ function smCalc(){
         '<div>Ĉ = ('+smData.C.map(smNum).join(', ')+') ÷ '+smFix(z[2])+' ≈ <b>('+uC.map(x=>x.toFixed(2)).join(', ')+')</b></div>'+
         '<div style="margin-top:0.5rem;">정규화 후 거리 — d(Â, Ĉ) = <b>'+smFix(smDist(uA,uC))+'</b> 　'+
           'd(Â, B̂) = <b>'+smFix(smDist(uA,uB))+'</b></div>'+
-        '<div style="margin-top:0.35rem;color:var(--muted);">스위치를 켜면 4-1 순위표의 거리 순위가 이 값으로 다시 계산됩니다.</div>';
+        '<div style="margin-top:0.35rem;color:var(--muted);">스위치를 켜면 탭 ① 순위표의 거리 순위가 이 값으로 다시 계산됩니다.</div>';
     }
   }
 }
@@ -33699,11 +33699,38 @@ function daJson(k,d){
   catch(e){ return d; }
 }
 /* 칩 정의·학습 목표 안내 행에서 해당 활동으로 스크롤 이동합니다. */
+/* 전개 활동 탭 — 6차시도 다른 차시와 같이 활동 하나만 보이게 합니다. */
+var daCur = 0;
+function daTab(n, el){
+  var root = document.getElementById('v-dataeth');
+  if(!root) return;
+  n = Math.max(0, Math.min(2, parseInt(n, 10) || 0));
+  daCur = n;
+  var btns = root.querySelectorAll('.tabs .tab');
+  btns.forEach(function(b, i){
+    var on = (i === n);
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  if(el && el.classList) el.classList.add('on');
+  ['dap0', 'dap1', 'dap2'].forEach(function(id, i){
+    var q = document.getElementById(id);
+    if(q) q.classList.toggle('on', i === n);
+  });
+}
 function daSee(id){
   var t = daEl(id);
   if(!t) return;
-  try{ t.scrollIntoView({behavior:'smooth', block:'start'}); }
-  catch(e){ try{ t.scrollIntoView(); }catch(e2){} }
+  /* 감춰진 탭 안이면 그 탭을 먼저 엽니다 — 본문 곳곳의 「활동 ①로 이동」이 모두 이 길로 옵니다. */
+  var pane = t.closest ? t.closest('.tpanel') : null;
+  if(pane && !pane.classList.contains('on')){
+    var i = ['dap0', 'dap1', 'dap2'].indexOf(pane.id);
+    if(i >= 0){ daTab(i, null); }
+  }
+  setTimeout(function(){
+    try{ t.scrollIntoView({behavior:'smooth', block:'start'}); }
+    catch(e){ try{ t.scrollIntoView(); }catch(e2){} }
+  }, 40);
 }
 function daFb(id, ok, html){
   var b = daEl(id);

@@ -305,9 +305,14 @@ footer .visits b{color:var(--body);font-weight:700;}
   color:var(--pri-active);background:rgba(0,117,222,.09);border:1px solid rgba(0,117,222,.28);
   border-radius:9999px;padding:0.16rem 0.6rem;white-space:nowrap;vertical-align:middle;}
 .aim-prog.full{color:#0d7a2e;background:rgba(26,174,57,.1);border-color:rgba(26,174,57,.35);}
+/* 「표시 지우기」는 37차시 전체에 붙는 단추인데 26px 높이라 손가락으로 누르기
+   어려웠습니다. 글자 크기는 그대로 두고 눌리는 영역만 44px 로 넓힙니다. */
 .aim-prog-reset{margin-left:0.4rem;font-family:var(--mono);font-size:0.68rem;color:var(--muted);
-  background:none;border:none;cursor:pointer;text-decoration:underline;padding:0.2rem;min-height:auto;}
+  background:none;border:none;cursor:pointer;text-decoration:underline;
+  padding:0.2rem 0.55rem;min-height:44px;display:inline-flex;align-items:center;
+  vertical-align:middle;}
 .aim-prog-reset:hover{color:var(--fg);}
+.aim-prog-reset:focus-visible{outline:2px solid var(--pri);outline-offset:2px;border-radius:6px;}
 @media print{.aim-prog,.aim-prog-reset{display:none;}}
 
 /* 학습지 지면의 자료 출처 — 인쇄물·저장 파일에도 함께 나갑니다. */
