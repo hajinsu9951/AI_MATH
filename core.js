@@ -48822,3 +48822,209 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
   else boot();
   window.aimHeadArt = fill;
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   참고 자료 허브 (#v-refs) — 접두사 rh
+   37차시 화면에 이미 붙어 있는 「참고 자료」 카드를 읽어 단원별로 모읍니다.
+   자료 목록을 여기에 따로 적어 두지 않는 까닭 — 차시 쪽을 고치면 두 곳이
+   어긋나기 때문입니다. 화면을 읽어 만들면 언제나 차시 쪽이 진실입니다.
+   (선생님이 [+ 자료 추가]로 넣은 자료도 화면에 붙어 있으므로 함께 잡힙니다.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function rhInstall(){
+  'use strict';
+
+  var UNIT_SUM = [
+    '인공지능이 무엇인지부터 규칙과 학습, 퍼셉트론, 그리고 데이터가 기울면 판단도 기운다는 것까지.',
+    '문장을 집합과 벡터로 옮겨 중요한 단어를 찾고, 두 글이 얼마나 비슷한지 수로 재는 단원.',
+    '사진을 행렬로 보고 뒤집고 곱하고 훑어, 기계가 이미지를 알아보는 길을 따라갑니다.',
+    '데이터에서 확률을 읽고 추세선을 그은 뒤, 손실을 가장 작게 만드는 값을 스스로 찾아갑니다.',
+    '탐구의 다섯 걸음을 세우고, 사례를 해부하고, 내 데이터로 모형을 만들어 발표까지.',
+    '언어를 벡터로, 다음 말을 확률로. 잡음에서 그림이 되는 과정과 그 한계까지 — 선택 심화.'
+  ];
+
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function txt(el){ return el ? String(el.textContent || '').replace(/\s+/g, ' ').trim() : ''; }
+
+  /* 한 차시 화면에서 참고 자료를 긁어 옵니다. */
+  function pick(view){
+    var out = [], seen = {};
+    var boxes = [];
+    view.querySelectorAll('.card, .info').forEach(function(c){
+      if(c.closest('#v-refs')) return;
+      var h = c.querySelector('h3, h4, strong');
+      if(h && /참고\s*자료/.test(h.textContent || '')) boxes.push(c);
+    });
+    boxes.forEach(function(box){
+      box.querySelectorAll('a[href]').forEach(function(a){
+        var href = a.getAttribute('href') || '';
+        if(!/^https?:/i.test(href) && !/\.html?(\?|#|$)/i.test(href) &&
+           !/^(assets|games|notebooks|docs)\//i.test(href)) return;
+        if(seen[href]) return;
+        var th = a.querySelector('.th');
+        var img = th && th.querySelector('img');
+        var svg = th && th.querySelector('svg');
+        var em  = a.querySelector('.em') || (th && th.querySelector('.em'));
+        var tt  = a.querySelector('.tt, .t');
+        var ds  = a.querySelector('.ds, .d');
+        var bg  = a.querySelector('.bg, .b');
+        var title = txt(tt);
+        if(!title){
+          /* 제목 칸이 따로 없는 차시 — 링크 글월의 첫 줄을 씁니다. */
+          title = txt(a).slice(0, 60);
+        }
+        if(!title) return;
+        seen[href] = 1;
+        out.push({
+          u: href,
+          t: title,
+          d: txt(ds).slice(0, 140),
+          b: txt(bg).slice(0, 14),
+          img: img ? img.getAttribute('src') : '',
+          svg: (!img && svg) ? svg.outerHTML : '',
+          em: (!img && !svg && em) ? txt(em) : '',
+          ext: /^https?:/i.test(href)
+        });
+      });
+    });
+    return out;
+  }
+
+  function build(){
+    var host = document.getElementById('rh-body');
+    if(!host || typeof AIM_LESSONS === 'undefined' || typeof AIM_UNITS === 'undefined') return;
+
+    /* 뷰 하나를 여러 차시가 나눠 쓰기도 합니다(7·8차시 등) — 첫 차시로 묶습니다. */
+    var byView = {}, order = [];
+    AIM_LESSONS.forEach(function(l){
+      if(!l.v) return;
+      if(!byView[l.v]){ byView[l.v] = { u: l.u, ns: [], t: l.t, v: l.v }; order.push(l.v); }
+      byView[l.v].ns.push(l.n);
+    });
+
+    var units = [], total = 0;
+    for(var i = 0; i < AIM_UNITS.length; i++) units.push({ meta: AIM_UNITS[i], rows: [], n: 0 });
+
+    order.forEach(function(v){
+      var view = document.getElementById('v-' + v);
+      if(!view) return;
+      var refs = pick(view);
+      if(!refs.length) return;
+      var info = byView[v];
+      var slot = units[info.u];
+      if(!slot) return;
+      slot.rows.push({ v: v, ns: info.ns.join('·'), t: info.t, refs: refs });
+      slot.n += refs.length;
+      total += refs.length;
+    });
+
+    /* ── 단원 카드 ── */
+    var uh = '';
+    units.forEach(function(s, i){
+      if(!s.n) return;
+      var no = s.meta.u + '. ';
+      uh += '<button type="button" class="rh-unit" data-u="' + i + '">' +
+              '<span class="ph"><img src="assets/unit/U' + (i + 1) + '.jpg" alt="" loading="lazy" ' +
+              'onerror="this.remove()"></span>' +
+              '<span class="bd">' +
+                '<span class="no">' + esc(no + s.meta.r) + '</span>' +
+                '<h3>' + esc(s.meta.name) + '</h3>' +
+                '<span class="sum">' + esc(UNIT_SUM[i] || '') + '</span><br>' +
+                '<span class="cnt">자료 ' + s.n + '건</span>' +
+              '</span>' +
+            '</button>';
+    });
+    var ubox = document.getElementById('rh-units');
+    if(ubox) ubox.innerHTML = uh;
+
+    /* ── 거르기 칩 ── */
+    var ch = '<button type="button" class="rh-chip on" data-f="all">전체 ' + total + '</button>';
+    units.forEach(function(s, i){
+      if(!s.n) return;
+      ch += '<button type="button" class="rh-chip" data-f="' + i + '">' +
+            esc(s.meta.u + '. ' + s.meta.name) + ' ' + s.n + '</button>';
+    });
+    var cbox = document.getElementById('rh-chips');
+    if(cbox) cbox.innerHTML = ch;
+
+    /* ── 본문 ── */
+    var html = '';
+    units.forEach(function(s, i){
+      if(!s.n) return;
+      html += '<section class="rh-sec" id="rh-sec-' + i + '" data-u="' + i + '">' +
+                '<div class="rh-sech"><h3>' + esc(s.meta.u + '. ' + s.meta.name) + '</h3>' +
+                '<span class="r">' + esc(s.meta.r) + ' · 자료 ' + s.n + '건</span></div>';
+      s.rows.forEach(function(r){
+        html += '<div class="rh-les">' +
+                  '<div class="rh-lesh"><span class="n">' + esc(r.ns) + '</span>' +
+                  '<span class="t">' + esc(r.t) + '</span>' +
+                  '<button type="button" class="go" data-go="' + esc(r.v) + '">차시로 가기 →</button></div>' +
+                  '<div class="rh-grid">';
+        r.refs.forEach(function(x){
+          var thumb = x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy" onerror="this.remove()">'
+                    : (x.svg ? x.svg
+                    : (x.em ? '<span class="em">' + esc(x.em) + '</span>' : ''));
+          html += '<a class="rh-ref" href="' + esc(x.u) + '"' +
+                  (x.ext ? ' target="_blank" rel="noopener"' : '') + '>' +
+                    '<span class="th">' + thumb +
+                      (x.b ? '<span class="bg">' + esc(x.b) + '</span>' : '') +
+                    '</span>' +
+                    '<span class="bd">' +
+                      '<span class="tt">' + esc(x.t) + '</span>' +
+                      (x.d ? '<span class="ds">' + esc(x.d) + '</span>' : '') +
+                      '<span class="fr">' + esc(r.ns) + '</span>' +
+                    '</span>' +
+                  '</a>';
+        });
+        html += '</div></div>';
+      });
+      html += '</section>';
+    });
+    host.innerHTML = html || '<p class="rh-empty">모을 자료를 찾지 못했습니다.</p>';
+
+    var tot = document.getElementById('rh-tot');
+    if(tot) tot.textContent = '37차시 · 자료 ' + total + '건';
+
+    /* ── 거르기 · 이동 ── */
+    var root = document.getElementById('v-refs');
+    if(root && !root.dataset.rhWired){
+      root.dataset.rhWired = '1';
+      root.addEventListener('click', function(e){
+        var chip = e.target.closest && e.target.closest('.rh-chip');
+        if(chip){
+          root.querySelectorAll('.rh-chip').forEach(function(b){ b.classList.toggle('on', b === chip); });
+          var f = chip.getAttribute('data-f');
+          root.querySelectorAll('.rh-sec').forEach(function(sec){
+            sec.classList.toggle('hide', f !== 'all' && sec.getAttribute('data-u') !== f);
+          });
+          return;
+        }
+        var ub = e.target.closest && e.target.closest('.rh-unit');
+        if(ub){
+          var i = ub.getAttribute('data-u');
+          var c = root.querySelector('.rh-chip[data-f="' + i + '"]');
+          if(c) c.click();
+          var sec = document.getElementById('rh-sec-' + i);
+          if(sec) setTimeout(function(){ try{ sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }catch(err){} }, 60);
+          return;
+        }
+        var g = e.target.closest && e.target.closest('[data-go]');
+        if(g && typeof go === 'function'){ go(g.getAttribute('data-go')); }
+      });
+    }
+  }
+
+  var built = false;
+  function boot(){
+    if(built) return;
+    if(!document.getElementById('v-refs')) return;
+    /* 차시 쪽 자료 카드가 스크립트로 붙는 것도 있어 한 박자 기다립니다. */
+    setTimeout(function(){ try{ build(); built = true; }catch(e){ console.error('rhBuild', e); } }, 400);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.aimBuildRefs = build;
+})();

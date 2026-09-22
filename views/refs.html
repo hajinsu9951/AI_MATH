@@ -1,0 +1,130 @@
+<!-- ═══════════ REFS (참고 자료 허브 — 단원별로 한자리에 모아 봅니다) ═══════════
+     이 뷰는 빈 그릇입니다. 자료 목록은 core.js 의 aimBuildRefs() 가
+     37차시 화면에 이미 붙어 있는 「참고 자료」 카드를 읽어 만듭니다.
+     차시 쪽 자료를 고치면 여기도 저절로 따라오므로 두 곳을 손댈 일이 없습니다.
+     ══════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-refs">
+  <style>
+  /* refs 뷰 전용 — 모든 규칙을 #v-refs 하위로 스코프합니다(전역 누수 금지). */
+  #v-refs .rh-hero{margin-bottom:1.6rem;}
+  #v-refs .rh-hero h2{font-size:1.75rem;letter-spacing:-0.02em;line-height:1.35;}
+  #v-refs .rh-hero .desc{margin-top:0.6rem;color:var(--body);line-height:1.8;}
+  #v-refs .rh-tot{display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.9rem;
+    font-family:var(--mono);font-size:0.76rem;letter-spacing:0.04em;color:var(--pri-active);
+    background:rgba(0,117,222,.09);border:1px solid rgba(0,117,222,.28);
+    border-radius:9999px;padding:0.3rem 0.8rem;}
+
+  /* ── 단원 카드 여섯 장 ── */
+  #v-refs .rh-units{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(20rem,100%),1fr));
+    gap:0.9rem;margin:1.4rem 0 2.6rem;}
+  #v-refs .rh-unit{display:block;width:100%;text-align:left;padding:0;cursor:pointer;
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;}
+  #v-refs .rh-unit:hover{border-color:var(--muted);box-shadow:0 4px 14px rgba(0,0,0,.07);transform:translateY(-2px);}
+  #v-refs .rh-unit:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
+  #v-refs .rh-unit .ph{aspect-ratio:16/9;background:var(--bg);border-bottom:1px solid var(--border);
+    overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  #v-refs .rh-unit .ph img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-refs .rh-unit .ph svg{width:100%;height:auto;display:block;}
+  #v-refs .rh-unit .bd{padding:0.85rem 1.05rem 1.05rem;}
+  #v-refs .rh-unit .no{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;color:var(--muted);}
+  #v-refs .rh-unit h3{font-size:1.05rem;margin:0.25rem 0 0.35rem;line-height:1.4;}
+  #v-refs .rh-unit .sum{font-size:0.9rem;color:var(--body);line-height:1.65;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  #v-refs .rh-unit .cnt{display:inline-block;margin-top:0.6rem;font-family:var(--mono);font-size:0.7rem;
+    color:var(--muted);border:1px solid var(--border);border-radius:9999px;padding:0.14rem 0.55rem;}
+
+  /* ── 거르기 줄 ── */
+  #v-refs .rh-bar{position:sticky;top:var(--aim-hdr,81px);z-index:90;background:var(--bg);
+    padding:0.5rem 0 0.6rem;border-bottom:1px solid var(--border);margin-bottom:1.2rem;}
+  #v-refs .rh-chips{display:flex;flex-wrap:wrap;gap:0.4rem;}
+  #v-refs .rh-chip{font-family:var(--mono);font-size:0.76rem;letter-spacing:0.02em;
+    border:1px solid var(--border);border-radius:9999px;padding:0 0.8rem;min-height:40px;
+    display:inline-flex;align-items:center;background:var(--card);color:var(--muted);cursor:pointer;}
+  #v-refs .rh-chip:hover{border-color:var(--muted);color:var(--fg);}
+  #v-refs .rh-chip.on{background:var(--pri);border-color:var(--pri);color:#fff;}
+  #v-refs .rh-chip:focus-visible{outline:2px solid var(--fg);outline-offset:2px;}
+
+  /* ── 단원 구획 ── */
+  #v-refs .rh-sec{margin:0 0 2.6rem;}
+  #v-refs .rh-sec.hide{display:none;}
+  #v-refs .rh-sech{display:flex;align-items:baseline;gap:0.7rem;flex-wrap:wrap;
+    margin:0 0 0.9rem;padding-bottom:0.5rem;border-bottom:2px solid var(--fg);}
+  #v-refs .rh-sech h3{font-size:1.2rem;letter-spacing:-0.01em;}
+  #v-refs .rh-sech .r{font-family:var(--mono);font-size:0.74rem;color:var(--muted);}
+
+  /* ── 차시 묶음 ── */
+  #v-refs .rh-les{margin:0 0 1.4rem;}
+  #v-refs .rh-lesh{display:flex;align-items:center;gap:0.5rem;margin:0 0 0.55rem;}
+  #v-refs .rh-lesh .n{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;
+    color:#fff;background:var(--fg);border-radius:9999px;padding:0.12rem 0.55rem;white-space:nowrap;}
+  #v-refs .rh-lesh .t{font-size:0.98rem;font-weight:600;color:var(--fg);}
+  #v-refs .rh-lesh .go{margin-left:auto;font-family:var(--mono);font-size:0.72rem;color:var(--muted);
+    border:1px solid var(--border);border-radius:9999px;padding:0 0.7rem;min-height:36px;
+    display:inline-flex;align-items:center;background:var(--card);cursor:pointer;white-space:nowrap;}
+  #v-refs .rh-lesh .go:hover{border-color:var(--pri);color:var(--pri);}
+
+  /* ── 자료 카드 ── */
+  #v-refs .rh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(16rem,100%),1fr));gap:0.7rem;}
+  #v-refs .rh-ref{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);overflow:hidden;text-decoration:none;color:inherit;
+    transition:border-color .18s ease, box-shadow .18s ease;}
+  #v-refs .rh-ref:hover{border-color:var(--pri);box-shadow:0 3px 10px rgba(0,0,0,.06);}
+  #v-refs .rh-ref:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
+  #v-refs .rh-ref .th{position:relative;aspect-ratio:16/10;background:var(--bg);
+    border-bottom:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  #v-refs .rh-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-refs .rh-ref .th svg{width:100%;height:100%;display:block;}
+  #v-refs .rh-ref .th .em{font-size:2.2rem;line-height:1;}
+  #v-refs .rh-ref .bg{position:absolute;left:0.45rem;top:0.45rem;font-family:var(--mono);font-size:0.64rem;
+    letter-spacing:0.04em;background:rgba(26,26,26,.82);color:#fff;border-radius:9999px;
+    padding:0.14rem 0.5rem;white-space:nowrap;}
+  #v-refs .rh-ref .bd{padding:0.6rem 0.75rem 0.75rem;display:flex;flex-direction:column;gap:0.25rem;flex:1;}
+  #v-refs .rh-ref .tt{font-size:0.93rem;font-weight:600;line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  #v-refs .rh-ref .ds{font-size:0.82rem;color:var(--muted);line-height:1.55;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  #v-refs .rh-ref .fr{margin-top:auto;padding-top:0.35rem;font-family:var(--mono);font-size:0.68rem;color:var(--muted);}
+
+  #v-refs .rh-empty{color:var(--muted);font-size:0.95rem;padding:2rem 0;}
+  #v-refs .rh-note{margin-top:2rem;padding-top:1rem;border-top:1px dashed var(--border);
+    font-size:0.86rem;color:var(--muted);line-height:1.75;}
+
+  @media (max-width:640px){
+    #v-refs .rh-hero h2{font-size:1.4rem;}
+    #v-refs .rh-units{gap:0.7rem;}
+    #v-refs .rh-bar{overflow-x:auto;}
+    #v-refs .rh-chips{flex-wrap:nowrap;}
+    #v-refs .rh-chip{white-space:nowrap;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="vw-wrap rh-hero">
+    <p class="mono" style="margin-bottom:0.4rem;">참고 자료 — 37차시 전체</p>
+    <h2>수업에서 쓰는 자료를 한자리에</h2>
+    <p class="desc">
+      37차시 화면 아래에 흩어져 있는 참고 자료를 단원별로 모았습니다.
+      영상·웹 활동·원자료·학습지를 한눈에 훑고, 필요한 자료가 어느 차시 것인지 바로 확인할 수 있습니다.
+      카드를 누르면 자료가 새 탭에서 열리고, <b>[차시로 가기]</b>를 누르면 그 자료를 쓰는 차시로 이동합니다.
+    </p>
+    <span class="rh-tot" id="rh-tot">자료를 모으는 중…</span>
+  </div>
+
+  <!-- 단원 카드 여섯 장 — core.js 가 채웁니다 -->
+  <div class="rh-units" id="rh-units"></div>
+
+  <!-- 거르기 줄 -->
+  <div class="rh-bar">
+    <div class="rh-chips" id="rh-chips"></div>
+  </div>
+
+  <!-- 단원별 자료 목록 -->
+  <div id="rh-body"><p class="rh-empty">자료를 모으는 중입니다…</p></div>
+
+  <p class="rh-note">
+    이 쪽의 목록은 각 차시의 「참고 자료」 카드를 그대로 읽어 만든 것입니다 —
+    차시 쪽 자료를 고치면 이곳도 함께 바뀝니다.
+    선생님이 각 차시에서 <b>[+ 자료 추가]</b>로 넣은 자료는 그 기기에만 저장되며, 이 목록에도 함께 나옵니다.
+  </p>
+</div>

@@ -8,14 +8,14 @@
      35~37 genvec·genimg·genethics (Ⅵ 선택 심화)
      project(34차시)는 반드시 마지막 — 회고 탭의 「우리 팀이 쓴 수학」 지도가
      앞선 뷰의 존재를 판정합니다. */
-  const order = ["home","intro","mlplay","logic","perceptron","bias","dataeth","text","tfidf","vecop","sim","senti","review","imgop","rgb","transpose","matmul","imgcls","fclayer","cnn","prob","trend","optim","loss2","gdsheet","axb","inquiry","decision","datalab","project","genvec","genimg","genethics"];
+  const order = ["home","refs","intro","mlplay","logic","perceptron","bias","dataeth","text","tfidf","vecop","sim","senti","review","imgop","rgb","transpose","matmul","imgcls","fclayer","cnn","prob","trend","optim","loss2","gdsheet","axb","inquiry","decision","datalab","project","genvec","genimg","genethics"];
   /* ── 배포 표시 ──────────────────────────────────────────────────────────
      뷰 33개를 표시 없이 받으면 브라우저 HTTP 캐시가 옛 사본을 내주어,
      새로 올린 내용이 캐시가 만료될 때까지(깃허브 페이지는 보통 10분)
      보이지 않습니다. 서비스워커를 지워도 마찬가지였습니다.
      sw.js 의 CACHE_NAME 과 같은 값을 붙여 한 번 새로 고치면 바로 보이게 합니다.
      ※ 내용을 고칠 때는 sw.js 의 CACHE_NAME 과 이 값을 함께 올립니다. */
-  const BUILD = (typeof window !== 'undefined' && window.AIM_BUILD) || 'v115';
+  const BUILD = (typeof window !== 'undefined' && window.AIM_BUILD) || 'v116';
 
   const container = document.getElementById('views');
   if (!container) return;
