@@ -87,9 +87,20 @@
     transition:border-color .18s ease, box-shadow .18s ease;}
   #v-refs .rh-ref:hover{border-color:var(--pri);box-shadow:0 3px 10px rgba(0,0,0,.06);}
   #v-refs .rh-ref:focus-visible{outline:2px solid var(--pri);outline-offset:2px;}
-  #v-refs .rh-ref .th{position:relative;aspect-ratio:16/10;background:var(--bg);
+  /* 썸네일 — 자료마다 제 화면이 보이되 245건이 한 결로 읽히도록 맞춥니다.
+     자료의 원래 화면은 사이트마다 색이 제각각(어두운 UI·형광 초록·빨강…)이라
+     그대로 늘어놓으면 벽이 소란스럽습니다. 비율·여백·테두리를 똑같이 두고
+     채도만 조금 낮춰 가라앉히며, 카드에 손을 얹으면 본래 색으로 돌아옵니다. */
+  #v-refs .rh-ref .th{position:relative;aspect-ratio:16/10;background:var(--card-h);
     border-bottom:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;}
-  #v-refs .rh-ref .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-refs .rh-ref .th img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;}
+  #v-refs .rh-ref .th img.shot{filter:saturate(0.72) contrast(0.96) brightness(1.02);
+    transition:filter .18s ease;}
+  #v-refs .rh-ref:hover .th img.shot,
+  #v-refs .rh-ref:focus-visible .th img.shot{filter:none;}
+  /* 자료 제 그림이 없어 종류 삽화로 채운 칸은 꽉 채우지 않고 여백을 둡니다 */
+  #v-refs .rh-ref .th img:not(.shot){object-fit:contain;padding:0.5rem;background:var(--bg);}
+  #v-refs .rh-ref .th .art{display:block;width:100%;height:100%;padding:0.4rem;}
   #v-refs .rh-ref .th svg{width:100%;height:100%;display:block;}
   #v-refs .rh-ref .th .em{font-size:2.2rem;line-height:1;}
   #v-refs .rh-ref .bg{position:absolute;left:0.45rem;top:0.45rem;font-family:var(--mono);font-size:0.64rem;

@@ -49012,9 +49012,16 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
                   '<div class="rh-grid">';
         r.refs.forEach(function(x){
           var K = kindMeta(x.kind);
-          /* 실제 화면 캡처는 112px 에서 글자가 뭉개집니다. 목록에서는 종류 삽화를
-             쓰고, 화면 캡처는 차시 안 카드에 그대로 둡니다. */
-          var thumb = '<img src="' + esc(K.img) + '" alt="" loading="lazy" onerror="this.remove()">';
+          /* 자료마다 제 화면이 보여야 무엇이 들어 있는지 알 수 있습니다.
+             자기 그림이 있으면 그것을 쓰고, 없는 자료만 종류 삽화로 채웁니다.
+             (허브 칸은 200px 남짓이라 차시 안 112px 칸과 달리 화면이 읽힙니다.
+              245건이 제각각으로 보이지 않도록 색 처리는 CSS 에서 한 결로 맞춥니다.) */
+          var own = x.img || '';
+          var thumb = own
+            ? '<img class="shot" src="' + esc(own) + '" data-fb="' + esc(K.img) + '" ' +
+              'alt="" loading="lazy" onerror="rhFb(this)">'
+            : (x.svg ? '<span class="art">' + x.svg + '</span>'
+                     : '<img src="' + esc(K.img) + '" alt="" loading="lazy" onerror="this.remove()">');
           html += '<a class="rh-ref" data-kind="' + esc(x.kind) + '" href="' + esc(x.u) + '"' +
                   (x.ext ? ' target="_blank" rel="noopener"' : '') + '>' +
                     '<span class="th">' + thumb +
@@ -49082,6 +49089,16 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
       });
     }
   }
+
+  /* 자료 제 그림이 없으면 종류 삽화로 갈아 끼웁니다(한 번만). */
+  window.rhFb = function(im){
+    try{
+      im.onerror = null;
+      im.classList.remove('shot');
+      var fb = im.getAttribute('data-fb');
+      if(fb) im.src = fb; else im.remove();
+    }catch(e){}
+  };
 
   var built = false;
   function boot(){
