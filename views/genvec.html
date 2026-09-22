@@ -36,7 +36,9 @@
   #v-genvec .gv-recall .row{display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;}
   #v-genvec .gv-recall .lb{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-right:0.2rem;}
   #v-genvec .gv-mini{font-family:var(--mono);font-size:0.76rem;border:1px solid var(--border);border-radius:9999px;
-    padding:0.2rem 0.6rem;background:var(--card);color:var(--body);cursor:pointer;min-height:30px;}
+    /* 손가락으로 누를 수 있게 44px — 글자 크기는 그대로 둡니다. */
+    padding:0.35rem 0.75rem;background:var(--card);color:var(--body);cursor:pointer;
+    min-height:44px;display:inline-flex;align-items:center;}
   #v-genvec .gv-mini:hover{border-color:var(--fg);color:var(--fg);}
   #v-genvec .gv-goal{margin-top:0.4rem;font-size:1rem;line-height:1.8;}
   #v-genvec .gv-goal b.gt{color:var(--fg);}
