@@ -5536,18 +5536,9 @@ const LG_REFS=[
   { k:'em', em:'🃏', b:'웹 활동', t:'논리 회로 · 논리집합 카드 게임', sv:'cards',
     d:'연산 카드와 명제 카드로 논리식을 만들어 진리표를 완성하는 교실 활동 안내입니다. (대전대신고 하진수 개발 · 노션 「인공지능 수학」 자료실)',
     u:'https://dshskr.notion.site/1ad7f8928da3800393d8f321a9ff5798' },
-  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 논리 게이트', sv:'gates',
-    d:'AND·OR·NOT·XOR 등 논리 게이트의 기호와 진리표를 표준 정의로 정리한 문서입니다. 오늘 채점한 진리표와 비교해 보세요.',
-    u:'https://ko.wikipedia.org/wiki/논리_게이트' },
   { k:'em', em:'🐶', b:'웹 활동', t:'나에게 맞는 강아지 찾기', sv:'dogtree',
     d:'한국일보가 만든 전문가 시스템 체험 페이지입니다. 질문에 답할수록 규칙이 후보를 좁혀 갑니다.',
     u:'https://interactive.hankookilbo.com/v/e4fe0c1ef9294bdbb8e34c3b326ec2ed/' },
-  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 전문가 시스템', sv:'rules',
-    d:'지식 베이스와 추론 엔진의 구조, 전문가 시스템의 역사와 한계를 정리한 문서입니다.',
-    u:'https://ko.wikipedia.org/wiki/전문가_시스템' },
-  { k:'em', em:'📖', b:'백과사전', t:'위키백과 — 순서도', sv:'flow',
-    d:'순서도에 쓰이는 기호와 표기 규칙을 정리한 문서입니다. 오늘 그린 순서도와 비교해 보세요.',
-    u:'https://ko.wikipedia.org/wiki/순서도' },
   { k:'em', em:'🏫', b:'사이트', t:'EBS 이솦 (EBS SW·AI)', sv:'ebs',
     d:'인공지능 개념 강좌와 실습 자료를 더 찾아볼 수 있는 사이트입니다.',
     u:'https://www.ebssw.kr' },
@@ -48833,6 +48824,49 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
 (function rhInstall(){
   'use strict';
 
+  /* 자료 종류 여섯 갈래. 차시마다 배지 글이 제각각(62가지)이라 여기서 묶습니다.
+     묶이지 않는 것은 「그 밖의 자료」로 갑니다. */
+  var KINDS = [
+    { k:'video', n:'영상',      img:'assets/refkind/K-video.jpg',
+      re:/영상|유튜브|연수/ },
+    { k:'act',   n:'웹 활동',   img:'assets/refkind/K-act.jpg',
+      re:/웹\s*활동|활동|게임|체험|경쟁|시뮬/ },
+    { k:'tool',  n:'웹 도구',   img:'assets/refkind/K-tool.jpg',
+      re:/웹\s*도구|도구$|^도구|검색|사이트|자료실|웹앱\s*모음/ },
+    { k:'eng',   n:'공학적 도구', img:'assets/refkind/K-eng.jpg',
+      re:/공학|계산\s*도구|스프레드시트|시트|콜랩|코드|지오지브라|데스모스|알지오/ },
+    { k:'data',  n:'데이터',    img:'assets/refkind/K-data.jpg',
+      re:/데이터|통계|지표|기상|공공/ },
+    { k:'app',   n:'실습앱',    img:'assets/refkind/K-app.jpg',
+      re:/실습\s*앱|웹앱|실습|앱$/ },
+    { k:'etc',   n:'그 밖의 자료', img:'assets/refkind/K-etc.jpg', re:null }
+  ];
+  /* 배지가 없는 자료는 주소로 갈라 봅니다. */
+  var BY_URL = [
+    { k:'video', re:/youtube\.com|youtu\.be|ebs|vimeo/i },
+    { k:'data',  re:/data\.go\.kr|kosis|weather|kma\.go\.kr|kaggle|data\./i },
+    { k:'eng',   re:/geogebra|desmos|algeomath|colab|docs\.google\.com\/spreadsheets|github\.io.*sheet/i },
+    { k:'app',   re:/teachablemachine|playground\.tensorflow|quickdraw|experiments\.with/i },
+    { k:'act',   re:/github\.io|\/games\/|interactive|poloclub/i },
+    { k:'tool',  re:/^https?:/i }
+  ];
+  function kindOf(badge, url){
+    var b = String(badge || '');
+    for(var i = 0; i < KINDS.length; i++){
+      if(KINDS[i].re && KINDS[i].re.test(b)) return KINDS[i].k;
+    }
+    if(!b){
+      for(var j = 0; j < BY_URL.length; j++){
+        if(BY_URL[j].re.test(String(url || ''))) return BY_URL[j].k;
+      }
+    }
+    return 'etc';
+  }
+  function kindMeta(k){
+    for(var i = 0; i < KINDS.length; i++) if(KINDS[i].k === k) return KINDS[i];
+    return KINDS[KINDS.length - 1];
+  }
+
   var UNIT_SUM = [
     '인공지능이 무엇인지부터 규칙과 학습, 퍼셉트론, 그리고 데이터가 기울면 판단도 기운다는 것까지.',
     '문장을 집합과 벡터로 옮겨 중요한 단어를 찾고, 두 글이 얼마나 비슷한지 수로 재는 단원.',
@@ -48878,7 +48912,9 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
         }
         if(!title) return;
         seen[href] = 1;
+        var bgTxt = txt(bg).slice(0, 14);
         out.push({
+          kind: kindOf(bgTxt, href),
           u: href,
           t: title,
           d: txt(ds).slice(0, 140),
@@ -48905,7 +48941,7 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
       byView[l.v].ns.push(l.n);
     });
 
-    var units = [], total = 0;
+    var units = [], total = 0, kindN = {};
     for(var i = 0; i < AIM_UNITS.length; i++) units.push({ meta: AIM_UNITS[i], rows: [], n: 0 });
 
     order.forEach(function(v){
@@ -48919,6 +48955,7 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
       slot.rows.push({ v: v, ns: info.ns.join('·'), t: info.t, refs: refs });
       slot.n += refs.length;
       total += refs.length;
+      refs.forEach(function(x){ kindN[x.kind] = (kindN[x.kind] || 0) + 1; });
     });
 
     /* ── 단원 카드 ── */
@@ -48950,6 +48987,16 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
     var cbox = document.getElementById('rh-chips');
     if(cbox) cbox.innerHTML = ch;
 
+    /* 종류 줄 — 여섯 갈래 + 그 밖의 자료 */
+    var kh = '<button type="button" class="rh-chip rh-kchip on" data-k="all">모든 종류 ' + total + '</button>';
+    KINDS.forEach(function(K){
+      if(!kindN[K.k]) return;
+      kh += '<button type="button" class="rh-chip rh-kchip" data-k="' + K.k + '">' +
+            esc(K.n) + ' ' + kindN[K.k] + '</button>';
+    });
+    var kbox = document.getElementById('rh-kinds');
+    if(kbox) kbox.innerHTML = kh;
+
     /* ── 본문 ── */
     var html = '';
     units.forEach(function(s, i){
@@ -48964,13 +49011,14 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
                   '<button type="button" class="go" data-go="' + esc(r.v) + '">차시로 가기 →</button></div>' +
                   '<div class="rh-grid">';
         r.refs.forEach(function(x){
-          var thumb = x.img ? '<img src="' + esc(x.img) + '" alt="" loading="lazy" onerror="this.remove()">'
-                    : (x.svg ? x.svg
-                    : (x.em ? '<span class="em">' + esc(x.em) + '</span>' : ''));
-          html += '<a class="rh-ref" href="' + esc(x.u) + '"' +
+          var K = kindMeta(x.kind);
+          /* 실제 화면 캡처는 112px 에서 글자가 뭉개집니다. 목록에서는 종류 삽화를
+             쓰고, 화면 캡처는 차시 안 카드에 그대로 둡니다. */
+          var thumb = '<img src="' + esc(K.img) + '" alt="" loading="lazy" onerror="this.remove()">';
+          html += '<a class="rh-ref" data-kind="' + esc(x.kind) + '" href="' + esc(x.u) + '"' +
                   (x.ext ? ' target="_blank" rel="noopener"' : '') + '>' +
                     '<span class="th">' + thumb +
-                      (x.b ? '<span class="bg">' + esc(x.b) + '</span>' : '') +
+                      '<span class="bg">' + esc(K.n) + '</span>' +
                     '</span>' +
                     '<span class="bd">' +
                       '<span class="tt">' + esc(x.t) + '</span>' +
@@ -48995,7 +49043,25 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
       root.addEventListener('click', function(e){
         var chip = e.target.closest && e.target.closest('.rh-chip');
         if(chip){
-          root.querySelectorAll('.rh-chip').forEach(function(b){ b.classList.toggle('on', b === chip); });
+          if(chip.classList.contains('rh-kchip')){
+            root.querySelectorAll('.rh-kchip').forEach(function(b){ b.classList.toggle('on', b === chip); });
+            var k = chip.getAttribute('data-k');
+            root.querySelectorAll('.rh-ref').forEach(function(a){
+              a.classList.toggle('hide', k !== 'all' && a.getAttribute('data-kind') !== k);
+            });
+            /* 한 건도 남지 않은 차시 묶음과 단원은 접어 둡니다. */
+            root.querySelectorAll('.rh-les').forEach(function(g){
+              g.classList.toggle('hide', !g.querySelector('.rh-ref:not(.hide)'));
+            });
+            root.querySelectorAll('.rh-sec').forEach(function(sec){
+              var uf = root.querySelector('.rh-chip[data-f].on');
+              var byU = uf && uf.getAttribute('data-f') !== 'all' &&
+                        sec.getAttribute('data-u') !== uf.getAttribute('data-f');
+              sec.classList.toggle('hide', byU || !sec.querySelector('.rh-les:not(.hide)'));
+            });
+            return;
+          }
+          root.querySelectorAll('.rh-chip[data-f]').forEach(function(b){ b.classList.toggle('on', b === chip); });
           var f = chip.getAttribute('data-f');
           root.querySelectorAll('.rh-sec').forEach(function(sec){
             sec.classList.toggle('hide', f !== 'all' && sec.getAttribute('data-u') !== f);

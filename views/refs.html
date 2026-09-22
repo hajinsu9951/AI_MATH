@@ -15,8 +15,10 @@
     border-radius:9999px;padding:0.3rem 0.8rem;}
 
   /* ── 단원 카드 여섯 장 ── */
-  #v-refs .rh-units{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(20rem,100%),1fr));
-    gap:0.9rem;margin:1.4rem 0 2.6rem;}
+  #v-refs .rh-units{display:grid;gap:0.9rem;margin:1.4rem 0 2.6rem;
+    grid-template-columns:repeat(auto-fill,minmax(min(17rem,100%),1fr));}
+  @media (min-width:1100px){#v-refs .rh-units{grid-template-columns:repeat(3,1fr);}}
+  @media (min-width:1500px){#v-refs .rh-units{grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));}}
   #v-refs .rh-unit{display:block;width:100%;text-align:left;padding:0;cursor:pointer;
     background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
     overflow:hidden;transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;}
@@ -65,7 +67,18 @@
   #v-refs .rh-lesh .go:hover{border-color:var(--pri);color:var(--pri);}
 
   /* ── 자료 카드 ── */
-  #v-refs .rh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(16rem,100%),1fr));gap:0.7rem;}
+  /* 화면이 넓어지면 칸이 더 들어갑니다 — 본문 폭(68rem)을 넘는 화면에서도
+     칸 크기를 유지한 채 개수만 늘립니다. */
+  #v-refs .rh-grid{display:grid;gap:0.7rem;
+    grid-template-columns:repeat(auto-fill,minmax(min(13.5rem,100%),1fr));}
+  #v-refs .rh-ref.hide{display:none;}
+  #v-refs .rh-les.hide{display:none;}
+  @media (min-width:1100px){
+    #v-refs .rh-grid{grid-template-columns:repeat(auto-fill,minmax(12.5rem,1fr));}
+  }
+  @media (min-width:1500px){
+    #v-refs .rh-grid{grid-template-columns:repeat(auto-fill,minmax(11.5rem,1fr));}
+  }
   #v-refs .rh-ref{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);
     border-radius:var(--radius);overflow:hidden;text-decoration:none;color:inherit;
     transition:border-color .18s ease, box-shadow .18s ease;}
@@ -90,12 +103,30 @@
   #v-refs .rh-note{margin-top:2rem;padding-top:1rem;border-top:1px dashed var(--border);
     font-size:0.86rem;color:var(--muted);line-height:1.75;}
 
+  #v-refs .rh-kinds{margin-top:0.4rem;}
+  #v-refs .rh-kchip{border-style:dashed;}
+  #v-refs .rh-kchip.on{border-style:solid;background:var(--fg);border-color:var(--fg);color:#fff;}
+
+  /* 태블릿(세로) */
+  @media (max-width:900px){
+    #v-refs .rh-units{grid-template-columns:repeat(auto-fill,minmax(min(15rem,100%),1fr));}
+    #v-refs .rh-grid{grid-template-columns:repeat(auto-fill,minmax(min(11rem,100%),1fr));}
+  }
+  /* 휴대폰 — 자료 칸은 두 줄, 단원 카드는 한 줄 */
   @media (max-width:640px){
     #v-refs .rh-hero h2{font-size:1.4rem;}
-    #v-refs .rh-units{gap:0.7rem;}
-    #v-refs .rh-bar{overflow-x:auto;}
+    #v-refs .rh-units{grid-template-columns:1fr;gap:0.7rem;}
+    #v-refs .rh-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0.5rem;}
+    #v-refs .rh-ref .tt{font-size:0.86rem;}
+    #v-refs .rh-ref .ds{display:none;}
+    #v-refs .rh-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;}
     #v-refs .rh-chips{flex-wrap:nowrap;}
     #v-refs .rh-chip{white-space:nowrap;}
+    #v-refs .rh-lesh .t{font-size:0.9rem;}
+  }
+  /* 아주 좁은 화면(360px 이하) */
+  @media (max-width:380px){
+    #v-refs .rh-grid{grid-template-columns:1fr;}
   }
   </style>
 
@@ -114,9 +145,10 @@
   <!-- 단원 카드 여섯 장 — core.js 가 채웁니다 -->
   <div class="rh-units" id="rh-units"></div>
 
-  <!-- 거르기 줄 -->
+  <!-- 거르기 줄 — 위는 단원, 아래는 종류 -->
   <div class="rh-bar">
     <div class="rh-chips" id="rh-chips"></div>
+    <div class="rh-chips rh-kinds" id="rh-kinds"></div>
   </div>
 
   <!-- 단원별 자료 목록 -->
