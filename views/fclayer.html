@@ -252,6 +252,13 @@
     #v-fclayer .fc-bar .k{width:3.4rem;}
     #v-fclayer .fc-bar .v{width:4.6rem;font-size:0.78rem;}
     #v-fclayer .fc-expr{font-size:0.92rem;}
+    /* 세 칸 표(탭 ③ 「관찰 — 수는 얼마나 빨리 커지는가」)가 좁은 화면에서
+       오른쪽으로 삐져나가 마지막 열이 잘렸습니다. 머리글을 줄바꿈 허용하고
+       입력칸의 최소 폭을 풀어 화면 안에 들어오게 합니다. */
+    #v-fclayer .fc-tb{font-size:0.9rem;}
+    #v-fclayer .fc-tb th,#v-fclayer .fc-tb td{padding:0.35rem 0.4rem;}
+    #v-fclayer .fc-tb th{white-space:normal;}
+    #v-fclayer .fc-tb input[type=text]{min-width:0;}
   }
   </style>
 
@@ -851,6 +858,8 @@
 
     <div class="card" data-no-toggle="1">
       <h3>관찰 — 수는 얼마나 빨리 커지는가</h3>
+      <!-- 만일의 경우를 위한 그물 — 세 칸이라 아주 좁은 화면에서는 옆으로 밀어 볼 수 있게 합니다 -->
+      <div class="fc-scroll">
       <table class="fc-tb">
         <tr><th style="width:38%;">구성</th><th>W 의 꼴</th><th>성분 개수(합계)</th></tr>
         <tr><td>784 → 10</td><td><input type="text" aria-label="꼴 1"></td><td><input type="text" aria-label="개수 1"></td></tr>
@@ -858,6 +867,7 @@
         <tr><td>784 → 256 → 10</td><td><input type="text" aria-label="꼴 3"></td><td><input type="text" aria-label="개수 3"></td></tr>
         <tr><td>224 × 224 × 3 → 128 → 2</td><td><input type="text" aria-label="꼴 4"></td><td><input type="text" aria-label="개수 4"></td></tr>
       </table>
+      </div>
       <p>은닉층 크기를 <b>2배</b>로 하면 성분 개수는 몇 배가 되나요? 이 수들이 <b>무엇을 뜻하는지</b> 한 줄로 적어 보세요.</p>
       <input type="text" id="fc-a3-obsin" style="width:100%;max-width:100%;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:0.95rem;padding:0.45rem 0.65rem;" placeholder="이 수들은 인공지능이 …">
       <div class="btn-row"><button class="btn" type="button" onclick="fcA3Obs()">모범 답안 확인</button></div>

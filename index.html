@@ -597,14 +597,25 @@ nav{position:relative;}
 .hm-no .badge{display:inline-block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;
   color:var(--muted);border:1px dashed var(--border);border-radius:9999px;padding:0.15rem 0.55rem;margin-top:0.5rem;}
 
-/* ═══════ 뷰 표제부 워터마크 (홈 카드 SVG 재사용) ═══════ */
+/* ═══════ 뷰 표제부 삽화 ═══════
+   차시마다 따로 만든 정사각 삽화(assets/lesson/Lnn.jpg)를 표제부 오른쪽에 둡니다.
+   예전에는 같은 자리에 홈 카드 SVG 를 불투명도 0.1 로 깔았는데, 그림이 거의
+   보이지 않아 장식 구실만 했습니다. 이제 제 모습으로 보여 주고, 그림이 아직
+   없거나 못 내려온 차시는 예전처럼 옅은 SVG 워터마크로 되돌아갑니다.
+   right 를 음수로 두면 표제부 밖으로 삐져나가 scrollWidth 를 넓히므로
+   (구동 QA D8) 안쪽 오른쪽 끝에 맞춥니다. */
 .vw-wrap{position:relative;}
-/* right 를 음수로 두면 장식 SVG 가 표제부 밖으로 0.6rem(≈12px) 삐져나가
-   scrollWidth 를 넓힙니다(구동 QA D8 — 3차시 .lg-hd 는 overflow:hidden 이라 그만큼 잘렸습니다).
-   워터마크는 안쪽 오른쪽 끝에 맞춥니다. */
-.vw-mark{position:absolute;top:-1.4rem;right:0;width:min(19rem,42%);opacity:0.1;
-  pointer-events:none;z-index:0;}
+.vw-mark{position:absolute;top:-0.4rem;right:0;width:min(11rem,26%);
+  pointer-events:none;z-index:0;border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.vw-mark img{display:block;width:100%;height:auto;}
 .vw-mark svg{display:block;width:100%;height:auto;}
+.vw-mark.has-img svg{display:none;}
+/* 그림이 없으면 예전 워터마크 모습으로 */
+.vw-mark:not(.has-img){opacity:0.1;border:0;box-shadow:none;background:none;
+  width:min(19rem,42%);top:-1.4rem;}
+/* 삽화가 앉을 자리만큼 글줄을 물립니다 — 활동 줄(.tabs)은 건드리지 않습니다. */
+.vw-wrap>p,.vw-wrap>h2{padding-right:min(12.5rem,30%);}
 .vw-wrap>*:not(.vw-mark){position:relative;z-index:1;}
 /* 1·2차시는 활동 줄이 .vw-wrap 안에 있어 바로 윗줄에 눌려 고정이 풀립니다. 그 한 줄만 예외로 둡니다. */
 .vw-wrap>.tabs{position:sticky;top:var(--aim-hdr,81px);z-index:90;}
@@ -624,7 +635,13 @@ nav{position:relative;}
   .tab.aim-just{animation:none;}
   .tabs.aim-moved{transition:none;}
 }
-@media(max-width:760px){.vw-mark{display:none;}}
+/* 좁은 화면에서는 감추지 않고 제목 위 한 칸으로 내려 세웁니다 —
+   그림이 차시를 알아보는 표시 구실을 하므로 휴대폰에서도 보여 줍니다. */
+@media(max-width:760px){
+  .vw-mark{position:static;width:100%;max-width:11rem;margin:0 0 0.9rem;top:auto;right:auto;}
+  .vw-mark:not(.has-img){display:none;}
+  .vw-wrap>p,.vw-wrap>h2{padding-right:0;}
+}
 
 /* 「일반화 · 내 문장으로」 산출 칸 (흥미·탐구 C-5) */
 .aim-rf .aim-rf-ta{width:100%;min-height:5rem;resize:vertical;border:1px solid var(--border);

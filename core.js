@@ -39762,8 +39762,10 @@ function mmHandGrid(el, n, m){
   for(let i = 0; i < n; i++){
     for(let j = 0; j < m; j++){
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'c';
-      b.innerHTML = '<input type="number" step="1" aria-label="' + (i+1) + '행 ' + (j+1) + '열">';
+      /* .hand — 입력칸이 든 칸입니다. 칸 폭·입력칸 폭을 함께 묶어 두기 위한 표시입니다
+         (matmul.html 의 .mg .c.hand 규칙). 없으면 좁은 화면에서 입력칸이 칸을 뚫고 나갑니다. */
+      b.type = 'button'; b.className = 'c hand';
+      b.innerHTML = '<input type="number" step="1" inputmode="numeric" aria-label="' + (i+1) + '행 ' + (j+1) + '열">';
       el.appendChild(b);
     }
   }
@@ -48577,6 +48579,11 @@ function wireTabFlow(root){
   const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
   const HEAD = 72;
   const FOLLOWS = (a,b)=> (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)!==0;
+  /* 문서 기준 위치 — .tabs 는 position:sticky 라서 getBoundingClientRect() 는
+     「붙어 있는 자리」를 돌려줍니다. 소단원을 닫고 여는 사이 그 값이 음수가 되면
+     Math.max(0,…) 가 0 으로 접혀 화면이 맨 위까지 되감겼습니다.
+     offsetTop 은 sticky 와 무관한 제자리 값이므로 그것을 씁니다. */
+  const docTop = el =>{ let y=0; for(let n=el; n; n=n.offsetParent) y += n.offsetTop; return y; };
   const isStep3 = k => [...k.classList].some(c=>c.endsWith('-step')) &&
                        /^STEP\s*3/.test((k.textContent||'').trim());
 
@@ -48649,7 +48656,7 @@ function wireTabFlow(root){
         try{window.dispatchEvent(new Event('resize'));}catch(e){}
         if(scroll){
           const t=head||panels[n-1];
-          const top=Math.max(0, t.getBoundingClientRect().top+window.scrollY-HEAD);
+          const top=Math.max(0, docTop(t)-HEAD);
           window.scrollTo({top, behavior:REDUCED?'auto':'smooth'});
         }
         return true;
@@ -48659,11 +48666,18 @@ function wireTabFlow(root){
       const openTab=i=>{
         const b=btns[i]; if(!b) return;
         b.click();
-        const top=Math.max(0, tabs.getBoundingClientRect().top+window.scrollY-HEAD);
         down=0; settle=Date.now()+900;
-        window.scrollTo({top, behavior:REDUCED?'auto':'smooth'});
         b.classList.add('tab-jumped');
         setTimeout(()=>b.classList.remove('tab-jumped'), 1700);
+        /* 탭을 바꾸면 소단원이 닫히고 열리며 문서 높이가 크게 바뀝니다.
+           그 전에 잰 값으로 옮기면 엉뚱한 자리로 가므로, 한 프레임 기다려
+           자리가 잡힌 뒤 다시 재서 옮깁니다. */
+        const move=()=>{
+          const top=Math.max(0, docTop(tabs)-HEAD);
+          window.scrollTo({top, behavior:REDUCED?'auto':'smooth'});
+          down=0; settle=Date.now()+900;
+        };
+        requestAnimationFrame(()=>requestAnimationFrame(move));
       };
       btns.forEach(b=>b.addEventListener('click',()=>{ down=0; settle=Date.now()+900; }));
 
@@ -48708,11 +48722,14 @@ function wireTabFlow(root){
           if(bar.dataset.done) return;
           if(!bar.offsetParent){ wasVis=false; armedAt=0; bar.classList.remove('is-armed'); return; }
           if(!wasVis){ wasVis=true; down=0; armedAt=0; return; }
-          if(down < 150){ armedAt=0; bar.classList.remove('is-armed'); return; }
+          if(down < 240){ armedAt=0; bar.classList.remove('is-armed'); return; }
           const doc=document.documentElement;
           const atEnd = doc.scrollHeight - window.scrollY - innerHeight < 40;
           const r=bar.getBoundingClientRect();
-          if(atEnd || r.top <= innerHeight*0.8){
+          /* 띠가 화면에 통째로 들어왔거나 문서 바닥에 닿았을 때만 넘깁니다.
+             윗변만 보이면 되던 이전 기준은, 화면에 다 들어오는 짧은 소단원에서
+             들어서는 순간 이미 충족돼 첫 스크롤에 탭이 저절로 넘어갔습니다. */
+          if(atEnd || (r.bottom <= innerHeight - 8 && r.top >= 0)){
             bar.classList.add('is-armed');
             if(!armedAt) armedAt=Date.now();
             else if(Date.now()-armedAt >= 700) fire();
@@ -48727,3 +48744,54 @@ function wireTabFlow(root){
   });
 }
 setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
+
+/* ═══════════════════════════════════════════════════════════════════════
+   표제부 삽화 — 차시별 그림을 .vw-mark 안에 넣습니다.
+   예전에는 홈 카드 SVG 를 불투명도 0.1 로 깔아 두어 그림이 거의 보이지
+   않았습니다. 이제 차시마다 따로 만든 assets/lesson/Lnn.jpg 를 얹고,
+   그림이 없거나 못 내려온 차시는 예전 SVG 워터마크로 그대로 남습니다.
+   (캐시에서 바로 온 그림은 onload 가 늦거나 오지 않으므로
+    complete·naturalWidth 로 한 번 더 확인합니다 — 홈 카드에서 겪은 일입니다.)
+   ═══════════════════════════════════════════════════════════════════════ */
+(function aimHeadArt(){
+  'use strict';
+  var pad = function(n){ return ('0' + n).slice(-2); };
+  function mark(el){ if(el) el.classList.add('has-img'); }
+  function fill(){
+    if(typeof AIM_LESSONS === 'undefined' || !Array.isArray(AIM_LESSONS)) return;
+    var seen = {};
+    AIM_LESSONS.forEach(function(l){
+      if(!l || !l.v || seen[l.v]) return;
+      seen[l.v] = 1;                       /* 7·8차시처럼 한 뷰를 나눠 쓰면 앞 차시 그림 */
+      var view = document.getElementById('v-' + l.v);
+      if(!view) return;
+      var box = view.querySelector('.vw-mark');
+      if(!box || box.dataset.art) return;
+      var n = parseInt(l.n, 10);
+      if(!n) return;
+      box.dataset.art = '1';
+      var img = document.createElement('img');
+      img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+      img.addEventListener('load', function(){ mark(box); });
+      img.addEventListener('error', function(){ try{ img.remove(); }catch(e){} });
+      img.src = 'assets/lesson/L' + pad(n) + '.jpg';
+      box.insertBefore(img, box.firstChild);
+      if(img.complete && img.naturalWidth > 0) mark(box);
+    });
+  }
+  function boot(){
+    fill();
+    /* 뷰가 나중에 끼워지는 경우(매니페스트 안전망 등)도 받습니다. */
+    var host = document.getElementById('views') || document.body;
+    var t = null;
+    try{
+      new MutationObserver(function(){
+        if(t) return;
+        t = setTimeout(function(){ t = null; fill(); }, 200);
+      }).observe(host, {childList:true, subtree:true});
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.aimHeadArt = fill;
+})();

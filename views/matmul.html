@@ -149,6 +149,28 @@
     #v-matmul .mat td{font-size:0.85rem;padding:0.08rem 0.3rem;min-width:1.3rem;}
     #v-matmul .mm-keys .chip{font-size:1.0rem;padding:0.5rem 0.95rem;}
   }
+
+  /* ── 손으로 채우는 칸(mmHandGrid) ────────────────────────────────────────
+     칸 안에 <input>이 들어갑니다. 폭을 묶어 두지 않으면 브라우저 기본 폭
+     (약 166px)이 나와 1.55rem짜리 칸을 뚫고 화면 밖까지 번져 나갑니다.
+     보이기만 하는 칸보다 조금 크게 잡아 손가락으로도 누를 수 있게 합니다.
+     (앞의 좁은 화면 규칙보다 뒤에 두어야 이깁니다 — 명시도가 같습니다.) */
+  #v-matmul .mg .c.hand,
+  #v-matmul .mg.sm .c.hand,
+  #v-matmul .mg.xs .c.hand{width:3rem;height:2.7rem;padding:0;overflow:hidden;}
+  #v-matmul .mg .c.hand input{width:100%;max-width:100%;min-width:0;height:100%;
+    box-sizing:border-box;margin:0;padding:0 0.1rem;border:0;background:transparent;
+    color:inherit;font-family:var(--mono);font-size:0.95rem;text-align:center;
+    -moz-appearance:textfield;appearance:textfield;}
+  #v-matmul .mg .c.hand input::-webkit-outer-spin-button,
+  #v-matmul .mg .c.hand input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #v-matmul .mg .c.hand input:focus{outline:2px solid var(--pri);outline-offset:-2px;}
+  @media (max-width:640px){
+    #v-matmul .mg .c.hand,
+    #v-matmul .mg.sm .c.hand,
+    #v-matmul .mg.xs .c.hand{width:2.7rem;height:2.5rem;}
+    #v-matmul .mg .c.hand input{font-size:0.9rem;}
+  }
   </style>
 
   <!-- ═════ 표제부 ═════ -->
