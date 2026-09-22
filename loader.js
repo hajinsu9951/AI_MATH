@@ -15,7 +15,7 @@
      보이지 않습니다. 서비스워커를 지워도 마찬가지였습니다.
      sw.js 의 CACHE_NAME 과 같은 값을 붙여 한 번 새로 고치면 바로 보이게 합니다.
      ※ 내용을 고칠 때는 sw.js 의 CACHE_NAME 과 이 값을 함께 올립니다. */
-  const BUILD = (typeof window !== 'undefined' && window.AIM_BUILD) || 'v117';
+  const BUILD = (typeof window !== 'undefined' && window.AIM_BUILD) || 'v118';
 
   const container = document.getElementById('views');
   if (!container) return;

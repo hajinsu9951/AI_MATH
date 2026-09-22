@@ -119,13 +119,18 @@
     #v-refs .rh-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0.5rem;}
     #v-refs .rh-ref .tt{font-size:0.86rem;}
     #v-refs .rh-ref .ds{display:none;}
-    #v-refs .rh-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-    #v-refs .rh-chips{flex-wrap:nowrap;}
-    #v-refs .rh-chip{white-space:nowrap;}
+    /* 칩 줄은 옆으로 밀어 봅니다. 스크롤을 바깥 상자(.rh-bar)에 걸면
+       position:sticky 와 부딪혀 칩 전체 폭(1,067px)이 문서를 밀어냅니다 —
+       스크롤은 칩 줄 자신에게 줍니다. */
+    #v-refs .rh-bar{overflow:visible;}
+    #v-refs .rh-chips{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;scrollbar-width:none;max-width:100%;}
+    #v-refs .rh-chips::-webkit-scrollbar{display:none;}
+    #v-refs .rh-chip{white-space:nowrap;flex:0 0 auto;}
     #v-refs .rh-lesh .t{font-size:0.9rem;}
   }
-  /* 아주 좁은 화면(360px 이하) */
-  @media (max-width:380px){
+  /* 아주 좁은 화면 — 375px 흔한 휴대폰은 두 줄을 지키고, 그보다 좁을 때만 한 줄 */
+  @media (max-width:340px){
     #v-refs .rh-grid{grid-template-columns:1fr;}
   }
   </style>
