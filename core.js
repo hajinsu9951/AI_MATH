@@ -49117,3 +49117,34 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
   else boot();
   window.aimBuildRefs = build;
 })();
+
+
+/* ── 교사 전용 자료 가리기 ──────────────────────────────────────────────
+   .aim-teacher 가 붙은 카드는 평소에는 화면에서 지웁니다.
+   주소 끝에 ?teacher=1 을 한 번 붙여 열면 이 기기에서는 계속 보이고,
+   ?teacher=0 으로 다시 끕니다.
+   ※ 이 사이트는 공개 페이지라 파일 자체를 감출 수는 없습니다.
+      학생 화면에 뜨지 않게 하는 장치이지 접근 차단이 아닙니다. */
+(function aimTeacherGate(){
+  'use strict';
+  var KEY = 'aim.teacher';
+  try{
+    var q = new URLSearchParams(location.search).get('teacher');
+    if(q === '1') localStorage.setItem(KEY, '1');
+    else if(q === '0') localStorage.removeItem(KEY);
+  }catch(e){}
+  var on = false;
+  try{ on = localStorage.getItem(KEY) === '1'; }catch(e){}
+  if(on){ document.documentElement.classList.add('aim-teacher-on'); return; }
+
+  function strip(root){
+    (root || document).querySelectorAll('.aim-teacher').forEach(function(el){ el.remove(); });
+  }
+  function boot(){
+    strip();
+    /* 차시 화면이 뒤늦게 붙는 경우가 있어 잠깐 더 지켜봅니다. */
+    var t = 0, id = setInterval(function(){ strip(); if(++t > 12) clearInterval(id); }, 400);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
