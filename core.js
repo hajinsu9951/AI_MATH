@@ -48899,13 +48899,19 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
            !/^(assets|games|notebooks|docs)\//i.test(href)) return;
         if(seen[href]) return;
         var th = a.querySelector('.th');
-        var img = th && th.querySelector('img');
+        /* 썸네일 칸이 따로 없는 차시도 있어, 링크 안의 그림을 마지막에 한 번 더 찾습니다. */
+        var img = (th && th.querySelector('img')) || a.querySelector('img');
         var svg = th && th.querySelector('svg');
         var em  = a.querySelector('.em') || (th && th.querySelector('.em'));
         var tt  = a.querySelector('.tt, .t');
         var ds  = a.querySelector('.ds, .d');
         var bg  = a.querySelector('.bg, .b');
-        var title = txt(tt);
+        /* data-rt / data-rimg — 차시 화면의 '열기' 단추처럼 글자만으로는
+           무엇을 하는 자료인지 알 수 없을 때, 참고 자료 화면에 쓸 제목과
+           그림을 링크에 따로 적어 둡니다. */
+        var ovT = a.getAttribute('data-rt');
+        var ovI = a.getAttribute('data-rimg');
+        var title = ovT || txt(tt);
         if(!title){
           /* 제목 칸이 따로 없는 차시 — 링크 글월의 첫 줄을 씁니다. */
           title = txt(a).slice(0, 60);
@@ -48919,7 +48925,7 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
           t: title,
           d: txt(ds).slice(0, 140),
           b: txt(bg).slice(0, 14),
-          img: img ? img.getAttribute('src') : '',
+          img: ovI || (img ? img.getAttribute('src') : ''),
           svg: (!img && svg) ? svg.outerHTML : '',
           em: (!img && !svg && em) ? txt(em) : '',
           ext: /^https?:/i.test(href)
