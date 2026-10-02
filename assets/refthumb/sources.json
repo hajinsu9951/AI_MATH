@@ -1,0 +1,77 @@
+{
+ "data": {
+  "file": "BalticServers data center.jpg",
+  "thumb": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/BalticServers_data_center.jpg/1280px-BalticServers_data_center.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "page": "https://commons.wikimedia.org/wiki/File:BalticServers_data_center.jpg",
+  "artist": "BalticServers.com",
+  "license": "CC BY-SA 3.0",
+  "licurl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "credit": "Self-photographed",
+  "saved": "p-data.jpg",
+  "bytes": 60017
+ },
+ "globe": {
+  "file": "The Blue Marble, AS17-148-22727.jpg",
+  "thumb": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/The_Blue_Marble%2C_AS17-148-22727.jpg/1280px-The_Blue_Marble%2C_AS17-148-22727.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "page": "https://commons.wikimedia.org/wiki/File:The_Blue_Marble,_AS17-148-22727.jpg",
+  "artist": "Harrison Schmitt / Apollo 17",
+  "license": "Public domain",
+  "licurl": "",
+  "credit": "https://tothemoon.im-ldi.com/gallery/Apollo/17/6#AS17-148-22727",
+  "saved": "p-globe.jpg",
+  "bytes": 78941
+ },
+ "news": {
+  "file": "A stack of newspapers.jpg",
+  "thumb": "https://upload.wikimedia.org/wikipedia/commons/1/10/A_stack_of_newspapers.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "page": "https://commons.wikimedia.org/wiki/File:A_stack_of_newspapers.jpg",
+  "artist": "Daniel R. Blume from Orange County, California, USA",
+  "license": "CC BY-SA 2.0",
+  "licurl": "https://creativecommons.org/licenses/by-sa/2.0",
+  "credit": "A stack of newspapers",
+  "saved": "p-news.jpg",
+  "bytes": 57784
+ },
+ "doc": {
+  "file": "Library stacks of books and bookshelf.jpg",
+  "thumb": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Library_stacks_of_books_and_bookshelf.jpg/1280px-Library_stacks_of_books_and_bookshelf.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "page": "https://commons.wikimedia.org/wiki/File:Library_stacks_of_books_and_bookshelf.jpg",
+  "artist": "Shixart1985",
+  "license": "CC BY 2.0",
+  "licurl": "https://creativecommons.org/licenses/by/2.0",
+  "credit": "Own work",
+  "saved": "p-doc.jpg",
+  "bytes": 61717
+ },
+ "site": {
+  "file": "Laptop on a neat desk (Unsplash).jpg",
+  "thumb": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Laptop_on_a_neat_desk_%28Unsplash%29.jpg/1280px-Laptop_on_a_neat_desk_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "page": "https://commons.wikimedia.org/wiki/File:Laptop_on_a_neat_desk_(Unsplash).jpg",
+  "artist": "Norbert Levajsics levajsics",
+  "license": "CC0",
+  "licurl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "credit": "https://unsplash.com/photos/7xGwQp2-SxY Image at the Wayback Machine Gallery at ",
+  "saved": "p-site.jpg",
+  "bytes": 26313
+ },
+ "weather": {
+  "file": "Anemometer.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Anemometer.jpg",
+  "artist": "Stefan Kühn",
+  "license": "CC BY 3.0",
+  "licurl": "https://creativecommons.org/licenses/by/3.0",
+  "saved": "p-weather.jpg",
+  "bytes": 26738
+ },
+ "photo": {
+  "file": "Leica M11 with Summicron-M 50mm F2 lens.jpg",
+  "thumb": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Leica_M11_with_Summicron-M_50mm_F2_lens.jpg/1280px-Leica_M11_with_Summicron-M_50mm_F2_lens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "page": "https://commons.wikimedia.org/wiki/File:Leica_M11_with_Summicron-M_50mm_F2_lens.jpg",
+  "artist": "Peachyeung316",
+  "license": "CC BY-SA 4.0",
+  "licurl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "credit": "Own work",
+  "saved": "p-photo.jpg",
+  "bytes": 35531
+ }
+}

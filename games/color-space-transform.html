@@ -1,0 +1,810 @@
+<!-- RGB → HSV / HSL 색공간 변환 시각화 교구 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>색공간 변환 실험실 · RGB → HSV / HSL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg:#080810;
+    --bg2:#0e0e18;
+    --panel:#12121e;
+    --panel2:#181826;
+    --line:#24243a;
+    --ink:#ececf6;
+    --mut:#8f8fac;
+    --dim:#5f5f78;
+    --peri:#8ea0ff;      /* UI 강조: 색 스펙트럼이 아닌 곳에만 최소로 */
+    --peri-d:#5566cc;
+    --warn:#ffd27a;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Space Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(1100px 700px at 78% -10%, #16162a 0%, rgba(22,22,42,0) 55%),
+      radial-gradient(900px 600px at -5% 110%, #131322 0%, rgba(19,19,34,0) 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--disp);
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  .wrap{display:grid;grid-template-columns:1fr 384px;grid-template-rows:auto 1fr;height:100vh;height:100dvh}
+  header{
+    grid-column:1/3;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+    padding:14px 22px;border-bottom:1px solid var(--line);background:rgba(10,10,18,.6);backdrop-filter:blur(6px);
+  }
+  header h1{font-size:17px;font-weight:600;letter-spacing:.2px;margin:0}
+  header h1 b{color:var(--peri)}
+  header .sub{font-size:12.5px;color:var(--mut);font-family:var(--mono)}
+  header .spacer{flex:1}
+  header .step-tag{
+    font-family:var(--mono);font-size:11.5px;padding:4px 11px;border-radius:999px;
+    border:1px solid var(--line);color:var(--mut);white-space:nowrap;transition:all .25s;
+  }
+  header .step-tag.on{border-color:var(--peri-d);color:#dfe4ff;background:rgba(94,110,220,.12)}
+
+  /* --- 3D 무대 --- */
+  .stage{position:relative;background:radial-gradient(80% 80% at 50% 42%, #0d0d18 0%, #070710 100%);overflow:hidden}
+  #gl{display:block;width:100%;height:100%;cursor:grab}
+  #gl:active{cursor:grabbing}
+  .hud{position:absolute;left:16px;bottom:14px;font-family:var(--mono);font-size:11.5px;color:var(--dim);pointer-events:none;line-height:1.6}
+  .hud b{color:var(--mut)}
+  .phase{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:12px;letter-spacing:.3px;
+    padding:7px 16px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(12,12,22,.72);backdrop-filter:blur(4px);color:var(--ink);text-align:center;white-space:nowrap;
+  }
+  .phase .lin{color:#7fe0c0}.phase .non{color:#ff9ec7}
+  .viewbtns{position:absolute;top:12px;right:12px;display:flex;gap:6px}
+  .viewbtns button{
+    font-family:var(--mono);font-size:11px;color:var(--mut);background:rgba(18,18,30,.8);
+    border:1px solid var(--line);border-radius:8px;padding:6px 9px;cursor:pointer;transition:.15s;
+  }
+  .viewbtns button:hover{color:var(--ink);border-color:var(--peri-d)}
+
+  /* --- 사이드바 --- */
+  .side{background:linear-gradient(180deg,var(--bg2),var(--bg));border-left:1px solid var(--line);overflow-y:auto;overflow-x:hidden}
+  .side::-webkit-scrollbar{width:9px}
+  .side::-webkit-scrollbar-thumb{background:#22223a;border-radius:9px;border:2px solid var(--bg2)}
+  .sec{padding:16px 18px;border-bottom:1px solid var(--line)}
+  .sec h2{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin:0 0 12px;font-weight:600}
+
+  /* 색 미리보기 */
+  .swatchrow{display:flex;gap:13px;align-items:center;margin-bottom:14px}
+  .swatch{width:58px;height:58px;border-radius:12px;flex:none;box-shadow:0 6px 20px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.09)}
+  .swatch-info{font-family:var(--mono);font-size:12.5px;line-height:1.65;color:var(--mut)}
+  .swatch-info b{color:var(--ink);font-weight:600}
+
+  /* 슬라이더 */
+  .slider{margin:12px 0}
+  .slider .lab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;margin-bottom:5px}
+  .slider .lab .nm{font-weight:600}
+  .slider .lab .val{color:var(--mut)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:7px;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:#fff;border:2px solid #101018;box-shadow:0 1px 5px rgba(0,0,0,.6);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#fff;border:2px solid #101018;cursor:pointer}
+  #rR{background:linear-gradient(90deg,#200,#f33)}
+  #rG{background:linear-gradient(90deg,#020,#3f3)}
+  #rB{background:linear-gradient(90deg,#002,#48f)}
+  #morph{background:linear-gradient(90deg,#7fe0c0,#8ea0ff,#ff9ec7)}
+
+  .presets{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+  .presets button{width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.14);cursor:pointer;padding:0;transition:transform .1s}
+  .presets button:hover{transform:scale(1.14)}
+
+  .segrow{display:flex;gap:7px;margin-top:4px;flex-wrap:wrap}
+  .seg{flex:1;min-width:74px;font-family:var(--mono);font-size:11.5px;text-align:center;padding:8px 4px;border-radius:9px;border:1px solid var(--line);color:var(--mut);background:var(--panel);cursor:pointer;transition:.15s}
+  .seg:hover{color:var(--ink)}
+  .seg.on{border-color:var(--peri-d);color:#e6eaff;background:rgba(94,110,220,.14)}
+
+  .playbar{display:flex;gap:8px;margin-top:12px}
+  .playbar button{flex:1;font-family:var(--mono);font-size:12px;padding:9px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;transition:.15s}
+  .playbar button:hover{border-color:var(--peri-d);background:var(--panel2)}
+  .playbar button.primary{background:rgba(94,110,220,.16);border-color:var(--peri-d);color:#e6eaff}
+
+  /* 대수식 패널 */
+  .math{font-family:var(--mono);font-size:12.5px;line-height:1.55}
+  .eq{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:11px}
+  .eq .t{color:var(--dim);font-size:11px;letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
+  .eq .f{color:var(--ink)}
+  .eq .r{color:var(--peri);font-weight:600}
+  .eq .why{color:var(--mut);font-size:11.5px;line-height:1.5;margin-top:7px;font-family:var(--disp)}
+  .eq.hi{border-color:var(--peri-d);box-shadow:0 0 0 1px rgba(94,110,220,.25)}
+  .branch{opacity:.34;transition:opacity .2s}
+  .branch.on{opacity:1}
+  .branch.on .arrow{color:var(--warn)}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+  .kv .k{color:var(--mut)}.kv .v{color:var(--ink);font-weight:600}
+  .num{color:#ffd27a}
+
+  .legend{font-family:var(--mono);font-size:11.5px;color:var(--mut);line-height:1.7}
+  .legend .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}
+
+  /* 유도 과정 (접기/펼치기) */
+  .derivToggle{
+    width:100%;text-align:left;margin-top:4px;font-family:var(--mono);font-size:11.5px;
+    color:var(--peri);background:rgba(94,110,220,.08);border:1px solid var(--line);
+    border-radius:9px;padding:9px 12px;cursor:pointer;transition:.15s;
+  }
+  .derivToggle:hover{background:rgba(94,110,220,.15);border-color:var(--peri-d)}
+  .derivToggle.open{color:#e6eaff;border-color:var(--peri-d)}
+  .deriv{margin-top:10px;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .deriv .goal{
+    font-family:var(--disp);font-size:12px;line-height:1.6;color:var(--mut);
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--peri-d);
+    border-radius:8px;padding:10px 12px;margin:0 0 12px;
+  }
+  .deriv .goal b{color:var(--ink)}
+  .dstep{margin-bottom:14px;font-family:var(--mono);font-size:12px}
+  .dstep>b{color:var(--ink)}
+  .dstep .dn{
+    display:inline-block;min-width:20px;height:20px;line-height:20px;text-align:center;
+    border-radius:6px;background:rgba(94,110,220,.18);color:var(--peri);
+    font-weight:600;margin-right:8px;font-size:11px;
+  }
+  .dstep .tag{font-size:10px;color:var(--dim);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px}
+  .dm{color:var(--mut);padding:3px 0 0 28px;line-height:1.55}
+  .dm.res{color:#ffd27a}
+  .dm.res b{color:#ffd27a}
+  .dm.chk{color:var(--dim);font-style:italic}
+  .dm.why2{font-family:var(--disp);font-size:11.5px;color:var(--mut);line-height:1.55}
+  .dm.why2 b{color:#dfe4ff}
+  .dstep b{font-weight:600}
+  /* 단계별 해설 토글 */
+  .expl-toggle{
+    margin:8px 0 0 28px;font-family:var(--mono);font-size:10.5px;color:var(--peri);
+    background:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;cursor:pointer;transition:.15s;
+  }
+  .expl-toggle:hover{background:rgba(94,110,220,.14);border-color:var(--peri-d)}
+  .expl-toggle.open{color:#e6eaff;background:rgba(94,110,220,.14);border-color:var(--peri-d)}
+  .expl{
+    margin:8px 0 2px 28px;padding:11px 13px;border-radius:9px;
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--peri-d);
+    animation:fade .2s ease;
+  }
+  .expl p{font-family:var(--disp);font-size:12px;line-height:1.62;color:var(--mut);margin:0 0 9px}
+  .expl p:last-child{margin-bottom:0}
+  .expl b{color:#e6eaff;font-weight:600}
+  /* 핵심 개념 카드 */
+  .concept{margin-bottom:10px}
+  .cToggle{
+    width:100%;text-align:left;font-family:var(--mono);font-size:11.5px;color:var(--peri);
+    background:rgba(94,110,220,.08);border:1px solid var(--line);border-radius:9px;
+    padding:9px 12px;cursor:pointer;transition:.15s;line-height:1.4;
+  }
+  .cToggle:hover{background:rgba(94,110,220,.16);border-color:var(--peri-d)}
+  .cToggle.open{color:#e6eaff;border-color:var(--peri-d);background:rgba(94,110,220,.16)}
+  .cBody{
+    margin-top:8px;padding:12px 14px;border-radius:9px;
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--peri-d);
+    animation:fade .2s ease;
+  }
+  .cBody p{font-family:var(--disp);font-size:12px;line-height:1.64;color:var(--mut);margin:0 0 10px}
+  .cBody p:last-child{margin-bottom:0}
+  .cBody b{color:#e6eaff;font-weight:600}
+  .cBody u{text-decoration-color:var(--peri)}
+  .cf{
+    font-family:var(--mono);font-size:12px;color:#ffd27a;background:var(--bg);
+    border:1px solid var(--line);border-radius:7px;padding:7px 10px;margin:8px 0;overflow-x:auto;
+  }
+
+  @media(max-width:940px){
+    .wrap{grid-template-columns:1fr;grid-template-rows:auto 52vh 1fr}
+    .side{border-left:none;border-top:1px solid var(--line)}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><b>색공간 변환 실험실</b> · RGB → HSV / HSL</h1>
+    <span class="sub">기저변환(회전) + 극좌표(비선형)의 합성으로 이해하기</span>
+    <span class="spacer"></span>
+    <span class="step-tag" id="tagLin">1 · 선형 회전</span>
+    <span class="step-tag" id="tagNon">2 · 비선형 변형</span>
+  </header>
+
+  <div class="stage">
+    <canvas id="gl"></canvas>
+    <div class="phase" id="phaseTxt">RGB 큐브</div>
+    <div class="viewbtns">
+      <button id="btnTop">회색축에서 내려다보기</button>
+      <button id="btnReset">시점 초기화</button>
+    </div>
+    <div class="hud">
+      <b>드래그</b> 회전 · <b>휠</b> 확대/축소 · <b>큰 점</b> = 선택한 색<br>
+      <span id="hudExtra"></span>
+    </div>
+  </div>
+
+  <div class="side">
+    <!-- 색 선택 -->
+    <div class="sec">
+      <h2>입력 색 (RGB)</h2>
+      <div class="swatchrow">
+        <div class="swatch" id="sw"></div>
+        <div class="swatch-info" id="swInfo"></div>
+      </div>
+      <div class="slider">
+        <div class="lab"><span class="nm" style="color:#ff6b6b">R</span><span class="val" id="vR"></span></div>
+        <input type="range" id="rR" min="0" max="255" value="230">
+      </div>
+      <div class="slider">
+        <div class="lab"><span class="nm" style="color:#6bd66b">G</span><span class="val" id="vG"></span></div>
+        <input type="range" id="rG" min="0" max="255" value="126">
+      </div>
+      <div class="slider">
+        <div class="lab"><span class="nm" style="color:#6b9bff">B</span><span class="val" id="vB"></span></div>
+        <input type="range" id="rB" min="0" max="255" value="34">
+      </div>
+      <div class="presets" id="presets"></div>
+    </div>
+
+    <!-- 변환 컨트롤 -->
+    <div class="sec">
+      <h2>변환</h2>
+      <div class="segrow" id="targetSeg">
+        <div class="seg on" data-t="hsv">HSV (원뿔)</div>
+        <div class="seg" data-t="hsvcyl">HSV (원기둥)</div>
+        <div class="seg" data-t="hsl">HSL (이중원뿔)</div>
+      </div>
+      <div class="slider" style="margin-top:14px">
+        <div class="lab"><span class="nm">모핑</span><span class="val"><span class="lin" style="color:#7fe0c0">RGB</span> → <span class="non" style="color:#ff9ec7" id="tgtName">HSV</span></span></div>
+        <input type="range" id="morph" min="0" max="1000" value="0">
+      </div>
+      <div class="playbar">
+        <button class="primary" id="btnPlay">▶ 변환 재생</button>
+        <button id="btnBack">◀ 되돌리기</button>
+      </div>
+    </div>
+
+    <!-- 대수식 -->
+    <div class="sec">
+      <h2>Step 1 · 선형 기저변환 (회전)</h2>
+      <div class="math" id="mathLin"></div>
+      <button class="derivToggle" id="derivBtn">▸ 정규직교 기저는 어떻게 유도되나? (자세히)</button>
+      <div class="deriv" id="derivBox" hidden>
+        <p class="goal">목표 &nbsp;색 벡터 <b>(R,G,B)</b>를 ① <b>회색축 방향</b> 성분과 ② 회색축에 <b>수직인 색도평면</b> 성분으로 나누고 싶다. 이를 위해 서로 직교하는 단위벡터 3개(정규직교기저)를 만든다. <span style="color:var(--peri)">각 단계의 “＋ 해설”을 누르면 자세한 풀이가 나옵니다.</span></p>
+
+        <div class="dstep"><span class="dn">①</span> <b>회색축 방향 n</b>
+          <div class="dm">무채색은 R=G=B, 즉 (a,a,a)=a·(1,1,1) → 방향은 (1,1,1)</div>
+          <div class="dm">크기 |(1,1,1)| = √(1²+1²+1²) = √3</div>
+          <div class="dm res">∴ <b>n = (1,1,1)/√3</b></div>
+          <button class="expl-toggle">＋ 해설</button>
+          <div class="expl" hidden>
+            <p><b>왜 회색축부터?</b> 색공간을 정리할 때 가장 먼저 필요한 건 “기준이 되는 세로축”입니다. 회색(무채색)은 색기운이 전혀 없고 오직 밝기만 다른 색이므로, 이 축을 기둥으로 삼으면 나머지를 “그 기둥에서 얼마나·어느 방향으로 벗어났는가”로 말할 수 있습니다.</p>
+            <p><b>왜 방향이 (1,1,1)인가?</b> 회색은 세 채널이 똑같습니다: 검정(0,0,0), 중간회색(0.5,0.5,0.5), 흰색(1,1,1) … 모두 (a,a,a) 꼴이죠. 이 점들을 이으면 RGB 큐브의 <b>검정→흰색 대각선</b>이 되고, 그 방향벡터가 (1,1,1)입니다.</p>
+            <p><b>왜 √3으로 나누나(정규화)?</b> 나중에 “이 축 방향으로 얼마?”를 <b>내적</b> 한 번으로 바로 읽으려면 축이 길이 1이어야 합니다. 3차원에서 길이는 피타고라스로 |(1,1,1)|=√(1²+1²+1²)=√3. 그래서 <b>n=(1,1,1)/√3</b>, 각 성분은 1/√3≈0.577입니다.</p>
+          </div>
+        </div>
+
+        <div class="dstep"><span class="dn">②</span> <b>빨강에서 회색 성분을 빼낸다 → u</b> <span class="tag">그람–슈미트</span>
+          <div class="dm">빨강 e<sub>R</sub>=(1,0,0)에서 n방향 성분을 제거:</div>
+          <div class="dm">u′ = e<sub>R</sub> − (e<sub>R</sub>·n) n</div>
+          <div class="dm">e<sub>R</sub>·n = (1+0+0)/√3 = 1/√3</div>
+          <div class="dm">(e<sub>R</sub>·n)n = (1/√3)·(1,1,1)/√3 = (1/3,1/3,1/3)</div>
+          <div class="dm">u′ = (1,0,0) − (1/3,1/3,1/3) = (2/3, −1/3, −1/3)</div>
+          <div class="dm">|u′| = √(4/9+1/9+1/9) = √(6/9) = √6/3</div>
+          <div class="dm res">∴ u = u′/|u′| = <b>(2,−1,−1)/√6</b></div>
+          <button class="expl-toggle">＋ 해설</button>
+          <div class="expl" hidden>
+            <p><b>큰 그림.</b> 두 번째 축은 색도평면 위에 놓여야 하니 <b>n에 수직</b>이어야 하고, 이왕이면 “빨강 쪽”을 가리키게 하고 싶습니다. 그래서 빨강 벡터에서 시작해, n을 따라 늘어진 부분(그림자)만 잘라내면 남는 건 자동으로 n에 수직이 됩니다. 이것이 <b>그람–슈미트</b>의 핵심 아이디어입니다.</p>
+            <p><b>사영(그림자)이란?</b> 어떤 벡터가 n 방향으로 “얼마나 뻗어 있는지”는 내적 e<sub>R</sub>·n으로 잽니다. 그 양만큼 n을 곱한 (e<sub>R</sub>·n)n 이 바로 빨강이 회색축 위에 드리운 그림자입니다. 여기서는 (1/3,1/3,1/3).</p>
+            <p><b>빼면 왜 수직이 되나?</b> 남은 벡터 u′=e<sub>R</sub>−(e<sub>R</sub>·n)n 과 n의 내적을 계산해 보면<br>u′·n = e<sub>R</sub>·n − (e<sub>R</sub>·n)(n·n) = e<sub>R</sub>·n − (e<sub>R</sub>·n)·1 = <b>0</b>.<br>(n이 단위벡터라 n·n=1인 게 열쇠입니다.) 그래서 항상 수직이 보장됩니다.</p>
+            <p><b>결과의 의미.</b> u′=(2/3,−1/3,−1/3). R 성분은 +, G·B 성분은 똑같이 −. 즉 “빨강으로 간다 = 초록·파랑에서 똑같이 멀어진다”는 방향입니다. 마지막으로 길이 √6/3로 나눠 단위벡터 <b>u=(2,−1,−1)/√6</b>를 얻습니다.</p>
+          </div>
+        </div>
+
+        <div class="dstep"><span class="dn">③</span> <b>나머지 방향 v (n·u 둘 다에 수직) → 외적</b>
+          <div class="dm">v = n × u &nbsp;(외적은 두 벡터에 모두 수직)</div>
+          <div class="dm">(1,1,1)×(2,−1,−1) = (1·(−1)−1·(−1), 1·2−1·(−1), 1·(−1)−1·2) = (0, 3, −3)</div>
+          <div class="dm">정규화: (0,3,−3)/|(0,3,−3)| = (0,3,−3)/(3√2)</div>
+          <div class="dm res">∴ <b>v = (0, 1, −1)/√2</b></div>
+          <div class="dm chk">검산 &nbsp;초록 e<sub>G</sub>=(0,1,0)에 그람–슈미트를 해도 같은 v가 나온다.</div>
+          <button class="expl-toggle">＋ 해설</button>
+          <div class="expl" hidden>
+            <p><b>왜 외적?</b> 이제 n과 u는 정해졌습니다. 마지막 축은 <b>둘 다에 수직</b>이어야 합니다. 두 벡터에 동시에 수직인 벡터를 즉시 만들어 주는 도구가 바로 <b>외적</b> n×u입니다(오른손 법칙으로 방향까지 결정).</p>
+            <p><b>계산.</b> 외적의 각 성분은 (a₂b₃−a₃b₂, a₃b₁−a₁b₃, a₁b₂−a₂b₁) 공식으로 (1,1,1)×(2,−1,−1)=(0,3,−3). 방향만 중요하므로 길이 3√2로 나눠 <b>v=(0,1,−1)/√2</b>.</p>
+            <p><b>이 축의 정체.</b> v의 R 성분은 0, G는 +, B는 −. 즉 v는 <b>초록↔파랑</b>을 가르는 축입니다. 빨강방향(u)과 밝기방향(n)에 모두 수직인 “남은 색차”가 정확히 초록–파랑 대비라는 게 자연스럽죠.</p>
+            <p><b>검산의 뜻.</b> 초록에서 출발해 그람–슈미트를 해도 똑같은 v가 나옵니다. 어느 색에서 시작하든 “n·u에 수직인 평면”은 하나뿐이므로, 우리가 만든 기저가 일관됨을 확인해 주는 것입니다.</p>
+          </div>
+        </div>
+
+        <div class="dstep"><span class="dn">✓</span> <b>직교·정규 확인</b>
+          <div class="dm">n·u = (2−1−1)/√18 = 0 &nbsp; n·v = (0+1−1)/√6 = 0 &nbsp; u·v = (0−1+1)/√12 = 0</div>
+          <div class="dm">|n|=|u|=|v|=1 &nbsp;→ 세 벡터는 <b>정규직교기저</b>.</div>
+          <button class="expl-toggle">＋ 해설</button>
+          <div class="expl" hidden>
+            <p><b>무엇을 확인하나?</b> “정규직교기저”라는 이름 그대로 두 조건입니다. ① 서로 <b>직교</b>: 모든 짝의 내적이 0. ② <b>정규</b>: 각 벡터의 길이가 1. 위 세 내적이 모두 0으로 떨어지고 길이도 1이니 두 조건을 만족합니다.</p>
+            <p><b>왜 중요한가?</b> 이 조건이 성립하면 새 좌표계로의 변환이 <b>순수한 회전</b>(길이·각도·부피 보존)이 됩니다. 늘리거나 찌그러뜨리지 않죠. 그래서 3D 화면에서 <b>Step 1 동안 큐브가 모양을 유지한 채 “회전만”</b> 하는 것입니다. 만약 직교가 아니었다면 큐브가 비틀려 찌그러졌을 겁니다.</p>
+          </div>
+        </div>
+
+        <div class="dstep"><span class="dn">＊</span> <b>왜 굳이 "직교"인가?</b>
+          <div class="dm why2">직교이기 때문에 세 성분이 서로 간섭하지 않는다. 밝기를 올리면 n 성분(L<sub>gray</sub>)만 커지고 (α,β)는 그대로 → <b>색상(Hue)이 변하지 않는다.</b> 이것이 "밝기와 색을 분리"하는 수학적 근거다.</div>
+          <button class="expl-toggle">＋ 해설</button>
+          <div class="expl" hidden>
+            <p><b>직교 = 좌표의 독립성.</b> 축들이 서로 수직이면, 한 축을 따라 움직여도 다른 축의 좌표는 전혀 변하지 않습니다. 서로 “새지” 않는 거죠.</p>
+            <p><b>색공간에서의 의미.</b> 그래서 밝기(회색축 성분 L<sub>gray</sub>)를 키워도 색도평면 좌표 (α,β)는 그대로입니다. (α,β)가 그대로면 각도 = <b>Hue</b>도 그대로. 즉 “불빛을 밝게 해도 빨강은 여전히 빨강”이라는 우리의 직관이 수학적으로 보장됩니다.</p>
+            <p><b>반대로 비직교였다면?</b> 밝기를 바꾸면 색상까지 슬금슬금 흔들려서, 밝기와 색을 따로 조절할 수 없게 됩니다. HSV·HSL이 “밝기(V·L)”와 “색(H)”을 독립 다이얼로 제공하는 것 자체가 이 직교성 덕분입니다.</p>
+          </div>
+        </div>
+
+        <div class="dstep"><span class="dn">→</span> <b>사영 = 내적</b>
+          <div class="dm">L<sub>gray</sub> = (R,G,B)·n = (R+G+B)/√3</div>
+          <div class="dm">α = (R,G,B)·u = (2R−G−B)/√6</div>
+          <div class="dm">β = (R,G,B)·v = (G−B)/√2</div>
+          <div class="dm why2">이 (α,β)를 극좌표로 바꾼 각도 <b>atan2(β,α)</b> 가 바로 Hue다. Step 1의 선형 부분이 색상을 이미 결정한다.</div>
+          <button class="expl-toggle">＋ 해설</button>
+          <div class="expl" hidden>
+            <p><b>왜 좌표가 내적인가?</b> 정규직교기저에서는 “어떤 축 방향으로 얼마?”라는 좌표가 그 축 단위벡터와의 <b>내적</b> 하나로 그대로 읽힙니다. 그래서 세 좌표가 (R,G,B)·n, ·u, ·v로 깔끔하게 나옵니다. 이게 위 α·β 공식이 “왜 하필 저 계수(2R−G−B 등)”인지에 대한 답입니다 — 전부 기저벡터 성분에서 나온 것.</p>
+            <p><b>극좌표로의 전환.</b> (α,β)는 색도평면 위 한 점의 직교좌표입니다. 이를 극좌표 (반지름, 각도)로 바꾸면<br>· 각도 θ = atan2(β,α) → <b>Hue(색상)</b><br>· 반지름 √(α²+β²) → 채도(색의 진하기)<br>즉 색상환의 “각도”라는 개념이 여기서 태어납니다.</p>
+            <p><b>Step 2로 넘어가며.</b> 여기까지(사영·각도)는 모두 <b>선형·삼각함수</b>라 매끈합니다. 진짜 비선형은 다음 단계의 max·min(V, S)에서 등장하며, 그때 원기둥/육각뿔 모양이 완성됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 핵심 개념 깊이 해설 -->
+    <div class="sec">
+      <h2>핵심 개념 자세히</h2>
+
+      <div class="concept">
+        <button class="cToggle">▸ ① 회색축 n — 무엇이고, 회전에서 어떤 역할인가</button>
+        <div class="cBody" hidden>
+          <p><b>정의.</b> n = (1,1,1)/√3. RGB 큐브에서 <b>검정(0,0,0)→흰색(1,1,1)</b>으로 이어지는 대각선의 단위 방향벡터입니다. 이 선 위의 점은 모두 R=G=B, 즉 색기운이 없는 <b>무채색(회색)</b>이라 “회색축”이라 부릅니다.</p>
+          <p><b>왜 √3으로 나누나(정규화).</b> 방향만 필요하면 (1,1,1)로 충분하지만, 나중에 “이 축 방향으로 얼마?”라는 좌표를 <b>내적 한 번</b>으로 곧장 읽으려면 축의 길이가 정확히 1이어야 합니다. 3차원 길이는 피타고라스로 |(1,1,1)|=√(1²+1²+1²)=√3. 그래서 각 성분이 1/√3(≈0.577)인 단위벡터가 됩니다.</p>
+          <p><b>좌표로서의 뜻.</b> 색 벡터를 n에 사영하면 L<sub>gray</sub>=(R,G,B)·n=(R+G+B)/√3. 세 채널이 균등하게 1/√3씩 기여하므로, 이 값은 곧 <b>밝기(명도) 성분</b>입니다. 여기서 벗어난 나머지가 “색기운”이 되죠.</p>
+          <p><b>“회전축”이라는 말의 정확한 의미.</b> Step 1에서 하는 일은 <b>n이 화면의 수직(위쪽)으로 서도록 공간 전체를 돌리는 것</b>입니다. 이때 헷갈리기 쉬운 점: <u>n 자체가 “돌리는 중심선”은 아닙니다.</u> n은 “세워야 할 목표 기둥”이고, 실제로 도는 중심선(진짜 회전축)은 n을 위쪽 방향으로 옮기는 방향, 즉 n과 up의 <b>외적 n×up</b> 쪽입니다. 정리하면 — <b>n = 정렬 대상(색공간의 중심 기둥)</b>, 회전은 그 기둥을 똑바로 세우는 동작.</p>
+          <p><b>3D에서 확인.</b> “회색축에서 내려다보기” 버튼을 누르면 이 n을 정면으로 마주 보게 되고, 큐브의 여섯 색 모서리가 정확히 <b>정육각형</b>으로 배열됩니다. 이 육각형이 곧 색상환의 뼈대입니다.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <button class="cToggle">▸ ② 그람–슈미트 — 직교하는 축을 만드는 일반 방법</button>
+        <div class="cBody" hidden>
+          <p><b>무슨 문제를 푸나.</b> 아무렇게나 놓인(단, 서로 독립인) 벡터 몇 개가 주어졌을 때, 같은 공간을 <b>서로 직각으로 만나는 길이 1짜리 축들</b>로 다시 세우고 싶습니다. 그람–슈미트는 이걸 순서대로 해내는 표준 절차입니다.</p>
+          <p><b>단 하나의 아이디어: “그림자 빼기”.</b> 새 벡터에서 이미 만든 축들 방향으로 드리운 그림자(사영)를 모두 빼면, 남는 성분은 그 축들에 <b>자동으로 수직</b>이 됩니다.</p>
+          <div class="cf">q₁ = a₁ / |a₁|</div>
+          <div class="cf">q₂ = ( a₂ − (a₂·q₁)q₁ ) 를 정규화</div>
+          <div class="cf">q₃ = ( a₃ − (a₃·q₁)q₁ − (a₃·q₂)q₂ ) 를 정규화</div>
+          <p><b>왜 수직이 보장되나(핵심 증명).</b> 만든 벡터를 q₁과 내적해 보면<br>( a₂ − (a₂·q₁)q₁ )·q₁ = a₂·q₁ − (a₂·q₁)(q₁·q₁) = a₂·q₁ − (a₂·q₁)·1 = <b>0</b>.<br>q₁이 <u>단위벡터(q₁·q₁=1)</u>인 것이 이 소거의 열쇠입니다.</p>
+          <p><b>우리 문제에 적용.</b> a₁=(1,1,1) → q₁=n. a₂=빨강(1,0,0) → 사영 한 번 빼서 q₂=u. 세 벡터 중 둘을 이렇게 얻었고, 마지막 하나는 3차원의 특권인 <b>외적</b>으로 대신 구합니다(③번 참고).</p>
+          <p><b>순서·시작 벡터가 결과를 정한다.</b> 어떤 벡터를 첫 축으로 잡느냐에 따라 최종 기저가 달라집니다. 우리는 “<b>빨강을 색도평면의 기준 방향</b>으로 삼겠다”는 의도로 e<sub>R</sub>을 골랐고, 그래서 u가 빨강 쪽을 가리키게 된 것입니다.</p>
+        </div>
+      </div>
+
+      <div class="concept">
+        <button class="cToggle">▸ ③ 외적 — 두 벡터에 동시에 수직인 벡터 만들기</button>
+        <div class="cBody" hidden>
+          <p><b>정의와 쓸모.</b> 3차원 두 벡터 a, b의 외적 a×b는 <b>a와 b 둘 다에 수직</b>인 새 벡터입니다. “이미 두 축이 있는데 거기 수직인 세 번째 축이 필요하다” — 바로 우리 상황이라 외적이 최적의 도구입니다.</p>
+          <p><b>성분 공식(행렬식 기억법).</b></p>
+          <div class="cf">a×b = ( a₂b₃ − a₃b₂,&nbsp; a₃b₁ − a₁b₃,&nbsp; a₁b₂ − a₂b₁ )</div>
+          <div class="cf">우리 계산: (1,1,1)×(2,−1,−1) = (0, 3, −3)</div>
+          <p><b>방향 — 오른손 법칙.</b> 오른손 네 손가락을 a에서 b로 감아쥘 때 <b>엄지가 가리키는 쪽</b>이 a×b입니다. 그래서 순서가 중요합니다: b×a = −(a×b) (방향이 정반대).</p>
+          <p><b>크기 — 평행사변형 넓이.</b> |a×b| = |a||b|sinθ 로, a와 b가 만드는 평행사변형의 넓이와 같습니다. 두 벡터가 나란하면(θ=0) 0이 됩니다. 특히 a, b가 서로 <b>수직인 단위벡터</b>면 |a×b| = 1·1·sin90° = 1 → 결과가 자동으로 단위벡터입니다.</p>
+          <p><b>왜 여기서 유용한가.</b> n과 u는 이미 “수직인 단위벡터”이므로 n×u는 곧바로 세 번째 <b>단위</b> 축이 됩니다. (해설 계산에서는 정규화 안 된 (1,1,1)×(2,−1,−1)로 잡아 크기 3√2로 나눴을 뿐, 원리는 같습니다.) 결과 v=(0,1,−1)/√2.</p>
+          <p><b>검산 습관.</b> 나온 v가 정말 맞는지 v·n=0, v·u=0 을 확인하세요. 둘 다 0이면 “두 축에 수직”이 확인된 것입니다.</p>
+        </div>
+      </div>
+    </div>
+      <div class="math" id="mathNon"></div>
+    </div>
+    <div class="sec">
+      <h2>범례</h2>
+      <div class="legend">
+        <span class="dot" style="background:#c9c9c9"></span>회색축 = 검정↔흰색 대각선 (무채색)<br>
+        <span class="dot" style="background:#8ea0ff"></span>선택 색까지의 반지름 = 채도(chroma)<br>
+        6개 모서리색 → 색상환 60°씩 (빨→노→초→시→파→마)
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   수학 유틸  (모든 색 성분은 0~1 정규화)
+   ============================================================ */
+const S3=Math.sqrt(3), S6=Math.sqrt(6), S2=Math.sqrt(2);
+
+// RGB → HSV / 보조량
+function rgb2hsv(r,g,b){
+  const M=Math.max(r,g,b), m=Math.min(r,g,b), C=M-m;
+  const V=M;
+  const S = M===0 ? 0 : C/M;
+  let H=0, branch=0;               // 0:무채색 1:R최대 2:G최대 3:B최대
+  if(C>1e-9){
+    if(M===r){ H=((g-b)/C)%6; branch=1; }
+    else if(M===g){ H=(b-r)/C+2; branch=2; }
+    else { H=(r-g)/C+4; branch=3; }
+    H*=60; H=((H%360)+360)%360;
+  }
+  return {M,m,C,V,S,H,branch};
+}
+// RGB → HSL 의 명도/채도
+function rgb2hsl(r,g,b){
+  const M=Math.max(r,g,b), m=Math.min(r,g,b), C=M-m;
+  const L=(M+m)/2;
+  const S = C<1e-9 ? 0 : C/(1-Math.abs(2*L-1));
+  return {L,S,C};
+}
+// 색도평면으로의 선형 사영 (정규직교 기저)
+//  u=(2,-1,-1)/√6 (빨강방향),  n=(1,1,1)/√3 (회색축),  v=(0,1,-1)/√2
+//  사영 성분 = 내적
+function basis(r,g,b){
+  const Lg=(r+g+b)/S3;            // 회색축 성분  = (R,G,B)·n
+  const a =(2*r-g-b)/S6;          // α = (R,G,B)·u
+  const be=(g-b)/S2;              // β = (R,G,B)·v = (G−B)/√2
+  const Hrad=Math.atan2(be,a);    // 색상 각도 = atan2(β, α)
+  let Hdeg=Hrad*180/Math.PI; Hdeg=((Hdeg%360)+360)%360;
+  const C2=Math.hypot(a,be);      // 원형 채도 √(α²+β²)
+  return {Lg,a,be,Hdeg,C2};
+}
+
+/* ============================================================
+   Three.js 무대
+   ============================================================ */
+const canvas=document.getElementById('gl');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,0.05,100);
+
+// --- 커스텀 궤도 컨트롤 (드래그 회전 + 휠 줌 + 터치) ---
+const cam={theta:0.72, phi:1.15, rad:3.35, tTheta:0.72, tPhi:1.15, tRad:3.35};
+function applyCam(){
+  cam.theta+=(cam.tTheta-cam.theta)*0.18;
+  cam.phi  +=(cam.tPhi-cam.phi)*0.18;
+  cam.rad  +=(cam.tRad-cam.rad)*0.18;
+  const p=Math.max(0.05,Math.min(Math.PI-0.05,cam.phi));
+  camera.position.set(
+    cam.rad*Math.sin(p)*Math.sin(cam.theta),
+    cam.rad*Math.cos(p),
+    cam.rad*Math.sin(p)*Math.cos(cam.theta)
+  );
+  camera.lookAt(0,0,0);
+}
+let drag=false,px=0,py=0;
+canvas.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;py=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  cam.tTheta-=(e.clientX-px)*0.008;
+  cam.tPhi  -=(e.clientY-py)*0.008;
+  cam.tPhi=Math.max(0.05,Math.min(Math.PI-0.05,cam.tPhi));
+  px=e.clientX;py=e.clientY;
+});
+addEventListener('pointerup',()=>drag=false);
+canvas.addEventListener('wheel',e=>{e.preventDefault();cam.tRad=Math.max(1.6,Math.min(7,cam.tRad*(1+Math.sign(e.deltaY)*0.09)))},{passive:false});
+
+document.getElementById('btnTop').onclick=()=>{cam.tPhi=0.13;cam.tTheta=0.0;cam.tRad=3.2;};
+document.getElementById('btnReset').onclick=()=>{cam.tTheta=0.72;cam.tPhi=1.15;cam.tRad=3.35;};
+
+/* ---- 회전(기저변환) 사원수 만들기 ----
+   행이 eu, eup, ev' 인 회전행렬 → p 를 (eu·p, eup·p, ev'·p) 로 보냄 */
+const eu =new THREE.Vector3(2,-1,-1).normalize();
+const eup=new THREE.Vector3(1,1,1).normalize();
+const evp=new THREE.Vector3(0,-1,1).normalize();
+const Mrot=new THREE.Matrix4().set(
+  eu.x, eu.y, eu.z, 0,
+  eup.x,eup.y,eup.z,0,
+  evp.x,evp.y,evp.z,0,
+  0,0,0,1
+);
+const qTarget=new THREE.Quaternion().setFromRotationMatrix(Mrot);
+const qCur=new THREE.Quaternion(), qId=new THREE.Quaternion();
+
+/* ---- 목표 위치(P2) 계산: 현재 선택된 변환에 따라 ---- */
+let TARGET='hsv'; // hsv | hsvcyl | hsl
+function targetPos(r,g,b,out){
+  const hsv=rgb2hsv(r,g,b);
+  let radius, y;
+  if(TARGET==='hsv'){          // 육각뿔: 반지름=chroma, 높이=V
+    radius=hsv.C; y=hsv.V-0.5;
+  }else if(TARGET==='hsvcyl'){ // 원기둥: 반지름=S, 높이=V
+    radius=hsv.S; y=hsv.V-0.5;
+  }else{                        // HSL 이중원뿔: 반지름=chroma, 높이=L
+    const hsl=rgb2hsl(r,g,b); radius=hsl.C; y=hsl.L-0.5;
+  }
+  const th=hsv.H*Math.PI/180;
+  out.set(radius*Math.cos(th), y, -radius*Math.sin(th));
+  return out;
+}
+
+/* ---- 모핑 좌표 계산 (t:0~1, 0.5에서 두 단계 분리) ---- */
+const _tmp=new THREE.Vector3();
+function morphPos(P0,P1,P2,t,out){
+  if(t<=0.5){                       // 단계1: 순수 회전
+    const s=t/0.5;
+    qCur.copy(qId).slerp(qTarget,s);
+    out.copy(P0).applyQuaternion(qCur);
+  }else{                            // 단계2: 회전된 큐브 → 목표 형태
+    let u=(t-0.5)/0.5;
+    u = u<0.5 ? 2*u*u : 1-Math.pow(-2*u+2,2)/2;  // easeInOut
+    out.lerpVectors(P1,P2,u);
+  }
+  return out;
+}
+
+/* ============================================================
+   점구름 (RGB 격자) 생성
+   ============================================================ */
+const N=11;                     // 격자 해상도
+const pts=[];                   // {r,g,b, P0,P1,P2}
+for(let i=0;i<N;i++)for(let j=0;j<N;j++)for(let k=0;k<N;k++){
+  const r=i/(N-1), g=j/(N-1), b=k/(N-1);
+  const P0=new THREE.Vector3(r-0.5,g-0.5,b-0.5);
+  const P1=P0.clone().applyQuaternion(qTarget);
+  const P2=new THREE.Vector3();
+  pts.push({r,g,b,P0,P1,P2});
+}
+const NP=pts.length;
+const posArr=new Float32Array(NP*3), colArr=new Float32Array(NP*3);
+pts.forEach((p,i)=>{ colArr[i*3]=p.r; colArr[i*3+1]=p.g; colArr[i*3+2]=p.b; });
+const cloudGeo=new THREE.BufferGeometry();
+cloudGeo.setAttribute('position',new THREE.BufferAttribute(posArr,3));
+cloudGeo.setAttribute('color',new THREE.BufferAttribute(colArr,3));
+
+// 둥근 점 텍스처
+function discTex(){
+  const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');
+  const g=x.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.6,'rgba(255,255,255,1)');g.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=g;x.beginPath();x.arc(32,32,32,0,7);x.fill();
+  const t=new THREE.CanvasTexture(c);return t;
+}
+const cloudMat=new THREE.PointsMaterial({size:0.052,vertexColors:true,map:discTex(),transparent:true,alphaTest:0.15,depthWrite:false,sizeAttenuation:true});
+const cloud=new THREE.Points(cloudGeo,cloudMat);
+scene.add(cloud);
+
+/* ---- 큐브 12모서리 (변형되며 육각형으로 휘어짐) ---- */
+const cubeV=[[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,1],[1,0,1],[1,1,1],[0,1,1]];
+const cubeE=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+const SEG=18;
+const edges=[];  // 각 모서리: {nodes:[{P0,P1,P2}], geo, line}
+cubeE.forEach(([a,bI])=>{
+  const va=cubeV[a], vb=cubeV[bI];
+  const nodes=[];
+  for(let s=0;s<=SEG;s++){
+    const t=s/SEG;
+    const r=va[0]+(vb[0]-va[0])*t, g=va[1]+(vb[1]-va[1])*t, b=va[2]+(vb[2]-va[2])*t;
+    const P0=new THREE.Vector3(r-0.5,g-0.5,b-0.5);
+    nodes.push({r,g,b,P0,P1:P0.clone().applyQuaternion(qTarget),P2:new THREE.Vector3()});
+  }
+  const arr=new Float32Array((SEG+1)*3);
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(arr,3));
+  const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0x3a3a55,transparent:true,opacity:0.55}));
+  scene.add(line);
+  edges.push({nodes,geo,line});
+});
+
+/* ---- 회색축 (검정↔흰색) ---- */
+const axisGeo=new THREE.BufferGeometry();axisGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));
+const axis=new THREE.Line(axisGeo,new THREE.LineBasicMaterial({color:0xcfcfe0,transparent:true,opacity:0.85}));
+scene.add(axis);
+const axisB={P0:new THREE.Vector3(-0.5,-0.5,-0.5),P1:null,P2:new THREE.Vector3()};
+const axisW={P0:new THREE.Vector3(0.5,0.5,0.5),P1:null,P2:new THREE.Vector3()};
+axisB.P1=axisB.P0.clone().applyQuaternion(qTarget); axisW.P1=axisW.P0.clone().applyQuaternion(qTarget);
+
+/* ---- 선택 색 마커 + 채도(반지름) 선 ---- */
+const marker=new THREE.Mesh(new THREE.SphereGeometry(0.05,24,24),new THREE.MeshBasicMaterial({color:0xffffff}));
+const markerRing=new THREE.Mesh(new THREE.SphereGeometry(0.062,24,24),new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.5}));
+scene.add(marker);scene.add(markerRing);
+const selB={P0:new THREE.Vector3(),P1:new THREE.Vector3(),P2:new THREE.Vector3()};
+const radGeo=new THREE.BufferGeometry();radGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));
+const radLine=new THREE.Line(radGeo,new THREE.LineBasicMaterial({color:0x8ea0ff,transparent:true,opacity:0.9}));
+scene.add(radLine);
+const axisPtGeo=new THREE.BufferGeometry();axisPtGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));
+
+/* ============================================================
+   전역 상태 & 목표위치 재계산
+   ============================================================ */
+let R=230,G=126,B=34;    // 0~255
+let t=0;                 // 모핑
+function recomputeTargets(){
+  const o=new THREE.Vector3();
+  pts.forEach((p,i)=>{ targetPos(p.r,p.g,p.b,p.P2); });
+  edges.forEach(e=>e.nodes.forEach(n=>targetPos(n.r,n.g,n.b,n.P2)));
+  targetPos(0,0,0,axisB.P2); targetPos(1,1,1,axisW.P2);
+}
+recomputeTargets();
+
+/* ============================================================
+   렌더 루프
+   ============================================================ */
+const posAttr=cloudGeo.getAttribute('position');
+const tmpV=new THREE.Vector3();
+function updateGeometry(){
+  // 점구름
+  for(let i=0;i<NP;i++){
+    morphPos(pts[i].P0,pts[i].P1,pts[i].P2,t,tmpV);
+    posArr[i*3]=tmpV.x;posArr[i*3+1]=tmpV.y;posArr[i*3+2]=tmpV.z;
+  }
+  posAttr.needsUpdate=true;
+  // 모서리
+  edges.forEach(e=>{
+    const a=e.geo.getAttribute('position').array;
+    e.nodes.forEach((n,s)=>{morphPos(n.P0,n.P1,n.P2,t,tmpV);a[s*3]=tmpV.x;a[s*3+1]=tmpV.y;a[s*3+2]=tmpV.z;});
+    e.geo.getAttribute('position').needsUpdate=true;
+    e.line.material.opacity=0.15+0.45*(1-Math.min(1,t*2));  // 변형 끝나면 흐려짐
+  });
+  // 회색축
+  const ax=axisGeo.getAttribute('position').array;
+  morphPos(axisB.P0,axisB.P1,axisB.P2,t,tmpV);ax[0]=tmpV.x;ax[1]=tmpV.y;ax[2]=tmpV.z;
+  morphPos(axisW.P0,axisW.P1,axisW.P2,t,tmpV);ax[3]=tmpV.x;ax[4]=tmpV.y;ax[5]=tmpV.z;
+  axisGeo.getAttribute('position').needsUpdate=true;
+
+  // 마커
+  const r=R/255,g=G/255,b=B/255;
+  selB.P0.set(r-0.5,g-0.5,b-0.5);selB.P1.copy(selB.P0).applyQuaternion(qTarget);targetPos(r,g,b,selB.P2);
+  morphPos(selB.P0,selB.P1,selB.P2,t,tmpV);
+  marker.position.copy(tmpV);markerRing.position.copy(tmpV);
+  marker.material.color.setRGB(r,g,b);
+
+  // 채도(반지름) 선: 변환이 끝나갈수록 표시 (축 위 같은 높이 → 마커)
+  const show=Math.max(0,(t-0.55)/0.45);
+  const rp=radGeo.getAttribute('position').array;
+  rp[0]=0;rp[1]=tmpV.y;rp[2]=0; rp[3]=tmpV.x;rp[4]=tmpV.y;rp[5]=tmpV.z;
+  radGeo.getAttribute('position').needsUpdate=true;
+  radLine.material.opacity=0.9*show; radLine.visible=show>0.02;
+}
+
+let playing=0; // 1: →1, -1: →0
+function animate(){
+  requestAnimationFrame(animate);
+  if(playing){ t=Math.max(0,Math.min(1,t+playing*0.011)); document.getElementById('morph').value=Math.round(t*1000);
+    if(t>=1||t<=0)playing=0; syncPhase(); }
+  updateGeometry();
+  applyCam();
+  renderer.render(scene,camera);
+}
+
+/* ============================================================
+   반응형 리사이즈
+   ============================================================ */
+function resize(){
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  if(canvas.width!==w*renderer.getPixelRatio()||canvas.height!==h*renderer.getPixelRatio()){
+    renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+  }
+}
+new ResizeObserver(resize).observe(canvas);
+
+/* ============================================================
+   UI 연결 + 대수식 렌더링
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const fmt=(x,d=3)=>Number(x).toFixed(d);
+
+function syncPhase(){
+  const el=$('phaseTxt'), tl=$('tagLin'), tn=$('tagNon');
+  tl.classList.remove('on');tn.classList.remove('on');
+  if(t<0.02){ el.textContent='RGB 큐브'; }
+  else if(t<=0.5){
+    el.innerHTML='<span class="lin">단계 1 · 선형 기저변환(회전)</span> — 회색축을 세로로 세우는 중';
+    tl.classList.add('on');
+  }else if(t<0.99){
+    el.innerHTML='<span class="non">단계 2 · 비선형 변형</span> — max/min·극좌표로 '+tgtLabel()+' 만드는 중';
+    tn.classList.add('on');
+  }else{
+    el.innerHTML=tgtLabel()+' 완성';
+    tn.classList.add('on');
+  }
+}
+function tgtLabel(){return TARGET==='hsl'?'HSL 이중원뿔':(TARGET==='hsvcyl'?'HSV 원기둥':'HSV 육각뿔');}
+
+function renderMath(){
+  const r=R/255,g=G/255,b=B/255;
+  const hsv=rgb2hsv(r,g,b), hsl=rgb2hsl(r,g,b), bz=basis(r,g,b);
+
+  // 미리보기
+  $('sw').style.background=`rgb(${R},${G},${B})`;
+  $('swInfo').innerHTML=
+    `<b>rgb(${R}, ${G}, ${B})</b><br>정규화 (${fmt(r,2)}, ${fmt(g,2)}, ${fmt(b,2)})<br>`+
+    `HSV ( <b>${fmt(hsv.H,0)}°</b>, ${fmt(hsv.S*100,0)}%, ${fmt(hsv.V*100,0)}% )`;
+  $('vR').textContent=R; $('vG').textContent=G; $('vB').textContent=B;
+
+  // ---- Step1 : 선형 ----
+  $('mathLin').innerHTML=`
+    <div class="eq">
+      <div class="t">정규직교 기저</div>
+      <div class="f">n<sub>gray</sub> = (1,1,1)/√3</div>
+      <div class="f">u = (2,−1,−1)/√6 &nbsp;<span style="color:#ff6b6b">빨강방향</span></div>
+      <div class="f">v = (0, 1,−1)/√2 &nbsp;<span style="color:#6bd66b">초록–파랑</span></div>
+      <div class="why">RGB 벡터를 <b>회색축 성분</b>과 <b>회색축에 수직인 색도평면 성분</b>으로 쪼갭니다. 축을 바꾸는 것뿐이라 이 단계는 <b>선형(회전)</b>입니다.</div>
+    </div>
+    <div class="eq hi">
+      <div class="t">색도평면 좌표 = 각 축에 내적(사영)</div>
+      <div class="kv"><span class="k">L<sub>gray</sub> = (R,G,B)·n = (R+G+B)/√3</span><span class="v r">${fmt(bz.Lg)}</span></div>
+      <div class="kv"><span class="k">α = (R,G,B)·u = (2R−G−B)/√6</span><span class="v r">${fmt(bz.a)}</span></div>
+      <div class="kv"><span class="k">β = (R,G,B)·v = (G−B)/√2</span><span class="v r">${fmt(bz.be)}</span></div>
+      <div class="why">여기서 (α, β)는 색도평면 위 점의 좌표입니다. 3D에서 지금 <b>큐브가 회전</b>하는 이유가 바로 이 좌표계로 옮겨 앉기 때문입니다. 아래 <b>▸ 유도 과정</b>에서 이 세 벡터가 어디서 나왔는지 확인하세요.</div>
+    </div>`;
+
+  // ---- Step2 : 비선형 ----
+  const br=hsv.branch;
+  $('mathNon').innerHTML=`
+    <div class="eq">
+      <div class="t">max · min</div>
+      <div class="kv"><span class="k">M = max(R,G,B)</span><span class="v num">${fmt(hsv.M)}</span></div>
+      <div class="kv"><span class="k">m = min(R,G,B)</span><span class="v num">${fmt(hsv.m)}</span></div>
+      <div class="kv"><span class="k">C = M − m (chroma)</span><span class="v num">${fmt(hsv.C)}</span></div>
+      <div class="why"><b>max·min은 비선형</b> 연산입니다. C(채도의 근원)가 색도평면에서의 <b>반지름</b>이 되어 육각형 모양을 만듭니다.</div>
+    </div>
+    <div class="eq">
+      <div class="t">Value & Saturation</div>
+      <div class="kv"><span class="k">V = M</span><span class="v r">${fmt(hsv.V)}</span></div>
+      <div class="kv"><span class="k">S = C / M</span><span class="v r">${fmt(hsv.S)}</span></div>
+      <div class="why"><b>왜 V=max?</b> 가장 밝은 채널이 곧 그 색의 밝기 상한이라, 이 값들이 위로 <b>같은 높이</b>로 끌어올려져 뿔의 윗면이 됩니다. <b>왜 S=C/M?</b> 회색축에서 얼마나 벗어났는지를 밝기로 나눈 상대적 거리입니다.</div>
+    </div>
+    <div class="eq">
+      <div class="t">Hue — 최대 채널 구간의 국소 선형식</div>
+      <div class="branch ${br===1?'on':''}"><span class="arrow">▸</span> M=R: H = 60·((G−B)/C mod 6)</div>
+      <div class="branch ${br===2?'on':''}"><span class="arrow">▸</span> M=G: H = 60·((B−R)/C + 2)</div>
+      <div class="branch ${br===3?'on':''}"><span class="arrow">▸</span> M=B: H = 60·((R−G)/C + 4)</div>
+      <div class="kv" style="margin-top:6px"><span class="k">→ H</span><span class="v r">${fmt(hsv.H,1)}°</span></div>
+      <div class="why">육각형의 각 60° 구간 안에서는 각도가 두 채널 차이로 <b>선형</b>하게 변합니다. 그래서 구간별로 다른 선형식이 붙습니다. 그리고 이 값은 위 α,β의 각도와 같습니다: <b>atan2(β,α) = ${fmt(bz.Hdeg,1)}°</b>.</div>
+    </div>
+    ${TARGET==='hsl'?`
+    <div class="eq hi">
+      <div class="t">HSL — 명도 L</div>
+      <div class="kv"><span class="k">L = (M+m)/2</span><span class="v r">${fmt(hsl.L)}</span></div>
+      <div class="kv"><span class="k">S<sub>HSL</sub> = C/(1−|2L−1|)</span><span class="v r">${fmt(hsl.S)}</span></div>
+      <div class="why">HSV와 <b>각도(H)·반지름(C)은 똑같고 높이만</b> V=max 대신 L=(max+min)/2 입니다. 그래서 흰색이 위 꼭짓점으로 모여 <b>이중원뿔</b>이 됩니다.</div>
+    </div>`:''}`;
+}
+
+// 슬라이더
+['rR','rG','rB'].forEach(id=>$(id).addEventListener('input',e=>{
+  if(id==='rR')R=+e.target.value; if(id==='rG')G=+e.target.value; if(id==='rB')B=+e.target.value;
+  renderMath();
+}));
+$('morph').addEventListener('input',e=>{t=+e.target.value/1000;playing=0;syncPhase();});
+
+// 프리셋
+const PRE=[['빨강',255,0,0],['주황',255,140,0],['노랑',255,255,0],['초록',0,220,0],['시안',0,220,220],['파랑',40,90,255],['보라',150,40,220],['마젠타',255,0,200],['흰색',255,255,255],['회색',128,128,128],['검정',0,0,0]];
+const pc=$('presets');
+PRE.forEach(([nm,r,g,b])=>{const bt=document.createElement('button');bt.title=nm;bt.style.background=`rgb(${r},${g},${b})`;
+  bt.onclick=()=>{R=r;G=g;B=b;$('rR').value=r;$('rG').value=g;$('rB').value=b;renderMath();};pc.appendChild(bt);});
+
+// 변환 선택
+$('targetSeg').addEventListener('click',e=>{const s=e.target.closest('.seg');if(!s)return;
+  [...$('targetSeg').children].forEach(x=>x.classList.remove('on'));s.classList.add('on');
+  TARGET=s.dataset.t; $('tgtName').textContent=TARGET==='hsl'?'HSL':'HSV';
+  recomputeTargets();syncPhase();renderMath();});
+
+// 재생
+$('btnPlay').onclick=()=>{ if(t>=0.999)t=0; playing=1; };
+$('btnBack').onclick=()=>{ playing=-1; };
+
+// 유도 과정 펼치기
+$('derivBtn').addEventListener('click',()=>{
+  const box=$('derivBox'), btn=$('derivBtn'), open=box.hidden;
+  box.hidden=!open; btn.classList.toggle('open',open);
+  btn.textContent=(open?'▾':'▸')+' 정규직교 기저는 어떻게 유도되나? (자세히)';
+});
+// 단계별 해설 펼치기 (이벤트 위임)
+$('derivBox').addEventListener('click',e=>{
+  const b=e.target.closest('.expl-toggle'); if(!b)return;
+  const box=b.nextElementSibling; const open=box.hidden;
+  box.hidden=!open; b.classList.toggle('open',open);
+  b.textContent=(open?'−':'＋')+' 해설';
+});
+// 핵심 개념 카드 펼치기
+document.querySelectorAll('.cToggle').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const body=btn.nextElementSibling, open=body.hidden;
+    body.hidden=!open; btn.classList.toggle('open',open);
+    btn.textContent=(open?'▾':'▸')+btn.textContent.slice(1);
+  });
+});
+
+renderMath();syncPhase();resize();animate();
+</script>

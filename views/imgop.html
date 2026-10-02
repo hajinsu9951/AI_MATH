@@ -1,0 +1,1416 @@
+<!-- ═══════════ IMGOP (14차시: 이미지는 행렬이다 — 표현과 변환) ═══════════
+     · 파일 위치: views/imgop.html  (기존 파일 전체 교체본)
+     · 전역 접두사 io · 뷰 루트 id #v-imgop · 모든 스타일 규칙은 #v-imgop 하위로만 작성
+     · 로직은 core.js 의 기존 IMGOP 블록을 통째로 교체하는 core-snippet.js 참조
+     · 외부 이미지 0 (유튜브 썸네일 · 교과서 로컬 슬롯 제외) — 표본 사진은 전부 canvas 로 생성
+     · 3단원 재편(37차시안) 반영:
+         - mnist 탭 ①② (픽셀·이진행렬 / 회색조·해상도)를 활동 ①② 로 흡수 → 자립
+         - 구 탭 ②의 RGB 채널·회색조(평균·휘도) 블록은 15차시 rgb 로 이관(예고 한 줄만 유지)
+         - 구 탭 ④(전치행렬)은 16차시 transpose 로 승격 이관 → 이 뷰에서 제거
+         - 구 탭 ⑤(손으로 확인) 문항은 각 활동의 「판정 문제」로 분산 배치
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="v-imgop">
+  <style>
+  /* 서책형 도판 — 사진에서 직접 만든 설명 그림 */
+  #v-imgop .io-plate{margin:1.1rem 0 1.4rem;}
+  #v-imgop .io-plate img{width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:0.5rem;background:#fff;cursor:zoom-in;box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.06);}
+  #v-imgop .io-plate figcaption{margin-top:0.7rem;padding-left:0.9rem;border-left:3px solid var(--accent);font-size:0.95rem;line-height:1.85;color:var(--body);}
+  #v-imgop .io-plate .src{display:block;margin-top:0.45rem;font-size:0.8rem;color:var(--muted);}
+
+  /* imgop 뷰 전용 스타일 (#v-imgop 스코프 한정 — 전역 누수 금지) */
+  #v-imgop .io-step{display:flex;align-items:center;gap:0.75rem;margin:2.6rem 0 1.1rem;}
+  #v-imgop .io-step::after{content:'';flex:1;height:1px;background:var(--border);}
+  #v-imgop .io-step .mono{font-size:0.72rem;color:var(--fg);letter-spacing:0.18em;margin:0;white-space:nowrap;}
+
+  /* 표제부 · 워터마크 */
+  #v-imgop .io-hero{position:relative;}
+  #v-imgop .io-wm{position:absolute;right:0;top:-0.6rem;width:15rem;max-width:42%;height:auto;opacity:0.09;pointer-events:none;}
+  #v-imgop .io-hero>*:not(.io-wm){position:relative;}
+  #v-imgop .vw-mark{display:none;}          /* core.js 자동 워터마크와 겹치지 않도록 */
+  #v-imgop .io-goalmap{display:flex;flex-direction:column;gap:0.3rem;margin-top:0.7rem;}
+  #v-imgop .io-goalmap button{font-family:var(--sans);font-size:0.95rem;text-align:left;line-height:1.65;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--body);
+    padding:0.5rem 0.75rem;min-height:44px;cursor:pointer;transition:all 0.2s;}
+  #v-imgop .io-goalmap button:hover{border-color:var(--fg);color:var(--fg);}
+  #v-imgop .io-ask{border-left:4px solid var(--accent);}
+  #v-imgop .io-ask ul{list-style:none;margin:0.6rem 0 0;padding:0;}
+  #v-imgop .io-ask li{position:relative;padding-left:1.6rem;margin-bottom:0.55rem;font-weight:600;color:var(--fg);font-size:1.03rem;}
+  #v-imgop .io-ask li::before{content:'❓';position:absolute;left:0;top:0;}
+  #v-imgop .io-ask li:last-child{margin-bottom:0;}
+
+  /* 공통 조각 */
+  #v-imgop .io-src{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.6rem;line-height:1.7;display:block;}
+  #v-imgop .io-hint{font-size:0.88rem;color:var(--muted);line-height:1.65;}
+  #v-imgop .io-fml{font-family:var(--mono);font-size:0.95rem;line-height:1.95;background:var(--bg);
+    border-left:3px solid var(--accent);border-radius:0 0.4rem 0.4rem 0;padding:0.55rem 0.8rem;margin:0.5rem 0;
+    overflow-x:auto;white-space:nowrap;max-width:100%;}
+  #v-imgop .io-fml b{color:var(--fg);}
+  #v-imgop .io-fml.wrap{white-space:normal;}
+  #v-imgop .io-scroll{overflow-x:auto;max-width:100%;}
+  #v-imgop .io-tbl{border-collapse:collapse;font-size:0.9rem;min-width:min(100%,18rem);}
+  #v-imgop .io-tbl th,#v-imgop .io-tbl td{border:1px solid var(--border);padding:0.34rem 0.5rem;text-align:center;line-height:1.6;}
+  #v-imgop .io-tbl th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-imgop .io-tbl td.hi{background:var(--accent);font-weight:700;color:var(--fg);}
+  #v-imgop .io-tbl td.over{color:var(--red);font-weight:700;}
+  #v-imgop .io-fb{font-size:1.02rem;font-weight:700;line-height:1.8;padding:0.7rem 0.9rem;border-radius:0.5rem;
+    background:var(--bg);margin:0.7rem 0 0;border-left:5px solid var(--border);}
+  #v-imgop .io-fb.ok{border-left-color:var(--green);color:var(--green);}
+  #v-imgop .io-fb.no{border-left-color:var(--red);color:var(--red);}
+  #v-imgop .io-fb b{color:var(--fg);}
+  #v-imgop .io-fb:empty{display:none;}
+  #v-imgop .io-veil{opacity:0.34;pointer-events:none;filter:grayscale(0.5);transition:opacity 0.3s;}
+  #v-imgop .io-in{height:2.4rem;min-width:0;border:1px solid var(--border);border-radius:0.4rem;
+    padding:0 0.6rem;font-family:var(--mono);font-size:0.95rem;background:var(--bg);color:var(--fg);}
+  #v-imgop .io-in.num{width:5.4rem;text-align:center;}
+  #v-imgop select.io-sel{height:2.6rem;min-height:44px;border:1px solid var(--border);border-radius:0.4rem;background:var(--bg);
+    color:var(--fg);font-family:var(--mono);font-size:1rem;padding:0 0.5rem;max-width:100%;}
+  #v-imgop textarea.io-ta{width:100%;min-height:4.4rem;border:1px solid var(--border);border-radius:0.5rem;
+    padding:0.55rem 0.7rem;font-family:var(--sans);font-size:1.0rem;line-height:1.75;background:var(--card);color:var(--fg);resize:vertical;}
+  /* 조작 요소 확대 — 칩·버튼 ≥ 0.95rem · 터치 타깃 ≥ 44px (뷰 안에서만) */
+  #v-imgop .chips .chip{font-size:0.95rem;padding:0.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;}
+  #v-imgop .chips .chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  /* 핵심 개념 칩은 spec §8 확정값(1.15rem · 600 · 0.65×1.25rem)을 그대로 지킵니다. */
+  #v-imgop .chips.io-keys .chip{font-size:1.15rem;font-weight:600;padding:0.65rem 1.25rem;min-height:2.9rem;}
+  #v-imgop .btn{font-size:0.95rem;padding:0.55rem 1.05rem;min-height:44px;letter-spacing:0.04em;}
+  #v-imgop .tabs{flex-wrap:wrap;}
+  #v-imgop .tabs .tab{font-size:0.95rem;min-height:44px;padding:0.6rem 0.85rem;}
+  #v-imgop .ws-btn{min-height:44px;}
+
+  /* 배지 */
+  #v-imgop .io-adv{display:inline-block;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.06em;
+    background:var(--blue);color:#fff;border-radius:9999px;padding:0.14rem 0.5rem;margin-left:0.45rem;vertical-align:middle;}
+  #v-imgop .io-next{display:inline-block;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.06em;
+    background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.14rem 0.5rem;margin-left:0.45rem;vertical-align:middle;}
+  #v-imgop .io-count{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:1rem;
+    font-weight:700;color:var(--fg);background:var(--accent);border-radius:9999px;padding:0.35rem 0.9rem;margin:0.5rem 0 0;}
+  #v-imgop .io-clipbadge{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.95rem;
+    font-weight:700;border-radius:9999px;padding:0.3rem 0.85rem;margin:0.5rem 0 0;
+    background:var(--bg);border:1px solid var(--border);color:var(--muted);}
+  #v-imgop .io-clipbadge.hot{border-color:var(--red);color:var(--red);}
+
+  /* 단계 토글(details) — 조작 전에는 잠깁니다 */
+  #v-imgop .io-fold{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0 0.95rem;margin:0.7rem 0;}
+  #v-imgop .io-fold>summary{cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;color:var(--fg);
+    padding:0.8rem 1.8rem 0.8rem 0;position:relative;min-height:44px;display:flex;align-items:center;}
+  #v-imgop .io-fold>summary::-webkit-details-marker{display:none;}
+  #v-imgop .io-fold>summary::after{content:'▸';position:absolute;right:0.1rem;color:var(--muted);font-weight:800;}
+  #v-imgop .io-fold[open]>summary::after{content:'▾';}
+  #v-imgop .io-fold .bd{padding:0 0 0.9rem;}
+  #v-imgop .io-fold .bd p,#v-imgop .io-fold .bd li{font-size:1.0rem;color:var(--body);line-height:1.85;margin-bottom:0.6rem;}
+  #v-imgop .io-fold.io-locked{opacity:0.62;}
+  #v-imgop .io-fold.io-locked>summary{cursor:not-allowed;color:var(--muted);}
+  #v-imgop .io-lockmsg{font-family:var(--mono);font-size:0.74rem;color:var(--muted);margin:0 0 0.7rem;line-height:1.7;}
+
+  /* 캔버스 · 사진 */
+  #v-imgop .io-imgs{display:flex;flex-wrap:wrap;gap:0.9rem;align-items:flex-start;margin-top:0.7rem;}
+  #v-imgop figure.io-fig{margin:0;flex:1 1 9.5rem;min-width:0;max-width:14rem;}
+  #v-imgop figure.io-fig canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;background:var(--bg);
+    border:1px solid var(--border);border-radius:0.5rem;image-rendering:pixelated;}
+  #v-imgop figure.io-fig figcaption{font-family:var(--mono);font-size:0.74rem;color:var(--muted);
+    margin-top:0.3rem;line-height:1.6;text-align:center;}
+  #v-imgop figure.io-fig.pick canvas{cursor:crosshair;}
+  #v-imgop figure.io-fig.sel canvas{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg);}
+  #v-imgop canvas.io-curve{display:block;width:100%;max-width:min(100%,22rem);height:auto;aspect-ratio:6/5;
+    background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;margin:0.6rem 0 0.2rem;}
+  #v-imgop canvas.io-line{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:22/7;
+    background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;margin:0.6rem 0 0.3rem;
+    touch-action:none;cursor:ew-resize;}
+
+  /* 도입 실자료 — 확대 3분할 */
+  #v-imgop .io-zoom{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(10rem,100%),1fr));gap:0.8rem;margin-top:0.8rem;}
+  #v-imgop .io-zoom figure{margin:0;min-width:0;}
+  #v-imgop .io-zoom canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;border:1px solid var(--border);
+    border-radius:0.5rem;image-rendering:pixelated;background:var(--bg);}
+  #v-imgop .io-zoom figcaption{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.3rem;
+    line-height:1.6;text-align:center;}
+  #v-imgop .io-cap{font-size:1.02rem;font-weight:700;color:var(--fg);margin:0.7rem 0 0;line-height:1.7;}
+
+  /* 수식 조립 줄 */
+  #v-imgop .io-build{display:flex;flex-wrap:wrap;gap:0.5rem 0.7rem;align-items:center;margin:0.8rem 0 0.2rem;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.7rem 0.85rem;}
+  #v-imgop .io-build label{font-family:var(--mono);font-size:0.9rem;color:var(--fg);display:inline-flex;
+    align-items:center;gap:0.4rem;min-height:44px;}
+  #v-imgop .io-build input[type=range]{flex:1 1 9rem;min-width:0;height:44px;accent-color:var(--fg);cursor:pointer;background:transparent;}
+  #v-imgop .io-build input[type=checkbox],#v-imgop .io-build input[type=radio]{width:1.25rem;height:1.25rem;accent-color:var(--fg);cursor:pointer;}
+  #v-imgop .io-val{font-family:var(--mono);font-size:1.02rem;font-weight:700;color:var(--fg);white-space:nowrap;}
+
+  /* 값 창 (5×5 · 11×11) */
+  #v-imgop .io-winwrap{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start;margin-top:0.8rem;overflow-x:auto;max-width:100%;}
+  #v-imgop .io-winwrap>div{min-width:0;}
+  #v-imgop .io-winlab{font-family:var(--mono);font-size:0.78rem;letter-spacing:0.06em;color:var(--muted);
+    margin:0 0 0.3rem;text-transform:uppercase;}
+  #v-imgop .io-win{display:inline-grid;gap:2px;background:var(--border);border-radius:var(--radius);padding:2px;}
+  #v-imgop .io-win .wc{width:2.85rem;height:2.3rem;display:flex;align-items:center;justify-content:center;
+    background:var(--card);font-family:var(--mono);font-size:0.76rem;font-weight:500;color:var(--fg);}
+  #v-imgop .io-win .wc.c{box-shadow:inset 0 0 0 2px var(--fg);font-weight:700;}
+  #v-imgop .io-win .wc.over{color:var(--red);font-weight:700;}
+  #v-imgop .io-win.n11 .wc{width:1.95rem;height:1.6rem;font-size:0.62rem;}
+  #v-imgop .io-win.n11 .wc.mid{background:var(--accent);}
+
+  /* 계산 전개 3열 */
+  #v-imgop .io-calc{border-collapse:collapse;font-family:var(--mono);font-size:0.88rem;min-width:min(100%,17rem);margin-top:0.5rem;}
+  #v-imgop .io-calc th,#v-imgop .io-calc td{border:1px solid var(--border);padding:0.32rem 0.55rem;text-align:center;}
+  #v-imgop .io-calc th{background:var(--card-h);font-weight:600;white-space:nowrap;}
+  #v-imgop .io-calc td.mid{background:var(--accent);font-weight:700;color:var(--fg);white-space:nowrap;}
+  #v-imgop .io-calc td.over{color:var(--red);font-weight:700;}
+
+  /* 이진행렬 격자 (활동 ①) */
+  #v-imgop .io-gwrap{display:flex;gap:1.1rem;flex-wrap:wrap;align-items:flex-start;justify-content:center;margin:0.9rem 0;
+    overflow-x:auto;max-width:100%;}
+  #v-imgop .io-gcol{text-align:center;min-width:0;}
+  #v-imgop .io-gcol .lb{display:block;font-family:var(--mono);font-size:0.82rem;font-weight:700;color:var(--muted);margin-bottom:0.35rem;}
+  #v-imgop .io-gcol .lb.hot{color:var(--red);}
+  #v-imgop .io-grid{display:grid;gap:2px;background:var(--border);padding:3px;border-radius:6px;width:max-content;margin:0 auto;max-width:100%;}
+  #v-imgop .io-cellb{width:2.3rem;height:2.3rem;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:0.9rem;font-weight:700;border-radius:3px;user-select:none;border:none;padding:0;}
+  #v-imgop .io-pic .io-cellb{background:#111;color:transparent;}
+  #v-imgop .io-pic .io-cellb.w{background:#fff;}
+  #v-imgop .io-pic.draw .io-cellb{cursor:pointer;}
+  #v-imgop .io-ansg .io-cellb{background:var(--bg);color:var(--fg);border:1px solid var(--border);cursor:pointer;
+    min-width:44px;min-height:44px;}
+  #v-imgop .io-ansg .io-cellb:hover{background:var(--card-h);}
+  #v-imgop .io-ansg .io-cellb:focus-visible{outline:2px solid var(--fg);outline-offset:-2px;}
+  #v-imgop .io-ansg .io-cellb.one{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+  #v-imgop .io-ansg .io-cellb.ok{box-shadow:inset 0 0 0 3px var(--green);}
+  #v-imgop .io-ansg .io-cellb.no{box-shadow:inset 0 0 0 3px var(--red);}
+  #v-imgop .io-arrow{align-self:center;font-family:var(--mono);font-size:1.4rem;color:var(--muted);}
+  #v-imgop .io-idx{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-top:0.7rem;font-family:var(--mono);font-size:0.95rem;}
+
+  /* 회색조·해상도 (활동 ②) */
+  #v-imgop .io-a2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(17rem,100%),1fr));gap:1rem;margin-top:0.8rem;}
+  #v-imgop .io-pane{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem;min-width:0;}
+  #v-imgop .io-pane>h4{font-size:1.0rem;margin:0 0 0.5rem;color:var(--fg);}
+  #v-imgop canvas.io-cv{display:block;width:100%;max-width:min(100%,20rem);height:auto;image-rendering:pixelated;
+    border:1px solid var(--border);border-radius:0.4rem;background:#fff;margin:0.4rem auto;cursor:crosshair;}
+  #v-imgop .io-ramp{display:flex;height:1.6rem;border:1px solid var(--border);border-radius:0.3rem;overflow:hidden;margin:0.5rem 0 0.2rem;}
+  #v-imgop .io-ramp i{flex:1;}
+  #v-imgop .io-ramplb{display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.75rem;color:var(--muted);}
+  #v-imgop .io-vt{border-collapse:collapse;font-family:var(--mono);font-size:0.82rem;margin:0.5rem auto 0;}
+  #v-imgop .io-vt td{border:1px solid var(--border);width:3.1rem;height:2.1rem;text-align:center;background:var(--card);}
+  #v-imgop .io-vt td.hot{outline:3px solid var(--red);outline-offset:-3px;font-weight:800;color:var(--red);}
+  #v-imgop .io-fillrow{display:flex;flex-wrap:wrap;gap:0.4rem 0.6rem;align-items:center;margin:0.45rem 0;font-size:1.0rem;line-height:1.9;}
+
+  /* 채점 격자 (판정 문제) */
+  #v-imgop .io-eg{display:inline-grid;gap:2px;background:var(--border);border-radius:var(--radius);padding:2px;}
+  #v-imgop .io-eg .ec{width:3.4rem;height:2.7rem;background:var(--card);display:flex;align-items:center;justify-content:center;}
+  #v-imgop .io-eg .ec input{width:100%;height:100%;border:none;background:transparent;text-align:center;
+    font-family:var(--mono);font-size:0.95rem;font-weight:600;color:var(--fg);outline:none;padding:0;-moz-appearance:textfield;}
+  #v-imgop .io-eg .ec input::-webkit-outer-spin-button,
+  #v-imgop .io-eg .ec input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #v-imgop .io-eg .ec.ok{background:var(--green);}
+  #v-imgop .io-eg .ec.ok input{color:#fff;}
+  #v-imgop .io-eg .ec.no{background:var(--red);}
+  #v-imgop .io-eg .ec.no input{color:#fff;}
+  #v-imgop .io-qrow{display:flex;flex-wrap:wrap;gap:1.1rem;align-items:flex-start;margin:0.8rem 0;overflow-x:auto;max-width:100%;}
+  #v-imgop .io-qrow>div{min-width:0;}
+  #v-imgop .io-qlab{font-family:var(--mono);font-size:0.9rem;font-weight:700;color:var(--fg);margin:0 0 0.35rem;line-height:1.75;}
+
+  /* 업로드 영역 */
+  #v-imgop .io-upz{border:2px dashed var(--border);border-radius:var(--radius);padding:0.75rem;text-align:center;
+    cursor:pointer;transition:all 0.2s;margin:0.5rem 0 0;font-size:0.86rem;color:var(--muted);line-height:1.6;display:block;}
+  #v-imgop .io-upz:hover,#v-imgop .io-upz.dg{border-color:var(--fg);background:var(--card);color:var(--fg);}
+  #v-imgop .io-upz input{display:none;}
+
+  /* 내분점 판 · 계수 표시 */
+  #v-imgop .io-coef{display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.5rem 0 0;}
+  #v-imgop .io-coef .cf{flex:1 1 8rem;min-width:0;background:var(--bg);border:1px solid var(--border);
+    border-radius:var(--radius);padding:0.55rem 0.7rem;text-align:center;}
+  #v-imgop .io-coef .cf .k{display:block;font-family:var(--mono);font-size:0.72rem;color:var(--muted);letter-spacing:0.06em;}
+  #v-imgop .io-coef .cf .v{display:block;font-family:var(--mono);font-size:1.15rem;font-weight:700;color:var(--fg);margin-top:0.15rem;}
+  #v-imgop .io-coef .cf.a{border-left:4px solid var(--blue);}
+  #v-imgop .io-coef .cf.b{border-left:4px solid var(--red);}
+  #v-imgop .io-coef .cf.s{border-left:4px solid var(--green);}
+
+  /* 사진 · 교과서 캡처 슬롯 */
+  #v-imgop .io-tbshot{display:flex;flex-wrap:wrap;gap:0.7rem;margin-top:0.7rem;}
+  #v-imgop .io-tbshot figure{margin:0;flex:1 1 13rem;min-width:0;}
+  #v-imgop .io-tbshot img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:0.5rem;}
+  #v-imgop .io-tbshot figcaption{font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.25rem;}
+
+  /* 추천 영상 링크 카드(검색) — 공통 .cmn-vd-grid 를 그대로 씁니다 */
+  #v-imgop .io-vdlink{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    border:1px solid var(--border);border-radius:0.7rem;overflow:hidden;background:var(--card);transition:all 0.2s;}
+  #v-imgop .io-vdlink:hover{border-color:var(--fg);transform:translateY(-2px);}
+  #v-imgop .io-vdlink .th{position:relative;aspect-ratio:1/1;background:var(--card-h);display:flex;
+    align-items:center;justify-content:center;font-size:2.2rem;overflow:hidden;}
+  #v-imgop .io-vdlink .th img{width:100%;height:100%;object-fit:cover;display:block;}
+  #v-imgop .io-vdlink .meta{padding:0.55rem 0.7rem 0.75rem;}
+  #v-imgop .io-vdlink .meta b{display:block;font-size:0.95rem;font-weight:600;line-height:1.45;}
+  #v-imgop .io-vdlink .meta span{display:block;font-size:0.8rem;color:var(--muted);margin-top:0.2rem;line-height:1.55;}
+
+  /* 참고 자료 카드 */
+  #v-imgop .io-refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(13rem,100%),1fr));gap:0.8rem;margin-top:0.9rem;}
+  #v-imgop .io-ref{position:relative;display:block;text-decoration:none;color:inherit;border:1px solid var(--border);
+    border-radius:var(--radius);background:var(--bg);overflow:hidden;transition:all 0.2s;width:100%;text-align:left;
+    font-family:var(--sans);font-size:1rem;cursor:pointer;}
+  #v-imgop .io-ref:hover{background:var(--card-h);border-color:var(--muted);transform:translateY(-2px);}
+  #v-imgop .io-ref.add{border-style:dashed;}
+  #v-imgop .io-ref .th{position:relative;aspect-ratio:1/1;background:var(--card-h);display:flex;align-items:center;
+    justify-content:center;font-size:2.3rem;}
+  #v-imgop .io-ref .bg{position:absolute;left:0.4rem;top:0.4rem;font-family:var(--mono);font-size:0.62rem;
+    background:var(--fg);color:var(--bg);padding:0.14rem 0.45rem;border-radius:9999px;letter-spacing:0.04em;}
+  #v-imgop .io-ref .bd{display:block;padding:0.65rem 0.75rem;}
+  #v-imgop .io-ref .tt{display:block;font-weight:600;font-size:0.95rem;line-height:1.45;}
+  #v-imgop .io-ref .ds{display:block;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:0.25rem;}
+  #v-imgop .io-ref .sc{display:block;font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.35rem;line-height:1.5;}
+
+  /* 공학 도구 가이드 카드 */
+  #v-imgop .io-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));gap:0.85rem;margin-top:0.9rem;}
+  #v-imgop .io-tool{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:0.85rem 0.9rem;min-width:0;}
+  #v-imgop .io-tool .tg{display:inline-flex;align-items:center;gap:0.35rem;font-family:var(--mono);font-size:0.72rem;
+    background:var(--fg);color:var(--bg);border-radius:9999px;padding:0.18rem 0.6rem;letter-spacing:0.04em;}
+  #v-imgop .io-tool h4{font-size:1.0rem;margin:0.5rem 0 0.4rem;color:var(--fg);line-height:1.55;}
+  #v-imgop .io-tool ol{margin:0 0 0.6rem 1.1rem;padding:0;}
+  #v-imgop .io-tool li{font-size:0.93rem;color:var(--body);line-height:1.75;margin-bottom:0.28rem;
+    overflow-wrap:anywhere;word-break:break-word;}
+  #v-imgop .io-tool li b{font-family:var(--mono);font-size:0.92em;overflow-wrap:anywhere;word-break:break-word;}
+  #v-imgop .io-tool a.go{display:inline-flex;align-items:center;min-height:40px;font-size:0.9rem;font-weight:600;
+    color:var(--fg);text-decoration:underline;text-underline-offset:3px;}
+  #v-imgop .io-tool p.src{font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin:0.45rem 0 0;line-height:1.6;}
+
+  @media (prefers-reduced-motion: reduce){
+    #v-imgop *{animation:none !important;transition:none !important;}
+  }
+  @media (max-width:640px){
+    #v-imgop .io-wm{display:none;}
+    #v-imgop .io-fml{font-size:0.84rem;}
+    #v-imgop .io-win .wc{width:2.5rem;height:2.1rem;font-size:0.7rem;}
+    #v-imgop .io-win.n11 .wc{width:1.6rem;height:1.4rem;font-size:0.56rem;}
+    #v-imgop .io-eg .ec{width:3rem;height:2.5rem;}
+    #v-imgop figure.io-fig{flex:1 1 7.5rem;}
+    #v-imgop .io-cellb{width:2rem;height:2rem;font-size:0.8rem;}
+    #v-imgop .io-ansg .io-cellb{min-width:2.5rem;min-height:2.5rem;}
+    #v-imgop .io-vt td{width:2.6rem;font-size:0.75rem;}
+  }
+  </style>
+
+  <!-- ═════ 표제부 ═════ -->
+  <div class="io-hero">
+    <svg class="io-wm" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <g stroke="var(--border)" stroke-width="1">
+        <rect x="14" y="26" width="17" height="17" fill="#111"/><rect x="31" y="26" width="17" height="17" fill="#3a3a3a"/>
+        <rect x="48" y="26" width="17" height="17" fill="#8a8a8a"/><rect x="65" y="26" width="17" height="17" fill="#d0d0d0"/>
+        <rect x="14" y="43" width="17" height="17" fill="#3a3a3a"/><rect x="31" y="43" width="17" height="17" fill="#8a8a8a"/>
+        <rect x="48" y="43" width="17" height="17" fill="#d0d0d0"/><rect x="65" y="43" width="17" height="17" fill="#fff"/>
+        <rect x="14" y="60" width="17" height="17" fill="#8a8a8a"/><rect x="31" y="60" width="17" height="17" fill="#d0d0d0"/>
+        <rect x="48" y="60" width="17" height="17" fill="#fff"/><rect x="65" y="60" width="17" height="17" fill="#fff"/>
+      </g>
+      <text x="120" y="58" font-size="17" font-family="monospace" fill="var(--fg)">+ 50</text>
+      <path d="M112 68 H172" stroke="var(--fg)" stroke-width="2.5" marker-end="none"/>
+      <path d="M164 62 L172 68 L164 74" fill="none" stroke="var(--fg)" stroke-width="2.5"/>
+      <g stroke="var(--border)" stroke-width="1">
+        <rect x="196" y="26" width="17" height="17" fill="#3c3c3c"/><rect x="213" y="26" width="17" height="17" fill="#6c6c6c"/>
+        <rect x="230" y="26" width="17" height="17" fill="#bcbcbc"/><rect x="247" y="26" width="17" height="17" fill="#fff"/>
+        <rect x="196" y="43" width="17" height="17" fill="#6c6c6c"/><rect x="213" y="43" width="17" height="17" fill="#bcbcbc"/>
+        <rect x="230" y="43" width="17" height="17" fill="#fff"/><rect x="247" y="43" width="17" height="17" fill="#fff"/>
+        <rect x="196" y="60" width="17" height="17" fill="#bcbcbc"/><rect x="213" y="60" width="17" height="17" fill="#fff"/>
+        <rect x="230" y="60" width="17" height="17" fill="#fff"/><rect x="247" y="60" width="17" height="17" fill="#fff"/>
+      </g>
+      <text x="160" y="120" font-size="14" font-family="monospace" text-anchor="middle" fill="var(--muted)">수를 바꾸면 사진이 바뀐다</text>
+      <text x="160" y="146" font-size="15" font-family="monospace" text-anchor="middle" fill="var(--fg)">B = A + tJ</text>
+    </svg>
+    <p class="mono" style="margin-bottom:0.4rem;">Ⅲ. 이미지 데이터 처리 · 14차시 · [12인수03-01] [12인수03-02]</p>
+    <h2>이미지는 행렬이다 — 표현과 변환</h2>
+    <p class="desc">
+      사진 한 장을 크게 확대하면 작은 네모 칸들이 보입니다. 칸마다 0부터 255까지의 수가 하나씩 들어 있고,
+      그 수들을 가로·세로로 늘어놓은 것이 곧 <b>행렬</b>입니다.
+      오늘은 사진을 행렬로 적어 보고, 그 행렬에 수를 더하거나 곱해서 사진을 바꿔 봅니다.
+    </p>
+  </div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 학습 목표</strong>
+    <div style="margin-top:0.5rem;">
+      ① 이미지의 각 픽셀 위치와 밝기 값을 <b>행렬의 성분</b>으로 나타내고, <b>해상도</b>와 성분의 개수를 계산할 수 있습니다. <b>[12인수03-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ② 검은색 0·흰색 1의 <b>이진행렬</b>과 0~255의 <b>회색조 행렬</b>을 구분하여 이미지를 표현할 수 있습니다. <b>[12인수03-01]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ③ 행렬의 <b>덧셈 A + tJ</b> 와 <b>실수배 kA</b> 로 밝기를, <b>뺄셈 255J − A</b> 로 반전을 만들고 <b>클리핑</b>을 설명할 수 있습니다. <b>[12인수03-02]</b>
+    </div>
+    <div style="margin-top:0.35rem;">
+      ④ 두 이미지의 합성 <b>C = αA + (1 − α)B</b> 가 수직선 위 <b>내분점</b>과 같은 식임을 설명할 수 있습니다. <b>[12인수03-02]</b>
+    </div>
+    <div class="io-goalmap">
+      <button type="button" onclick="ioSee(0,'io-act1')">├ 목표 ①② → <b>활동 ①</b> 모니터의 약속 — 그림을 0과 1로 옮겨 적기 →</button>
+      <button type="button" onclick="ioSee(1,'io-act2')">├ 목표 ①② → <b>활동 ②</b> 0과 1로는 부족하다 — 회색조와 해상도 →</button>
+      <button type="button" onclick="ioSee(2,'io-act3')">├ 목표 ③ → <b>활동 ③</b> 밝기 슬라이더의 정체 — 수식을 직접 조립하기 →</button>
+      <button type="button" onclick="ioSee(3,'io-act4')">└ 목표 ③④ → <b>활동 ④</b> 색을 뒤집고, 사진을 섞다 — 반전과 내분 →</button>
+    </div>
+  </div>
+
+  <p class="mat-label" style="text-align:left;margin-top:1.2rem;">핵심 개념
+    <span style="text-transform:none;letter-spacing:0;">— 칩을 누르면 상세 설명이 펼쳐집니다</span></p>
+  <div class="chips io-keys" data-no-toggle="1">
+    <span class="chip">픽셀과 해상도</span>
+    <span class="chip">이진행렬</span>
+    <span class="chip">회색조 0~255</span>
+    <span class="chip">A + tJ 와 kA</span>
+    <span class="chip">클리핑과 내분</span>
+  </div>
+
+  <div class="card io-ask" data-no-toggle="1">
+    <h3>핵심 질문</h3>
+    <ul>
+      <li>사진 보정 앱의 필터 버튼 뒤에는 어떤 계산이 숨어 있을까?</li>
+    </ul>
+    <p style="margin-top:0.7rem;"><b>보조 질문 ①</b> 컴퓨터는 사진을 무엇으로 저장하고 있을까요?<br>
+      <b>보조 질문 ②</b> 두 사진을 자연스럽게 섞은 ‘중간’은 수학에서 어떤 점과 같은 것일까요?</p>
+    <p style="margin-top:0.5rem;">세 질문 모두 STEP 3에서 여러분의 문장으로 답을 완성합니다.</p>
+  </div>
+
+  <!-- ═════ STEP 1 · 도입 (7분) ═════ -->
+  <div class="io-step"><p class="mono">STEP 1 · 도입 (8분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>추천 영상 — 사진을 ‘수의 표’로 여는 열쇠</h3>
+    <p>카드를 누르면 화면 전체로 재생됩니다(✕ 또는 ESC로 닫기).
+      마지막 점선 칸은 <b>선생님이 영상을 하나 더 걸 수 있는 자리</b>입니다.</p>
+    <div id="io-videos"></div>
+    <div class="cmn-vd-grid" style="margin-top:0.8rem;">
+      <a class="io-vdlink" href="https://www.youtube.com/results?search_query=%EC%9D%B4%EB%AF%B8%EC%A7%80+%ED%94%BD%EC%85%80+%ED%96%89%EB%A0%AC+%ED%91%9C%ED%98%84"
+         target="_blank" rel="noopener">
+        <span class="th">🔎</span>
+        <span class="meta"><b>“이미지 · 픽셀 · 행렬 표현” 영상 더 찾기</b>
+          <span>유튜브 검색 · 좋은 영상을 찾으면 위 그리드의 [＋ 선생님 영상 추가]에 등록해 두세요.</span></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>확대하면 보이는 것 — 컴퓨터에게 사진은 그림이 아닙니다</h3>
+    <figure class="io-plate">
+      <img src="assets/photo/pixel_grid.jpg" alt="같은 사진을 원본, 64×64, 24×24, 8×8 해상도로 낮추어 나란히 놓은 그림" loading="eager"
+           onclick="aimTbZoom(this)" title="누르면 크게, 다시 누르면 작게">
+      <figcaption>같은 사진을 칸 수만 줄여 본 것입니다. 칸이 줄수록 <b>다루는 수의 개수</b>도 줄어듭니다(270000개 → 192개). 컴퓨터에게 사진은 <b>이 수들의 표</b>일 뿐입니다.
+        <span class="src">원본 사진 — D. Sharon Pruitt, 「Ice cream cone」, CC BY 2.0, Wikimedia Commons. 채널 분해·해상도 축소는 수업용으로 직접 처리했습니다.</span></figcaption>
+    </figure>
+    <p>같은 사진을 세 단계로 확대했습니다. 오른쪽 끝에서는 <b>네모 칸 하나하나에 적힌 수</b>가 보입니다.</p>
+    <div class="io-zoom">
+      <figure><canvas id="io-zm0" width="120" height="120" aria-label="원본 회색조 사진"></canvas>
+        <figcaption>① 원본</figcaption></figure>
+      <figure><canvas id="io-zm1" width="120" height="120" aria-label="8배로 확대한 사진"></canvas>
+        <figcaption>② 8배 확대 — 칸이 보이기 시작</figcaption></figure>
+      <figure><canvas id="io-zm2" width="360" height="360" aria-label="32배로 확대해 각 칸의 밝기 값을 숫자로 겹쳐 놓은 사진"></canvas>
+        <figcaption>③ 32배 확대 — 칸마다 수가 하나</figcaption></figure>
+    </div>
+    <p class="io-cap">“컴퓨터에게 사진은 그림이 아니라 <b>수의 표</b>입니다.”</p>
+    <p class="io-hint">발문 — 가장 오른쪽 칸의 <b>밝은 곳</b>과 <b>어두운 곳</b>은 각각 어떤 수인가요? 두 수의 차는 얼마인가요?</p>
+    <span class="io-src">동아 교과서 Ⅲ p.84 「사진의 일부를 확대하면 작은 색상 블록으로 이루어져 있다」 서술을 재구성</span>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>마중 퀴즈 — 내 생각은?</h3>
+    <p style="margin-bottom:1rem;">정답을 몰라도 좋습니다. <b>지금의 생각</b>을 골라 보세요.
+      답을 고르면 해설이 나타나고, 다음 질문이 이어서 열립니다.</p>
+    <div id="io-warm"></div>
+    <p style="margin-top:1.1rem;"><b>세 질문의 답은 오늘 네 개의 활동에서 하나씩 완성합니다.</b></p>
+  </div>
+
+  <!-- ═════ STEP 2 · 전개 (34분) ═════ -->
+  <div class="io-step"><p class="mono">STEP 2 · 전개 (30분)</p></div>
+
+  <div class="info" data-no-toggle="1" style="margin-top:0;">
+    <strong>오늘의 흐름</strong>
+    <div style="margin-top:0.4rem;">① 그림을 0·1로 <b>적는다</b> → ② 0~255로 <b>넓히고</b> 해상도를 잰다 →
+      ③ 값을 <b>더하고 곱해</b> 밝기를 바꾼다 → ④ 값을 <b>뒤집고</b> 두 사진을 <b>섞는다</b>.</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" type="button" onclick="ioTab(0,this)">① 픽셀과 이진행렬</button>
+    <button class="tab" type="button" onclick="ioTab(1,this)">② 회색조와 해상도</button>
+    <button class="tab" type="button" onclick="ioTab(2,this)">③ 밝기 랩</button>
+    <button class="tab" type="button" onclick="ioTab(3,this)">④ 반전과 사진 합성</button>
+  </div>
+
+  <!-- ── 탭 ① 활동 ① · 픽셀과 이진행렬 (8분) ─────────────────────────── -->
+  <div class="tpanel on" id="io0">
+    <div class="card" id="io-act1" data-no-toggle="1">
+      <h3>활동 ① · 「모니터의 약속」 — 그림을 0과 1로 옮겨 적기</h3>
+      <p>왼쪽 격자에 그림이 하나 있습니다. 이 그림을 <b>말이 아니라 수로</b> 친구에게 전달해야 합니다.
+        어떤 <b>약속</b>을 정하면 될까요?</p>
+      <p class="io-hint" style="margin-top:0.4rem;">먼저 자기 방식을 한 줄로 적고 [제출]을 누르면 아래 조작판이 열립니다.</p>
+      <textarea class="io-ta" id="io-a0-idea"
+        placeholder="예: 칸이 검으면 0, 희면 1이라고 정하고 왼쪽 위부터 줄줄이 읽어 준다."></textarea>
+      <div class="btn-row" style="margin-top:0.5rem;">
+        <button class="btn pri" type="button" onclick="ioIdeaSubmit()">제출</button>
+      </div>
+      <p class="status" id="io-a0-msg">제출하면 아래 조작판이 열립니다.</p>
+    </div>
+
+    <div class="card io-veil" id="io-a0-panel" data-no-toggle="1">
+      <h3>조작 — 왼쪽 그림을 오른쪽 표에 옮겨 적기</h3>
+      <p>왼쪽 격자를 보고 오른쪽 빈 표의 칸을 눌러 <b>같은 자리에 같은 수</b>가 오도록 채웁니다.
+        칸을 누를 때마다 <b>0 ↔ 1</b> 이 바뀝니다.</p>
+      <div class="chips" id="io-bin-pat" style="margin-top:0.6rem;">
+        <span class="chip on" data-p="heart">무늬 ① 하트</span>
+        <span class="chip" data-p="star">무늬 ② 별</span>
+        <span class="chip" data-p="tee">무늬 ③ T자</span>
+        <span class="chip" data-p="my">무늬 ④ 내가 그리기</span>
+      </div>
+      <div class="chips" id="io-bin-size" style="margin-top:0.4rem;">
+        <span class="chip" data-n="5">5 × 5</span>
+        <span class="chip on" data-n="6">6 × 6</span>
+        <span class="chip" data-n="8">8 × 8</span>
+      </div>
+      <p class="io-hint" id="io-bin-hint" style="margin-top:0.4rem;">
+        약속 — <b>검은색은 0, 흰색은 1</b> 입니다.</p>
+
+      <div class="io-gwrap">
+        <div class="io-gcol">
+          <span class="lb">그림 (픽셀)</span>
+          <div class="io-grid io-pic" id="io-bin-pic"></div>
+        </div>
+        <span class="io-arrow" aria-hidden="true">➔</span>
+        <div class="io-gcol">
+          <span class="lb hot">내가 적은 행렬</span>
+          <div class="io-grid io-ansg" id="io-bin-ans"></div>
+        </div>
+      </div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn pri" type="button" onclick="ioBinCheck()">채점</button>
+        <button class="btn" type="button" onclick="ioBinClear()">모두 지우기</button>
+        <button class="btn" type="button" onclick="ioBinReveal()">정답 보기</button>
+      </div>
+      <div class="io-fb" id="io-bin-fb"></div>
+      <p class="status" id="io-bin-prog">맞힌 무늬 0개 — 한 무늬를 모두 맞히면 아래 세 단계가 열립니다.</p>
+      <span class="io-src">씨마스 교과서 Ⅲ p.90 · 활동지 「활동1-2 이진행렬과 행렬값」 서술을 재구성</span>
+    </div>
+
+    <p class="io-lockmsg" id="io-bin-lockmsg">↓ 아래 세 단계는 <b>한 무늬를 모두 맞힌 뒤</b>에 열립니다.</p>
+
+    <details class="io-fold io-locked" id="io-bin-f1">
+      <summary>단계 1 · 관찰 — 무엇이 칸의 자리를 결정했나</summary>
+      <div class="bd">
+        <p>검은 칸에는 무엇을 적었나요? 흰 칸은요? 같은 그림을 친구와 <b>서로 다르게</b> 적을 수도 있나요?</p>
+        <p>약속을 반대로 정하면(검은색을 1로) 표의 <b>0과 1이 통째로 뒤바뀝니다</b>. 그림은 그대로인데 표가 달라지는 것입니다.
+          그래서 표를 주고받으려면 <b>약속을 먼저 정하고 함께 알고 있어야</b> 합니다.</p>
+        <p>또 하나 — 수 하나를 적으려면 그 칸이 <b>몇 번째 줄, 몇 번째 칸</b>인지가 정해져야 합니다.
+          즉 이미지를 수로 바꾸려면 <b>위치 정보</b>와 <b>밝기 정보</b>가 함께 필요합니다.</p>
+        <textarea class="io-ta" id="io-bin-note" style="margin-top:0.5rem;"
+          placeholder="예: 약속을 반대로 정했더니 표의 0과 1이 전부 뒤집혔다. 그림은 그대로였다."></textarea>
+        <span class="io-src">씨마스 교과서 Ⅲ p.90 「각 픽셀의 위치 정보와 색상 정보를 수치화한다」 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-bin-f2">
+      <summary>단계 2 · 정리 — 행, 열, 성분, 그리고 m × n 행렬</summary>
+      <div class="bd">
+        <p>수를 직사각형 모양으로 늘어놓고 괄호로 묶은 것을 <b>행렬</b>이라 하고, 그 안의 수 하나하나를 <b>성분</b>이라고 합니다.
+          가로줄이 <b>행</b>, 세로줄이 <b>열</b>이며, 행이 m개·열이 n개이면 <b>m × n 행렬</b>이라고 합니다.</p>
+        <p>제 i 행과 제 j 열이 만나는 자리의 성분은 <b>a<sub>ij</sub></b> 로 씁니다.
+          a<sub>12</sub> 는 제 1 행 제 2 열, a<sub>21</sub> 은 제 2 행 제 1 열이며 <b>두 값은 서로 다를 수 있습니다</b>.</p>
+        <p class="io-fml">해상도 n × m 인 흑백 이미지 → m × n 행렬 A = (a<sub>ij</sub>),  a<sub>ij</sub> ∈ {0, 1}</p>
+        <span class="io-src">활동지 「활동1-2」 ‘개념’ 상자 · 공통수학1 행렬 정의 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-bin-f3">
+      <summary>단계 3 · 정의 확인 — 이진행렬이란 무엇인가</summary>
+      <div class="bd">
+        <p><b>정의.</b> 검은색을 <b>0</b>, 흰색을 <b>1</b> 로 하여 이미지를 나타낸 행렬을 <b>이진행렬</b>이라 합니다.
+          이미지의 제 i 줄 제 j 칸은 행렬의 <b>(i, j) 성분</b>에 대응하므로, 위치 정보가 그대로 보존됩니다.</p>
+        <p><b>장점</b> 성분이 0과 1뿐이라 계산이 아주 간단합니다. <b>한계</b> 중간 밝기(회색)를 표현할 수 없습니다.
+          그래서 다음 활동에서 0~255의 회색조로 넓히게 됩니다.</p>
+        <p class="io-fml">예 ⎡1 1 1⎤ ⎢0 1 0⎥ ⎣0 1 0⎦ → 위쪽 가로줄과 가운데 세로줄이 흰색인 <b>T자</b> 모양</p>
+        <span class="io-src">씨마스 교과서 Ⅲ p.90 · 동아 교과서 Ⅲ p.84 서술을 재구성</span>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 성분의 자리를 읽는 연습</h3>
+      <p>지금 화면의 <b>정답 행렬</b>에 대해 답해 봅시다. 자리를 바꾸어 여러 번 연습할 수 있습니다.</p>
+      <div class="io-idx">
+        <span>제 <b id="io-bin-qi">2</b> 행 제 <b id="io-bin-qj">3</b> 열의 성분 a<sub id="io-bin-qs">23</sub> 은?</span>
+        <input class="io-in num" id="io-bin-qin" type="number" min="0" max="1" inputmode="numeric" aria-label="성분의 값">
+        <button class="btn pri" type="button" onclick="ioBinQ()">확인</button>
+        <button class="btn" type="button" onclick="ioBinNewQ()">다른 자리로</button>
+      </div>
+      <div class="io-fb" id="io-bin-qfb"></div>
+      <p class="io-hint" style="margin-top:0.6rem;">힌트 — 앞의 수가 <b>행(가로줄)</b>, 뒤의 수가 <b>열(세로줄)</b>입니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 활동 ① 확인하기</h3>
+      <p class="io-qlab">문제 1 · 성분이 <b>모두 1</b>인 5 × 5 이진행렬이 나타내는 이미지는?</p>
+      <div class="chips" id="io-q1a">
+        <span class="chip" data-v="0">전부 검은색</span>
+        <span class="chip" data-v="1">전부 흰색</span>
+        <span class="chip" data-v="2">검은색과 흰색이 번갈아</span>
+        <span class="chip" data-v="3">알 수 없다</span>
+      </div>
+      <div class="io-fb" id="io-q1a-fb"></div>
+
+      <p class="io-qlab" style="margin-top:1.3rem;">문제 2 · 이진행렬 <b>⎡1 0⎤⎣0 1⎦</b> 이 나타내는 이미지를 아래 격자에 칠하시오.
+        (칸을 누르면 검은색 ↔ 흰색)</p>
+      <div class="io-gwrap" style="justify-content:flex-start;">
+        <div class="io-gcol">
+          <span class="lb">내가 칠한 그림</span>
+          <div class="io-grid io-pic draw" id="io-q1b-grid"></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="ioQ1bCheck()">채점</button>
+        <button class="btn" type="button" onclick="ioQ1bClear()">지우기</button>
+      </div>
+      <div class="io-fb" id="io-q1b-fb"></div>
+      <span class="io-src">활동지 「활동1-2 이진행렬과 행렬값」 1-1·1-3 문항을 웹으로 옮김</span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ② 활동 ② · 회색조와 해상도 (8분) ────────────────────────── -->
+  <div class="tpanel" id="io1">
+    <div class="card" id="io-act2" data-no-toggle="1">
+      <h3>활동 ② · 「0과 1로는 부족하다」 — 회색조와 해상도</h3>
+      <p>이진행렬로는 <b>회색</b>을 표현할 수 없습니다. 사람 얼굴 사진을 0과 1로만 그리면 어떻게 보일까요?
+        밝기를 몇 단계로 나누면 충분할까요?</p>
+      <p class="io-hint" style="margin-top:0.4rem;">예상을 한 줄 적고 [제출]을 누르면 조작판이 열립니다.</p>
+      <textarea class="io-ta" id="io-a2-idea"
+        placeholder="예: 10단계쯤이면 충분할 것 같다. 얼굴은 그림자가 많아서 2단계로는 얼룩처럼 보일 것이다."></textarea>
+      <div class="btn-row" style="margin-top:0.5rem;">
+        <button class="btn pri" type="button" onclick="ioResIdea()">제출</button>
+      </div>
+      <p class="status" id="io-a2-msg">제출하면 아래 조작판이 열립니다.</p>
+    </div>
+
+    <div class="card io-veil" id="io-res-panel" data-no-toggle="1">
+      <h3>조작 — 해상도와 단계 수를 바꾸며 밝기 값을 읽기</h3>
+      <div class="io-build">
+        <label>해상도
+          <input type="range" id="io-res-r" min="0" max="5" step="1" value="2" aria-label="해상도 단계">
+          <span class="io-val" id="io-res-rv">16 × 16</span>
+        </label>
+      </div>
+      <div class="chips" id="io-res-lv" style="margin-top:0.5rem;">
+        <span class="chip" data-l="2">2단계 (0 · 255)</span>
+        <span class="chip" data-l="4">4단계</span>
+        <span class="chip" data-l="16">16단계</span>
+        <span class="chip on" data-l="256">256단계</span>
+      </div>
+      <div class="chips" style="margin-top:0.4rem;">
+        <span class="chip" id="io-res-num" onclick="ioResToggleNum()">값 표시 켜기</span>
+      </div>
+      <p class="io-count" id="io-res-badge">가로 16 × 세로 16 = 256 개</p>
+
+      <div class="io-a2grid">
+        <div class="io-pane">
+          <h4>회색조 이미지</h4>
+          <canvas class="io-cv" id="io-res-cv" width="336" height="336"
+                  aria-label="해상도를 바꿀 수 있는 회색조 손글씨 이미지" role="img"></canvas>
+          <div class="io-ramp" id="io-res-ramp" aria-hidden="true"></div>
+          <div class="io-ramplb"><span>0 · 검은색</span><span>128</span><span>255 · 흰색</span></div>
+          <p class="io-hint" style="margin-top:0.4rem;">격자의 한 칸을 누르면 그 자리의 밝기 값과 위치(제 i 행 제 j 열)를 알려 줍니다.</p>
+        </div>
+        <div class="io-pane">
+          <h4>왼쪽 위 4 × 4 부분의 행렬</h4>
+          <div class="io-scroll"><table class="io-vt" id="io-res-vt"></table></div>
+          <p class="status" id="io-res-sel">아직 고른 칸이 없습니다.</p>
+          <div class="io-idx">
+            <span>붉게 표시된 칸의 밝기 값은?</span>
+            <input class="io-in num" id="io-res-in" type="number" min="0" max="255" inputmode="numeric" aria-label="밝기 값">
+            <button class="btn pri" type="button" onclick="ioResCheck()">확인</button>
+            <button class="btn" type="button" onclick="ioResNewQ()">다른 칸으로</button>
+          </div>
+          <div class="io-fb" id="io-res-fb"></div>
+        </div>
+      </div>
+      <div class="io-scroll" style="margin-top:0.9rem;">
+        <table class="io-tbl" id="io-res-info"></table>
+      </div>
+      <p class="status" id="io-res-prog">바꾸어 본 해상도 0가지 — 두 가지 이상 바꾸면 아래 세 단계가 열립니다.</p>
+      <span class="io-src">씨마스 교과서 Ⅲ p.90 「그레이 스케일 256단계」 · 동아 교과서 Ⅲ p.84 「해상도」 서술을 재구성</span>
+    </div>
+
+    <p class="io-lockmsg" id="io-res-lockmsg">↓ 아래 세 단계는 <b>해상도를 두 가지 이상</b> 바꾸어 본 뒤에 열립니다.</p>
+
+    <details class="io-fold io-locked" id="io-res-f1">
+      <summary>단계 1 · 관찰 — 해상도를 낮추면 무엇이 먼저 사라지나</summary>
+      <div class="bd">
+        <p>4 × 4로 낮추면 “7”이라고 알아보기 어려워집니다. 픽셀 한 칸이 <b>넓은 영역의 평균 밝기</b>를 대표하게 되어
+          가는 획과 모서리 같은 <b>작은 특징</b>이 먼저 사라지기 때문입니다.</p>
+        <p>단계 수를 2 → 256으로 올리면 획의 <b>가장자리가 부드러워집니다</b>. 2단계에서는 획의 경계가 톱니처럼 끊기지만
+          256단계에서는 중간 회색이 그 사이를 메웁니다.</p>
+        <p>해상도를 가로·세로 모두 2배로 늘리면 픽셀 수는 <b>4배</b>가 됩니다. 저장 용량과 계산량도 함께 늘어납니다.
+          이 맞바꿈이 곧 “적당한 해상도”를 고르는 이유입니다.</p>
+        <textarea class="io-ta" id="io-res-note" style="margin-top:0.5rem;"
+          placeholder="예: 8×8까지는 7로 보였는데 4×4에서는 획이 뭉개져 알아볼 수 없었다."></textarea>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-res-f2">
+      <summary>단계 2 · 정리 — 왜 하필 256단계인가</summary>
+      <div class="bd">
+        <p>검은색과 흰색 사이의 회색 영역을 <b>256단계</b>로 나누어 0부터 255까지의 값으로 표현한 것이
+          <b>그레이 스케일(회색조)</b>입니다. 값이 클수록 밝습니다.</p>
+        <p>왜 256일까요? 컴퓨터는 정보를 0과 1로 저장하고, <b>8비트로 2<sup>8</sup> = 256가지</b>를 나타낼 수 있기 때문입니다.
+          8비트는 정확히 <b>1바이트</b>여서 저장에도 효율적입니다.</p>
+        <p class="io-fml">1바이트 = 8비트 · 2<sup>8</sup> = 256단계 · 1KB = 1024바이트 · 1MB = 1024KB</p>
+        <span class="io-src">씨마스 교과서 Ⅲ p.90 · 활동지 「활동1-2」 ‘추가 개념(bit·byte)’ 상자를 재구성</span>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-res-f3">
+      <summary>단계 3 · 정의 확인 — 픽셀 · 해상도 · 회색조</summary>
+      <div class="bd">
+        <p><b>픽셀(화소)</b> 은 이미지를 이루는 가장 작은 네모 칸입니다.
+          <b>해상도</b> 는 이미지가 가로 a개, 세로 b개의 픽셀로 이루어져 있을 때 <b>a × b</b> 로 나타냅니다.
+          픽셀 수가 많을수록 윤곽이 매끄러워집니다.</p>
+        <p><b>회색조 이미지</b> 는 색상 정보 없이 <b>밝기 정보 하나</b>로만 이루어지며, 0 이상 255 이하의 정수를 성분으로 하는
+          <b>행렬 한 장</b>으로 표현됩니다. 한 장에 필요한 수의 개수는 곧 픽셀의 개수와 같습니다.</p>
+        <div class="io-fillrow" id="io-res-fill">
+          <span>ㄱ. 픽셀이 밝을수록 행렬 값은</span>
+          <select class="io-sel" data-k="0" aria-label="빈칸 ㄱ"><option value="">고르기</option><option value="up">커진다</option><option value="dn">작아진다</option></select>
+          <span>ㄴ. 흰색을 나타내는 값은</span>
+          <select class="io-sel" data-k="1" aria-label="빈칸 ㄴ"><option value="">고르기</option><option value="0">0</option><option value="128">128</option><option value="255">255</option></select>
+          <span>ㄷ. 검은색을 나타내는 값은</span>
+          <select class="io-sel" data-k="2" aria-label="빈칸 ㄷ"><option value="">고르기</option><option value="0">0</option><option value="128">128</option><option value="255">255</option></select>
+          <span>ㄹ. 픽셀 수가 많을수록</span>
+          <select class="io-sel" data-k="3" aria-label="빈칸 ㄹ"><option value="">고르기</option><option value="hi">고화질이다</option><option value="lo">저화질이다</option></select>
+          <button class="btn pri" type="button" onclick="ioResFill()">빈칸 채점</button>
+        </div>
+        <div class="io-fb" id="io-res-fillfb"></div>
+        <span class="io-src">동아 교과서 Ⅲ p.84 「해상도 a × b」 · 씨마스 교과서 Ⅲ p.90 「그레이 스케일」 서술을 재구성</span>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>일반화 — 저장에 필요한 수의 개수 계산해 보기</h3>
+      <p>가로 <input class="io-in num" id="io-res-w" type="number" min="1" max="4096" value="1920" inputmode="numeric" aria-label="가로 픽셀 수">
+        × 세로 <input class="io-in num" id="io-res-h" type="number" min="1" max="4096" value="1080" inputmode="numeric" aria-label="세로 픽셀 수">
+        인 이미지를
+        <select class="io-sel" id="io-res-mode" aria-label="이미지 종류">
+          <option value="1">흑백 이진(1비트)</option>
+          <option value="8" selected>회색조(8비트)</option>
+          <option value="24">컬러 R·G·B(24비트) [15차시]</option>
+        </select>
+        로 저장하면?
+        <button class="btn pri" type="button" onclick="ioResBytes()">계산</button></p>
+      <div class="io-fb" id="io-res-bfb"></div>
+      <p class="io-hint" style="margin-top:0.5rem;">손으로 먼저 어림해 본 뒤 확인하세요.
+        (픽셀 수) × (한 픽셀에 필요한 비트 수) ÷ 8 = 바이트 수 입니다.</p>
+    </div>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 활동 ② 확인하기</h3>
+      <p class="io-qlab">문제 1 · 해상도가 <b>60 × 60</b> 인 회색조 이미지의 픽셀 개수는?</p>
+      <div class="chips" id="io-q2a">
+        <span class="chip" data-v="0">120개</span>
+        <span class="chip" data-v="1">255개</span>
+        <span class="chip" data-v="2">3,600개</span>
+        <span class="chip" data-v="3">216,000개</span>
+      </div>
+      <div class="io-fb" id="io-q2a-fb"></div>
+
+      <p class="io-qlab" style="margin-top:1.3rem;">문제 2 · 해상도를 <b>가로·세로 모두 2배</b>로 늘리면 픽셀 수는 몇 배가 되는가?</p>
+      <div class="chips" id="io-q2b">
+        <span class="chip" data-v="0">2배</span>
+        <span class="chip" data-v="1">4배</span>
+        <span class="chip" data-v="2">8배</span>
+        <span class="chip" data-v="3">그대로</span>
+      </div>
+      <div class="io-fb" id="io-q2b-fb"></div>
+      <span class="io-src">동아 교과서 Ⅲ p.89 「스스로 해결하기 1」 문항 구조를 재구성</span>
+    </div>
+
+    <div class="info" data-no-toggle="1">
+      <strong>다음 시간 미리보기 <span class="io-next">15차시</span></strong>
+      <div style="margin-top:0.4rem;">오늘의 사진은 모두 <b>회색조 한 장</b>입니다. 색이 있는 사진은 빨강·초록·파랑
+        <b>세 장의 행렬</b>이 되고, 필요한 수의 개수에는 <b>× 3</b> 이 붙습니다.
+        세 수를 한 수로 모으는 <b>회색조 변환</b>도 15차시에서 다룹니다.</div>
+    </div>
+  </div>
+
+  <!-- ── 탭 ③ 활동 ③ · 밝기 랩 (10분, 주력 위젯) ─────────────────────── -->
+  <div class="tpanel" id="io2">
+    <div class="card" id="io-act3" data-no-toggle="1">
+      <h3>활동 ③ · 「밝기 슬라이더의 정체」 — 수식을 직접 조립하기</h3>
+      <p>사진 앱의 <b>밝기</b> 슬라이더를 오른쪽으로 밀면 무슨 일이 일어날까요?
+        화면의 수백만 개 픽셀에 각각 어떤 계산이 일어나는지 식으로 적어 보세요. <b>결과 = 원래 값 ______</b></p>
+      <p class="io-hint" style="margin-top:0.5rem;">먼저 예상을 고른 뒤에 아래 실험판이 열립니다.</p>
+      <div class="chips" id="io-a1-guess">
+        <span class="chip" data-g="0">모든 수에 같은 수를 <b>더한다</b></span>
+        <span class="chip" data-g="1">모든 수에 1보다 큰 수를 <b>곱한다</b></span>
+        <span class="chip" data-g="2">둘 다 가능하다</span>
+      </div>
+      <p class="status" id="io-a1-gmsg">예상을 고르면 아래 실험판이 열립니다.</p>
+    </div>
+
+    <div class="card io-veil" id="io-a1-panel" data-no-toggle="1">
+      <h3>실험판 — 원본 A 에서 결과 B 로</h3>
+      <div class="io-imgs">
+        <figure class="io-fig pick sel">
+          <canvas id="io-cv-src" width="56" height="56" aria-label="원본 회색조 사진"></canvas>
+          <figcaption>원본 A · 클릭하면 그 자리의 값 패널이 열립니다</figcaption>
+        </figure>
+        <figure class="io-fig">
+          <canvas id="io-cv-out" width="56" height="56" aria-label="변환된 회색조 사진"></canvas>
+          <figcaption id="io-a1-outcap">결과 B</figcaption>
+        </figure>
+        <div style="flex:1 1 12rem;min-width:0;">
+          <p class="io-winlab">변환 곡선 — 원본값(가로) → 결과값(세로)</p>
+          <canvas class="io-curve" id="io-cv-curve" width="330" height="275"
+                  aria-label="입력 픽셀 값에 대한 출력 픽셀 값 그래프"></canvas>
+          <p class="io-hint">회색 점선은 <b>y = x</b>(변환 없음)입니다. 선이 위로 올라가면 밝아지고,
+            <b>납작해진 구간</b>이 바로 클리핑입니다.</p>
+        </div>
+      </div>
+
+      <div class="io-build">
+        <label>실수배 k
+          <select class="io-sel" id="io-a1-k" aria-label="실수배 계수 k">
+            <option value="0">0</option><option value="0.5">0.5</option><option value="0.8">0.8</option>
+            <option value="1" selected>1</option><option value="1.2">1.2</option>
+            <option value="1.5">1.5</option><option value="2">2</option>
+          </select>
+        </label>
+        <label>더하기 t
+          <input type="range" id="io-a1-t" min="-100" max="100" step="10" value="0" aria-label="더하는 수 t">
+          <span class="io-val" id="io-a1-tval">0</span>
+        </label>
+        <label><input type="checkbox" id="io-a1-clip" checked> 클리핑 0~255</label>
+        <button class="btn" type="button" onclick="ioA1Reset()">처음으로</button>
+      </div>
+      <p class="io-fml" id="io-a1-fml">B = 1·A + 0·J</p>
+      <p class="io-clipbadge" id="io-a1-clipbadge">잘린 픽셀 0 개 (전체의 0.0 %)</p>
+
+      <div class="btn-row" style="margin-top:0.6rem;">
+        <button class="btn" type="button" onclick="ioA1Side()">덧셈 vs 실수배 나란히 보기</button>
+      </div>
+      <div class="io-imgs" id="io-a1-sidebox" style="display:none;">
+        <figure class="io-fig"><canvas id="io-cv-add" width="56" height="56" aria-label="A + 50J 결과"></canvas>
+          <figcaption>A + 50J · 덧셈(밝기)</figcaption></figure>
+        <figure class="io-fig"><canvas id="io-cv-mul" width="56" height="56" aria-label="1.2A 결과"></canvas>
+          <figcaption>1.2A · 실수배(대비)</figcaption></figure>
+        <div style="flex:1 1 12rem;min-width:0;">
+          <p class="io-hint">같은 사진에 두 식을 동시에 적용했습니다.
+            <b>어두운 칸</b>이 얼마나 달라졌는지 비교해 보세요 — 덧셈은 어두운 칸도 50만큼 올라가지만,
+            실수배는 어두운 칸을 거의 그대로 둡니다.</p>
+        </div>
+      </div>
+
+      <p class="io-winlab" style="margin-top:1.1rem;">선택한 자리의 값 패널 — 행 <span id="io-a1-r">27</span>, 열 <span id="io-a1-c">27</span> 부근
+        <span class="io-adv" style="background:var(--fg);">노션 실습 이식</span></p>
+      <div class="chips" id="io-a1-wsize">
+        <span class="chip" data-n="5">5 × 5 보기</span>
+        <span class="chip on" data-n="11">11 × 11 보기</span>
+      </div>
+      <div class="io-winwrap">
+        <div>
+          <p class="io-winlab">원본 A 의 값</p>
+          <div class="io-win n11" id="io-a1-winA"></div>
+        </div>
+        <div>
+          <p class="io-winlab">결과 B 의 같은 자리</p>
+          <div class="io-win n11" id="io-a1-winB"></div>
+        </div>
+      </div>
+      <div class="io-scroll">
+        <table class="io-calc" id="io-a1-calc"></table>
+      </div>
+
+      <p class="io-winlab" style="margin-top:1.1rem;">미션 — 아래 네 가지를 차례로 만들어 보세요</p>
+      <div class="chips" id="io-a1-mis">
+        <span class="chip" data-m="0">① 밝기를 1.2배로</span>
+        <span class="chip" data-m="1">② 전체를 50만큼 밝게</span>
+        <span class="chip" data-m="2">③ 전체를 50만큼 어둡게</span>
+        <span class="chip" data-m="3">④ 2배로 만들어 255를 넘겨 보기</span>
+      </div>
+      <div class="io-fb" id="io-a1-fb"></div>
+      <p class="status" id="io-a1-prog">완료한 미션 0 / 4 — 미션을 두 개 이상 끝내면 아래 단계 토글이 열립니다.</p>
+    </div>
+
+    <p class="io-lockmsg" id="io-a1-lockmsg">↓ 아래 세 단계는 <b>미션 2개 이상</b>을 끝낸 뒤에 열립니다.</p>
+
+    <details class="io-fold io-locked" id="io-a1-f1">
+      <summary>단계 1 · 관찰 — k와 t를 바꿀 때 사진은 어떻게 달라졌나</summary>
+      <div class="bd">
+        <p><b>t(더하기)</b> 는 모든 칸을 <b>똑같이 밀어 올립니다</b>. 차이는 그대로인 채 전체가 뿌옇게 밝아집니다.</p>
+        <p><b>k(실수배)</b> 는 밝은 곳과 어두운 곳의 <b>차이를 벌립니다</b>. 230에 2를 곱하면 460이지만 80에 2를 곱하면 160이므로,
+          두 칸의 차는 150에서 300으로 커집니다. 그래서 사진이 ‘쨍’해집니다(대비 증가).</p>
+        <div class="io-scroll" style="margin-top:0.5rem;">
+          <table class="io-tbl">
+            <tr><th>연산</th><th>밝은 칸 230</th><th>어두운 칸 80</th><th>두 칸의 차</th></tr>
+            <tr><td>원본</td><td>230</td><td>80</td><td>150</td></tr>
+            <tr><td>A + 50J</td><td class="over">255 (280→255)</td><td>130</td><td>125</td></tr>
+            <tr><td>2A</td><td class="over">255 (460→255)</td><td>160</td><td>95</td></tr>
+            <tr><td>½A</td><td>115</td><td>40</td><td>75</td></tr>
+          </table>
+        </div>
+        <p style="margin-top:0.5rem;"><b>k = 0</b> 으로 하면 모든 칸이 0이 되어 사진은 <b>전부 검은색</b>이 됩니다.
+          값이 255이던 칸에 <b>t = +50</b> 을 하면 305가 아니라 <b>255</b> 그대로입니다.</p>
+        <span class="io-src">동아 교과서 Ⅲ pp.90~91 예시 행렬 A = [[230,80,230],[80,230,80],[230,80,230]] 서술을 재구성</span>
+        <textarea class="io-ta" id="io-a1-note" style="margin-top:0.7rem;"
+          placeholder="예: k를 2로 올렸더니 하늘과 달이 모두 흰색이 되어 구분이 사라졌다."></textarea>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-a1-f2">
+      <summary>단계 2 · 정리 — 255를 넘으면 컴퓨터는 어떻게 할까</summary>
+      <div class="bd">
+        <p>8비트 회색조에서 한 칸이 가질 수 있는 값은 <b>0 이상 255 이하의 정수</b>뿐입니다.
+          계산 결과가 이 범위를 벗어나면 <b>범위 안으로 잘라 넣습니다</b>. 이것을 <b>클리핑</b>이라고 합니다.</p>
+        <ul>
+          <li>0보다 작아지면 → <b>0</b> (검은색보다 더 검은 색은 없습니다)</li>
+          <li>255보다 커지면 → <b>255</b> (흰색보다 더 흰 색은 없습니다)</li>
+        </ul>
+        <p><b>되돌릴 수 없다는 점</b>이 중요합니다. 255로 잘린 칸들은 원래 280이었는지 460이었는지 알 수 없게 되어,
+          k를 다시 0.5로 낮춰도 원본으로 돌아오지 않습니다.
+          직접 확인해 보세요 — 미션 ④(2배)를 누른 뒤 [클리핑 0~255] 체크를 <b>끄면</b> 값 패널에 <b>붉은 수</b>가 나타납니다.</p>
+        <span class="io-src">씨마스 교과서 Ⅲ p.95 「지식 Plus — 픽셀의 값이 0보다 작아지거나 255보다 커질 경우」 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-a1-f3">
+      <summary>단계 3 · 정의 확인 — 밝기 변환 A + tJ 와 대비 변환 kA</summary>
+      <div class="bd">
+        <p>같은 꼴의 두 행렬 A = (a<sub>ij</sub>), B = (b<sub>ij</sub>) 에 대하여
+          <b>A ± B</b> 의 (i, j) 성분은 a<sub>ij</sub> ± b<sub>ij</sub> 이고, <b>kA</b> 의 (i, j) 성분은 k · a<sub>ij</sub> 입니다.</p>
+        <p>모든 성분이 1인 행렬을 <b>J</b> 라 할 때, 이미지 행렬 A 에 대하여</p>
+        <p class="io-fml">밝기 변환 A + tJ  (t &gt; 0 밝게 · t &lt; 0 어둡게)<br>
+          대비 변환 kA  (k &gt; 1 또렷하게 · 0 &lt; k &lt; 1 흐리게)</p>
+        <p>결과가 0 미만이면 0으로, 255 초과이면 255로 잘라 넣습니다(<b>클리핑</b>).
+          성분이 정수가 아니면 반올림·올림·버림으로 정수로 맞춥니다.</p>
+        <p>사진 앱의 ‘<b>밝기</b>’ 버튼이 <b>덧셈</b>, ‘<b>대비</b>’ 버튼이 <b>실수배</b>에 해당합니다.</p>
+        <span class="io-src">씨마스 교과서 Ⅲ pp.94~95 (R₁ = R + tJ) · 동아 교과서 Ⅲ pp.90~91 서술을 재구성</span>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 활동 ③ 확인하기 (손으로 계산)</h3>
+      <p class="io-qlab">A = ⎡100 200⎤⎣250 &nbsp;50⎦ 이고 J 는 모든 성분이 1인 행렬입니다.
+        (0 미만은 0, 255 초과는 255로 조정)</p>
+      <div class="io-qrow" id="io-q3-wrap"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="ioQ3Check()">채점</button>
+        <button class="btn" type="button" onclick="ioQ3Reset()">지우기</button>
+      </div>
+      <div class="io-fb" id="io-q3-fb"></div>
+
+      <p class="io-qlab" style="margin-top:1.3rem;">문제 3 · 위 두 계산에서 <b>클리핑이 일어난 칸</b>은 각각 몇 개인가?</p>
+      <div class="chips" id="io-q3c">
+        <span class="chip" data-v="0">A + 60J 에서 1개, 1.5A 에서 1개</span>
+        <span class="chip" data-v="1">A + 60J 에서 2개, 1.5A 에서 2개</span>
+        <span class="chip" data-v="2">A + 60J 에서 0개, 1.5A 에서 2개</span>
+        <span class="chip" data-v="3">둘 다 4개</span>
+      </div>
+      <div class="io-fb" id="io-q3c-fb"></div>
+      <span class="io-src">동아 교과서 Ⅲ pp.90~91 예시 행렬 구조를 2 × 2 로 줄여 재구성</span>
+    </div>
+  </div>
+
+  <!-- ── 탭 ④ 활동 ④ · 반전과 사진 합성 (8분) ────────────────────────── -->
+  <div class="tpanel" id="io3">
+    <div class="card" id="io-act4" data-no-toggle="1">
+      <h3>활동 ④ · 「색을 뒤집고, 사진을 섞다」 — 반전과 내분</h3>
+      <p>사진의 색을 <b>완전히 뒤집으면</b>(네거티브 필름처럼) 어떤 식이 될까요?
+        검은색(0)은 흰색(255)이 되고, 흰색(255)은 검은색(0)이 되어야 합니다. <b>결과 = ______</b></p>
+      <p class="io-hint" style="margin-top:0.4rem;">예상을 고르면 아래 실험판이 열립니다.</p>
+      <div class="chips" id="io-a4-guess">
+        <span class="chip" data-g="0">모든 값에 −1을 곱한다</span>
+        <span class="chip" data-g="1">255에서 각 값을 뺀다</span>
+        <span class="chip" data-g="2">모든 값을 255로 바꾼다</span>
+      </div>
+      <p class="status" id="io-a4-gmsg">예상을 고르면 아래 실험판이 열립니다.</p>
+    </div>
+
+    <div class="card io-veil" id="io-a4-panel" data-no-toggle="1">
+      <h3>㉠ 반전 — 255J − A</h3>
+      <div class="io-imgs">
+        <figure class="io-fig pick sel">
+          <canvas id="io-cv-ivs" width="64" height="64" aria-label="원본 회색조 사진"></canvas>
+          <figcaption>원본 A · 클릭하면 그 자리의 계산 전개가 열립니다</figcaption>
+        </figure>
+        <figure class="io-fig">
+          <canvas id="io-cv-ivt" width="64" height="64" aria-label="반전된 회색조 사진"></canvas>
+          <figcaption id="io-a4-cap">결과 — 버튼을 눌러 보세요</figcaption>
+        </figure>
+      </div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="ioA4Inv()">반전 실행 255J − A</button>
+        <button class="btn" type="button" onclick="ioA4Reset()">원본으로</button>
+      </div>
+      <p class="io-fml" id="io-a4-fml">A′ = 255J − A</p>
+      <p class="io-winlab" style="margin-top:0.9rem;">선택한 자리의 5 × 5 계산 전개 — 가운데 열에 계산식
+        <span class="io-adv" style="background:var(--fg);">노션 실습 이식</span></p>
+      <div class="io-scroll"><table class="io-calc" id="io-a4-win"></table></div>
+      <div class="io-fb" id="io-a4-fb"></div>
+      <p class="status" id="io-a4-prog">반전 횟수 0 — 반전을 두 번 눌러 보면 무슨 일이 일어날까요?</p>
+      <span class="io-src">씨마스 교과서 Ⅲ pp.94~95 · 활동지 「활동4 밝기 및 채널변형」 5번 문항을 재구성</span>
+    </div>
+
+    <div class="card io-veil" id="io-a3-panel" data-no-toggle="1">
+      <h3>㉡ 사진 합성 — 수직선 위의 점 P 를 끌어 보세요</h3>
+      <p>수직선 위에 A(2)와 B(8)이 있습니다. <b>점 P를 좌우로 끌면</b> 선분 AB를 나누는 비가 바뀌고,
+        그 비가 그대로 <b>두 사진의 섞임 비율</b>이 됩니다.</p>
+      <canvas class="io-line" id="io-cv-line" aria-label="수직선 위의 두 점 A(2), B(8)과 내분점 P"></canvas>
+
+      <div class="chips" id="io-a3-pre">
+        <span class="chip" data-a="0">α = 0</span>
+        <span class="chip" data-a="0.25">α = 0.25</span>
+        <span class="chip" data-a="0.5">α = 0.5</span>
+        <span class="chip" data-a="0.75">α = 0.75</span>
+        <span class="chip" data-a="1">α = 1</span>
+      </div>
+
+      <p class="io-fml" id="io-a3-eq">AP : PB = 1 : 1 · P = (1×8 + 1×2) ÷ 2 = 5.00</p>
+      <div class="io-coef">
+        <div class="cf a"><span class="k">A의 계수 α</span><span class="v" id="io-a3-ca">0.50</span></div>
+        <div class="cf b"><span class="k">B의 계수 1 − α</span><span class="v" id="io-a3-cb">0.50</span></div>
+        <div class="cf s"><span class="k">두 계수의 합</span><span class="v" id="io-a3-cs">1.000</span></div>
+      </div>
+
+      <div class="io-imgs" style="margin-top:1rem;">
+        <figure class="io-fig pick">
+          <canvas id="io-cv-a" width="72" height="72" aria-label="사진 A"></canvas>
+          <figcaption>사진 A · 저녁 언덕</figcaption>
+        </figure>
+        <figure class="io-fig">
+          <canvas id="io-cv-mix" width="72" height="72" aria-label="합성된 사진"></canvas>
+          <figcaption id="io-a3-mixcap">합성 결과 C = 0.50·A + 0.50·B</figcaption>
+        </figure>
+        <figure class="io-fig pick">
+          <canvas id="io-cv-b" width="72" height="72" aria-label="사진 B"></canvas>
+          <figcaption>사진 B · 나뭇잎</figcaption>
+        </figure>
+      </div>
+      <p class="io-winlab" style="margin-top:0.8rem;">선택한 자리의 3 × 5 계산 전개 — 가운데 열에 계산식
+        <span class="io-adv" style="background:var(--fg);">노션 실습 이식</span></p>
+      <div class="io-scroll"><table class="io-calc" id="io-a3-win"></table></div>
+
+      <label class="io-upz" id="io-a3-upa">📷 사진 A 를 내 사진으로 바꾸기 — 클릭하거나 파일을 끌어다 놓으세요
+        <input type="file" accept="image/*" id="io-a3-fa"></label>
+      <label class="io-upz" id="io-a3-upb">📷 사진 B 를 내 사진으로 바꾸기 — 클릭하거나 파일을 끌어다 놓으세요
+        <input type="file" accept="image/*" id="io-a3-fb2"></label>
+      <p class="io-hint">올린 사진은 이 기기 화면 안에서만 처리되며 어디에도 저장·전송되지 않습니다.
+        정사각형으로 잘라 72 × 72 회색조로 줄여 사용합니다.</p>
+
+      <p class="io-winlab" style="margin-top:1.1rem;">미션 — 활동지 표의 여섯 칸을 만들어 보세요</p>
+      <div class="chips" id="io-a3-mis">
+        <span class="chip" data-a="1">A 100%</span>
+        <span class="chip" data-a="0.8">A 80%</span>
+        <span class="chip" data-a="0.6">A 60%</span>
+        <span class="chip" data-a="0.4">A 40%</span>
+        <span class="chip" data-a="0.2">A 20%</span>
+        <span class="chip" data-a="0">A 0%</span>
+      </div>
+      <div class="io-fb" id="io-a3-fb"></div>
+      <p class="status" id="io-a3-prog">기록한 비율 0 / 6 — 세 칸 이상 채우면 아래 단계 토글이 열립니다.</p>
+
+      <div class="io-scroll" style="margin-top:0.6rem;">
+        <table class="io-tbl" id="io-a3-tbl">
+          <tr><th>AP : PB</th><th>P의 좌표</th><th>A의 계수</th><th>B의 계수</th><th>계수의 합</th><th>P는 어느 쪽에 가까운가</th></tr>
+        </table>
+      </div>
+    </div>
+
+    <p class="io-lockmsg" id="io-a3-lockmsg">↓ 아래 세 단계는 <b>비율 3가지 이상</b>을 기록한 뒤에 열립니다.</p>
+
+    <details class="io-fold io-locked" id="io-a3-f1">
+      <summary>단계 1 · 관찰 — 반전을 두 번 하면? 계수의 합은 왜 언제나 1인가</summary>
+      <div class="bd">
+        <p>반전을 <b>두 번</b> 하면 원본으로 돌아옵니다. 255 − (255 − a) = a 이기 때문입니다.
+          클리핑과 달리 반전은 <b>정보를 잃지 않는</b> 변환입니다.</p>
+        <p>표를 보면 <b>A의 계수 + B의 계수 = 1</b> 이 한 번도 깨지지 않습니다.
+          합이 1보다 크면 사진이 전체적으로 밝아지고(흰색 쪽으로 몰림), 1보다 작으면 어두워집니다.</p>
+        <p>합을 1로 묶어 두었기 때문에 <b>‘섞임’만 일어나고 밝기는 유지</b>됩니다.
+          그래서 α 하나만 정하면 나머지는 자동으로 1 − α 로 정해집니다.</p>
+        <textarea class="io-ta" id="io-a3-note" style="margin-top:0.5rem;"
+          placeholder="예: α를 1에서 0으로 천천히 밀었더니 A가 사라지고 B가 나타났다. 0.5에서 둘이 똑같이 보였다."></textarea>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-a3-f2">
+      <summary>단계 2 · 정리 — 수직선의 내분점과 사진 합성은 같은 식</summary>
+      <div class="bd">
+        <p>수직선 위의 두 점 A(a), B(b)에 대하여 선분 AB를 <b>m : n 으로 내분하는 점 P</b>의 좌표는</p>
+        <p class="io-fml">P = (m·b + n·a) ÷ (m + n) = (n/(m+n))·a + (m/(m+n))·b</p>
+        <p>여기서 α = n/(m+n) 이라 하면 <b>P = αa + (1 − α)b</b> 이고, 두 계수의 합은 언제나 1입니다.</p>
+        <p>사진 합성은 이 계산을 <b>모든 픽셀에서 한꺼번에</b> 하는 것입니다.
+          수 하나가 행렬 하나로 바뀌었을 뿐, 식의 모양은 완전히 같습니다.</p>
+        <p class="io-fml">C = αA + (1 − α)B  (0 ≤ α ≤ 1)</p>
+        <span class="io-src">동아 교과서 Ⅲ p.93 「가중치 a 와 오버랩」 · 활동지 「활동5 사진합성」 서술을 재구성</span>
+      </div>
+    </details>
+
+    <details class="io-fold io-locked" id="io-a3-f3">
+      <summary>단계 3 · 정의 확인 — 반전과 합성</summary>
+      <div class="bd">
+        <p><b>색상 반전.</b> 성분이 모두 255인 행렬을 255J 라 할 때 반전된 이미지는 <b>A′ = 255J − A</b> 입니다.
+          한 칸만 보면 <b>y = 255 − x</b>, 즉 기울기가 −1인 일차함수입니다.</p>
+        <p><b>합성.</b> 0 ≤ α ≤ 1 인 실수 α 에 대하여 <b>C = αA + (1 − α)B</b> 입니다.
+          두 계수의 합은 언제나 1이며, α 가 1에 가까울수록 A가, 0에 가까울수록 B가 선명합니다.</p>
+        <p>α 를 1에서 0까지 천천히 바꾸면 A 위로 B가 겹치며 넘어가는 <b>오버랩</b>이 됩니다.
+          영화에서 한 장면이 흐려지며 다음 장면이 또렷해지는 전환이 바로 이 식입니다.</p>
+        <span class="io-src">동아 교과서 Ⅲ p.93 M<sub>C</sub> = a·M<sub>A</sub> + (1−a)·M<sub>B</sub> · 씨마스 교과서 Ⅲ pp.94~95 서술을 재구성</span>
+      </div>
+    </details>
+
+    <div class="card" data-no-toggle="1">
+      <h3>판정 문제 — 활동 ④ 확인하기 (손으로 계산)</h3>
+      <p class="io-qlab">문제 1 · A = ⎡&nbsp;&nbsp;0 128⎤⎣200 255⎦ 의 반전 <b>255J − A</b> 를 구하시오.</p>
+      <div class="io-qrow" id="io-q4a-wrap"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="ioQ4aCheck()">채점</button>
+        <button class="btn" type="button" onclick="ioQ4aReset()">지우기</button>
+      </div>
+      <div class="io-fb" id="io-q4a-fb"></div>
+
+      <p class="io-qlab" style="margin-top:1.4rem;">문제 2 · A = ⎡100 200⎤⎣&nbsp;&nbsp;0 &nbsp;60⎦, B = ⎡200 &nbsp;&nbsp;0⎤⎣100 140⎦, α = 0.6 일 때
+        <b>C = αA + (1 − α)B</b> 를 구하시오.</p>
+      <div class="io-qrow" id="io-q4b-wrap"></div>
+      <div class="btn-row">
+        <button class="btn pri" type="button" onclick="ioQ4bCheck()">채점</button>
+        <button class="btn" type="button" onclick="ioQ4bReset()">지우기</button>
+      </div>
+      <div class="io-fb" id="io-q4b-fb"></div>
+
+      <p class="io-qlab" style="margin-top:1.4rem;">문제 3 · 반전은 되돌릴 수 있는가?</p>
+      <div class="chips" id="io-q4c">
+        <span class="chip" data-v="0">있다 — 한 번 더 반전하면 원래대로</span>
+        <span class="chip" data-v="1">없다 — 정보가 잘려 나간다</span>
+        <span class="chip" data-v="2">밝은 칸만 되돌릴 수 있다</span>
+      </div>
+      <div class="io-fb" id="io-q4c-fb"></div>
+      <span class="io-src">활동지 「활동5 사진합성」 1~4번 문항 · 동아 교과서 Ⅲ p.93 서술을 재구성</span>
+    </div>
+  </div>
+
+  <!-- ═════ STEP 3 · 정리 (7분) ═════ -->
+  <div class="io-step"><p class="mono">STEP 3 · 정리 (8분)</p></div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>오늘의 핵심 3줄</h3>
+    <ol style="margin:0.7rem 0 0 1.2rem;">
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.5rem;">
+        이미지는 픽셀의 밝기 값을 성분으로 하는 <b>행렬</b>입니다. 이진행렬은 <b>0·1</b> 두 값,
+        회색조는 <b>0~255</b> 256단계를 씁니다. 필요한 수의 개수는 <b>해상도</b>로 정해집니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;margin-bottom:0.5rem;">
+        밝기는 <b>A + tJ</b>, 대비는 <b>kA</b>, 반전은 <b>255J − A</b> 입니다.
+        결과가 0~255를 벗어나면 <b>잘라 넣고(클리핑)</b>, 잘린 값은 되돌릴 수 없습니다.</li>
+      <li style="font-size:1.06rem;font-weight:600;">
+        두 이미지의 합성 <b>C = αA + (1 − α)B</b> 는 <b>수직선 위 내분점</b>과 같은 식이며,
+        두 계수의 합은 언제나 1입니다.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>핵심 질문에 답하기</h3>
+    <p><b>“사진 보정 앱의 필터 버튼 뒤에는 어떤 계산이 숨어 있을까?”</b></p>
+    <textarea class="io-ta" id="io-ans1" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="io-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>사진은 픽셀 값을 성분으로 갖는 행렬이므로, 필터는 그 행렬의 <b>모든 성분에 한꺼번에</b> 같은 계산을 적용하는 것입니다.
+          같은 수를 더하거나(A + tJ), 곱하거나(kA), 255에서 빼는(255J − A) 것입니다.</p>
+        <p>버튼 하나를 누를 때 컴퓨터는 <b>200만 번이 넘는 덧셈</b>을 합니다.
+          사람이 손으로는 불가능한 일을 <b>행렬이라는 언어 한 줄</b>로 지시할 수 있다는 것이 요점입니다.</p>
+        <p>성취기준이 “행렬을 이용하여 이미지 데이터를 <b>목적에 맞게</b> 표현”이라고 적은 이유도 여기에 있습니다.
+          표현을 어떻게 정하느냐에 따라 할 수 있는 계산이 달라집니다.</p>
+      </div>
+    </details>
+
+    <p style="margin-top:1rem;"><b>보조 질문 ② 두 사진을 자연스럽게 섞은 ‘중간’은 수학에서 어떤 점과 같은 것일까?</b></p>
+    <textarea class="io-ta" id="io-ans2" placeholder="내 문장으로 답해 보세요."></textarea>
+    <details class="io-fold">
+      <summary>자세히 보기 — 예시 답안</summary>
+      <div class="bd">
+        <p>수직선 위에서 선분 AB를 m : n 으로 <b>내분하는 점</b>과 같습니다.
+          내분점의 좌표가 αa + (1 − α)b 이듯이, 합성 이미지의 각 픽셀도 αA + (1 − α)B 로 정해집니다.
+          α를 1에서 0으로 옮기는 일은 점 P를 A에서 B로 끌고 가는 일과 정확히 같습니다.</p>
+      </div>
+    </details>
+    <div class="btn-row"><button class="btn" type="button" onclick="ioAnsSave()">내 답 저장</button></div>
+    <p class="status" id="io-ans-st"></p>
+  </div>
+
+  <div class="card" data-no-toggle="1">
+    <h3>형성평가 — 스스로 확인하기</h3>
+    <p style="margin-bottom:0.8rem;">문항을 하나씩 풀어 봅시다. 답을 고르면 바로 정답과 해설이 나타나고,
+      마지막에 총점과 문항별 복기가 표시됩니다.</p>
+    <div id="io-quiz"></div>
+  </div>
+
+  <div class="info" data-no-toggle="1"><strong>다음 차시 예고 — 15차시 「컬러 이미지와 세 개의 행렬」</strong><br>
+    오늘 다룬 사진은 모두 <b>회색조 한 장</b>이었습니다. 그런데 여러분의 사진첩에 있는 사진들은 <b>색</b>이 있습니다.
+    색이 있는 한 장은 행렬 몇 개일까요?<br>
+    다음 시간에는 사진 한 장을 빨강·초록·파랑 <b>세 장의 행렬</b>로 분해하고, 다시 하나로 되돌립니다.
+    오늘 배운 덧셈·실수배는 그때 <b>세 번씩</b> 쓰이게 됩니다.
+    <span style="display:block;margin-top:0.6rem;">
+      <button class="btn pri" type="button" onclick="go('rgb')">15차시로 이동 →</button>
+      <button class="btn" type="button" onclick="go('review')">돌아보기 · 13차시 텍스트 종합</button>
+    </span>
+  </div>
+
+  <!-- ═════ 프로젝트 과제 ═════ -->
+  <div class="pj" data-no-toggle="1">
+    <span class="lb">프로젝트 과제 · 생각 키우기</span>
+    <h3>「내 사진 한 장의 필터 설명서」</h3>
+    <p class="sub">사진 앱의 버튼을 누르는 대신, <b>내가 고른 수식</b>으로 사진이 어떻게 바뀌었는지 수학으로 설명합니다.
+      계산의 정확성보다 <b>변환을 행렬의 연산으로 해석할 수 있는가</b>가 중심입니다.</p>
+    <dl>
+      <dt>수행 방법</dt>
+      <dd>① 사진첩에서 사진 한 장을 고르고 <b>해상도</b>를 확인합니다(스마트폰: 사진 → 정보 / PC: 파일 속성 → 자세히).
+        회색조로 저장할 때 필요한 <b>수의 개수</b>를 계산합니다.<br>
+        ② 사진 앱의 <b>밝기</b>와 <b>대비</b>를 각각 크게 올린 결과를 캡처합니다(2장).<br>
+        ③ 두 결과 각각에 대해 <b>어떤 식이 적용되었는지</b> 적습니다(A + tJ / kA). 그렇게 판단한 근거를 한 줄로 씁니다.<br>
+        ④ 사진의 <b>밝은 곳 한 점</b>과 <b>어두운 곳 한 점</b>을 골라, 두 식을 적용했을 때의 값을 <b>손으로 계산</b>합니다
+        (클리핑이 일어났는지 표시).<br>
+        ⑤ 마지막으로 한 문단(3~5문장): <b>“밝기와 대비는 왜 다른 버튼인가?”</b></dd>
+      <dt>제출물</dt>
+      <dd>· 원본 1장 + 보정 캡처 2장<br>
+        · 계산 표 1개(두 지점 × 두 식 · 클리핑 여부 표시)<br>
+        · 해상도 → 수의 개수 계산 과정 1줄<br>
+        · “밝기와 대비는 왜 다른 버튼인가” 한 문단(3~5문장)</dd>
+      <dt>평가 관점</dt>
+      <dd>· 해상도로부터 성분의 개수를 정확히 계산하는가 <b>[12인수03-01]</b><br>
+        · 덧셈과 실수배가 이미지에 미치는 효과의 <b>차이</b>를 구체적 수치로 설명하는가 <b>[12인수03-02]</b><br>
+        · 태도: 클리핑이 “정보의 손실”임을 자기 언어로 서술하는가</dd>
+    </dl>
+    <p class="io-hint" style="margin-top:0.7rem;"><b>초상권 안내</b> — 사람 얼굴이 크게 드러난 사진은 쓰지 않습니다.
+      풍경·사물·반려동물 사진을 권하며, 제출은 학급 내부 공유만 합니다.</p>
+  </div>
+
+  <!-- ═════ 참고 자료 ═════ -->
+  <div class="card" data-no-toggle="1">
+    <h3>참고 자료 — 더 넓게, 더 깊이</h3>
+    <p>카드를 누르면 새 탭에서 열립니다. STEP 1 도입 그리드에 실린 영상은 여기에 다시 넣지 않았습니다.</p>
+    <div class="io-refs">
+      <a class="io-ref" href="https://tjdgus1121.github.io/indeximage.html" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 활동</span><img src="assets/refthumb/sc-28-tjdgus1121-github-io-indeximage-html.jpg" alt="" loading="eager"></span><span class="bd"><span class="tt">이미지 탐구 활동 웹앱</span><span class="ds">사진을 올려 밝기·대비·색 반전을 직접 바꿔 보며 픽셀 값이 어떻게 변하는지 확인합니다. <b>출처</b> — KERIS 「인공지능 수학」 교수·학습 역량 강화(2차) 연수 패들렛 공유 자료</span></span></a>
+      <a class="io-ref" href="https://aimath-466607.web.app/" target="_blank" rel="noopener"><span class="th"><span class="bg">웹 활동</span><img src="assets/refthumb/sc-29-aimath-466607-web-app.jpg" alt="" loading="eager"></span><span class="bd"><span class="tt">인공지능 수학 실습 웹앱</span><span class="ds">이미지·행렬 실습을 모아 놓은 웹앱입니다. 오늘 활동을 마친 뒤 다른 연산도 시험해 볼 수 있습니다. <b>출처</b> — KERIS 「인공지능 수학」 교수·학습 역량 강화(2차) 연수 패들렛 공유 자료</span></span></a>
+      <a class="io-ref" href="assets/notion/ex2-1.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span><img src="assets/refthumb/sc-30-assets-notion-ex2-1-html.jpg" alt="" loading="eager"></span>
+        <span class="bd"><span class="tt">행렬 덧셈으로 이미지 밝기 조절하기</span>
+          <span class="ds">슬라이더로 t 를 바꾸면 선택 영역 11 × 11 의 값이 함께 바뀝니다. 활동 ③ 값 패널의 원본 도구입니다.</span>
+          <span class="sc">대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실</span></span>
+      </a>
+      <a class="io-ref" href="assets/notion/ex2-2.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span><img src="assets/refthumb/sc-31-assets-notion-ex2-2-html.jpg" alt="" loading="eager"></span>
+        <span class="bd"><span class="tt">행렬 실수배로 이미지 명암 대비 조절하기</span>
+          <span class="ds">k 를 바꿔 밝은 곳과 어두운 곳의 차이가 어떻게 벌어지는지 확인합니다.</span>
+          <span class="sc">대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실</span></span>
+      </a>
+      <a class="io-ref" href="assets/notion/ex3-1.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span><img src="assets/refthumb/sc-32-assets-notion-ex3-1-html.jpg" alt="" loading="eager"></span>
+        <span class="bd"><span class="tt">색상 반전으로 이미지 변환하기</span>
+          <span class="ds">5 × 5 영역의 가운데 열에 255 − x 계산식이 표시됩니다. 활동 ④ ㉠의 원본 도구입니다.</span>
+          <span class="sc">대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실</span></span>
+      </a>
+      <a class="io-ref" href="assets/notion/ex3-3.html" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">웹 활동</span><img src="assets/refthumb/sc-33-assets-notion-ex3-3-html.jpg" alt="" loading="eager"></span>
+        <span class="bd"><span class="tt">알파 블랜딩으로 이미지 합성하기</span>
+          <span class="ds">α 를 움직여 두 사진을 섞고, 3 × 5 영역에서 계산식을 확인합니다.</span>
+          <span class="sc">대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실</span></span>
+      </a>
+      <a class="io-ref" href="https://colab.research.google.com/drive/1MmloXuq6pA2B8nuWXEY5TXhT4W0DlzL_" target="_blank" rel="noopener">
+        <span class="th"><span class="bg">콜랩</span><img src="assets/refthumb/sc-34-colab-research-google-com-drive-1mmloxuq6pa2b8nuwxey.jpg" alt="" loading="eager"></span>
+        <span class="bd"><span class="tt">행렬을 이용한 색상 변환 (코랩 노트북)</span>
+          <span class="ds">파이썬으로 덧셈·실수배·반전을 사진 전체에 직접 실행해 보는 노트북입니다.</span>
+          <span class="sc">대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실</span></span>
+      </a>
+      
+      
+    </div>
+    <p class="io-hint" style="margin-top:0.6rem;">＋ 자료 추가 — 선생님이 URL·제목을 입력해 카드를 더할 수 있습니다.
+      3단원에는 패들렛 유래 자료가 없으므로, <b>패들렛 링크는 여기에 직접</b> 걸어 두세요.</p>
+    <div class="rx" id="io-refs-extra"></div>
+
+    <h3 style="margin-top:1.6rem;">공학 도구로 같은 계산 해 보기</h3>
+    <div class="io-tools">
+      <div class="io-tool">
+        <span class="tg">📊 스프레드시트</span>
+        <h4>8 × 8 회색조 행렬에 +t · ×k · 255−x 를 한꺼번에 적용</h4>
+        <ol>
+          <li>새 시트의 <b>B2:I9</b> 범위에 0~255 값을 입력합니다.</li>
+          <li><b>B2:I9</b> 선택 → <b>서식 → 조건부 서식 → 색상 스케일</b>(흰색↔검은색)로 이미지처럼 보이게 합니다.</li>
+          <li>아래 빈 범위에 <b>=B2+50</b> 을 넣고 <b>오른쪽·아래로 드래그</b>합니다.</li>
+          <li>다시 아래에 <b>=255-B2</b> 를 같은 방법으로 채웁니다.</li>
+          <li><b>=MIN(255,MAX(0,B2+50))</b> 로 <b>클리핑</b>을 직접 구현해 봅니다.</li>
+        </ol>
+        <a class="go" href="assets/worksheets/image/%ED%99%9C%EB%8F%994_%EC%97%91%EC%85%80%EC%88%98%EC%8B%9D%EC%B2%B4%ED%97%98.xlsx"
+           download="활동4_엑셀수식체험.xlsx" data-rt="활동 4 엑셀 파일 — 조건부 서식으로 밝기·반전·회색조 계산" data-rimg="assets/refimg/X-xlsx4.jpg">예제 파일 내려받기 ↓</a>
+        <p class="src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="io-tool">
+        <span class="tg">📓 코랩</span>
+        <h4>파이썬으로 같은 연산을 사진 전체에 적용</h4>
+        <ol>
+          <li>노트북을 열고 <b>런타임 → 모두 실행</b>을 누릅니다.</li>
+          <li><b>img = np.array(Image.open(...).convert('L'))</b> 로 회색조 값을 읽어 옵니다.</li>
+          <li><b>np.clip(img + 50, 0, 255)</b> 로 밝기를 올립니다.</li>
+          <li><b>255 - img</b> 로 반전합니다.</li>
+          <li><b>a*imgA + (1-a)*imgB</b> 로 두 사진을 합성합니다.</li>
+        </ol>
+        <a class="go" href="https://colab.research.google.com/drive/1MmloXuq6pA2B8nuWXEY5TXhT4W0DlzL_"
+           target="_blank" rel="noopener">예제 열기 ↗</a>
+        <p class="src">대전대신고 하진수 개발 — 노션 「인공지능 수학」 자료실 · 도구 표기는 버전에 따라 다를 수 있습니다.</p>
+      </div>
+      <div class="io-tool">
+        <span class="tg">📐 지오지브라</span>
+        <h4>행렬을 직접 입력해 덧셈·실수배를 계산</h4>
+        <ol>
+          <li><b>geogebra.org/calculator</b> 에 접속합니다.</li>
+          <li>입력창에 <b>A={{100,200},{250,50}}</b> 을 입력합니다.</li>
+          <li><b>J={{1,1},{1,1}}</b> 을 입력합니다.</li>
+          <li><b>A+60J</b> 를 입력해 결과를 확인합니다.</li>
+          <li><b>1.5A</b> 를 입력합니다 — 클리핑은 <b>직접 판단</b>해야 합니다.</li>
+        </ol>
+        <a class="go" href="https://www.geogebra.org/calculator" target="_blank" rel="noopener" data-rt="지오지브라 — 2×2 행렬에 A+60J와 1.5A 계산" data-rimg="assets/refimg/L14-ggb.jpg">지오지브라 계산기 열기 ↗</a>
+        <p class="src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+      <div class="io-tool">
+        <span class="tg">🧮 알지오매스</span>
+        <h4>행렬 블록으로 성분 연산을 체험</h4>
+        <ol>
+          <li><b>algeomath.kr</b> 에 접속해 <b>[알지오매스 시작]</b> 을 누릅니다.</li>
+          <li>왼쪽 도구에서 <b>수식/행렬 입력</b> 을 고릅니다.</li>
+          <li>2 × 2 행렬 두 개를 만들고 <b>합</b>과 <b>실수배</b>를 계산합니다.</li>
+          <li>결과를 활동 ③ 위젯의 값 패널과 대조해 봅니다.</li>
+        </ol>
+        <a class="go" href="https://algeomath.kr" target="_blank" rel="noopener" data-rt="알지오매스 — 행렬 블록으로 합과 실수배 체험" data-rimg="assets/refimg/L14-agm.jpg">알지오매스 열기 ↗</a>
+        <p class="src">도구 화면·명령어 표기는 버전에 따라 다를 수 있습니다. 안 되면 선생님께 알려 주세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ 학습지 ═════ -->
+  <div class="ws" data-no-toggle="1">
+    <span class="lb">학습지</span>
+    <h3>14차시 학습지 — 손으로 기록하며 정리하기</h3>
+    <p>웹에서 조작하고 관찰한 내용을 손으로 다시 정리하면 기억이 오래갑니다.
+      실물 활동지를 내려받거나, 웹 활동과 1:1로 대응하는 인쇄용 지면을 뽑아 채워 보세요.</p>
+    <div class="ws-dl">
+      <button class="ws-btn" type="button" onclick="wsPrint('io-sheet')">🖨 학습지 인쇄 <span class="sz">A4 2장</span></button>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%991-2_%EC%9D%B4%EC%A7%84%ED%96%89%EB%A0%AC%EA%B3%BC%ED%96%89%EB%A0%AC%EA%B0%92.pdf"
+         download="활동1-2_이진행렬과행렬값.pdf">📄 활동 1-2 — 이진행렬과 행렬값 (PDF) <span class="sz">PDF · 약 193 KB · 주 학습지</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%991-2_%EC%9D%B4%EC%A7%84%ED%96%89%EB%A0%AC%EA%B3%BC%ED%96%89%EB%A0%AC%EA%B0%92.hwpx"
+         download="활동1-2_이진행렬과행렬값.hwpx">📄 활동 1-2 — 이진행렬과 행렬값 (HWPX) <span class="sz">HWPX · 약 339 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%995_%EC%82%AC%EC%A7%84%ED%95%A9%EC%84%B1.pdf"
+         download="활동5_사진합성.pdf">📄 활동 5 — 사진 합성 (PDF) <span class="sz">PDF · 약 235 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%995_%EC%82%AC%EC%A7%84%ED%95%A9%EC%84%B1.hwp"
+         download="활동5_사진합성.hwp">📄 활동 5 — 사진 합성 (HWP) <span class="sz">HWP · 약 4.3 MB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%994_%EB%B0%9D%EA%B8%B0%EB%B0%8F%EC%B1%84%EB%84%90%EB%B3%80%ED%98%95.pdf"
+         download="활동4_밝기및채널변형.pdf">📄 활동 4 — 밝기 및 채널변형 (PDF) <span class="sz">PDF · 약 241 KB · 14·15차시 공용</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%ED%99%9C%EB%8F%994_%EC%97%91%EC%85%80%EC%88%98%EC%8B%9D%EC%B2%B4%ED%97%98.xlsx"
+         download="활동4_엑셀수식체험.xlsx">📊 활동 4 — 엑셀 수식 체험·행렬 연산 (XLSX) <span class="sz">XLSX · 약 244 KB</span></a>
+      <a class="ws-btn sec" href="assets/worksheets/image/%EC%9D%B4%EB%AF%B8%EC%A7%80_%ED%98%95%EC%84%B1%ED%8F%89%EA%B0%80_2026.pdf"
+         download="이미지_형성평가_2026.pdf">📄 이미지 단원 형성평가 2026 (PDF) <span class="sz">PDF · 약 198 KB · 3단원 공통 · 교사용</span></a>
+    </div>
+    <p class="io-hint" style="margin-top:0.6rem;"><b>활동 1-2 — 이진행렬과 행렬값</b> 활동 &#9312;&middot;&#9313;과 1:1 대응합니다(0&middot;1 옮겨 적기,
+        픽셀&middot;해상도&middot;비트 계산). <b>활동 5 — 사진 합성</b> 활동 &#9315;와 대응하며, 수직선 위
+        선분의 내분점을 다룹니다. <b>활동 4 — 밝기 및 채널 변형</b> 행렬의 덧셈&middot;뺄셈&middot;실수배
+        손계산과 "255를 넘으면?"이 활동 &#9314;와 대응합니다(RGB 부분은 15차시에서 다시 씁니다).</p>
+    <div id="io-wslinks"></div>
+  </div>
+
+  <!-- ═════ 오개념 처방 (교사용) — 제목만 보이고 본문은 접힘(spec §6) ═════ -->
+  <div class="card">
+    <h3>오개념 처방 — 수업 중 자주 나오는 네 가지와 처방 <span class="io-adv">교사용</span></h3>
+    <details class="io-fold">
+      <summary>수업 중 자주 나오는 네 가지 오개념과 처방</summary>
+      <div class="bd">
+        <div class="io-scroll">
+          <table class="io-tbl">
+            <tr><th style="min-width:8rem;">오개념</th><th style="min-width:9rem;">증상</th><th>처방</th></tr>
+            <tr><td>0 = 흰색</td><td>이진행렬에서 0을 흰색으로 칠함</td>
+              <td>모니터 전원 끄기 체험 → “빛이 없으면 검은색”. 물감(감산)과 빛(가산)의 차이를 한 문장으로 대비.</td></tr>
+            <tr><td>클리핑을 계산 오류로 봄</td><td>“270이 맞는데 왜 255죠?”</td>
+              <td>저장 칸의 크기가 정해져 있음을 <b>컵에 물 붓기</b>로 비유. 넘친 물은 되돌릴 수 없음을 함께 짚기.</td></tr>
+            <tr><td>밝기와 대비를 같은 것으로 봄</td><td>덧셈·실수배 구분 실패</td>
+              <td>활동 ③ [덧셈 vs 실수배 나란히 보기]로 <b>어두운 픽셀의 변화량</b>을 수로 비교.</td></tr>
+            <tr><td>합성 비율의 합을 놓침</td><td>0.7A + 0.7B 를 씀</td>
+              <td>계수 합 표시기를 강제 노출. 합이 1.4이면 결과가 전체적으로 밝아져 클리핑이 나는 것을 관찰.</td></tr>
+          </table>
+        </div>
+        <span class="io-src">연수교재 합본 p.144 오개념 처방 · 씨마스 지도서 Ⅲ 발문 자료를 재구성</span>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═════ 인쇄 전용 지면 (A4 2장) ═════ -->
+  <div class="ws-sheet" id="io-sheet" aria-hidden="true">
+    <div class="ws-h">
+      <h2>14차시 학습지 — 이미지는 행렬이다: 표현과 변환</h2>
+      <span class="ws-id">___학년 ___반 ___번 이름 __________</span>
+    </div>
+    <p class="note">목표 ① 픽셀·해상도 → 행렬의 성분 ☐ &nbsp; ② 이진행렬과 회색조 행렬의 구분 ☐ &nbsp;
+      ③ A + tJ · kA · 255J − A 와 클리핑 ☐ &nbsp; ④ C = αA + (1 − α)B 와 내분점 ☐
+      &nbsp;&nbsp;[12인수03-01] [12인수03-02]</p>
+
+    <h3>① 마중 퀴즈 — 나의 첫 생각</h3>
+    <table>
+      <tr><th style="width:54%;">질문</th><th style="width:14%;">내 답</th><th>그렇게 생각한 이유</th></tr>
+      <tr><td>회색조 이미지에서 성분값 0은 어떤 색인가?</td><td class="blank" style="height:7mm;"></td><td class="blank"></td></tr>
+      <tr><td>해상도 30 × 30 인 회색조 이미지에 필요한 수는 몇 개인가?</td><td class="blank" style="height:7mm;"></td><td class="blank"></td></tr>
+      <tr><td>모든 픽셀 값에 50을 더하면? 값이 220이던 픽셀은?</td><td class="blank" style="height:7mm;"></td><td class="blank"></td></tr>
+    </table>
+
+    <h3>② 활동 ① — 그림을 이진행렬로 옮겨 적기</h3>
+    <p class="note">약속: 검은색 = 0, 흰색 = 1. 왼쪽 격자에 무늬를 칠하고 오른쪽 표에 0·1을 적으세요.</p>
+    <table>
+      <tr><th style="width:50%;">그림(6 × 6 격자에 직접 칠하기)</th><th>내가 적은 행렬</th></tr>
+      <tr><td class="blank" style="height:20mm;"></td><td class="blank"></td></tr>
+    </table>
+    <p>1. 위 행렬의 (2, 3) 성분은 ______, (3, 2) 성분은 ______ 이다. 두 값이 다를 수 있는 이유는?</p>
+    <div class="rule sm"></div>
+    <p>2. 성분이 모두 1인 5 × 5 이진행렬이 나타내는 이미지는 ______________ 이고,
+      ⎡1 0⎤⎣0 1⎦ 이 나타내는 이미지는 □□ / □□ 에 칠하면 된다.</p>
+
+    <h3>③ 활동 ② — 해상도와 수의 개수</h3>
+    <table>
+      <tr><th>해상도</th><th>픽셀(성분) 개수</th><th>회색조 저장 바이트</th><th>흑백 이진 저장 바이트</th></tr>
+      <tr><td>8 × 8</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>30 × 30</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1920 × 1080</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>· 해상도를 가로·세로 모두 2배로 늘리면 픽셀 수는 ______ 배가 된다. 그 이유는?
+      그리고 회색조가 <b>256</b>단계인 까닭을 8비트와 연결해 쓰시오.</p>
+    <div class="rule sm"></div>
+
+    <h3>④ 활동 ③ — 밝기 변환 손계산</h3>
+    <p class="note">A = [[100, 200], [250, 50]], J 는 모든 성분이 1인 행렬. (0 미만은 0, 255 초과는 255)</p>
+    <table>
+      <tr><th>식</th><th>(1,1)</th><th>(1,2)</th><th>(2,1)</th><th>(2,2)</th><th>클리핑이 일어난 칸</th></tr>
+      <tr><td>A + 60J</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>A − 60J</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>1.5A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>· 밝은 칸 230과 어두운 칸 80의 <b>차</b>는 A + 50J 에서 ______, 2A 에서 ______ 이 된다.<br>
+      &nbsp;&nbsp;이것으로 알 수 있는 ‘밝기’와 ‘대비’의 차이는? ______________________________________________</p>
+
+    <h3>⑤ 활동 ④ — 반전과 합성</h3>
+    <p class="note">P = [[0, 128], [200, 255]] · A = [[100, 200], [0, 60]] · B = [[200, 0], [100, 140]] · α = 0.6</p>
+    <table>
+      <tr><th>식</th><th>(1,1)</th><th>(1,2)</th><th>(2,1)</th><th>(2,2)</th></tr>
+      <tr><td>255J − P</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td>C = αA + (1 − α)B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p class="note">▼ 수직선 위에 A(2), B(8)과 α = 0.25 · 0.5 · 0.75 인 점 P를 직접 찍고 이름을 적으세요.</p>
+    <div class="rule sm"></div>
+    <p>· 반전을 두 번 하면 ______________ 이다. 까닭은 255 − (255 − a) = ______ 이기 때문이다.</p>
+    <p>· 두 계수의 합이 언제나 <b>1</b>이어야 하는 까닭을 한 문장으로 쓰시오.</p>
+    <div class="rule sm"></div>
+
+    <h3>⑥ 형성평가</h3>
+    <ol>
+      <li>해상도 40 × 25 회색조 한 장에 필요한 수는? ① 65 ② 255 ③ 1,000 ④ 3,000 개 &nbsp; 답: ____</li>
+      <li>이진행렬로 표현할 수 <b>없는</b> 것은? ① 흰 십자 ② QR 코드 ③ 회색 그러데이션 ④ 검은 테두리 사각형 &nbsp; 답: ____</li>
+      <li>A = [[180, 60], [240, 100]] 일 때 A + 40J 는?
+        ① [[220,100],[280,140]] ② [[220,100],[255,140]] ③ [[140,20],[200,60]] ④ [[220,100],[240,140]] &nbsp; 답: ____</li>
+      <li>반전을 두 번 연속 적용한 결과는? ① 두 배로 밝아짐 ② 두 배로 어두워짐 ③ 원본과 같음 ④ 무작위 &nbsp; 답: ____</li>
+      <li>C = αA + (1 − α)B 에서 B가 더 진했다. α는? ① 1 ② 0.8 ③ 0.3 ④ 1.5 &nbsp; 답: ____</li>
+    </ol>
+
+    <h3>⑦ 핵심 질문</h3>
+    <p><b>사진 보정 앱의 필터 버튼 뒤에는 어떤 계산이 숨어 있을까?</b></p>
+    <div class="rule"></div>
+    <p class="note">자기 점검 — 목표 ① ○△× / 목표 ② ○△× / 목표 ③ ○△× / 목표 ④ ○△×</p>
+  
+      <div class="ws-srcbox">
+        <b>자료 출처</b>
+        <ul><li>동아 「인공지능 수학」 p.84, p.89, p.90~91, p.93</li><li>씨마스 「인공지능 수학」 p.90, p.94~95, p.95</li><li>동아출판 「인공지능 수학」 p.84, p.93</li><li>KERIS 「인공지능 수학」 교수·학습 역량 강화(2차) 연수 패들렛</li></ul>
+        <p>제작 : 대전대신고등학교 교사 하진수 · 이 학습지의 무단 배포 및 상업적 이용을 금합니다. 학교 수업 목적으로만 이용해 주세요.</p>
+      </div>
+</div>
+</div>
