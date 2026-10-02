@@ -48659,9 +48659,12 @@ function wireTabFlow(root){
       const after=groups[gi+1]||null;
       const head=steps.find(k=> FOLLOWS(tabs,k) && (!after || FOLLOWS(k,after))) || null;
 
-      /* 마지막 칸 뒤를 모두 닫습니다 — 정리도 그 안에 듭니다. */
+      /* 예전에는 마지막 칸 뒤(정리·참고 자료)를 닫아 두고, 전개를 끝까지
+         내려가야 열어 주었습니다. 지금은 닫지 않습니다 — 앞 활동을 마치지
+         않아도 뒤로 넘어갈 수 있어야 하기 때문입니다.
+         `tail`·`shut`·`undo` 는 되살릴 때를 위해 남겨 둡니다. */
       const tail=tailOf(panels[n-1], view);
-      const lockable=tail.length>0;
+      const lockable=false;
       if(lockable) tail.forEach(shut);
 
       const bars=[];
@@ -49144,6 +49147,64 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
     strip();
     /* 차시 화면이 뒤늦게 붙는 경우가 있어 잠깐 더 지켜봅니다. */
     var t = 0, id = setInterval(function(){ strip(); if(++t > 12) clearInterval(id); }, 400);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+/* ── 전개 활동 잠금 해제 ────────────────────────────────────────────────
+   앞 활동을 끝내지 않아도 다음 활동으로 넘어갈 수 있게 합니다.
+
+   차시마다 이름이 다른 두 갈래 잠금이 있었습니다.
+     · 「…-veil」  (io-veil, cvx-veil, rv-veil … 20종)
+       다음 활동 조작판을 흐리게 덮고 pointer-events 로 막습니다.
+     · 「…-locked」(io-locked, rv-locked, vc-locked … 14종)
+       <details> 접기에 붙어, 눌러도 preventDefault 로 막고
+       열려 있으면 d.open=false 로 도로 닫습니다.
+
+   뒤쪽은 자바스크립트가 직접 막으므로 CSS 만으로는 풀리지 않습니다.
+   잠금 가드가 모두 classList.contains('…-locked') 로만 판정하므로,
+   클래스를 떼어 내면 가드가 통째로 무력해집니다.
+
+   클래스를 붙이는 자리가 수십 군데라 그 자리를 하나씩 고치는 대신,
+   붙는 족족 떼어 내는 감시자를 하나 둡니다. 되돌릴 때는 이 블록만
+   지우면 원래 잠금이 그대로 살아납니다. */
+(function aimUnlockFlow(){
+  'use strict';
+  var RE = /-(?:locked|veil2?)$/;
+
+  function strip(el){
+    if(!el || el.nodeType !== 1 || !el.getAttribute) return;
+    /* 값싼 1차 거르기 — 클래스가 바뀔 때마다 불리므로 빠르게 쳐냅니다. */
+    var s = el.getAttribute('class');
+    if(!s || (s.indexOf('-veil') < 0 && s.indexOf('-locked') < 0)) return;
+    var cl = el.classList;
+    for(var i = cl.length - 1; i >= 0; i--){
+      if(RE.test(cl[i])) cl.remove(cl[i]);
+    }
+  }
+  function sweep(root){
+    var r = root || document;
+    if(r.nodeType === 1) strip(r);
+    if(!r.querySelectorAll) return;
+    var list = r.querySelectorAll('[class*="-veil"],[class*="-locked"]');
+    for(var i = 0; i < list.length; i++) strip(list[i]);
+  }
+
+  function boot(){
+    sweep();
+    try{
+      new MutationObserver(function(ms){
+        for(var i = 0; i < ms.length; i++){
+          var m = ms[i];
+          if(m.type === 'attributes'){ strip(m.target); continue; }
+          for(var j = 0; j < m.addedNodes.length; j++) sweep(m.addedNodes[j]);
+        }
+      }).observe(document.documentElement, {
+        subtree: true, childList: true,
+        attributes: true, attributeFilter: ['class']
+      });
+    }catch(e){ console.error('aimUnlockFlow', e); }
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();

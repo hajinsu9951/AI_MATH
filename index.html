@@ -269,8 +269,20 @@ footer .visits b{color:var(--body);font-weight:700;}
 .tab.tab-jumped{box-shadow:0 0 0 3px rgba(0,117,222,.35),0 2px 8px rgba(0,117,222,.28);}
 .tab-flow.is-last{background:var(--accent);}
 /* 전개 중에는 소단원 뒤가 잠시 닫혀 문서가 거기서 끝납니다 —
-   더 내려갈 곳이 없으니, 바닥에 닿으면 다음 소단원으로 이어집니다. */
-.flow-hidden{display:none !important;}
+   더 내려갈 곳이 없으니, 바닥에 닿으면 다음 소단원으로 이어집니다.
+   ※ 지금은 잠그지 않습니다(아래 「전개 잠금 해제」 참고). 클래스가 붙는
+      경로는 없지만, 혹시 남아 있어도 숨기지 않도록 규칙을 비워 둡니다. */
+.flow-hidden{}
+
+/* ── 전개 잠금 해제 ──────────────────────────────────────────────────
+   앞 활동을 끝내지 않아도 다음 활동으로 넘어갈 수 있게 합니다.
+   차시마다 이름이 다른 가림막(io-veil, cvx-veil, rv-veil … 20종)이
+   `pointer-events:none` 으로 뒤 활동을 막고 흐리게 덮고 있었습니다.
+   뷰 쪽 선택자가 `#v-cnn #v-conv .cvx-veil` 처럼 더 강해서 !important 로
+   덮습니다. 가림막을 거두는 JS(`classList.remove('…-veil')`)는 그대로
+   둬도 해가 없어 건드리지 않았습니다. */
+[class*="-veil"]{opacity:1 !important;pointer-events:auto !important;
+  filter:none !important;}
 .tf-skip{font-family:var(--mono);font-size:0.74rem;letter-spacing:0.04em;
   padding:0.4rem 0.85rem;border-radius:9999px;cursor:pointer;
   border:1px solid var(--border);background:var(--card);color:var(--muted);}
@@ -928,8 +940,8 @@ body.aim-has-botbar .aim-botbar{display:flex;}
 <!-- 배포 표시 — 내용을 고칠 때 sw.js 의 CACHE_NAME 과 이 값을 함께 올립니다.
      loader.js 자신도 표시가 없으면 브라우저 캐시에 묶여, 뷰에 표시를 붙여도
      옛 loader.js 가 실행돼 소용이 없습니다. -->
-<script>window.AIM_BUILD = 'v127';</script>
-<script src="loader.js?v127"></script>
+<script>window.AIM_BUILD = 'v128';</script>
+<script src="loader.js?v128"></script>
 
 <script>
 /* 전개 — 지금 활동을 끝까지 내려 읽으면 다음 활동으로 저절로 넘어갑니다.
