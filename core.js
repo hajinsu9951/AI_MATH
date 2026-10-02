@@ -49152,10 +49152,11 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
   else boot();
 })();
 
-/* ── 전개 활동 잠금 해제 ────────────────────────────────────────────────
+/* ── 전개(STEP 2) 활동 잠금 해제 ──────────────────────────────────────
    앞 활동을 끝내지 않아도 다음 활동으로 넘어갈 수 있게 합니다.
+   **STEP 2 · 전개 구간에만** 적용합니다 — 도입과 정리의 잠금은 그대로 둡니다.
 
-   차시마다 이름이 다른 두 갈래 잠금이 있었습니다.
+   차시마다 이름이 다른 두 갈래 잠금이 있습니다.
      · 「…-veil」  (io-veil, cvx-veil, rv-veil … 20종)
        다음 활동 조작판을 흐리게 덮고 pointer-events 로 막습니다.
      · 「…-locked」(io-locked, rv-locked, vc-locked … 14종)
@@ -49172,12 +49173,46 @@ setTimeout(()=>{ try{ wireTabFlow(document); }catch(e){} }, 0);
 (function aimUnlockFlow(){
   'use strict';
   var RE = /-(?:locked|veil2?)$/;
+  var FOLLOWING = Node.DOCUMENT_POSITION_FOLLOWING;
+  var PRECEDING = Node.DOCUMENT_POSITION_PRECEDING;
+  var marks = new WeakMap();   /* 뷰 → [{el, step}] (문서 순서) */
+
+  /* 차시 화면의 단계 머리말 — <div class="io-step"><p>STEP 2 · 전개…</p></div>.
+     한 화면에 두 차시가 들어 있는 경우가 있어(7·8, 21·22, 23·24차시 …)
+     STEP 1·2·3 주기가 두 번 돕니다. 18차시처럼 순서가 고르지 않은 것도
+     있어, 구간을 미리 자르지 않고 「바로 앞 머리말이 STEP 2 인가」로
+     판정합니다. */
+  function stepMarks(view){
+    if(marks.has(view)) return marks.get(view);
+    var out = [];
+    try{
+      var els = view.querySelectorAll('[class*="-step"]');
+      for(var i = 0; i < els.length; i++){
+        var m = /^STEP\s*([123])/.exec((els[i].textContent || '').trim());
+        if(m) out.push({ el: els[i], step: +m[1] });
+      }
+    }catch(e){}
+    marks.set(view, out);
+    return out;
+  }
+
+  function inDev(el){
+    var view = el.closest ? el.closest('.view') : null;
+    if(!view) return false;
+    var ms = stepMarks(view);
+    for(var i = ms.length - 1; i >= 0; i--){
+      /* el 이 이 머리말보다 뒤에 있으면, 그 머리말이 el 이 속한 단계입니다. */
+      if((ms[i].el.compareDocumentPosition(el) & FOLLOWING) !== 0) return ms[i].step === 2;
+    }
+    return false;   /* 머리말보다 앞 — 차시 들머리 */
+  }
 
   function strip(el){
     if(!el || el.nodeType !== 1 || !el.getAttribute) return;
     /* 값싼 1차 거르기 — 클래스가 바뀔 때마다 불리므로 빠르게 쳐냅니다. */
     var s = el.getAttribute('class');
     if(!s || (s.indexOf('-veil') < 0 && s.indexOf('-locked') < 0)) return;
+    if(!inDev(el)) return;
     var cl = el.classList;
     for(var i = cl.length - 1; i >= 0; i--){
       if(RE.test(cl[i])) cl.remove(cl[i]);
